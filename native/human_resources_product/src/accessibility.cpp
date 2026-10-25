@@ -153,7 +153,7 @@ std::string screen_summary(const View& view) {
         boss_health = "Boss hull " + std::to_string(static_cast<unsigned>(std::ceil(std::clamp(actor.hull / actor.maximum_hull, 0.F, 1.F) * 100))) + " percent. ";
         break;
       }
-    return std::string(view.damage_feedback.age >= 0 ? view.damage_feedback.hull ? "Hull hit. " : "Shield hit. " : "") + "Hull " + std::to_string(static_cast<unsigned>(std::max(0.F, run.hull))) + " of " +
+    return std::string(view.damage_feedback.age >= 0 ? damage_announcement(view.damage_feedback) : "") + "Hull " + std::to_string(static_cast<unsigned>(std::max(0.F, run.hull))) + " of " +
            std::to_string(static_cast<unsigned>(run.maximum_hull)) + ". Shield " +
            std::to_string(static_cast<unsigned>(std::max(0.F, run.shield))) + ". Level " + std::to_string(run.stats.level) +
            ". Score " + std::to_string(run.stats.score) + ". Captures " + std::to_string(run.stats.captures) + ". " + boss_health + (run.harvest_overdrive_seconds > 0 ? "Overdrive active, " + std::to_string(static_cast<unsigned>(std::ceil(run.harvest_overdrive_seconds))) + " seconds remaining. Capture and firing are boosted. " : run.harvest_chain ? "Sweep chain " + std::to_string(run.harvest_chain) + " of " + std::to_string(gameplay::tuning::harvest_chain_target) + ". " + std::to_string(static_cast<unsigned>(std::ceil(run.harvest_chain_seconds))) + " seconds to keep the chain. " : "") + "Drag to fly. Pass close to specimens for faster captures. Chain three quick sweeps for Overdrive. Capture and fire are automatic.";

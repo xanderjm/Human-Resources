@@ -687,23 +687,64 @@ void actual_damage_feedback_stays_inside_the_tactical_hud() {
   require(store.load().playable(),"damage account loads");
   hr::gameplay::Game game;game.start();
   auto run=game.snapshot();run.stats.active_seconds=30;
-  for (float scale : {1.F,1.3F,2.F,3.2F}) for (bool hull : {false,true}) {
-    View view{Screen::run,&run,&store,{0,0,320,568},{0,20,0,0}};
+  for (const auto viewport : {hr::ui::Rect{0,0,320,568}, hr::ui::Rect{0,0,390,844}, hr::ui::Rect{0,0,844,390}})
+  for (float scale : {1.F,1.3F,1.6F,2.F,3.2F}) for (bool hull : {false,true})
+  for (const auto cause : {hr::gameplay::DamageCause::unknown, hr::gameplay::DamageCause::contact, hr::gameplay::DamageCause::projectile}) {
+    View view{Screen::run,&run,&store,viewport,{0,20,0,0}};
     view.text_scale=scale;
     const auto ordinary=interface(view);
     const auto pause=std::find_if(ordinary.buttons.begin(),ordinary.buttons.end(),[](const auto& b){return b.command==Command::pause;})->bounds;
-    view.damage_feedback={.1F,hull};
+    view.damage_feedback={.1F,hull,cause};
     const auto hit=interface(view);
     const auto copy=compact(atlas_copy(hit));
-    require(copy.find(hull ? "HULL" : "SHIELD")!=std::string::npos,"committed hit identifies the affected defence at every text size");
+    require(copy.find(compact(damage_label(view.damage_feedback)))!=std::string::npos,"committed hit identifies complete actual cause and affected defence at every text size");
     const auto after=std::find_if(hit.buttons.begin(),hit.buttons.end(),[](const auto& b){return b.command==Command::pause;})->bounds;
     require(after.x==pause.x && after.y==pause.y && after.height==pause.height,"hit feedback preserves Pause and tactical field height");
     if(scale>1) readable_page_is_real_safe_and_scaled(view,hit);
     const auto spoken=accessibility_snapshot(view,hit);
-    require(std::any_of(spoken.begin(),spoken.end(),[&](const auto& n){return n.value.find(hull?"Hull hit.":"Shield hit.")!=std::string::npos;}),"native context describes committed damage without repeating an age countdown");
+    require(std::any_of(spoken.begin(),spoken.end(),[&](const auto& n){return n.value.find(damage_announcement(view.damage_feedback))!=std::string::npos;}),"native context describes committed damage without repeating an age countdown");
     view.damage_feedback.age=.4F;
     require(accessibility_snapshot(view,interface(view))[1].value==spoken[1].value,"damage age does not create per-frame spoken announcements");
   }
+}
+
+void wrapped_damage_hud_keeps_ingress_vitality_clear() {
+  progression_tests::MemoryBackend backend;
+  hr::progression::AccountStore store{backend};
+  require(store.load().playable(), "wrapped-hit ingress account loads");
+  hr::gameplay::Game game;
+  game.start();
+  auto run = game.snapshot();
+  run.stats.active_seconds = 30;
+  unsigned visible_meters = 0, wrapped = 0;
+  for (const auto viewport : {hr::ui::Rect{0,0,320,568}, hr::ui::Rect{0,0,390,844}})
+    for (float scale : {1.3F, 2.F, 3.2F})
+      for (float z : {5.F, 9.5F, 13.F, 16.5F}) {
+        // Explicit synthetic layout fixture: actual path attribution is covered
+        // by the gameplay contact/projectile tests, not inferred from this pose.
+        run.entities = {{.id=7, .kind=hr::gameplay::EntityKind::boss, .position={0,z}, .hull=100, .maximum_hull=160},
+            {.id=8, .kind=hr::gameplay::EntityKind::tank, .position={4,z}, .hull=100, .maximum_hull=300}};
+        run.presentation_events[0] = {1,30,hr::gameplay::PresentationEventKind::impact,8,{4,z}};
+        View view{Screen::run,&run,&store,viewport,{0,20,0,0}};
+        view.text_scale = scale;
+        view.damage_feedback = {0,false,hr::gameplay::DamageCause::contact};
+        const auto result = interface(view);
+        if (result.damage_hud_bottom > 0) {
+          ++wrapped;
+          const auto& panel = result.quads.front();
+          test_support::require_near(result.damage_hud_bottom, (panel.rect[1] + panel.rect[3]) * viewport.height, .01F, "wrapped clearance matches the actual drawn hit panel");
+        }
+        for (std::size_t i = 1; i < result.quads.size(); ++i) {
+          const auto& q = result.quads[i];
+          if (result.damage_hud_bottom == 0 || q.uv[2] >= 0 || q.color != std::array<float,4>{.035F,.105F,.17F,.96F}) continue;
+          const float y = q.rect[1] * viewport.height;
+          require(y >= result.damage_hud_bottom + 11.99F, "rendered boss/vehicle meter never overlaps wrapped damage HUD");
+          ++visible_meters;
+        }
+        view.damage_feedback = {};
+        require(interface(view).damage_hud_bottom == 0, "no-hit UI retains original clearance behavior");
+      }
+  require(wrapped > 0 && visible_meters > 0, "real wrapping is covered and clearance does not globally suppress combat progress");
 }
 
 void late_value_hud_keeps_level_at_small_portrait() {
@@ -731,6 +772,7 @@ void late_value_hud_keeps_level_at_small_portrait() {
 }
 } // namespace
 int main() {
+  wrapped_damage_hud_keeps_ingress_vitality_clear();
   late_value_hud_keeps_level_at_small_portrait();
   compact_choice_titles_stay_on_the_dark_frame();
   promotion_preserves_choice_safety_and_collected_return_controls();

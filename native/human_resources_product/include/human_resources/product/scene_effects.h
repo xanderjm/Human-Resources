@@ -14,6 +14,7 @@ struct SceneBeat final {
   std::uint32_t actor_id{};
   float age{}, radius{};
   gameplay::Vec2 destination; // Frozen observed player endpoint for real dashes.
+  gameplay::DamageCause damage_cause{};
 };
 struct SceneFeedback final {
   bool capture{}, laser{}, warning{}, hit{}, shield_hit{}, hull_hit{};

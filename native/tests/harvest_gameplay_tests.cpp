@@ -273,8 +273,48 @@ void evade_preserves_existing_protection() {
             "preserved revive protection still expires");
   }
 }
+gp::Game::State damage_fixture(float shield=20) {
+ gp::Game::State s; s.view.phase=gp::Phase::active; s.view.hull=100;s.view.shield=shield;s.view.stats.active_seconds=1;return s;
+}
+void expect_damage_cause(const gp::Game::State& s, gp::DamageCause cause,std::uint32_t id,unsigned expected) {
+ unsigned count=0;
+ for(const auto& e:s.view.presentation_events) if(e.sequence && (e.kind==gp::PresentationEventKind::hull_hit || e.kind==gp::PresentationEventKind::shield_hit)) {
+  ++count; require(e.damage_cause==cause && e.actor_id==id,"damage metadata is the actual caller cause and source");
+ }
+ require(count==expected,"only committed damage emits the existing layer events");
+}
+void damage_bullet(gp::Game::State& s,std::uint32_t id=91,float damage=25) {
+ gp::detail::Projectile b; b.source=id;b.view.source_id=id;b.view.position=s.view.player;b.view.radius=.1F;b.view.damage=damage;s.bullets.push_back(b);
+}
+void actual_contact_damage_cause() {
+ auto s=damage_fixture(); gp::detail::Actor a; a.view.kind=gp::EntityKind::soldier;a.view.infantry_role=gp::InfantryRole::rifleman;a.view.id=73;a.view.position=s.view.player;a.view.hull=10;
+ s.actors.push_back(a);a.view.id=74;s.actors.push_back(a);s.enemies(0);
+ expect_damage_cause(s,gp::DamageCause::contact,73,1);
+ require(s.view.hull==100 && s.view.shield<20,"one actual contact, existing shield loss and invulnerability suppress the second actor");
+ auto miss=damage_fixture();a.view.position={12,12};miss.actors.push_back(a);miss.enemies(0);expect_damage_cause(miss,gp::DamageCause::unknown,0,0);
+}
+void actual_projectile_damage_cause() {
+ auto s=damage_fixture();damage_bullet(s);s.projectiles(0);expect_damage_cause(s,gp::DamageCause::projectile,91,2);
+ require(s.view.hull==95 && s.view.shield==0 && s.next_presentation_sequence==3,"same shield spill and hull loss still emit exactly two ordinary layer events");
+ auto protected_run=damage_fixture();protected_run.view.invulnerability_seconds=1;damage_bullet(protected_run);protected_run.projectiles(0);expect_damage_cause(protected_run,gp::DamageCause::unknown,0,0);
+ auto dead=damage_fixture(0);dead.view.hull=0;damage_bullet(dead);dead.projectiles(0);expect_damage_cause(dead,gp::DamageCause::unknown,0,0);
+ auto miss=damage_fixture();damage_bullet(miss);miss.bullets[0].view.position={8,8};miss.projectiles(0);expect_damage_cause(miss,gp::DamageCause::unknown,0,0);
+ auto intercepted=damage_fixture(40);intercepted.view.evolution_bits=1U<<static_cast<unsigned>(gp::Evolution::employee_benefits);damage_bullet(intercepted);intercepted.projectiles(0);expect_damage_cause(intercepted,gp::DamageCause::unknown,0,0);
+ require(intercepted.view.hull==100 && intercepted.view.shield==40-gp::tuning::benefits_shield_cost,"paid intercept is not falsely announced as projectile damage");
+ auto reflected=damage_fixture();reflected.view.modules[static_cast<unsigned>(gp::Module::mirror_plating)]=3;
+ for(std::uint64_t seed=1;seed<1000;++seed) {auto probe=damage_fixture();probe.combat_random_state=seed;if(probe.combat_unit()<3*gp::tuning::reflect_step){reflected.combat_random_state=seed;break;}}
+ damage_bullet(reflected);reflected.projectiles(0);expect_damage_cause(reflected,gp::DamageCause::unknown,0,0);
+ require(reflected.view.hull==100 && reflected.view.shield==20 && reflected.reflected_damage==25,"reflected actual shot is not falsely announced as damage");
+}
+void unknown_and_zero_damage_cause() {
+ auto s=damage_fixture(0);s.hurt(3);expect_damage_cause(s,gp::DamageCause::unknown,0,1);
+ auto zero=damage_fixture();zero.hurt(0,gp::DamageCause::contact,81);expect_damage_cause(zero,gp::DamageCause::unknown,0,0);
+}
 }
 int main() {
+  actual_contact_damage_cause();
+  actual_projectile_damage_cause();
+  unknown_and_zero_damage_cause();
   sweep_rewards_real_pilot_motion();
   chain_overdrive_and_expiry();
   capture_upgrades_preserve_skill_rewards();

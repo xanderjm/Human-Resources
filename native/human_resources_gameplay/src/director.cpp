@@ -300,7 +300,7 @@ void Game::State::enemies(float dt) {
         screen_station >= -tuning::encounter_warning_retire_behind;
     if (distance < tuning::military_contact_radius[index] + tuning::player_radius) {
       const float growth = 1 + std::max(0.0F, static_cast<float>(view.stats.active_seconds / 60) - 2) * tuning::director_damage_growth_after_2min;
-      hurt(tuning::enemy_damage[index] * growth);
+      hurt(tuning::enemy_damage[index] * growth, DamageCause::contact, a.view.id);
     }
     if (a.view.warning_seconds > 0 && (!warning_visible || (captured_vehicle && (a.view.capture_progress > 0 || a.view.fire_recovery_seconds > 0)) ||
         (minigun && !jeep_minigun_shot(a.view, a.aim, a.view.minigun_barrel).valid) ||

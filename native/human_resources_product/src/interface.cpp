@@ -175,7 +175,7 @@ Interface wide_interface(const View& v) {
   switch (v.screen) {
   case Screen::run:
     c.hud(12, 10, 280, 56);
-    c.text(28, 20, v.damage_feedback.age >= 0 && !v.damage_feedback.hull ? "SHIELD HIT " + number(static_cast<unsigned>(run.shield)) : std::string(v.damage_feedback.age >= 0 ? "HULL HIT " : "HULL ") + number(static_cast<unsigned>(run.hull)) + " / " + number(static_cast<unsigned>(run.maximum_hull)), 18, v.damage_feedback.age >= 0 ? coral : white);
+    c.text(28, 20, v.damage_feedback.age >= 0 && !v.damage_feedback.hull ? std::string(damage_label(v.damage_feedback)) + " " + number(static_cast<unsigned>(run.shield)) : std::string(v.damage_feedback.age >= 0 ? damage_label(v.damage_feedback) : "HULL") + " " + number(static_cast<unsigned>(run.hull)) + " / " + number(static_cast<unsigned>(run.maximum_hull)), 18, v.damage_feedback.age >= 0 ? coral : white);
     c.hud(304, 10, 218, 56);
     c.text(322, 20, "LV " + number(run.stats.level) + " / " + time_text(run.stats.active_seconds), 18);
     c.hud(534, 10, 218, 56);
@@ -662,14 +662,18 @@ Interface readable_run(const View& v) {
   const float height = std::max(44.F, size + 12);
   // Tactical field stays clear: only hull and Pause occupy a single top row.
   // Secondary stats remain available on Pause and in Current Build.
-  c.fill(0, 0, safe.width, height + 16, navy);
+  // Long hit provenance wraps at the actual text size without reducing type.
+  const auto hit_lines = v.damage_feedback.age >= 0 ? readable_lines(c, damage_label(v.damage_feedback), safe.width - height - 32, size) : std::vector<std::string>{};
+  const float heading_height = hit_lines.size() > 1 ? static_cast<float>(hit_lines.size()) * size * 1.2F + 12 : height;
+  c.fill(0, 0, safe.width, heading_height + 16, navy);
+  if (hit_lines.size() > 1) c.output.damage_hud_bottom = safe.y + heading_height + 16;
   std::string health = "HP " + number(static_cast<unsigned>(std::max(0.F, v.run->hull)));
   if (v.damage_feedback.age >= 0) {
-    health = v.damage_feedback.hull ? "HULL HIT" : "SHIELD HIT";
-    if (c.measure(health,size) > safe.width-height-32) health = v.damage_feedback.hull ? "HULL" : "SHIELD";
-    c.fill(0,height+12,safe.width,3,v.damage_feedback.hull ? coral : mint);
+    health = damage_label(v.damage_feedback);
+    c.fill(0,heading_height+12,safe.width,3,v.damage_feedback.hull ? coral : mint);
   }
-  c.text(12, 8, health, size, v.damage_feedback.age >= 0 ? v.damage_feedback.hull ? coral : mint : white);
+  if (hit_lines.empty()) c.text(12, 8, health, size);
+  else for (std::size_t i = 0; i < hit_lines.size(); ++i) c.text(12, 8 + static_cast<float>(i) * size * 1.2F, hit_lines[i], size, v.damage_feedback.hull ? coral : mint);
   c.fill(safe.width - height - 8, 8, height, height, white);
   c.centered(safe.width - height - 8, 14, height, "II", size, navy);
   c.output.buttons.push_back({c.rect(safe.width - height - 8, 8, height, height), Command::pause, "PAUSE", true});
@@ -777,8 +781,8 @@ Interface standard_interface(const View& v) {
     c.ox = c.oy = 0;
     const float hull_size = stat_size(17), other_size = stat_size(14);
     const bool damaged = v.damage_feedback.age >= 0;
-    const std::string hull = std::string(damaged && v.damage_feedback.hull ? "HULL HIT " : "HP ") + short_number(static_cast<std::uint64_t>(std::max(0.F, run.hull)));
-    const std::string shield = std::string(damaged && !v.damage_feedback.hull ? "SHIELD HIT " : "SH ") + short_number(static_cast<std::uint64_t>(std::max(0.F, run.shield)));
+    const std::string hull = (damaged && v.damage_feedback.hull ? std::string(damage_label(v.damage_feedback)) + " " : "HP ") + short_number(static_cast<std::uint64_t>(std::max(0.F, run.hull)));
+    const std::string shield = (damaged && !v.damage_feedback.hull ? std::string(damage_label(v.damage_feedback)) + " " : "SH ") + short_number(static_cast<std::uint64_t>(std::max(0.F, run.shield)));
     const std::string level = "LV " + short_number(run.stats.level);
     const std::string score = "SCORE " + short_number(run.stats.score);
     const float left = safe.x + 8, right = pause_bounds.x - 8;
@@ -1035,6 +1039,7 @@ Interface interface(const View& v) {
       feedback.ox = feedback.oy = 0;
       const float text_size = 14 * (std::isfinite(v.text_scale) ? std::max(1.F, v.text_scale) : 1.F);
       float top = feedback.safe.y + 68, bottom = feedback.safe.bottom() - 100;
+      if (result.damage_hud_bottom > 0) top = std::max(top, result.damage_hud_bottom + 12);
       for (const auto& button : result.buttons) {
         if (button.command == Command::pause) top = std::max(top, button.bounds.bottom() + 12);
         if (button.command == Command::dash) bottom = std::min(bottom, button.bounds.y - 12);

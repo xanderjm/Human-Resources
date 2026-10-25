@@ -192,3 +192,21 @@ placement preserves the existing footprint and readable floor. Expanded text use
 the established complete-content pagination. Root/independent native review and
 the final 44-suite aggregate qualify this bounded source, with no new authority
 or account schema. Running user previews retain their immutable earlier epochs.
+
+## Presentation follow-up: actual damage cause
+
+Successful contact/projectile hurt calls supply provenance to their existing
+transient shield/hull events. Presentation carries that cause through the existing
+beat/feedback path and uses a measured COLLISION/SHOT label plus affected layer;
+unknown causes retain the original generic cue. No extra event, damage/rate/RNG
+mutation or persistent death cause is introduced. Explicit serialization omits
+these transient events, and cold restore clears them. Every-frame continuation
+and sequence equivalence verifies that authority7/codec1/account2 remain valid.
+
+Large text may wrap the actual hit heading. The interface exposes its exact
+measured damage_hud_bottom clearance to its optional vitality overlay, preventing
+an ingress boss meter from covering the damage message. Default zero preserves
+normal/no-hit geometry; no renderer heuristic infers ownership from quads. Actual
+contact/shot native frames and a labelled synthetic ingress regression qualify
+these distinct paths. The final44-suite aggregate passes; mobile packages retain
+their preceding exact source epoch until refreshed.

@@ -14,7 +14,7 @@ DamageFeedback SceneEffects::damage_feedback() const {
     if (!hull && beat.kind != SceneBeatKind::shield_hit)
       continue;
     if (result.age < 0 || beat.age < result.age || (beat.age == result.age && hull))
-      result = {beat.age, hull};
+      result = {beat.age, hull, beat.damage_cause};
   }
   return result;
 }
@@ -82,10 +82,10 @@ void SceneEffects::emit(const gameplay::PresentationEvent& event, double now, ga
   }
   if (beat_count_ == beat_capacity) {
     const auto oldest = std::max_element(beats_.begin(), beats_.end(), [](const auto& a, const auto& b) { return a.age < b.age; });
-    *oldest = {event.kind, event.position, event.actor_id, age, event.radius, player};
+    *oldest = {event.kind, event.position, event.actor_id, age, event.radius, player, event.damage_cause};
     return;
   }
-  beats_[beat_count_++] = {event.kind, event.position, event.actor_id, age, event.radius, player};
+  beats_[beat_count_++] = {event.kind, event.position, event.actor_id, age, event.radius, player, event.damage_cause};
 }
 void SceneEffects::update(const gameplay::Snapshot& run) {
   feedback_ = {};

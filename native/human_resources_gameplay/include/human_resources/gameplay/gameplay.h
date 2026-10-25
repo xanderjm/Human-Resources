@@ -201,6 +201,8 @@ enum class PresentationEventKind : std::uint8_t { capture,
   enemy_shot,
   sweep_capture,
   harvest_overdrive };
+// Presentation-only provenance supplied by the actual successful damage path.
+enum class DamageCause : std::uint8_t { unknown, contact, projectile };
 struct PresentationEvent final {
   std::uint64_t sequence{};
   double active_seconds{};
@@ -208,6 +210,7 @@ struct PresentationEvent final {
   std::uint32_t actor_id{};
   Vec2 position;
   float radius{}; // Only spatial area events; zero for point outcomes.
+  DamageCause damage_cause{}; // Transient; never serialized or inferred from proximity.
 };
 inline constexpr std::size_t presentation_event_capacity = 64;
 struct UpgradeChoice final {

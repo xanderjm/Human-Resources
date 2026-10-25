@@ -78,6 +78,7 @@ struct Interface final {
   // Visible measured page copy also supplies the native spoken summary.
   std::string page_text;
   bool text_overflow{}; // Internal fit result; the product selects its measured layout.
+  float damage_hud_bottom{}; // Absolute viewport bottom of a wrapped hit HUD; zero otherwise.
 };
 struct View final {
   Screen screen{Screen::title};

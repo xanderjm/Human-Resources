@@ -220,10 +220,10 @@ void Game::State::projectiles(float dt) {
       reflected_damage = std::min(reflected_damage + bullet.view.damage, tuning::mirrorball_damage_cap * (1 + research(Research::weapon_damage) / 100));
       continue;
     }
-    hurt(bullet.view.damage);
+    hurt(bullet.view.damage, DamageCause::projectile, bullet.source);
   }
 }
-void Game::State::hurt(float damage) {
+void Game::State::hurt(float damage, DamageCause cause, std::uint32_t source_id) {
   if (view.invulnerability_seconds > 0 || view.hull <= 0) {
     return;
   }
@@ -232,10 +232,10 @@ void Game::State::hurt(float damage) {
   const float absorbed = std::min(view.shield, damage);
   view.shield -= absorbed;
   if (absorbed > 0)
-    present(PresentationEventKind::shield_hit, view.player);
+    present(PresentationEventKind::shield_hit, view.player, source_id, 0, cause);
   const float hull_damage = damage - absorbed;
   if (hull_damage > 0) {
-    present(PresentationEventKind::hull_hit, view.player);
+    present(PresentationEventKind::hull_hit, view.player, source_id, 0, cause);
     view.hull = std::max(0.0F, view.hull - hull_damage);
     streak = 0;
   }

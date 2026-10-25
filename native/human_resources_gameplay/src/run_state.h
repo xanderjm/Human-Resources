@@ -85,7 +85,7 @@ struct Game::State final {
   [[nodiscard]] detail::Actor* actor(std::uint32_t id);
   [[nodiscard]] bool capture_eligible(const detail::Actor& actor) const;
   void sync();
-  void present(PresentationEventKind kind, Vec2 position, std::uint32_t actor_id = 0, float radius = 0);
+  void present(PresentationEventKind kind, Vec2 position, std::uint32_t actor_id = 0, float radius = 0, DamageCause cause = DamageCause::unknown);
   void step(float dt, Control control);
   void move(float dt, Control control);
   void advance_timers(float dt);
@@ -106,7 +106,7 @@ struct Game::State final {
   void drone_fire();
   void pulse();
   void projectiles(float dt);
-  void hurt(float damage);
+  void hurt(float damage, DamageCause cause = DamageCause::unknown, std::uint32_t source_id = 0);
   void hit(detail::Actor& enemy, float damage);
   void defeated(detail::Actor& enemy);
   void draw_choices();

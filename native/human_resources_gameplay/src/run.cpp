@@ -27,9 +27,9 @@ Game& Game::operator=(Game&&) noexcept = default;
 const Snapshot& Game::snapshot() const {
   return state_->view;
 }
-void Game::State::present(PresentationEventKind kind, Vec2 position, std::uint32_t actor_id, float radius) {
+void Game::State::present(PresentationEventKind kind, Vec2 position, std::uint32_t actor_id, float radius, DamageCause cause) {
   const auto sequence = next_presentation_sequence++;
-  view.presentation_events[(sequence - 1) % presentation_event_capacity] = {sequence, view.stats.active_seconds, kind, actor_id, position, radius};
+  view.presentation_events[(sequence - 1) % presentation_event_capacity] = {sequence, view.stats.active_seconds, kind, actor_id, position, radius, cause};
 }
 void Game::start(const RunSetup& setup) {
   *state_ = State{};

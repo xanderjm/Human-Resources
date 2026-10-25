@@ -10,6 +10,17 @@ change together. Prior landscape captures are historical integration evidence.
 
 ## Current truth
 
+The later actual-damage-cause feedback slice is accepted on desktop: existing
+shield/hull cues identify successful contact/projectile events without changing
+Game7 save bytes or rules. Final44host suites and actual-source native frames pass;
+large-text hit HUD/vitality clearance is explicit. Source/checkpoint evidence is
+under `build/evidence/damage-cause-feedback/` and `damage-cause-source-checkpoint/`.
+The qualified mobile epoch remains053d08aa Flight Report, excluding this change.
+The broad release audit also establishes a material framing defect on tablets/
+wide windows: legal vertical flight can overlap controls or leave the camera.
+A dedicated owner is developing one shared portrait-stage policy; no current
+release-ready or complete supported-aspect claim is made.
+
 Fresh physical-device audit: the paired iPhone has developer mode enabled, but
 its tunnel/DDI services are unavailable and lock state is unknown; no Android
 target is attached. The prior passcode-required result remains historical.

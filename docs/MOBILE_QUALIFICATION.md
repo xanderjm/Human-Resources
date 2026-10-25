@@ -13,6 +13,11 @@ target is attached. `build/evidence/current-mobile-delivery/device-readiness.jso
 records this newer observation. The authority-3 checkpoint below is historical;
 its uses of "current" describe that exact recorded epoch.
 
+The qualified Game7 mobile source is `053d08aa` (Flight Report). Later actual-hit
+cause feedback and the supported-aspect framing fix cannot inherit that exact
+package qualification; their desktop/source evidence remains separate until a
+coherent mobile refresh.
+
 This 25 October 2026 checkpoint refreshes the qualified authority-3 vehicle/Privacy build with native-resolution UI composition. Game authority remains **3**, outer account schema remains **2**, and the rules fingerprint is unchanged: `13238298123916137634`. It is a source-bound platform checkpoint, not a release-ready declaration.
 
 The canonical freeze is `build/evidence/native-ui-release/canonical-source-freeze.json`, SHA-256 `4101d9462ffe110b3c8c2c694ba25381448ad24650e9c51350772088dfcef796`: **559 source/build/content inputs**. The native aggregate passes 39 suites. The renderer draws single-sample native UI after the capped world blit. World cap 1280, game rules, layout, fonts, atlas, shaders, manifest and runtime assets are unchanged. The manual store-export producer is included in source provenance and does not ship. Native pixels/store captures and outside-checkout Metal smoke were independently accepted by the coordinator.
