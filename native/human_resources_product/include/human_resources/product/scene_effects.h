@@ -86,7 +86,7 @@ private:
     std::uint32_t id{};
     gameplay::EntityKind kind{};
     gameplay::InfantryRole role{};
-    CapturePose last, start, ground;
+    CapturePose last, start{}, ground{};
     double seconds{}, transition_seconds{};
     float station{};
     float capture_yaw{};

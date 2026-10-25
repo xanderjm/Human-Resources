@@ -25,6 +25,20 @@ Never report a higher level from lower-level evidence.
 
 Rows not selected in `project.json` are informative extension capabilities, not repository claims.
 
+## Current product qualification,25October2026
+
+Game7 framing/HUD/damage source plus the reviewed portability changes passes
+current iOS device/Simulator Release and Android both-ABI compile/package audits.
+An isolated QA application on software-Vulkan Android also verifies exact native/
+asset contents, earned draft/active recovery, early banking and actual stock
+font2.0 layout. This is narrower than physical production-app qualification.
+
+A supplemental installed MinGW GCC16.2 build strictly links the complete Windows
+GUI client and audits its112-file/DXIL package. It does not replace the selected
+Visual Studio/SDK gate or prove Windows execution, D3D12, Unicode storage, input,
+accessibility or distribution readiness. Linux remains without current target
+execution. See RELEASE_READINESS.md for exact source/evidence epochs and limits.
+
 ## Console And Private Profiles
 
 Console platform access, headers, libraries, shader compilers, packaging, users, storage, services, dev-kit control, certification rules, and evidence are platform-holder controlled. Public code defines capability seams and test doubles only.

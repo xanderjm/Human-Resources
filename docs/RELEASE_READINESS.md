@@ -10,6 +10,64 @@ change together. Prior landscape captures are historical integration evidence.
 
 ## Current truth
 
+The latest owner-requested normal launch is **Human Resources Current Playtest**,
+PID61631, from accepted2ad1024 plus the twelve reviewed portability fixes. It
+includes Game7 combat, Flight Report/damage causes, shared portrait framing,
+enlarged RUN HUD and compact fallback, preserving the original apparent ship
+size. Its fully decoded initial66-credit/ranks0/0/0/1 account copy lives in a
+separate namespace. The nine user previews and all their accounts are protected
+from automation, replacement and quit. Exact104-file staging/signature/source
+and normal-launch records are under `build/evidence/current-playtest-20261025/`.
+Initial copied values describe launch time; the owner may now change that save.
+
+The frozen production source passes44host suites/static/diff and five byte-exact
+native before/after comparisons. Portability adds explicit empty member defaults,
+bounded glyph index conversion, standard typed size diagnostics, equivalent
+Windows UTF-8 path construction and the Windows GUI entry setting. No gameplay,
+layout, save or dependency contract changes. Root rehashes twelve source files,
+334native inputs and all bound evidence. See
+`build/evidence/windows-portability-integration/REPORT.json` and
+`root-verification.json`.
+
+A coherent current mobile refresh passes iPhoneOS/Simulator arm64 Release,
+Android both-ABI debug/release, strict lint, APK ZIP/ELF16KiB and unsigned AAB
+validation/package audits. All543focused inputs and227files across five current
+artifacts match the independent acceptance rehash; five previous artifacts are
+retained byte-exact. See `build/evidence/game7-framing-mobile/REPORT.json` and
+`root-independent-mobile-review.json`. This supersedes the053d08aa package epoch
+for current compile/package evidence; no physical execution or signing follows.
+
+Supplemental current Android runtime proof runs the exact qualified108native/
+asset entries through a packaging-only isolated QA app ID on the existing
+read-only project emulator. Actual earned draft, force-stop/cold recovery,
+explicit Resume, real background checkpointing and exact-once banking pass.
+Actual stock font2.0 reaches native active/draft UI and is restored before the
+owned emulator stops. Four native1x/2x frames show intact hierarchy. The11.516s
+bank correctly earns0credits under the existing30s minimum; positive34-credit
+natural-death settlement remains proven by unchanged authority7 host owners.
+See `build/evidence/game7-android-runtime/REPORT.json`. This is software Vulkan,
+alternate-package semantic diagnostic evidence, not ordinary physical touch,
+performance, human feel or exact production application identity qualification.
+
+Supplemental Windows qualification strictly cross-links the full current client
+with installed MinGW GCC16.2, Windows GUI subsystem2, static SDL/GCC/pthread and
+nine DXIL stages. Root verifies727snapshot sources and the112-file internal
+package. This does not qualify the selected Visual Studio/SDK profile or any
+Windows execution/GPU/input/storage behavior. Collected GCC/MinGW runtime notices
+now accompany an unchanged internal package in
+`build/evidence/windows-runtime-notices/internal-delivery/`. Root verifies all127
+files/index entries; upstream licensing/provenance caveats remain explicit. No
+public distribution is cleared.
+Linux execution, physical mobile budgets/input/lifecycle/audio/haptics, human
+pacing/fun, public privacy/contact and store/distribution evidence remain open.
+The paired iPhone's most recent bounded audit still reports unavailable tunnel/
+DDI services; no repeated device operation is justified by these host results.
+
+## Historical qualification narrative
+
+The following entries retain their original source epochs and terminology.
+They do not override the current qualification and protected-app records above.
+
 The latest user-requested normal launch is `Human Resources Playtest Preview.app`,
 from accepted `5fa75ab` with Flight Report and actual collision/shot feedback.
 It retains original ship size and a validated separate snapshot of the user's

@@ -34,7 +34,7 @@ void release_stream(SDL_GPUDevice* device, SDL_GPUBuffer* buffer, SDL_GPUTransfe
 } // namespace
 bool StyleAnimationStream::preload(std::span<const std::string_view> ids, std::string_view root) {
   if (ids.size() > AnimationInstances::asset_capacity) {
-    SDL_SetError("Required animation preload exceeds %zu-asset limit", AnimationInstances::asset_capacity);
+    SDL_SetError("Required animation preload exceeds %llu-asset limit", static_cast<unsigned long long>(AnimationInstances::asset_capacity));
     return false;
   }
   for (const auto id : ids) {

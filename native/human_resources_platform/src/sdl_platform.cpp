@@ -310,7 +310,7 @@ human_resources::storage::ReadResult SdlStorageBackend::read(
   // Classify the open failure itself. A metadata/probe failure is never evidence
   // that the user has no data. Windows needs UTF-16 for non-ASCII account paths.
 #ifdef _WIN32
-  const auto native_path = std::filesystem::u8path(filename);
+  const auto native_path = std::filesystem::path(std::u8string(filename.begin(), filename.end()));
   std::FILE* opened = _wfopen(native_path.c_str(), L"rb");
 #else
   std::FILE* opened = std::fopen(filename.c_str(), "rb");

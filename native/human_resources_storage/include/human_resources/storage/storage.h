@@ -32,7 +32,7 @@ struct RelativePath final {
 
 struct PathValidation final {
   PathIssue issue{PathIssue::none};
-  RelativePath path;
+  RelativePath path{};
 
   [[nodiscard]] bool valid() const noexcept {
     return issue == PathIssue::none;
@@ -54,7 +54,7 @@ enum class EnvelopeIssue : std::uint8_t {
 struct DecodedEnvelope final {
   EnvelopeIssue issue{EnvelopeIssue::none};
   std::uint32_t schema_version{};
-  std::vector<std::byte> payload;
+  std::vector<std::byte> payload{};
 
   [[nodiscard]] bool valid() const noexcept {
     return issue == EnvelopeIssue::none;
@@ -94,7 +94,7 @@ enum class ReadIssue : std::uint8_t {
 
 struct ReadResult final {
   ReadIssue issue{ReadIssue::none};
-  std::vector<std::byte> bytes;
+  std::vector<std::byte> bytes{};
 
   [[nodiscard]] bool succeeded() const noexcept {
     return issue == ReadIssue::none;
@@ -112,7 +112,7 @@ public:
 
 struct DocumentLoad final {
   ReadIssue read_issue{ReadIssue::unavailable};
-  DecodedEnvelope envelope;
+  DecodedEnvelope envelope{};
 };
 
 // One writer owns a document. The product must validate its decoded payload

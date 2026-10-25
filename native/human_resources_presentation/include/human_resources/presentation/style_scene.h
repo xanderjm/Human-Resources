@@ -12,10 +12,10 @@ struct Vec3 final {
 using Matrix = std::array<float, 16>;
 enum class AttachmentSocket : std::uint8_t { head, weapon };
 struct StyleInstance final {
-  std::string_view mesh;
-  Vec3 position;
+  std::string_view mesh{};
+  Vec3 position{};
   Vec3 scale{1, 1, 1};
-  Vec3 rotation; // radians, XYZ; +Y up, +Z forward, metres
+  Vec3 rotation{}; // radians, XYZ; +Y up, +Z forward, metres
   std::array<float, 4> tint{1, 1, 1, 1};
   float texture_repeat{1};
   bool effect{};
@@ -33,7 +33,7 @@ struct StyleInstance final {
   // The authoritative projectile's position/direction remain the world model.
   std::uint64_t launch_parent_id{};
   std::uint64_t launch_id{};
-  Vec3 launch_local, launch_origin;
+  Vec3 launch_local{}, launch_origin{};
   float launch_bridge{}, launch_elevation{};
 };
 struct SurfaceVertex final {
@@ -43,7 +43,7 @@ struct SurfaceVertex final {
 };
 struct StyleSurface final {
   std::string_view material;
-  std::vector<SurfaceVertex> vertices; // triangle list; bounded by renderer upload capacity
+  std::vector<SurfaceVertex> vertices{}; // triangle list; bounded by renderer upload capacity
   std::array<float, 4> tint{1, 1, 1, 1};
   float texture_detail{.24F};
 };

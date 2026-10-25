@@ -24,7 +24,7 @@ enum class IdIssue : std::uint8_t {
 
 struct IdValidation final {
   IdIssue issue{IdIssue::none};
-  AssetId id;
+  AssetId id{};
 
   [[nodiscard]] bool valid() const noexcept {
     return issue == IdIssue::none;
@@ -86,7 +86,7 @@ enum class LoadIssue : std::uint8_t {
 
 struct LoadResult final {
   LoadIssue issue{LoadIssue::none};
-  std::vector<std::byte> bytes;
+  std::vector<std::byte> bytes{};
 
   [[nodiscard]] bool succeeded() const noexcept {
     return issue == LoadIssue::none;

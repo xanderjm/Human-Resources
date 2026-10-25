@@ -1,29 +1,36 @@
-# Mobile qualification — native UI resolution checkpoint
+# Mobile qualification — current Game7 framing checkpoint
 
-Current coordination, 25 October 2026: the production source is now Game7, with
-desktop accepted combat/world/Flight Report checkpoints. Current compile/package
-qualification passes both iOS Release profiles and Android both-ABI debug/release,
-strict lint, 16KiB APK and unsigned AAB audits. Evidence is
-`build/evidence/game7-flight-report-mobile/REPORT.json`; root independently checks
-all525focused/307native inputs and227files across five artifacts. No new physical
-execution or signing is claimed. The Game6 terrain/threat record remains a
-separate historical epoch. A fresh read-only audit finds the paired iPhone with developer mode
-enabled, but tunnel/DDI services unavailable; lock state is unknown. No Android
-target is attached. `build/evidence/current-mobile-delivery/device-readiness.json`
-records this newer observation. The authority-3 checkpoint below is historical;
-its uses of "current" describe that exact recorded epoch.
+Current coordination,25October2026: accepted2ad1024 plus the exact twelve reviewed
+portability fixes passes coherent iPhoneOS/Simulator arm64 Release and Android
+both-ABI debug/release, strict lint, APK ZIP/ELF16KiB and unsigned AAB/package
+audits. This includes actual damage causes, shared portrait framing, enlarged
+RUN HUD and compact fallback. All543focused inputs and227files across five
+current artifacts match; five preceding053d08aa artifacts remain exact. See
+`build/evidence/game7-framing-mobile/REPORT.json` and the fresh independent
+`root-independent-mobile-review.json`. Root verifies current source, artifacts,
+retention and bound evidence. No new physical execution or signing is claimed.
 
-The qualified Game7 mobile source is `053d08aa` (Flight Report). Later actual-hit
-cause feedback and the supported-aspect framing fix cannot inherit that exact
-package qualification; their desktop/source evidence remains separate until a
-coherent mobile refresh. The framing slice now passes44host suites and
-source-bound native comparisons under `build/evidence/gameplay-framing/`. The enlarged
-RUN HUD correction also passes44host suites and independent source-bound native
-review under `build/evidence/enlarged-phone-hud/`. The compact short-window fallback also passes44host suites and source-bound
-native comparisons under `build/evidence/compact-rail-fallback/`. Current-device
-reachability remains unverified. The coherent presentation source now awaits
-reviewed cross-compiler portability fixes before the mobile refresh; old
-packages do not inherit these source qualifications.
+Current supplemental Android runtime evidence is
+`build/evidence/game7-android-runtime/REPORT.json`: an isolated packaging-only QA
+application retains108exact qualified native/asset entries and unchanged Java/
+JNI classes. The project-owned read-only API36 emulator uses software Vulkan.
+An earned draft survives force-stop/cold inspect/Resume byte-exact; actual OS
+background pauses/flushes, cold recovery and resumed advancement pass. Early
+banking settles exactly once with0credits, as required below30active seconds.
+The current authority7 host proof separately banks34credits after natural death
+and retains the exact cold ledger. Actual stock font2.0 reaches native HUD/draft;
+1x/2x390×844 frames show intact composition. Original font1.0, backing userdata,
+qualified packages and all user apps/saves are preserved; owned emulator closed.
+
+This proves specific native runtime/recovery paths through an alternate app ID.
+It does not establish physical input, ordinary OS gesture delivery, current
+Android positive payout, physical performance/thermal/battery/haptics or human
+fun. The latest paired-iPhone audit still finds developer mode enabled but tunnel/
+DDI services unavailable, lock state unknown; no physical Android is attached.
+No new device/pairing/settings operation follows. The authority3 record below is
+historical; its uses of “current” belong only to that exact source epoch.
+
+## Historical authority3 native UI qualification
 
 This 25 October 2026 checkpoint refreshes the qualified authority-3 vehicle/Privacy build with native-resolution UI composition. Game authority remains **3**, outer account schema remains **2**, and the rules fingerprint is unchanged: `13238298123916137634`. It is a source-bound platform checkpoint, not a release-ready declaration.
 

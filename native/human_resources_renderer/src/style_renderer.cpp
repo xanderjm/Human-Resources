@@ -405,10 +405,10 @@ bool StyleRenderer::initialize(SDL_Window* window, std::string_view root, unsign
   if (!s.animation_stream.preload(animated_preload, s.root))
     return false;
   if (!animated_preload.empty())
-    SDL_Log("style animations prepared=%zu preload_ms=%.3f", animated_preload.size(), static_cast<double>(SDL_GetTicksNS() - animation_start) / 1.e6);
+    SDL_Log("style animations prepared=%llu preload_ms=%.3f", static_cast<unsigned long long>(animated_preload.size()), static_cast<double>(SDL_GetTicksNS() - animation_start) / 1.e6);
   if (!s.surface_stream.initialize(s.device))
     return false;
-  SDL_Log("style assets loaded=%zu", s.meshes.size());
+  SDL_Log("style assets loaded=%llu", static_cast<unsigned long long>(s.meshes.size()));
   return s.color && s.multisample && s.depth && s.shadow && s.sampler && s.shadow_sampler;
 }
 StyleRenderStats StyleRenderer::stats() const {

@@ -50,7 +50,8 @@ struct Canvas final {
     float width = 0;
     for (char source : text) {
       const auto ch = static_cast<unsigned char>(source);
-      width += glyph_advances[(title ? 95 : 0) + (ch >= 32 && ch < 127 ? ch - 32 : 31)] * size / 48.F;
+      const auto glyph_index = static_cast<std::size_t>((title ? 95 : 0) + (ch >= 32 && ch < 127 ? ch - 32 : 31));
+      width += glyph_advances[glyph_index] * size / 48.F;
     }
     return width;
   }

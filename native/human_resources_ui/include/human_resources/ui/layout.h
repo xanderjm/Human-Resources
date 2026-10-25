@@ -205,8 +205,8 @@ struct AccessibilityNode final {
   std::string stable_id;
   NodeId parent_id{};
   SemanticRole role{SemanticRole::none};
-  std::string label;
-  std::string value;
+  std::string label{};
+  std::string value{};
   Rect frame{};
   bool focusable{};
   bool disabled{};

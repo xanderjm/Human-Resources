@@ -47,7 +47,7 @@ struct DeviceEvent final {
   bool has_position{};
   // Pointer contacts retain their full identity and explicit drag/cancel phase.
   std::uint64_t contact{};
-  std::optional<ActionPhase> phase;
+  std::optional<ActionPhase> phase{};
   // Monotonic event time in nanoseconds; zero means unavailable.
   std::uint64_t timestamp_ns{};
 };

@@ -162,7 +162,7 @@ bool retain_qa_vehicle_checkpoint(App& app) {
         <<",\"active_seconds\":"<<run.stats.active_seconds<<",\"bytes\":"<<bytes.size()<<"}\n";
     metadata.close();if(!metadata) return false;
     app.qa_vehicle_checkpoints|=1U<<index;
-    SDL_Log("product-qa-vehicle-checkpoint kind=%s frame=%u source=%u bytes=%zu digest=%016llx",names[index].data(),app.frames,sources[index],bytes.size(),
+    SDL_Log("product-qa-vehicle-checkpoint kind=%s frame=%u source=%u bytes=%llu digest=%016llx",names[index].data(),app.frames,sources[index],static_cast<unsigned long long>(bytes.size()),
         static_cast<unsigned long long>(hr::storage::content_digest(bytes)));
   }
   return true;

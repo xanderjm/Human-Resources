@@ -1,5 +1,24 @@
 # Technical Decisions
 
+## 25 October 2026 — Strict portable client compilation
+
+Keep the selected Windows Visual Studio/SDK profile unchanged. An installed
+MinGW GCC16.2 cross-build is supplemental evidence only. Fix actual strict
+compiler diagnostics through explicit empty aggregate defaults, a bounded
+size_t glyph index and standard %llu diagnostic arguments with matching unsigned
+long long casts. Do not suppress warnings or relax project flags. Preserve
+Windows UTF-8 reads through filesystem::path(std::u8string(...)), equivalent to
+the deprecated u8path conversion; other platform branches are unchanged.
+
+Set WIN32_EXECUTABLE only for the ordinary Windows desktop client, producing
+GUI subsystem2 and the SDL WinMain entry. Game state, serialized data, layout,
+assets and dependencies stay unchanged. Current host44suites and five native
+before/after PNG pairs pass; a strict complete Windows link/package audit proves
+compilation, not execution or selected-toolchain qualification. Static runtime
+notice materials and unresolved upstream provenance remain separate from public
+distribution clearance. Exact evidence is in windows-portability-integration and
+windows-cross-qualification under ignored build/evidence.
+
 ## 25 October 2026 — Scoped portable offline art tools
 
 Keep existing NumPy/Pillow source cooking and Blender recipe exports outside the
