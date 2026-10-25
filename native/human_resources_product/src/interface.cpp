@@ -22,12 +22,16 @@ std::string time_text(double seconds) {
 }
 struct Canvas final {
   Interface output;
-  float w, h, scale, ox, oy;
+  float w, h, scale, ox, oy, vx, vy;
   float type_scale{1};
   ui::Rect safe;
   std::vector<ui::Rect> text_lines;
-  explicit Canvas(const View& v, bool wide = false) : w(v.viewport.width), h(v.viewport.height) {
+  explicit Canvas(const View& v, bool wide = false) : w(v.viewport.width), h(v.viewport.height), vx(v.viewport.x), vy(v.viewport.y) {
     safe = ui::inset(v.viewport, v.safe_area);
+    if (v.screen == Screen::run) {
+      const auto framing = v.framing ? *v.framing : gameplay_framing(v.viewport, v.safe_area, v.text_scale);
+      if (framing.constrained && !framing.compact) safe = framing.run_layout;
+    }
     type_scale = std::isfinite(v.text_scale) && v.text_scale > 1 ? v.text_scale : 1;
     const float base_w = wide ? 844.F : 390.F, base_h = wide ? 390.F : 844.F;
     scale = std::min(safe.width / base_w, safe.height / base_h);
@@ -39,7 +43,7 @@ struct Canvas final {
   }
   void fill(float x, float y, float width, float height, Color color) {
     const auto r = rect(x, y, width, height);
-    output.quads.push_back({{r.x / w, r.y / h, r.width / w, r.height / h}, {r.width, r.height, -std::max(.5F, std::min({12.F * scale, r.width * .5F, r.height * .5F})), 0}, color});
+    output.quads.push_back({{(r.x - vx) / w, (r.y - vy) / h, r.width / w, r.height / h}, {r.width, r.height, -std::max(.5F, std::min({12.F * scale, r.width * .5F, r.height * .5F})), 0}, color});
   }
   float measure(std::string_view text, float size, bool title = false) const {
     size = std::max(size, 14.F / scale) * type_scale;
@@ -68,7 +72,7 @@ struct Canvas final {
         ch = '?';
       const unsigned index = ch - 32;
       const auto r = rect(x - 4 * size / 48.F, y - 8 * size / 48.F, 64 * size / 48.F, 80 * size / 48.F);
-      output.quads.push_back({{r.x / w, r.y / h, r.width / w, r.height / h}, {static_cast<float>((index % 16) * 64) / 1024, static_cast<float>((title ? 512 : 0) + (index / 16) * 80) / 2048, 64.F / 1024, 80.F / 2048}, color});
+      output.quads.push_back({{(r.x - vx) / w, (r.y - vy) / h, r.width / w, r.height / h}, {static_cast<float>((index % 16) * 64) / 1024, static_cast<float>((title ? 512 : 0) + (index / 16) * 80) / 2048, 64.F / 1024, 80.F / 2048}, color});
       x += glyph_advances[(title ? 95 : 0) + index] * size / 48.F;
     }
   }
@@ -107,7 +111,7 @@ struct Canvas final {
   }
   void sprite(float x, float y, float width, float height, float sx, float sy, float sw, float sh) {
     const auto r = rect(x, y, width, height);
-    output.quads.push_back({{r.x / w, r.y / h, r.width / w, r.height / h}, {sx / 1024.F, sy / 2048.F, sw / 1024.F, sh / 2048.F}, {1, 1, 1, 1}});
+    output.quads.push_back({{(r.x - vx) / w, (r.y - vy) / h, r.width / w, r.height / h}, {sx / 1024.F, sy / 2048.F, sw / 1024.F, sh / 2048.F}, {1, 1, 1, 1}});
   }
   void icon(float x, float y, unsigned id, float size = 28) {
     sprite(x, y, size, size, static_cast<float>(id) * 128, 1024, 128, 128);
@@ -655,7 +659,7 @@ Interface build_overview(const View& v) {
 Interface readable_run(const View& v) {
   Canvas c(v);
   const float size = std::max(17.F * c.scale, 14.F) * v.text_scale;
-  const auto safe = ui::inset(v.viewport, v.safe_area);
+  const auto safe = c.safe;
   c.scale = c.type_scale = 1;
   c.ox = safe.x;
   c.oy = safe.y;
@@ -701,6 +705,82 @@ Interface readable_run(const View& v) {
       c.centered(12, y, safe.width - 24, line, size);
       y += size * 1.25F;
     }
+  }
+  return std::move(c.output);
+}
+Interface compact_run(const View& v, const GameplayFraming& framing) {
+  Canvas c(v);
+  c.scale = c.type_scale = 1;
+  c.ox = c.oy = 0;
+  const float size = 14 * (std::isfinite(v.text_scale) ? std::max(1.F, v.text_scale) : 1.F);
+  const auto left = framing.left_rail, right = framing.right_rail;
+  c.fill(left.x, left.y, left.width, left.height, navy);
+  c.fill(right.x, right.y, right.width, right.height, navy);
+  const float lx = left.x + 4, lw = left.width - 8;
+  float y = left.y + 8;
+  const auto lines = [&](std::string_view label, Color color) {
+    for (const auto& line : readable_lines(c, label, lw, size)) {
+      c.centered(lx, y, lw, line, size, color);
+      y += size * 1.15F;
+    }
+    y += 6;
+  };
+  lines("HP", muted);
+  lines(number(static_cast<unsigned>(std::max(0.F, v.run->hull))), white);
+  c.fill(lx, y, lw, 4, panel);
+  c.fill(lx, y, lw * std::clamp(v.run->hull / std::max(1.F, v.run->maximum_hull), 0.F, 1.F), 4, mint);
+  y += 12;
+  lines("SH", muted);
+  lines(number(static_cast<unsigned>(std::max(0.F, v.run->shield))), { .57F, .83F, 1, 1 });
+  if (v.damage_feedback.age >= 0) {
+    const auto cause=v.damage_feedback.cause==gameplay::DamageCause::contact?"BUMP":v.damage_feedback.cause==gameplay::DamageCause::projectile?"SHOT":"HIT";
+    lines(std::string(v.damage_feedback.hull?"HP\n":"SH\n")+cause,v.damage_feedback.hull?coral:mint);
+  }
+  else lines("LV " + number(v.run->stats.level), gold);
+  // Secondary score/build details retain their existing paused, readable view.
+  if (y + size + 14 <= left.bottom()) {
+    lines("XP", gold);
+    c.fill(lx, y, lw, 4, panel);
+    c.fill(lx, y, lw * std::clamp(v.run->xp / std::max(1.F, v.run->next_level_xp), 0.F, 1.F), 4, gold);
+  }
+  if (y > left.bottom() - 4) c.output.text_overflow = true;
+  const float rx = right.x + 4, rw = right.width - 8, button_height = std::max(44.F, size + 16);
+  const float pause_y = right.y + 8, dash_y = right.bottom() - button_height - 8;
+  c.fill(rx, pause_y, rw, button_height, white);
+  c.centered(rx, pause_y + (button_height - size) * .5F, rw, "II", size, navy);
+  c.output.buttons.push_back({{rx, pause_y, rw, button_height}, Command::pause, "PAUSE", true});
+  const bool ready = v.run->dash_cooldown_seconds <= 0;
+  c.fill(rx, dash_y, rw, button_height, ready ? mint : panel);
+  c.centered(rx, dash_y + (button_height - size) * .5F, rw, "DASH", size, ready ? navy : muted);
+  c.output.buttons.push_back({{rx, dash_y, rw, button_height}, Command::dash,
+      ready ? "DASH" : "DASH " + number(static_cast<unsigned>(std::ceil(v.run->dash_cooldown_seconds))) + "s", ready});
+  float status_y = pause_y + button_height + 16;
+  const auto status = [&](std::string_view text, Color color) {
+    const auto wrapped = readable_lines(c, text, rw, size);
+    const float height = static_cast<float>(wrapped.size()) * size * 1.15F;
+    if (status_y + height > dash_y - 8) { c.output.text_overflow = true; return; }
+    for (const auto& line : wrapped) {
+      c.centered(rx, status_y, rw, line, size, color);
+      status_y += size * 1.15F;
+    }
+    status_y += 8;
+  };
+  if (!ready) status(number(static_cast<unsigned>(std::ceil(v.run->dash_cooldown_seconds))) + "s", muted);
+  if (v.promotion.installed) {
+    const std::string full = "ADDED\n" + v.promotion.installed->title;
+    const auto count = readable_lines(c, full, rw, size).size();
+    bool words_fit=true;
+    std::istringstream words{v.promotion.installed->title};
+    for(std::string word;words>>word;)if(c.measure(word,size)>rw)words_fit=false;
+    status(words_fit && status_y + static_cast<float>(count) * size * 1.15F <= dash_y - 8 ? full : "ADDED", mint);
+  }
+  else if (v.run->harvest_overdrive_seconds > 0) status("BOOST\n" + number(static_cast<unsigned>(std::ceil(v.run->harvest_overdrive_seconds))) + "s", mint);
+  else if (v.run->harvest_chain) status("SWEEP\n" + number(v.run->harvest_chain) + "/" + number(gameplay::tuning::harvest_chain_target), mint);
+  else if (v.run->stats.active_seconds < 12) status(v.run->stats.active_seconds < 4 ? "DRAG TO FLY" : "FLY CLOSE", white);
+  if (v.stick_active) {
+    c.fill(v.stick_origin.x - 24, v.stick_origin.y - 24, 48, 48, {.06F, .2F, .25F, .35F});
+    const float dx = std::clamp(v.stick_position.x - v.stick_origin.x, -38.F, 38.F), dy = std::clamp(v.stick_position.y - v.stick_origin.y, -38.F, 38.F);
+    c.fill(v.stick_origin.x + dx - 8, v.stick_origin.y + dy - 8, 16, 16, {.5F, 1, .81F, .65F});
   }
   return std::move(c.output);
 }
@@ -756,7 +836,7 @@ void flight_report_panel(Canvas& c, const View& v) {
   if (!report.preview) c.button(26, 752, 338, report.hangar_action, Command::hangar, true, white, 56);
 }
 Interface standard_interface(const View& v) {
-  if (v.viewport.width > v.viewport.height)
+  if (v.viewport.width > v.viewport.height && v.screen != Screen::run)
     return wide_interface(v);
   Canvas c(v);
   const auto& run = *v.run;
@@ -766,7 +846,7 @@ Interface standard_interface(const View& v) {
   if (v.screen == Screen::run) {
     c.button(328, 10, 54, "II", Command::pause, true, white, 48);
     const auto pause_bounds = c.output.buttons.back().bounds;
-    const auto safe = ui::inset(v.viewport, v.safe_area);
+    const auto safe = c.safe;
     const float original_scale = c.scale, original_ox = c.ox, original_oy = c.oy, original_type_scale = c.type_scale;
     const auto stat_size = [&](float baseline) { return std::max(baseline * original_scale, 14.F) * original_type_scale; };
     const auto short_number = [](std::uint64_t value) {
@@ -1028,6 +1108,7 @@ Interface standard_interface(const View& v) {
   return std::move(c.output);
 }
 Interface interface(const View& v) {
+  const auto framing = v.framing ? *v.framing : gameplay_framing(v.viewport, v.safe_area, v.text_scale);
   const bool large = std::isfinite(v.text_scale) && v.text_scale > 1.F;
   if (v.screen == Screen::settings && v.show_privacy) return readable_interface(v);
   if (v.screen == Screen::pause && v.show_build && !v.save_error) return large ? readable_interface(v) : build_overview(v);
@@ -1046,8 +1127,9 @@ Interface interface(const View& v) {
       }
       // Installation confirmation owns its existing strip under the HUD.
       if (v.promotion.installed) top += std::max(36.F, text_size + 16) + 12;
-      const ui::Rect field{feedback.safe.x + 8, top, feedback.safe.width - 16, std::max(0.F, bottom - top)};
-      for (const auto& vitality : enemy_vitality(*v.run, v.viewport, field, text_size)) {
+      const ui::Rect field = framing.compact ? ui::Rect{framing.stage.x + 4, framing.stage.y + 4, framing.stage.width - 8, framing.stage.height - 8} :
+          ui::Rect{feedback.safe.x + 8, top, feedback.safe.width - 16, std::max(0.F, bottom - top)};
+      for (const auto& vitality : enemy_vitality(*v.run, framing, field, text_size)) {
         const auto& r = vitality.bounds;
         feedback.fill(r.x, r.y, r.width, r.height, navy);
         const float bar_y = vitality.boss ? r.bottom() - 9 : r.y + 2;
@@ -1056,7 +1138,10 @@ Interface interface(const View& v) {
         feedback.fill(r.x + 2, bar_y, (r.width - 4) * vitality.fraction, bar_height, vitality.boss ? coral : gold);
         if (vitality.boss) {
           const auto percent = static_cast<unsigned>(std::ceil(vitality.fraction * 100));
-          feedback.centered(r.x, r.y + 2, r.width, "BOSS " + number(percent) + "%", text_size, white);
+          if (vitality.stacked) {
+            feedback.centered(r.x, r.y + 2, r.width, "BOSS", text_size, white);
+            feedback.centered(r.x, r.y + text_size + 2, r.width, number(percent) + "%", text_size, white);
+          } else feedback.centered(r.x, r.y + 2, r.width, "BOSS " + number(percent) + "%", text_size, white);
           // Quarter marks convey length even when coral is hard to distinguish.
           for (unsigned i = 1; i < 4; ++i)
             feedback.fill(r.x + 2 + (r.width - 4) * static_cast<float>(i) / 4, bar_y, 1, bar_height, navy);
@@ -1064,7 +1149,7 @@ Interface interface(const View& v) {
       }
       result.quads.insert(result.quads.end(), feedback.output.quads.begin(), feedback.output.quads.end());
     }
-    if (!v.promotion.installed) return result;
+    if (!v.promotion.installed || framing.compact) return result;
     Canvas c{v};
     c.scale = 1;
     c.ox = c.safe.x;
@@ -1087,6 +1172,7 @@ Interface interface(const View& v) {
     result.text_overflow |= c.output.text_overflow;
     return result;
   };
+  if (framing.compact && v.screen == Screen::run && !v.save_error) return finish(compact_run(v, framing));
   if (large && v.screen == Screen::run && !v.save_error && v.text_scale >= 1.3F) return finish(readable_run(v));
   if (large && v.screen == Screen::blueprints && v.show_recipes && !v.save_error) {
     // One recipe must not change the navigation model when the next recipe's

@@ -191,21 +191,25 @@ struct StyleRenderer::State final {
     capture_extent = extent;
     return true;
   }
-  void blit_world(SDL_GPUCommandBuffer* command, SDL_GPUTexture* target, unsigned target_width, unsigned target_height) {
+  bool blit_world(SDL_GPUCommandBuffer* command, SDL_GPUTexture* target, unsigned target_width, unsigned target_height,
+      const std::array<float, 4>& available) {
+    const auto fitted = presentation::fit_world_destination(width, height, target_width, target_height, available);
+    if (!fitted.width || !fitted.height)
+      return SDL_SetError("Invalid world composition destination");
     SDL_GPUBlitInfo blit{};
     blit.source.texture = color;
     blit.source.w = width;
     blit.source.h = height;
     blit.destination.texture = target;
-    const auto fitted = fit_preview_extent(width, height, target_width, target_height, true);
     blit.destination.w = fitted.width;
     blit.destination.h = fitted.height;
-    blit.destination.x = (target_width - fitted.width) / 2;
-    blit.destination.y = (target_height - fitted.height) / 2;
+    blit.destination.x = fitted.x;
+    blit.destination.y = fitted.y;
     blit.load_op = SDL_GPU_LOADOP_CLEAR;
     blit.clear_color = {0, 0, 0, 1};
     blit.filter = SDL_GPU_FILTER_LINEAR;
     SDL_BlitGPUTexture(command, &blit);
+    return true;
   }
   bool draw_screen_quads(SDL_GPUCommandBuffer* command, SDL_GPUTexture* target, SDL_GPUGraphicsPipeline* ui_pipeline, std::span<const presentation::ScreenQuad> quads) {
     if (quads.empty())
@@ -550,8 +554,8 @@ bool StyleRenderer::render(const presentation::StyleFrame& frame, SDL_IOStream* 
   }
   SDL_EndGPURenderPass(pass);
   if (capture) {
-    s.blit_world(command, s.capture_color, s.capture_extent.width, s.capture_extent.height);
-    if (!s.draw_screen_quads(command, s.capture_color, s.capture_ui, frame.screen_quads)) {
+    if (!s.blit_world(command, s.capture_color, s.capture_extent.width, s.capture_extent.height, frame.world_destination) ||
+        !s.draw_screen_quads(command, s.capture_color, s.capture_ui, frame.screen_quads)) {
       SDL_CancelGPUCommandBuffer(command);
       return false;
     }
@@ -584,12 +588,12 @@ bool StyleRenderer::render(const presentation::StyleFrame& frame, SDL_IOStream* 
       s.present_width = sw;
       s.present_height = sh;
     }
-    s.blit_world(command, swapchain, sw, sh);
-    if (!s.draw_screen_quads(command, swapchain, s.product_ui, frame.screen_quads)) {
+    if (!s.blit_world(command, swapchain, sw, sh, frame.world_destination) ||
+        !s.draw_screen_quads(command, swapchain, s.product_ui, frame.screen_quads)) {
       const std::string error = SDL_GetError();
       (void)SDL_SubmitGPUCommandBuffer(command);
       s.animation_stream.commit();
-      return SDL_SetError("Native UI pass failed: %s", error.c_str());
+      return SDL_SetError("Native composition pass failed: %s", error.c_str());
     }
   }
   auto* fence = SDL_SubmitGPUCommandBufferAndAcquireFence(command);

@@ -37,6 +37,33 @@ void exact_progress_and_engagement() {
   run.beams.clear();
   require(hr::product::enemy_vitality(run, viewport, field, 14).empty(), "dead/retired target cannot retain a progress label");
 }
+void compact_stage_keeps_true_boss_progress_attached() {
+  for(const auto viewport:{hr::ui::Rect{0,0,320,320},hr::ui::Rect{0,0,844,390},hr::ui::Rect{0,0,768,1024}})for(float text_scale:{1.F,2.F}) {
+    const auto framing=hr::product::gameplay_framing(viewport,{},text_scale,
+        {static_cast<unsigned>(viewport.width)*2,static_cast<unsigned>(viewport.height)*2});
+    const hr::ui::Rect field{framing.stage.x+4,framing.stage.y+4,framing.stage.width-8,framing.stage.height-8};
+    hr::gameplay::Snapshot run;
+    // Leave a real free attachment edge; a rear player can legitimately occupy
+    // both available positions on a short display after the measured reflow.
+    run.player={-7.5F,16.5F};
+    run.entities={{.id=7,.kind=Kind::boss,.position={0,4},.hull=80,.maximum_hull=160}};
+    const auto result=hr::product::enemy_vitality(run,framing,field,14*text_scale);
+    if(result.empty())std::cerr<<"BOSS_ATTACHMENT "<<viewport.width<<'x'<<viewport.height<<" text="<<text_scale<<" field="<<field.x<<','<<field.y<<','<<field.width<<','<<field.height<<'\n';
+    require(result.size()==1,"representative short/tablet boss retains readable true progress at enlarged text");
+    const auto& bar=result.front();
+    require_near(bar.fraction,.5F,.0001F,"compact meter retains authoritative fraction");
+    require(bar.bounds.x>=field.x && bar.bounds.right()<=field.right() && bar.bounds.y>=field.y && bar.bounds.bottom()<=field.bottom(),"compact boss attachment fits the actual stage");
+    const auto scene=hr::product::scene(run,framing,true);
+    float body_top=10000,body_bottom=-10000;
+    for(const auto& part:scene.instances)if(part.mesh=="tank-hull" || part.mesh=="tank-turret") {
+      const auto region=hr::product::project_region(hr::presentation::multiply(scene.camera,hr::presentation::model_matrix(part)),*hr::product::visibility_mesh_bounds(part.mesh));
+      body_top=std::min(body_top,framing.stage.y+(region.top+1)*.5F*framing.stage.height);
+      body_bottom=std::max(body_bottom,framing.stage.y+(region.bottom+1)*.5F*framing.stage.height);
+    }
+    require(std::abs(bar.bounds.y-body_bottom-4)<.01F || std::abs(bar.bounds.bottom()-body_top+4)<.01F,"compact feedback attaches through the exact scene camera and integer blit stage");
+    if(viewport.width==320 && text_scale==2)require(bar.stacked,"short enlarged boss label wraps while preserving percentage");
+  }
+}
 void attachment_boundaries_and_caps() {
   for (const auto viewport : {hr::ui::Rect{0, 0, 320, 568}, hr::ui::Rect{0, 0, 390, 844}, hr::ui::Rect{0, 0, 844, 390}})
     for (float text : {14.F, 28.F}) {
@@ -134,6 +161,7 @@ void capture_feedback_replaces_ground_vitality() {
 } // namespace
 int main() {
   exact_progress_and_engagement();
+  compact_stage_keeps_true_boss_progress_attached();
   attachment_boundaries_and_caps();
   confirmed_hits_and_reduced_motion();
   capture_feedback_replaces_ground_vitality();

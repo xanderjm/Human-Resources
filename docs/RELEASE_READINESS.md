@@ -10,16 +10,30 @@ change together. Prior landscape captures are historical integration evidence.
 
 ## Current truth
 
+The latest user-requested normal launch is `Human Resources Playtest Preview.app`,
+from accepted `5fa75ab` with Flight Report and actual collision/shot feedback.
+It retains original ship size and a validated separate snapshot of the user's
+compatible account (66 credits and Hangar progress). Root verifies all104 bundle
+files and confirms normal LaunchServices PID30834. The eight user preview apps
+and their accounts are protected from automated operation, replacement or quit.
+`build/evidence/quality-native-integration/playtest-preview-staged.json` and
+`playtest-preview-launch.json` bind the delivery. In-progress framing work is
+excluded from this preview.
+
 The later actual-damage-cause feedback slice is accepted on desktop: existing
 shield/hull cues identify successful contact/projectile events without changing
 Game7 save bytes or rules. Final44host suites and actual-source native frames pass;
 large-text hit HUD/vitality clearance is explicit. Source/checkpoint evidence is
 under `build/evidence/damage-cause-feedback/` and `damage-cause-source-checkpoint/`.
 The qualified mobile epoch remains053d08aa Flight Report, excluding this change.
-The broad release audit also establishes a material framing defect on tablets/
-wide windows: legal vertical flight can overlap controls or leave the camera.
-A dedicated owner is developing one shared portrait-stage policy; no current
-release-ready or complete supported-aspect claim is made.
+The broad release audit establishes a material framing defect on tablets/wide
+windows. The accepted17-file shared portrait-stage slice now fixes that defect
+with44host suites and native full-flight comparisons. Ordinary phone world/UI
+and restored menu backgrounds are byte-identical to accepted5fa75ab. Evidence is
+under `build/evidence/gameplay-framing/`; rationale is
+`docs/adr/004-shared-flight-framing.md`. A dedicated UI owner continues the
+pre-existing enlarged-phone HUD overlap, so no complete supported-layout or
+release-ready claim is made.
 
 Fresh physical-device audit: the paired iPhone has developer mode enabled, but
 its tunnel/DDI services are unavailable and lock state is unknown; no Android
@@ -123,7 +137,7 @@ contacts do not qualify human timing or OS/physical touch. Game6 iPhoneOS and
 Simulator Release builds plus Android both-ABI debug/release, lint, APK and
 unsigned AAB/package audits pass; current mobile execution remains unqualified.
 
-The latest normal user launch is authority-7 `Human Resources Latest Preview.app`,
+The preceding normal user launch is authority-7 `Human Resources Latest Preview.app`,
 containing accepted combat/world changes with the original apparent ship size.
 It uses fresh `latest-preview-save`; all six prior apps/accounts remain preserved.
 Strict ad-hoc signature and 101 runtime/104 bundle files pass, and host PID 16229

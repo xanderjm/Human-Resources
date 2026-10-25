@@ -1,4 +1,4 @@
-add_library(human_resources_product STATIC src/controls.cpp src/interface.cpp src/scene.cpp src/scene_effects.cpp src/capture_motion.cpp src/vehicle_assembly.cpp src/gear_presentation.cpp src/visibility.cpp src/accessibility.cpp src/combat_feedback.cpp src/flight_report.cpp)
+add_library(human_resources_product STATIC src/gameplay_framing.cpp src/controls.cpp src/interface.cpp src/scene.cpp src/scene_effects.cpp src/capture_motion.cpp src/vehicle_assembly.cpp src/gear_presentation.cpp src/visibility.cpp src/accessibility.cpp src/combat_feedback.cpp src/flight_report.cpp)
 target_include_directories(human_resources_product PUBLIC include PRIVATE "${GAME_GENERATED_ROOT}/product/include")
 target_link_libraries(human_resources_product PUBLIC human_resources_gameplay human_resources_progression human_resources_presentation human_resources_input human_resources_ui human_resources_accessibility)
 game_apply_cpp_defaults(human_resources_product)

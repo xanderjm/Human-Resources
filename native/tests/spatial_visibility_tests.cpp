@@ -111,6 +111,101 @@ void full_gear_has_real_phone_margins() {
   std::cout << "PLAYER_EXTREMES top_clearance=" << top_clearance << " bottom_clearance=" << bottom_clearance << "\n";
   require(worst_clearance >= 0, "complete maximum gear clears the real HUD by twelve pixels and control by ten");
 }
+void supported_stages_keep_real_flight_and_readable_controls() {
+  struct Display { unsigned width, height; hr::ui::Insets insets; };
+  constexpr std::array displays{
+      Display{768,1024,{0,24,0,20}}, Display{1024,1366,{0,24,0,20}}, Display{1366,1024,{0,24,0,20}},
+      Display{844,390,{59,0,59,21}}, Display{320,320,{}}, Display{320,500,{}},
+      Display{390,568,{0,20,0,0}}, Display{844,390,{31,12,17,8}}};
+  progression_tests::MemoryBackend backend;
+  hr::progression::AccountStore store(backend);
+  (void)store.load();
+  hr::gameplay::Snapshot run;
+  run.phase = hr::gameplay::Phase::active;
+  run.runner_distance = 100;
+  run.hull = run.maximum_hull = 112;
+  run.shield = run.maximum_shield = 100;
+  run.laser_count = 4;
+  run.beam_capacity = 6;
+  for (auto module : {hr::gameplay::Module::laser_array, hr::gameplay::Module::orbit_drones, hr::gameplay::Module::shield_generator, hr::gameplay::Module::beam_splitter, hr::gameplay::Module::tractor_lens, hr::gameplay::Module::emp_ring})
+    run.modules[static_cast<unsigned>(module)] = 3;
+  run.evolution_bits = (1U << static_cast<unsigned>(hr::gameplay::Evolution::great_vacuum)) | (1U << static_cast<unsigned>(hr::gameplay::Evolution::storm_drain));
+  for (const auto display : displays) for (float text_scale : {1.F,2.F}) {
+    const hr::ui::Rect viewport{0,0,static_cast<float>(display.width),static_cast<float>(display.height)};
+    const auto framing = hr::product::gameplay_framing(viewport, display.insets, text_scale, {display.width*2,display.height*2});
+    require(framing.stage.width > 100 && framing.stage.height > 180, "largest supported text leaves a real portrait combat stage");
+    const auto actual = hr::presentation::fit_world_destination(framing.render_extent.width, framing.render_extent.height, display.width*2,display.height*2,framing.destination);
+    require_near(framing.stage.x, static_cast<float>(actual.x)*.5F, .001F, "attachment stage matches exact renderer destination x");
+    require_near(framing.stage.height, static_cast<float>(actual.height)*.5F, .001F, "attachment stage matches exact renderer destination height");
+    hr::product::View view{hr::product::Screen::run,&run,&store,viewport,display.insets};
+    view.text_scale=text_scale; view.framing=&framing;
+    run.stats.active_seconds=30;
+    const auto ui=hr::product::interface(view);
+    require(!ui.text_overflow,"supported stage HUD measures without text loss at requested size");
+    float top=framing.stage.y, bottom=framing.stage.bottom();
+    for(const auto& button:ui.buttons) {
+      require(button.bounds.width>=44 && button.bounds.height>=44,"complete Pause/Dash target retains forty-four points");
+      require(button.bounds.x>=framing.safe.x && button.bounds.y>=framing.safe.y && button.bounds.right()<=framing.safe.right()+.01F && button.bounds.bottom()<=framing.safe.bottom()+.01F,"all targets lie within actual safe area");
+      if(framing.compact) {
+        const auto overlap=hr::ui::intersect(button.bounds,framing.stage);
+        require(overlap.width<.01F || overlap.height<.01F,"entire compact control target stays outside world stage");
+      } else {
+        if(button.command==hr::product::Command::pause) top=button.bounds.bottom()+12;
+        if(button.command==hr::product::Command::dash) bottom=button.bounds.y-10;
+      }
+    }
+    for(const auto& quad:ui.quads)
+      if(std::abs(quad.uv[2]-64.F/1024)<.00001F && std::abs(quad.uv[3]-80.F/2048)<.00001F)
+        require(quad.rect[2]*viewport.width*48.F/64.F>=14*text_scale-.01F,"stage reflow preserves physical font floor and enlarged text");
+    if(framing.compact) {
+      auto damaged=view;
+      damaged.damage_feedback={.age=.1F,.hull=false,.cause=hr::gameplay::DamageCause::contact};
+      require(!hr::product::interface(damaged).text_overflow,"actual damage provenance wraps in short rails at enlarged text size");
+      run.harvest_overdrive_seconds=8;
+      require(!hr::product::interface(view).text_overflow,"short rails retain actual Overdrive confirmation without control overlap");
+      run.harvest_overdrive_seconds=0;
+    }
+    float clearance=10000;
+    for(float side:{-1.F,1.F}) for(float along:{-17.F,16.5F}) for(float bank:{-12.F,12.F}) for(float vertical:{-12.F,12.F}) for(unsigned phase=0;phase<32;++phase) {
+      run.player={side*7.5F,100+along};run.velocity={bank,vertical};run.stats.active_seconds=30+static_cast<double>(phase)*7.3919827/32;
+      run.shots.clear();
+      for(unsigned i=0;i<4;++i)run.shots.push_back({run.player,{(i&1)?-5.65F:5.65F,100+((i&2)?-6.F:6.F)},.1F,false,hr::gameplay::ShotKind::laser,static_cast<std::uint8_t>(i)});
+      for(unsigned i=0;i<3;++i)run.shots.push_back({run.player,{(i&1)?-5.65F:5.65F,100+((i&2)?-6.F:6.F)},.1F,true,hr::gameplay::ShotKind::drone,static_cast<std::uint8_t>(i)});
+      const auto frame=hr::product::scene(run,framing,false);
+      require(frame.camera==framing.camera && frame.world_destination==framing.destination,"scene consumes the actual shared projection and destination");
+      for(const auto& instance:frame.instances)if(player_mesh(instance.mesh))for(auto vertex:mesh(instance.mesh).vertices) {
+        auto point=vertex_screen(frame,instance,vertex,framing.stage.width,framing.stage.height);point[0]+=framing.stage.x;point[1]+=framing.stage.y;
+        const float margin=std::min({point[0]-framing.stage.x,framing.stage.right()-point[0],point[1]-top,bottom-point[1]});
+        clearance=std::min(clearance,margin);
+        if(margin<0)std::cerr<<"STAGE_FAIL "<<display.width<<'x'<<display.height<<" text="<<text_scale<<" mesh="<<instance.mesh<<" point="<<point[0]<<','<<point[1]<<" band="<<top<<".."<<bottom<<'\n';
+        require(margin>=0,"real banked maximum gear clears actual stage and all relevant controls across full movement");
+      }
+    }
+    std::cout<<"SUPPORTED_STAGE "<<display.width<<'x'<<display.height<<" text="<<text_scale<<" rect="<<framing.stage.x<<','<<framing.stage.y<<','<<framing.stage.width<<','<<framing.stage.height<<" clearance="<<clearance<<'\n';
+    for(float station:{hr::gameplay::tuning::encounter_warning_entry_ahead,-hr::gameplay::tuning::encounter_warning_retire_behind})for(float side:{-1.F,1.F})for(float player_along:{-17.F,16.5F})for(unsigned heading=0;heading<16;++heading) {
+      run.player={-side*7.5F,100+player_along};
+      const float angle=static_cast<float>(heading)*6.2831853F/16;
+      run.entities={{.id=1,.kind=hr::gameplay::EntityKind::boss,.position={side*7.5F,100+station},.velocity={std::sin(angle),-std::cos(angle)},.warning_aim=run.player,.warning_seconds=1}};
+      const auto muzzle=hr::gameplay::vehicle_cannon_shot(run.entities.front(),run.player);
+      require(muzzle.valid,"real committed boss source still reaches full flight field");
+      run.projectiles={{.id=2,.position=muzzle.origin,.velocity=muzzle.direction,.radius=.4F,.source_id=1,.launch_position=muzzle.origin,.launch_height=muzzle.height,.kind=hr::gameplay::EnemyProjectileKind::boss_missile,.launch_direction=muzzle.direction}};
+      const auto frame=hr::product::scene(run,framing,false);
+      for(const auto& instance:frame.instances)if(instance.mesh=="tank-hull" || instance.mesh=="tank-turret" || instance.mesh=="missile")for(auto vertex:mesh(instance.mesh).vertices) {
+        auto point=vertex_screen(frame,instance,vertex,framing.stage.width,framing.stage.height);point[1]+=framing.stage.y;
+        require(point[1]>=top && point[1]<=bottom,"real first-commit and retirement source/missile clear stage and HUD on supported surfaces");
+      }
+    }
+    run.entities.clear();run.projectiles.clear();
+  }
+  for(const auto size:{std::array<unsigned,2>{320,568},{390,844}}) {
+    const auto framing=hr::product::gameplay_framing({0,0,static_cast<float>(size[0]),static_cast<float>(size[1])},{},1,{size[0]*2,size[1]*2});
+    const float factor=std::min(1.F,1280.F/static_cast<float>(size[1]*2));
+    const auto old_w=static_cast<unsigned>(static_cast<int>(static_cast<float>(size[0]*2)*factor)/4*4),old_h=static_cast<unsigned>(static_cast<int>(static_cast<float>(size[1]*2)*factor)/4*4);
+    StyleFrame legacy;hr::presentation::set_overhead_camera(legacy,static_cast<float>(old_w)/static_cast<float>(old_h),17.F/.75F,{0,0,-.15F},27);
+    require(framing.camera==legacy.camera && framing.render_extent.width==old_w && framing.render_extent.height==old_h,"accepted physical phone camera and capped source remain bit exact to old formula");
+    require(framing.destination==std::array<float,4>{0,0,1,1},"accepted phone renderer destination remains exact full output");
+  }
+}
 void threat_attack_entry_and_retirement_clear_real_controls() {
   progression_tests::MemoryBackend backend;
   hr::progression::AccountStore store(backend);
@@ -292,6 +387,7 @@ int main(int argc, char** argv) {
   require(argc == 2, "cooked fixture root is explicit");
   content = argv[1];
   full_gear_has_real_phone_margins();
+  supported_stages_keep_real_flight_and_readable_controls();
   threat_attack_entry_and_retirement_clear_real_controls();
   horizon_approach_is_continuous_before_attacks();
   critical_geometry_controls_every_landmark();

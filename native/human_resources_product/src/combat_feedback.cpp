@@ -5,6 +5,7 @@
 #include <array>
 #include <cmath>
 #include <limits>
+#include <product_glyphs.generated.h>
 
 namespace human_resources::product {
 namespace {
@@ -55,15 +56,20 @@ ui::Rect silhouette(const gameplay::EntityView& actor, const gameplay::Snapshot&
 }
 } // namespace
 void set_gameplay_camera(presentation::StyleFrame& frame, float aspect) {
-  presentation::set_overhead_camera(frame, aspect, (aspect < 1 ? 17.F : 31.F) / .75F, {0, 0, -.15F}, 27.F);
+  frame.camera = gameplay_framing(aspect).camera;
 }
 std::vector<EnemyVitality> enemy_vitality(const gameplay::Snapshot& run,
     ui::Rect viewport, ui::Rect field, float boss_text_size) {
+  return enemy_vitality(run, gameplay_framing(viewport), field, boss_text_size);
+}
+std::vector<EnemyVitality> enemy_vitality(const gameplay::Snapshot& run,
+    const GameplayFraming& framing, ui::Rect field, float boss_text_size) {
+  const auto viewport = framing.stage;
   std::vector<EnemyVitality> result;
   result.reserve(3);
   if (!viewport.finite() || viewport.width <= 0 || viewport.height <= 0 || !field.finite()) return result;
   presentation::StyleFrame projection;
-  set_gameplay_camera(projection, viewport.width / viewport.height);
+  projection.camera = framing.camera;
   const presentation::StyleInstance ship{.position = {run.player.x, 2.5F, run.runner_distance - run.player.z + 2.3F},
       .scale = {1.12F / .75F, 1.12F / .75F, 1.12F / .75F}};
   auto ship_region = pixels(project_region(presentation::multiply(projection.camera, presentation::model_matrix(ship)),
@@ -101,8 +107,14 @@ std::vector<EnemyVitality> enemy_vitality(const gameplay::Snapshot& run,
     const bool boss = actor.kind == gameplay::EntityKind::boss;
     if ((boss && has_boss) || (!boss && vehicles == 2)) continue;
     const auto body = silhouette(actor, run, projection.camera, viewport);
-    const float width = boss ? std::max(112.F, boss_text_size * 6.6F) : 42.F;
-    const float height = boss ? boss_text_size + 18 : 8.F;
+    const bool stacked = boss && std::max(112.F, boss_text_size * 6.6F) > field.width;
+    const auto measure = [&](std::string_view text) {
+      float width = 0;
+      for (char ch : text) width += glyph_advances[static_cast<unsigned>(ch - 32)] * boss_text_size / 48.F;
+      return width;
+    };
+    const float width = boss ? (stacked ? std::max(measure("BOSS"), measure("100%")) + 8 : std::max(112.F, boss_text_size * 6.6F)) : 42.F;
+    const float height = boss ? boss_text_size * (stacked ? 2.F : 1.F) + 18 : 8.F;
     const float x = body.x + (body.width - width) * .5F;
     const ui::Rect above{x, body.y - height - 4, width, height}, below{x, body.bottom() + 4, width, height};
     // Boss identification normally sits above its large silhouette; entering
@@ -113,7 +125,7 @@ std::vector<EnemyVitality> enemy_vitality(const gameplay::Snapshot& run,
       for (const auto& existing : result)
         crowded |= overlaps(bounds, {existing.bounds.x - 4, existing.bounds.y - 4, existing.bounds.width + 8, existing.bounds.height + 8});
       if (crowded) continue;
-      result.push_back({actor.id, boss, std::clamp(actor.hull / actor.maximum_hull, 0.F, 1.F), bounds});
+      result.push_back({actor.id, boss, std::clamp(actor.hull / actor.maximum_hull, 0.F, 1.F), bounds, stacked});
       has_boss |= boss;
       vehicles += !boss;
       break;

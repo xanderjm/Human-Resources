@@ -697,7 +697,9 @@ void actual_damage_feedback_stays_inside_the_tactical_hud() {
     view.damage_feedback={.1F,hull,cause};
     const auto hit=interface(view);
     const auto copy=compact(atlas_copy(hit));
-    require(copy.find(compact(damage_label(view.damage_feedback)))!=std::string::npos,"committed hit identifies complete actual cause and affected defence at every text size");
+    const bool short_stage=gameplay_framing(viewport,view.safe_area,scale).compact;
+    const std::string expected=short_stage?std::string(hull?"HP":"SH")+(cause==hr::gameplay::DamageCause::contact?"BUMP":cause==hr::gameplay::DamageCause::projectile?"SHOT":"HIT"):std::string(damage_label(view.damage_feedback));
+    require(copy.find(compact(expected))!=std::string::npos,"committed hit identifies agreed full or compact actual cause and affected defence at every text size");
     const auto after=std::find_if(hit.buttons.begin(),hit.buttons.end(),[](const auto& b){return b.command==Command::pause;})->bounds;
     require(after.x==pause.x && after.y==pause.y && after.height==pause.height,"hit feedback preserves Pause and tactical field height");
     if(scale>1) readable_page_is_real_safe_and_scaled(view,hit);

@@ -85,9 +85,6 @@ void capture_guides(StyleFrame& frame, Vec3 ground, Vec3 intake, float radius, f
 // A cue is information, so the wider portrait camera must not reduce it to a
 // subpixel thread. Use the smallest supported logical viewport as the floor;
 // wider phones preserve that weight without changing any collision geometry.
-float threat_pixel(float camera_width, float aspect) {
-  return camera_width / (aspect < 1 ? 320.F : 844.F);
-}
 void hostile_trail(StyleFrame& frame, Vec3 tip, Vec3 rear, float pixel, float opacity = 1) {
   line(frame, tip, rear, std::max(.07F, pixel * 1.65F), {.025F, .07F, .11F, .84F * opacity});
   line(frame, tip, rear, std::max(.07F, pixel), {1, .24F, .13F, .88F * opacity});
@@ -149,6 +146,11 @@ std::vector<std::string_view> content_ids() {
   return ids;
 }
 presentation::StyleFrame scene(const gameplay::Snapshot& run, float aspect, bool reduced_motion, bool attract, SceneEffects* effects, presentation::SceneryTheme theme) {
+  return scene(run, gameplay_framing(aspect, attract ? FramingContext::attract : FramingContext::flight), reduced_motion, effects, theme);
+}
+presentation::StyleFrame scene(const gameplay::Snapshot& run, const GameplayFraming& framing, bool reduced_motion, SceneEffects* effects, presentation::SceneryTheme theme) {
+  const bool attract = framing.context == FramingContext::attract;
+  const float aspect = framing.aspect;
   const float t = static_cast<float>(run.stats.active_seconds);
   const double distance = attract ? 0 : run.runner_distance;
   auto frame = presentation::generate_scenery({theme, 514, distance, aspect, 9.7F}).scene;
@@ -162,9 +164,9 @@ presentation::StyleFrame scene(const gameplay::Snapshot& run, float aspect, bool
   const float recoil = reduced_motion || damage.age < 0 ? 0 : (1 - std::exp(-damage.age * 90)) * std::exp(-damage.age * 14) * (damage.hull ? 1.F : .4F);
   // A world-space camera follows forward travel; lateral movement remains visible
   // across the entire lane, so the player can judge the danger around the saucer.
-  const float camera_width = (aspect < 1 ? 17.F : 31.F) / .75F;
-  set_gameplay_camera(frame, aspect);
-  const float threat_unit = threat_pixel(camera_width, aspect);
+  frame.camera = framing.camera;
+  frame.world_destination = framing.destination;
+  const float threat_unit = framing.logical_pixel;
   const auto velocity = effects && !attract ? effects->flight_velocity() : run.velocity;
   const float response = effects && !attract ? effects->capture_response() : 0;
   const auto dash = effects && !attract ? effects->dash_response() : gameplay::Vec2{};

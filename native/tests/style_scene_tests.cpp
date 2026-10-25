@@ -104,11 +104,53 @@ void capture_contract() {
   require(!CaptureExtent{1206, 2622}.matches_aspect(0, 874), "unavailable window is not an aspect match");
   require(CaptureExtent{1207, 2622}.matches_aspect(402, 874) && !CaptureExtent{1208, 2622}.matches_aspect(402, 874), "aspect rounding tolerance is exactly one physical pixel");
 }
+void world_destination_contract() {
+  using human_resources::presentation::fit_world_destination;
+  using human_resources::presentation::PixelRect;
+  const auto same = [](PixelRect actual, PixelRect expected) {
+    return actual.x == expected.x && actual.y == expected.y &&
+        actual.width == expected.width && actual.height == expected.height;
+  };
+  struct Case { unsigned source_w, source_h, target_w, target_h; PixelRect expected; };
+  // These are the previous full-output blit's actual integer destinations,
+  // including the capped/four-pixel-aligned high-density phone world target.
+  for (const auto& test : std::array<Case, 5>{{
+      {320, 568, 320, 568, {0, 0, 320, 568}},
+      {390, 844, 390, 844, {0, 0, 390, 844}},
+      {588, 1280, 780, 1688, {2, 0, 775, 1688}},
+      {390, 844, 1200, 800, {415, 0, 370, 800}},
+      {844, 390, 390, 844, {0, 332, 390, 180}}}})
+    require(same(fit_world_destination(test.source_w, test.source_h, test.target_w, test.target_h), test.expected),
+        "default world destination preserves the previous centered integer blit exactly");
+  const std::array<float, 4> stage{312.F / 844.F, 0, 220.F / 844.F, 1};
+  require(same(fit_world_destination(220, 390, 844, 390, stage), {312, 0, 220, 390}),
+      "world fits the requested translated portrait stage instead of the whole wide output");
+  require(same(fit_world_destination(220, 390, 1688, 780, stage), {624, 0, 440, 780}),
+      "the same normalized stage maps coherently to high-density output");
+  require(same(fit_world_destination(320, 568, 320, 568, {-.25F, .125F, .75F, .75F}), {0, 142, 160, 284}),
+      "available bounds clip before fitting and preserve a nonzero vertical origin");
+  require(same(fit_world_destination(220, 390, 845, 391, stage), {312, 0, 221, 391}),
+      "odd output dimensions round stage edges once before the shared fit");
+  const unsigned largest = std::numeric_limits<unsigned>::max();
+  require(same(fit_world_destination(1, 1, largest, largest), {0, 0, largest, largest}),
+      "full normalized edges never round an unsigned output extent through an overflowing float");
+  const float nan = std::numeric_limits<float>::quiet_NaN(), inf = std::numeric_limits<float>::infinity();
+  for (const auto available : std::array<std::array<float, 4>, 6>{{
+      {nan, 0, 1, 1}, {0, inf, 1, 1}, {0, 0, 0, 1}, {0, 0, 1, -1}, {2, 0, 1, 1}, {0, 2, 1, 1}}}) {
+    const auto fitted = fit_world_destination(320, 568, 844, 390, available);
+    require(fitted.width == 0 && fitted.height == 0, "invalid or empty available destination cannot become a GPU blit");
+  }
+  for (const auto dimensions : std::array<std::array<unsigned, 4>, 4>{{{0, 568, 844, 390}, {320, 0, 844, 390}, {320, 568, 0, 390}, {320, 568, 844, 0}}}) {
+    const auto fitted = fit_world_destination(dimensions[0], dimensions[1], dimensions[2], dimensions[3]);
+    require(fitted.width == 0 && fitted.height == 0, "unavailable source or output has no drawable world destination");
+  }
+}
 } // namespace
 int main() {
   mesh_validation();
   film_contract();
   viewport_and_visibility();
   capture_contract();
+  world_destination_contract();
   std::cout << "style scene and mesh contracts passed\n";
 }

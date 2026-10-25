@@ -89,6 +89,7 @@ struct App final {
   bool audio_focused{true};
   hr::platform::WindowMetrics metrics;
   hr::product::Interface ui;
+  hr::product::GameplayFraming framing;
   hr::lifecycle::State lifecycle;
   Screen screen{Screen::title}, settings_return{Screen::title}, library_return{Screen::hangar};
   hr::presentation::SceneryTheme selected_theme{hr::presentation::SceneryTheme::farmland};
@@ -123,6 +124,12 @@ struct App final {
   unsigned render_w{1280}, render_h{720};
   unsigned window_w{390}, window_h{844};
 };
+hr::product::FramingContext framing_context(const App& app) {
+  auto origin = app.screen;
+  if (origin == Screen::settings) origin = app.settings_return;
+  if (origin == Screen::blueprints) origin = app.library_return;
+  return origin == Screen::title || origin == Screen::hangar ? hr::product::FramingContext::attract : hr::product::FramingContext::flight;
+}
 bool retain_qa_vehicle_checkpoint(App& app) {
   if(!app.qa || app.qa_metrics_path.empty()) return true;
   const auto& run=app.game.snapshot();
@@ -540,6 +547,11 @@ void rebuild(App& app) {
                                                                                                                                                                                                                          : "The save cannot be read. Retry before playing so existing progress is preserved.";
   app.frame_preferences = app.native_accessibility ? app.native_accessibility->preferences() : hr::accessibility::Preferences{};
   const float text_scale = std::isfinite(app.frame_preferences.text_scale) && app.frame_preferences.text_scale > 0 ? app.frame_preferences.text_scale : 1.F;
+  int output_width{}, output_height{};
+  SDL_GetWindowSizeInPixels(app.window, &output_width, &output_height);
+  app.framing = hr::product::gameplay_framing(app.metrics.viewport, app.metrics.safe_area, text_scale,
+      {static_cast<unsigned>(std::max(0, output_width)), static_cast<unsigned>(std::max(0, output_height))},
+      framing_context(app));
   std::string ui_context = std::to_string(static_cast<unsigned>(app.screen)) + "/" + std::to_string(text_scale) + "/" + std::to_string(app.metrics.viewport.width) + "/" + std::to_string(app.metrics.viewport.height) + "/" + std::to_string(app.metrics.safe_area.left) + "/" + std::to_string(app.metrics.safe_area.top) + "/" + std::to_string(app.metrics.safe_area.right) + "/" + std::to_string(app.metrics.safe_area.bottom) + "/" + std::to_string(app.save_error) + "/" + std::to_string(app.store.pending()) + "/" + std::to_string(static_cast<unsigned>(issue)) + "/" + std::to_string(app.show_build) + "/" + std::to_string(app.show_privacy) + "/" + std::to_string(app.show_recipes) + "/" + std::to_string(app.recipe_page);
   if (app.save_error) ui_context += "/" + std::string(save_message);
   if (app.screen == Screen::upgrade) {
@@ -563,6 +575,7 @@ void rebuild(App& app) {
   const auto current_receipt = receipt(app);
   view.current_receipt = &current_receipt;
   view.report_entry_seconds = app.report_entry_seconds;
+  view.framing = &app.framing;
   app.ui = hr::product::interface(view);
   app.ui_page = app.ui.page;
   Command focused = Command::none;
@@ -1090,15 +1103,15 @@ SDL_AppResult SDL_AppIterate(void* state) {
   SDL_GetWindowSizeInPixels(app.window, &pw, &ph);
   if (pw <= 0 || ph <= 0)
     return SDL_APP_CONTINUE;
-  const float factor = std::min(1.F, 1280.F / static_cast<float>(std::max(pw, ph)));
-  const auto w = static_cast<unsigned>(std::max(4, static_cast<int>(static_cast<float>(pw) * factor) / 4 * 4)), h = static_cast<unsigned>(std::max(4, static_cast<int>(static_cast<float>(ph) * factor) / 4 * 4));
-  if (!app.capture && (w != app.render_w || h != app.render_h)) {
+  const auto w = app.framing.render_extent.width, h = app.framing.render_extent.height;
+  if (!w || !h) return SDL_APP_CONTINUE;
+  if (w != app.render_w || h != app.render_h) {
     if (!app.renderer->resize(w, h))
       return SDL_APP_FAILURE;
     app.render_w = w;
     app.render_h = h;
   }
-  auto scene = hr::product::scene(app.game.snapshot(), static_cast<float>(app.render_w) / static_cast<float>(app.render_h), (app.store.account().settings.reduced_motion || app.frame_preferences.reduced_motion), app.screen == Screen::title || app.screen == Screen::hangar || app.screen == Screen::settings, &app.scene_effects, app.selected_theme);
+  auto scene = hr::product::scene(app.game.snapshot(), app.framing, (app.store.account().settings.reduced_motion || app.frame_preferences.reduced_motion), &app.scene_effects, app.selected_theme);
   scene.active_delta_seconds = static_cast<float>(std::max(0., app.game.snapshot().stats.active_seconds - active_before));
   scene.screen_quads = app.ui.quads;
   const auto render_begin = SDL_GetTicksNS();

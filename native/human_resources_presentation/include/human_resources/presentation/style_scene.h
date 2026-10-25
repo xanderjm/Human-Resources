@@ -53,6 +53,9 @@ struct ScreenQuad final {
   std::array<float, 4> color{1, 1, 1, 1};
 };
 struct StyleFrame final {
+  // Available normalized output rectangle. The shared integer fit supplies the
+  // actual destination; native UI and semantic input still use the full output.
+  std::array<float, 4> world_destination{0, 0, 1, 1};
   std::vector<ScreenQuad> screen_quads;
   std::vector<StyleInstance> instances;
   std::vector<StyleSurface> surfaces;

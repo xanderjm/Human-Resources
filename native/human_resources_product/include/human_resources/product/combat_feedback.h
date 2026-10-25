@@ -1,5 +1,6 @@
 #pragma once
 #include <human_resources/gameplay/gameplay.h>
+#include <human_resources/product/gameplay_framing.h>
 #include <human_resources/presentation/style_scene.h>
 #include <human_resources/ui/geometry.h>
 #include <vector>
@@ -13,12 +14,15 @@ struct EnemyVitality final {
   bool boss{};
   float fraction{};
   ui::Rect bounds;
+  bool stacked{};
 };
 // One boss and at most two damaged vehicles. Labels stay attached to the actual
 // assembled silhouette; crowded/off-field labels are omitted, never clamped to
 // an unrelated screen edge. All dimensions are viewport points.
 [[nodiscard]] std::vector<EnemyVitality> enemy_vitality(const gameplay::Snapshot&,
     ui::Rect viewport, ui::Rect field, float boss_text_size);
+[[nodiscard]] std::vector<EnemyVitality> enemy_vitality(const gameplay::Snapshot&,
+    const GameplayFraming&, ui::Rect field, float boss_text_size);
 [[nodiscard]] float enemy_hit_strength(const gameplay::Snapshot&, std::uint32_t actor_id,
     bool reduced_motion);
 } // namespace human_resources::product

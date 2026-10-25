@@ -2,6 +2,7 @@
 #include <human_resources/gameplay/gameplay.h>
 #include <human_resources/product/promotion.h>
 #include <human_resources/product/damage_feedback.h>
+#include <human_resources/product/gameplay_framing.h>
 #include <human_resources/presentation/scenery.h>
 #include <human_resources/presentation/style_scene.h>
 #include <human_resources/progression/progression.h>
@@ -106,6 +107,7 @@ struct View final {
   DamageFeedback damage_feedback{};
   const progression::RunReceipt* current_receipt{}; // Actual client receipt; preview never changes rewards.
   float report_entry_seconds{-1}; // Disposable, nonblocking presentation timing.
+  const GameplayFraming* framing{};
 };
 [[nodiscard]] constexpr std::string_view location_name(presentation::SceneryTheme theme) {
   switch (theme) {
@@ -129,5 +131,6 @@ struct View final {
 }
 [[nodiscard]] Interface interface(const View& view);
 [[nodiscard]] presentation::StyleFrame scene(const gameplay::Snapshot& run, float aspect, bool reduced_motion, bool attract = false, SceneEffects* effects = nullptr, presentation::SceneryTheme theme = presentation::SceneryTheme::farmland);
+[[nodiscard]] presentation::StyleFrame scene(const gameplay::Snapshot& run, const GameplayFraming& framing, bool reduced_motion, SceneEffects* effects = nullptr, presentation::SceneryTheme theme = presentation::SceneryTheme::farmland);
 [[nodiscard]] std::vector<std::string_view> content_ids();
 } // namespace human_resources::product
