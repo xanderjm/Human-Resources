@@ -1,0 +1,21 @@
+{
+  "checked_on": "2026-10-25",
+  "sources": [
+    {
+      "title": "Apple HIG app icons",
+      "url": "https://developer.apple.com/design/human-interface-guidelines/app-icons",
+      "fetched_document_sha256": "5f67bb7b1e2405ee03526ab83c3f75b63b28473ce39ebf10848655908e2712f7"
+    },
+    {
+      "title": "Xcode asset catalogue configuration",
+      "url": "https://developer.apple.com/documentation/xcode/configuring-your-app-icon",
+      "fetched_document_sha256": "797f6a733742eea32786be99e7f342e74f1b6d2ed6a7de57867ca71cfa733a3c"
+    },
+    {
+      "title": "Android adaptive icons",
+      "url": "https://developer.android.com/develop/ui/views/launch/icon_design_adaptive",
+      "fetched_document_sha256": "42c4a42c4bf8fcc51877c5d3d93812f9efec5024334629cf6e6c83d30a09221c"
+    }
+  ],
+  "notes": "Official pages fetched directly overHTTPS. No remote art downloaded. Documents verified1024square unmasked iOS imagery and single-size catalogues;108dp adaptive layers,48..66dp subject dimensions, foreground/background and monochrome resources. Candidate uses conservative33dp all-pixel radius."
+}

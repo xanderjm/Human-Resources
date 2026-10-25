@@ -1,0 +1,55 @@
+{
+  "schema_version": 1,
+  "id": "ui-xp-track",
+  "type": "native-graphic",
+  "source": "assets/graphics/ui-xp-track/ui-xp-track.svg",
+  "png": "assets/graphics/ui-xp-track/ui-xp-track.png",
+  "reference": "assets/references/ui-xp-track/v1.png",
+  "use": "Track only. Independent fill.svg/fill.png uses same canvas and inner rect; clip fill horizontally by progress. Do not stretch end caps.",
+  "colour_space": "sRGB colour, linear alpha",
+  "alpha_encoding": "straight/unassociated alpha",
+  "blend": "source-alpha / one-minus-source-alpha; emissive effects may use additive blend in renderer",
+  "sampler": {
+    "u": "clamp-to-edge",
+    "v": "clamp-to-edge"
+  },
+  "nine_slice_insets_px": [
+    64,
+    40,
+    64,
+    40
+  ],
+  "variants": [
+    {
+      "role": "independently usable XP fill",
+      "path": "assets/graphics/ui-xp-track/fill.png",
+      "audit": {
+        "dimensions_px": [
+          768,
+          128
+        ],
+        "rgba": true,
+        "alpha_range": [
+          0,
+          255
+        ],
+        "alpha_nonzero_bbox": [
+          30,
+          38,
+          738,
+          90
+        ],
+        "transparent_margin_px": [
+          30,
+          38,
+          30,
+          38
+        ],
+        "border_alpha_max": 0,
+        "visible_pixels": 36313,
+        "repeat_axis_check": null,
+        "sha256": "e197d7c69276baf3a35cbce5fc5e3f1e52fe12719d20017dc3019c72a90e3056"
+      }
+    }
+  ]
+}

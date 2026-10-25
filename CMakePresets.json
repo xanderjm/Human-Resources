@@ -1,0 +1,160 @@
+{
+  "version": 8,
+  "cmakeMinimumRequired": {
+    "major": 3,
+    "minor": 27,
+    "patch": 0
+  },
+  "configurePresets": [
+    {
+      "name": "dev",
+      "displayName": "Desktop development with optimized runtime",
+      "generator": "Ninja",
+      "binaryDir": "${sourceDir}/build/dev",
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "RelWithDebInfo",
+        "CMAKE_EXPORT_COMPILE_COMMANDS": "ON",
+        "HUMAN_RESOURCES_WARNINGS_AS_ERRORS": "ON"
+      }
+    },
+    {
+      "name": "release",
+      "displayName": "Desktop release",
+      "generator": "Ninja",
+      "binaryDir": "${sourceDir}/build/release",
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "Release",
+        "HUMAN_RESOURCES_WARNINGS_AS_ERRORS": "ON"
+      }
+    },
+    {
+      "name": "debug",
+      "displayName": "Unoptimized desktop debugging",
+      "inherits": "dev",
+      "binaryDir": "${sourceDir}/build/debug",
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "Debug"
+      }
+    },
+    {
+      "name": "asan-ubsan",
+      "displayName": "Desktop sanitizers",
+      "inherits": "dev",
+      "binaryDir": "${sourceDir}/build/asan-ubsan",
+      "cacheVariables": {
+        "HUMAN_RESOURCES_BUILD_CLIENT": "OFF",
+        "HUMAN_RESOURCES_ENABLE_SANITIZERS": "ON",
+        "CMAKE_BUILD_TYPE": "Debug"
+      }
+    },
+    {
+      "name": "analysis",
+      "displayName": "Pinned clang-tidy analysis",
+      "inherits": "dev",
+      "binaryDir": "${sourceDir}/build/analysis",
+      "cacheVariables": {
+        "HUMAN_RESOURCES_ENABLE_CLANG_TIDY": "ON",
+        "CMAKE_BUILD_TYPE": "Debug"
+      }
+    },
+    {
+      "name": "coverage",
+      "displayName": "LLVM source coverage",
+      "inherits": "dev",
+      "binaryDir": "${sourceDir}/build/coverage",
+      "cacheVariables": {
+        "HUMAN_RESOURCES_BUILD_CLIENT": "OFF",
+        "HUMAN_RESOURCES_ENABLE_COVERAGE": "ON",
+        "CMAKE_BUILD_TYPE": "Debug"
+      }
+    }
+  ],
+  "buildPresets": [
+    {
+      "name": "dev",
+      "configurePreset": "dev"
+    },
+    {
+      "name": "release",
+      "configurePreset": "release"
+    },
+    {
+      "name": "debug",
+      "configurePreset": "debug"
+    },
+    {
+      "name": "asan-ubsan",
+      "configurePreset": "asan-ubsan"
+    },
+    {
+      "name": "analysis",
+      "configurePreset": "analysis"
+    },
+    {
+      "name": "coverage",
+      "configurePreset": "coverage"
+    }
+  ],
+  "testPresets": [
+    {
+      "name": "dev",
+      "configurePreset": "dev",
+      "output": {
+        "outputOnFailure": true
+      },
+      "execution": {
+        "noTestsAction": "error"
+      }
+    },
+    {
+      "name": "debug",
+      "configurePreset": "debug",
+      "output": {
+        "outputOnFailure": true
+      },
+      "execution": {
+        "noTestsAction": "error"
+      }
+    },
+    {
+      "name": "asan-ubsan",
+      "configurePreset": "asan-ubsan",
+      "output": {
+        "outputOnFailure": true
+      },
+      "execution": {
+        "noTestsAction": "error"
+      }
+    },
+    {
+      "name": "coverage",
+      "configurePreset": "coverage",
+      "output": {
+        "outputOnFailure": true
+      },
+      "execution": {
+        "noTestsAction": "error"
+      }
+    },
+    {
+      "name": "release",
+      "configurePreset": "release",
+      "output": {
+        "outputOnFailure": true
+      },
+      "execution": {
+        "noTestsAction": "error"
+      }
+    },
+    {
+      "name": "analysis",
+      "configurePreset": "analysis",
+      "output": {
+        "outputOnFailure": true
+      },
+      "execution": {
+        "noTestsAction": "error"
+      }
+    }
+  ]
+}

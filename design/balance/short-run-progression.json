@@ -1,0 +1,91 @@
+{
+  "version": "short-run-progression-v1-proposal",
+  "status": "Offline first-playable plan and simulation input; not native gameplay or validated commercial performance.",
+  "targets": {
+    "fresh_regular_median_minutes": [5, 10],
+    "maxed_regular_median_max_minutes": 13,
+    "first_purchase_median_run_at_most": 2,
+    "first_evolution_median_minutes_at_most": 6,
+    "end": "Death only. No time or level cap; observation horizons censor survivors."
+  },
+  "run": {
+    "hardware_slots": 6,
+    "active_blueprints": 10,
+    "next_level_base_xp": 20,
+    "next_level_per_current_level_xp": 2,
+    "ordinary_owned_upgrades": true,
+    "rerolls": 2,
+    "research_bundle_every_levels": 15,
+    "reset": ["run XP", "level", "installed modules and ranks", "research bonuses", "evolutions", "rerolls", "revive availability"],
+    "preserve": ["Research Credits", "permanent upgrade ranks", "blueprint unlocks", "selected blueprint loadout", "records", "cosmetic ownership"]
+  },
+  "permanent": {
+    "costs_per_rank": [80, 140, 240, 400, 640],
+    "tracks": {
+      "damage": {"per_rank": 0.03, "maximum_ranks": 5, "effect": "All original weapon damage templates gain 3% of the unmodified template per rank; maximum +15%. Run modifiers apply afterwards."},
+      "hull": {"per_rank": 4, "maximum_ranks": 5, "effect": "+4 starting and maximum hull per rank; maximum +20."},
+      "shield": {"per_rank": 4, "maximum_ranks": 5, "effect": "+4 starting and maximum shield per rank; maximum +20. No permanent recharge-speed increase."},
+      "capture": {"per_rank": 0.02, "maximum_ranks": 5, "effect": "+2% base biological capture rate per rank; maximum +10%. No additional beam or vehicle capture-rate bonus."}
+    },
+    "purchase_policy_for_simulation": "Buy the lowest-rank affordable track; ties follow a declared account preference. Spend between runs only. Total cost to cap four tracks is 6,000 credits."
+  },
+  "credits": {
+    "seconds_per_credit": 8,
+    "score_per_credit": 5,
+    "per_vehicle_takedown": 2,
+    "per_boss_kill": 5,
+    "minimum_active_seconds": 30,
+    "formula": "For runs lasting at least 30 active seconds: floor(active seconds/8) + floor(score/5) + 2*(jeep kills + tank kills + vehicle captures) + 5*boss kills. No entry fee or reward loss on death.",
+    "bonus": "Optional completed rewarded ad grants one additional copy of the base run credits. No bonus to achievements, XP, unlock counters or purchases. Never double an already doubled reward. Hide the credit-ad offer when the remaining permanent upgrades are already affordable; the first playable has no other credit sink. Preserve surplus credits, with no promise of future purchasing value."
+  },
+  "starting_blueprints": ["laser_array", "rail_lens", "orbit_drones", "emp_ring", "beam_splitter", "tractor_lens", "shield_generator", "repair_swarm", "vector_thrusters", "bounty_scanner"],
+  "unlocks": [
+    {"id": "heavy_winch", "counter": "captures", "threshold": 300},
+    {"id": "overtime_reactor", "counter": "captures", "threshold": 700},
+    {"id": "reserve_battery", "counter": "base_credits", "threshold": 800},
+    {"id": "arc_coil", "counter": "military_kills", "threshold": 60},
+    {"id": "mirror_plating", "counter": "active_seconds", "threshold": 1800},
+    {"id": "phase_drive", "counter": "active_seconds", "threshold": 3600}
+  ],
+  "loadout": "All sixteen blueprints are built for the first playable. Ten start unlocked. Unlocks are free achievements and apply on the next run; they never install equipment automatically. Select exactly ten unlocked blueprints for the run pool, keeping six installed-module slots separate. Do not allow thinning the pool to force preferred upgrades. Newly unlocked cards are explicitly offered for a loadout swap. Research is always available. Simulation loadouts follow fixed policy preferences, not foreknowledge of a seed.",
+  "revive": {
+    "maximum_per_run": 1,
+    "minimum_run_seconds": 90,
+    "hull_fraction": 0.5,
+    "invulnerability_seconds": 3,
+    "shield_after": 0,
+    "clear": "Clear ordinary active enemies/projectiles for breathing room; retain bosses, active run time, XP and build. Full native geometry remains to be tested.",
+    "unavailable": "Declining or unavailable ads immediately allow ordinary results/restart. No reward is granted for an incomplete or failed ad."
+  },
+  "monetisation": {
+    "first_playable": "Use local placement test doubles; no live SDK or billing integration in this planning pass.",
+    "launch_candidate": ["one optional rewarded revive per eligible run", "one optional end-of-run base-credit bonus", "cosmetic saucer packs"],
+    "excluded": ["ads during active play or level-up choices", "energy or paid entry", "unlimited paid permanent power", "paid random equipment boxes"],
+    "scenario_ad_seconds": 30,
+    "scenario_note": "Thirty seconds is an assumed wall-clock cost per completed ad, not measured inventory, conversion, fill or revenue. All-ad scenarios are upper-bound exposure cases."
+  },
+  "director": {
+    "health_growth_after_2min": 0.20,
+    "damage_growth_after_2min": 0.25,
+    "soldier_rate": 0.25,
+    "jeep_rate": 0.04,
+    "tank_rate": 0.012,
+    "rate_growth_per_minute": 0.25,
+    "rate_multiplier_cap": 4,
+    "boss_first_second": 150,
+    "boss_interval_seconds": 180,
+    "boss_base_hp": 160,
+    "boss_health_index_coefficient": 0.7,
+    "boss_damage": 18,
+    "pressure": 0.65,
+    "note": "Run-time-based escalation shared by every account. No scaling to permanent power, player level, spending, ad choice or losing streak. Numerical assumptions remain uncalibrated."
+  },
+  "implementation_order": [
+    "Portable endless run state: movement/capture/combat, paused three-card choices, exact gains, death/restart and headless tests.",
+    "Short-run director and score: telegraphed attacks, bounded active threats, distinct capture/combat builds; instrument active seconds, offers and damage causes.",
+    "Account progression: four capped credit tracks, six achievements, ten-blueprint loadout; run rewards settle once using a persistent run identifier.",
+    "Local versioned save: credit balance, ranks, unlock counters and a reward receipt ledger; atomic replacement and migration tests. Settings/purchases separate from resettable run state.",
+    "Revive and credit-bonus placement test doubles: pause correctly, handle complete/decline/unavailable/failure/duplicate callback and process interruption without double rewards.",
+    "Hands-on repeated-run tests and actual-device pacing/readability checks. Tune using observed runs before adding live ads or cosmetic billing. Resolve audience/rating before provider integration."
+  ]
+}

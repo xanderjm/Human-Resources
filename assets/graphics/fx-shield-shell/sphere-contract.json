@@ -1,0 +1,14 @@
+{
+  "unit_radius_m": 1,
+  "pivot": [
+    0,
+    0,
+    0
+  ],
+  "triangles": 960,
+  "vertices": 561,
+  "scale": "Uniform scale to desired field radius; centre on UFO assembly.",
+  "shader": "shield-rim.hlsl is an uncompiled renderer-neutral helper; bind normal/view direction/tint/opacity in production renderer.",
+  "fallback": "GLB has flat transparent fallback material only; use shader helper for camera-dependent rim.",
+  "not_in_runtime_package": true
+}

@@ -1,0 +1,17 @@
+{
+  "schema_version": 1,
+  "id": "fx-hit-spark",
+  "type": "native-graphic",
+  "source": "assets/graphics/fx-hit-spark/fx-hit-spark.svg",
+  "png": "assets/graphics/fx-hit-spark/fx-hit-spark.png",
+  "reference": "assets/references/fx-hit-spark/v1.png",
+  "use": "One restrained impact sprite; tintable, alpha blend, clamp both axes.",
+  "colour_space": "sRGB colour, linear alpha",
+  "alpha_encoding": "straight/unassociated alpha",
+  "blend": "source-alpha / one-minus-source-alpha; emissive effects may use additive blend in renderer",
+  "sampler": {
+    "u": "clamp-to-edge",
+    "v": "clamp-to-edge"
+  },
+  "variants": []
+}

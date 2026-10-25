@@ -1,0 +1,22 @@
+{
+  "schema_version": 1,
+  "id": "road-centre-dash",
+  "type": "native-graphic",
+  "source": "assets/graphics/road-centre-dash/road-centre-dash.svg",
+  "png": "assets/graphics/road-centre-dash/road-centre-dash.png",
+  "reference": "assets/references/road-centre-dash/v1.png",
+  "use": "Individual isolated painted ivory road marking: visible footprint about 1m long ×0.12m wide. Instance at regular road centre intervals with transparent gaps. Clamp both axes; no asphalt baked in.",
+  "colour_space": "sRGB colour, linear alpha",
+  "alpha_encoding": "straight/unassociated alpha",
+  "blend": "source-alpha / one-minus-source-alpha; emissive effects may use additive blend in renderer",
+  "sampler": {
+    "u": "clamp-to-edge",
+    "v": "clamp-to-edge"
+  },
+  "dimensions_m": [
+    1,
+    0.001,
+    0.12
+  ],
+  "variants": []
+}

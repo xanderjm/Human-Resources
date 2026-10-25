@@ -1,0 +1,301 @@
+{
+  "schema_version": 1,
+  "units": "metres",
+  "coordinates": "Right handed; +Y up, +Z forward, +X right. Parent-to-child transforms, yaw is positive right-handed about +Y; no reflections or nonuniform scale.",
+  "scope": "Authoring placement recipes validated by offline textured geometry renders. No runtime rigging, animation, collision or platform qualification.",
+  "assemblies": [
+    {
+      "id": "farmer-with-straw-hat",
+      "nodes": [
+        {
+          "id": "farmer-body",
+          "asset": "farmer-body",
+          "model_file": "assets/models/farmer-body/farmer-body.glb",
+          "source_sha256": "7a09a2af9d7a16a79abefc9d32b3a32728a20b6a4cda85817f55782b191bcd6d"
+        },
+        {
+          "id": "straw-hat",
+          "asset": "straw-hat",
+          "model_file": "assets/models/straw-hat/straw-hat.glb",
+          "attach_to_socket": "headwear",
+          "source_sha256": "cb77e0b7468d8b6de5574e5e2054757a867b56ce2b00e9bb9e60a1290da03b83"
+        }
+      ],
+      "sockets": [
+        {
+          "id": "headwear",
+          "parent_node": "farmer-body",
+          "translation_m": [
+            0,
+            1.3,
+            0
+          ],
+          "yaw_degrees": 180,
+          "primary_axis": "+Y"
+        }
+      ],
+      "fit_review": {
+        "status": "passed",
+        "notes": "Uniformly enlarged straw brim from 0.65 m to 1.05 m to fit the 0.54\u20130.59 m chibi head. Opening sits over the hair at [0,1.30,0]; 180 degree socket yaw turns the low brim toward the rear and keeps the eyes/face visible in front and three-quarter views. Brim is intentionally broad and jaunty. Concealed hair/cap overlap is intentional; no character mesh is edited.",
+        "review_type": "offline visual assembly fit",
+        "runtime_qualified": false
+      },
+      "measured_bounds_m": [
+        [
+          -0.5682974559686889,
+          0.0,
+          -0.5126712328767123
+        ],
+        [
+          0.5682974559686889,
+          1.8527397260273974,
+          0.5126712328767123
+        ]
+      ],
+      "render_evidence": [
+        "assets/production/reviews/assembly-farmer-with-straw-hat-final-three-quarter.png",
+        "assets/production/reviews/assembly-farmer-with-straw-hat-final-opposite.png",
+        "assets/production/reviews/assembly-farmer-with-straw-hat-final-front.png",
+        "assets/production/reviews/assembly-farmer-with-straw-hat-final-side.png",
+        "assets/production/reviews/assembly-farmer-with-straw-hat-final-high.png"
+      ]
+    },
+    {
+      "id": "resident-with-nightcap",
+      "nodes": [
+        {
+          "id": "resident-body",
+          "asset": "resident-body",
+          "model_file": "assets/models/resident-body/resident-body.glb",
+          "source_sha256": "4a2cc1a80eece1cb5ee6e67fe1a2d94a914646d497d3d5fcbe04102fd52c39dd"
+        },
+        {
+          "id": "nightcap",
+          "asset": "nightcap",
+          "model_file": "assets/models/nightcap/nightcap.glb",
+          "attach_to_socket": "headwear",
+          "source_sha256": "b688d889ca38949f2892e55d7c5234b5f2452e29420d474a7b147532e2bd5ca0"
+        }
+      ],
+      "sockets": [
+        {
+          "id": "headwear",
+          "parent_node": "resident-body",
+          "translation_m": [
+            0,
+            1.32,
+            -0.04
+          ],
+          "yaw_degrees": 0,
+          "primary_axis": "+Y"
+        }
+      ],
+      "fit_review": {
+        "status": "passed",
+        "notes": "Uniformly enlarged cap from 0.484 m to 0.68 m overall width. Cream cuff sits over the hair with no floating gap and leaves the face clear in front, side and rear views. Offset Z=-0.04 m follows the head centre. Pompom remains an integral part of the cap; no body mesh edit or stretching.",
+        "review_type": "offline visual assembly fit",
+        "runtime_qualified": false
+      },
+      "measured_bounds_m": [
+        [
+          -0.6152641878669276,
+          0.0,
+          -0.4431090487238979
+        ],
+        [
+          0.6152641878669276,
+          1.9526682134570765,
+          0.37103718199608615
+        ]
+      ],
+      "render_evidence": [
+        "assets/production/reviews/assembly-resident-with-nightcap-final-three-quarter.png",
+        "assets/production/reviews/assembly-resident-with-nightcap-final-opposite.png",
+        "assets/production/reviews/assembly-resident-with-nightcap-final-front.png",
+        "assets/production/reviews/assembly-resident-with-nightcap-final-side.png",
+        "assets/production/reviews/assembly-resident-with-nightcap-final-high.png"
+      ]
+    },
+    {
+      "id": "jeep-four-wheels",
+      "nodes": [
+        {
+          "id": "jeep-chassis",
+          "asset": "jeep-chassis",
+          "model_file": "assets/models/jeep-chassis/jeep-chassis.glb",
+          "translation_m": [
+            0,
+            0.12,
+            0
+          ],
+          "source_sha256": "f5c3216456bd78d2f842d42154838b8fb58b40f9df9b22cdbd8cf1db9eb1e0b1"
+        },
+        {
+          "id": "front-right",
+          "asset": "jeep-wheel",
+          "model_file": "assets/models/jeep-wheel/jeep-wheel.glb",
+          "attach_to_socket": "front-right",
+          "source_sha256": "2f39e7a7db81504cb2ce47c17d0cb510416a47c10d815df9f1cda6dc21f6debd"
+        },
+        {
+          "id": "front-left",
+          "asset": "jeep-wheel",
+          "model_file": "assets/models/jeep-wheel/jeep-wheel.glb",
+          "attach_to_socket": "front-left",
+          "source_sha256": "2f39e7a7db81504cb2ce47c17d0cb510416a47c10d815df9f1cda6dc21f6debd"
+        },
+        {
+          "id": "rear-right",
+          "asset": "jeep-wheel",
+          "model_file": "assets/models/jeep-wheel/jeep-wheel.glb",
+          "attach_to_socket": "rear-right",
+          "source_sha256": "2f39e7a7db81504cb2ce47c17d0cb510416a47c10d815df9f1cda6dc21f6debd"
+        },
+        {
+          "id": "rear-left",
+          "asset": "jeep-wheel",
+          "model_file": "assets/models/jeep-wheel/jeep-wheel.glb",
+          "attach_to_socket": "rear-left",
+          "source_sha256": "2f39e7a7db81504cb2ce47c17d0cb510416a47c10d815df9f1cda6dc21f6debd"
+        }
+      ],
+      "sockets": [
+        {
+          "id": "front-right",
+          "parent_node": "jeep-chassis",
+          "translation_m": [
+            0.78,
+            0.18,
+            1.02
+          ],
+          "yaw_degrees": 0,
+          "primary_axis": "+X"
+        },
+        {
+          "id": "front-left",
+          "parent_node": "jeep-chassis",
+          "translation_m": [
+            -0.78,
+            0.18,
+            1.02
+          ],
+          "yaw_degrees": 180,
+          "primary_axis": "+X"
+        },
+        {
+          "id": "rear-right",
+          "parent_node": "jeep-chassis",
+          "translation_m": [
+            0.78,
+            0.18,
+            -1.04
+          ],
+          "yaw_degrees": 0,
+          "primary_axis": "+X"
+        },
+        {
+          "id": "rear-left",
+          "parent_node": "jeep-chassis",
+          "translation_m": [
+            -0.78,
+            0.18,
+            -1.04
+          ],
+          "yaw_degrees": 180,
+          "primary_axis": "+X"
+        }
+      ],
+      "fit_review": {
+        "status": "passed",
+        "notes": "Four 0.6 m diameter tyres align with front/rear arch openings. Chassis raised 0.12 m; axle centres at world Y=0.30 m put all tyre bottoms at Y=0. Both left wheels yaw 180 degrees, so hub faces point outward on both sides; no negative scale or mirrored geometry. Wheel/fender overlap is limited to the intended arch seating. No crew installed because the available soldier is standing.",
+        "review_type": "offline visual assembly fit",
+        "runtime_qualified": false
+      },
+      "crew": "No crew installed. Existing soldier has a standing pose, not a seated driver; no clipping or rigging is used to imply a seated fit.",
+      "measured_bounds_m": [
+        [
+          -0.879217225614126,
+          0.0,
+          -1.5500000000000003
+        ],
+        [
+          0.879217225614126,
+          1.4000391389432485,
+          1.5500000000000003
+        ]
+      ],
+      "render_evidence": [
+        "assets/production/reviews/assembly-jeep-four-wheels-final-three-quarter.png",
+        "assets/production/reviews/assembly-jeep-four-wheels-final-opposite.png",
+        "assets/production/reviews/assembly-jeep-four-wheels-final-front.png",
+        "assets/production/reviews/assembly-jeep-four-wheels-final-side.png",
+        "assets/production/reviews/assembly-jeep-four-wheels-final-high.png"
+      ]
+    },
+    {
+      "id": "tank-with-turret",
+      "nodes": [
+        {
+          "id": "tank-hull",
+          "asset": "tank-hull",
+          "model_file": "assets/models/tank-hull/tank-hull.glb",
+          "source_sha256": "dc840c7ce2168942a51b7ad02225cc0ba2180ec58071cbd0543e986cdc5515c8"
+        },
+        {
+          "id": "tank-turret",
+          "asset": "tank-turret",
+          "model_file": "assets/models/tank-turret/tank-turret.glb",
+          "attach_to_socket": "turret-yaw",
+          "source_sha256": "d99d8b1a49dac32adacae4e806434b0d685dc407d7515cc47816c1f9e650c4e0"
+        }
+      ],
+      "sockets": [
+        {
+          "id": "turret-yaw",
+          "parent_node": "tank-hull",
+          "translation_m": [
+            -0.04,
+            0.955,
+            -0.24
+          ],
+          "yaw_degrees": 0,
+          "primary_axis": "+Y"
+        }
+      ],
+      "fit_review": {
+        "status": "passed",
+        "notes": "Turret base seated 0.04 m into the hull mount at [-0.04,0.955,-0.24]. +Y socket axis supports independent turret yaw, +Z cannon aim. Front/rear/side/high views show a coherent ring join, both tracks grounded and cannon clear of hull. No hull/turret resizing or deformation.",
+        "review_type": "offline visual assembly fit",
+        "runtime_qualified": false
+      },
+      "measured_bounds_m": [
+        [
+          -1.1,
+          0.0,
+          -1.091389432485323
+        ],
+        [
+          1.1,
+          2.2659589041095893,
+          1.091389432485323
+        ]
+      ],
+      "render_evidence": [
+        "assets/production/reviews/assembly-tank-with-turret-final-three-quarter.png",
+        "assets/production/reviews/assembly-tank-with-turret-final-opposite.png",
+        "assets/production/reviews/assembly-tank-with-turret-final-front.png",
+        "assets/production/reviews/assembly-tank-with-turret-final-side.png",
+        "assets/production/reviews/assembly-tank-with-turret-final-high.png"
+      ]
+    }
+  ],
+  "contact_sheet": "assets/production/reviews/assemblies-final.png",
+  "notes": [
+    "Each asset already includes its normalizing root transform. Apply these recipe transforms after loading the normalized GLB.",
+    "Each recipe node is an external placement wrapper in normalized metre coordinates. Attach sockets to that wrapper, not to a GLB internal raw-space/normalizing node. The imported GLB hierarchy is a child of the wrapper.",
+    "Node order is topological: parent nodes precede attached nodes. Socket translation and yaw are in the parent node frame. Units are metres. No additional scale is applied.",
+    "Wheel model local axle/outward hub axis is +X. Left-side socket yaw 180 degrees rotates that axis to assembly -X; right-side yaw 0 leaves +X.",
+    "Turret socket primary axis +Y is its independent yaw axis; forward aiming direction is +Z at zero yaw.",
+    "This validates static art fit, not skinning, animation, collision, native runtime appearance or mobile performance."
+  ]
+}

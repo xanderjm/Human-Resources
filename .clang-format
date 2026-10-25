@@ -1,0 +1,17 @@
+BasedOnStyle: LLVM
+Standard: c++20
+# Token substitution changes namespace and target lengths. Preserve intentional
+# line breaks so generated repositories are byte-for-byte format clean.
+ColumnLimit: 0
+IndentWidth: 2
+ContinuationIndentWidth: 4
+AlignAfterOpenBracket: DontAlign
+PointerAlignment: Left
+ReferenceAlignment: Left
+SortIncludes: CaseSensitive
+DerivePointerAlignment: false
+AllowShortFunctionsOnASingleLine: Empty
+AllowShortIfStatementsOnASingleLine: Never
+AllowShortLoopsOnASingleLine: false
+BreakBeforeBraces: Attach
+InsertNewlineAtEOF: true

@@ -1,0 +1,16 @@
+{
+  "version": 1,
+  "source_model": "assets/models/ufo-modular/ufo-modular.glb",
+  "source_model_sha256": "5026c93d9ca212052f0eeaf5ba9e69e7a9eb63528f65c52f95be5664fae46e69",
+  "camera_direction": [
+    1,
+    3,
+    2
+  ],
+  "render_size_px": 1536,
+  "background_srgb": "#F2EDDE",
+  "ios_subject_max_extent_fraction": 0.83,
+  "android_canvas_dp": 108,
+  "android_subject_safe_diameter_dp": 64,
+  "notes": "Existing approved modular cobalt UFO in its rest configuration. Preserve its material factors and embedded painted textures; no new model, texture art, beam, text or glow. Flat opaque ivory background derives from approved style-guide presentation. CPU diffuse render is authoring-only; PNG layers are unmasked."
+}

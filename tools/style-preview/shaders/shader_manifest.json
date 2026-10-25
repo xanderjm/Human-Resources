@@ -1,0 +1,57 @@
+{
+  "schema_version": 1,
+  "programs": [
+    {
+      "name": "style_world",
+      "source": "src/style_world.hlsl",
+      "stages": [
+        {
+          "stage": "vertex",
+          "entrypoint": "vertex_main"
+        },
+        {
+          "stage": "fragment",
+          "entrypoint": "fragment_main"
+        }
+      ]
+    },
+    {
+      "name": "style_overlay",
+      "source": "src/style_overlay.hlsl",
+      "stages": [
+        {
+          "stage": "vertex",
+          "entrypoint": "vertex_main"
+        },
+        {
+          "stage": "fragment",
+          "entrypoint": "fragment_main"
+        }
+      ]
+    },
+    {
+      "name": "style_shadow",
+      "source": "src/style_shadow.hlsl",
+      "stages": [
+        {
+          "stage": "fragment",
+          "entrypoint": "fragment_main"
+        }
+      ]
+    },
+    {
+      "name": "product_ui",
+      "source": "src/product_ui.hlsl",
+      "stages": [
+        {
+          "stage": "vertex",
+          "entrypoint": "vertex_main"
+        },
+        {
+          "stage": "fragment",
+          "entrypoint": "fragment_main"
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,60 @@
+name: Foundation Linux
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  native:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 120
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+      - uses: actions/setup-python@42375524e23c412d93fb67b49958b491fce71c38 # v5.4.0
+        with:
+          python-version: '3.13.5'
+      - name: Prepare pinned offline art tools
+        run: python3 tools/bootstrap_art_tools.py --download-blender
+      - uses: actions/cache@5a3ec84eff668545956fd18022155c47e93e2684 # v4.2.3
+        with:
+          path: |
+            external
+            build/host-tools
+          key: linux-host-tools-${{ hashFiles('dependencies.lock.json') }}
+      - name: Install native build and Vulkan runtime prerequisites
+        run: >-
+          sudo apt-get update && sudo apt-get install --yes
+          ninja-build xvfb mesa-vulkan-drivers libvulkan1
+          vulkan-tools
+          libasound2-dev libpulse-dev libx11-dev libxext-dev libxrandr-dev
+          libxcursor-dev libxi-dev libxkbcommon-dev libwayland-dev
+          libdrm-dev libgbm-dev
+      - name: Check prerequisites
+        run: python3 tools/project.py doctor --platform linux
+      - name: Bootstrap exact dependencies and host tools
+        run: python3 tools/project.py bootstrap
+      - name: Verify foundation
+        run: python3 tools/project.py verify
+      - name: Smoke Vulkan client
+        env:
+          FOUNDATION_SMOKE_REPORT: build/evidence/smoke-linux.log
+        run: |
+          mkdir -p build/evidence
+          xvfb-run -a build/dev/human_resources_player --smoke-test
+          cat build/evidence/smoke-linux.log
+          python3 tools/generators/audit_smoke_report.py \
+            --report build/evidence/smoke-linux.log --expected-backend vulkan
+      - name: Build and audit release package
+        run: python3 tools/project.py package --platform linux
+      - name: Record exact qualification evidence
+        run: >-
+          python3 tools/project.py evidence
+          --smoke-log build/evidence/smoke-linux.log
+          --output build/evidence/linux.json
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: foundation-linux-evidence
+          path: build/evidence
+          if-no-files-found: error

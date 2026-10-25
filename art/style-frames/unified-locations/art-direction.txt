@@ -1,0 +1,16 @@
+UFO — One game, three muted locations
+Generated with built-in image generation.
+
+SHARED VISUAL RULES
+GEOMETRY: Rounded, simple low-poly animals; comic humans; restrained reusable environment geometry.
+PLAYER: The same cobalt/petrol-blue saucer with matching dome, three mint lights and crooked antenna.
+TARGETS: Warm ivory/black cattle, cream sheep, salmon pigs; warm skin, amber headwear and navy clothes. Local wardrobe changes preserve the same character family.
+ENVIRONMENT: Only low-saturation shades of one location-specific hue for all scenery, including roofs, trees, paths and props.
+EFFECTS: Mint capture circles/trails and laser; coral military warnings and projectiles; dark charcoal-blue enemy vehicles.
+INTERFACE: Matching compact navy top HUD; no permanent bottom upgrade tray during ordinary play.
+COMPOSITION: Matched overhead camera, framing and actor placement make the three location palettes directly comparable.
+
+LOCATIONS
+1. Sage Farmland (Sage-grey): Open paddocks, low barn roofs and crop-circle traces; the whole environment shares a muted sage-grey family.
+2. Slate Suburbia (Slate-blue): Sleepy residential streets and front gardens, all rendered in subdued slate-blue while the shared warm target palette remains intact.
+3. Mauve Desert Roadside (Dusty-mauve): Broad desert ground, angular rock outcrops, cacti and a roadside canopy in muted mauve; the same coloured cast and effects maintain the game's identity.

@@ -1,0 +1,17 @@
+{
+  "schema_version": 1,
+  "id": "ui-beam",
+  "type": "native-graphic",
+  "source": "assets/graphics/ui-beam/ui-beam.svg",
+  "png": "assets/graphics/ui-beam/ui-beam.png",
+  "reference": "assets/references/ui-beam/v1.png",
+  "use": "Standalone upgrade icon, no text/card. Clamp both axes.",
+  "colour_space": "sRGB colour, linear alpha",
+  "alpha_encoding": "straight/unassociated alpha",
+  "blend": "source-alpha / one-minus-source-alpha; emissive effects may use additive blend in renderer",
+  "sampler": {
+    "u": "clamp-to-edge",
+    "v": "clamp-to-edge"
+  },
+  "variants": []
+}

@@ -1,0 +1,157 @@
+{
+  "schema_version": 1,
+  "status": "Native spatial first-playable candidate. Existing balance catalogues remain the upgrade and account authorities; this file owns previously unspecified geometry and bounded scheduling only.",
+  "fixed_hz": 60,
+  "maximum_catchup_seconds": 0.25,
+  "field_half_width": 5.65,
+  "forward_scroll_metres_per_second": 2.2,
+  "player_radius": 0.85,
+  "laser_range": 15,
+  "laser_flash_seconds": 0.12,
+  "pierce_alignment_metres": 1.5,
+  "enemy_spawn_ahead": 12.6,
+  "enemy_retire_behind": 11,
+  "biological_active_cap": 28,
+  "projectile_active_cap": 96,
+  "warning_active_cap": 8,
+  "biological_spawn_per_second": 1.4,
+  "biological_score": [
+    3,
+    5,
+    2,
+    3
+  ],
+  "biological_movement_speed": [
+    0.7,
+    0.55,
+    0.65,
+    0.6
+  ],
+  "biological_body_radius": [
+    0.237,
+    0.436,
+    0.255,
+    0.221,
+    0.224
+  ],
+  "biological_body_radius_source": "Root-centred neutral body cross-sections at Y=0.5m in consumed HRMs; rounded upward. Farmer uses the larger resident/farmer value to keep cosmetic themes on the same rules. See tools/gameplay_qa/measure_body_footprints.py.",
+  "biological_separation_speed": 0.6,
+  "biological_spawn_candidates": 4,
+  "military_movement_speed": [
+    1.6,
+    2.6,
+    1.1,
+    1.4
+  ],
+  "projectile_speed": [
+    6,
+    7,
+    5.5,
+    7.5
+  ],
+  "projectile_radius": [
+    0.23,
+    0.28,
+    0.4,
+    0.32
+  ],
+  "attack_warning_seconds": [
+    0.9,
+    1.15,
+    1.4,
+    1.25
+  ],
+  "military_contact_radius": [
+    0.75,
+    1.35,
+    1.7,
+    2
+  ],
+  "hit_invulnerability_seconds": 0.55,
+  "projectile_lifetime_seconds": 8,
+  "soldier_capture_seconds_multiplier": 1.2,
+  "vehicle_score": 5,
+  "boss_active_cap": 1,
+  "steering_acceleration": 28,
+  "initial_biological_count": 8,
+  "emergency_disable_radius": 4,
+  "attack_prediction_fraction": 0.85,
+  "player_forward_allowance": 6,
+  "player_backward_allowance": 6,
+  "infantry": {
+    "roles": [
+      "rifleman",
+      "shotgunner",
+      "rocketeer"
+    ],
+    "pellets": [
+      1,
+      3,
+      1
+    ],
+    "damage_fraction": [
+      1,
+      0.3333333333333333,
+      1
+    ],
+    "spread_radians": [
+      0,
+      0.12,
+      0
+    ],
+    "projectile_speed": [
+      6,
+      6,
+      4.5
+    ],
+    "warning_seconds": [
+      0.9,
+      0.9,
+      1.2
+    ],
+    "cooldown_seconds": [
+      3,
+      3,
+      2.7
+    ],
+    "recovery_seconds": [
+      0.6,
+      0.6,
+      0.6
+    ],
+    "neutral_muzzle": [
+      [
+        0.24330195360028936,
+        1.0803900157024073,
+        0.6155800193622988
+      ],
+      [
+        0.2979684053812023,
+        1.0268369896253833,
+        0.5500675877416492
+      ],
+      [
+        0.19912252591636953,
+        1.397632124272968,
+        0.7275452402125976
+      ]
+    ],
+    "weapon_yaw_radians": [
+      0.7853981830119012,
+      0.9599312976398262,
+      0.6981317238148942
+    ],
+    "muzzle_source": "Measured aim-t0 socket_weapon delta and raw muzzle markers from the reviewed equipped source GLBs; shotgun uses the two muzzle centres, launcher starts 1cm beyond the integral nose. See docs/MILITARY_VARIANTS_HANDOFF.md.",
+    "body_core_source": "Body-only neutral HRM pelvis-to-pelvis+0.30m torso band; widest root-centred inscribed core rounded upward to0.224m. Weapons excluded; build/military-variants-prep/body-core-measurements.json."
+  },
+  "projectile_target_height": 2.5,
+  "capture_return_seconds": 1.4,
+  "minigun": {
+    "minimum_muzzle_range": 4.5,
+    "minimum_elevation_degrees": 0,
+    "maximum_elevation_degrees": 14,
+    "spawn_forward_offset": 0.01,
+    "visible_tracer_radius": 0.008,
+    "visible_flash_radius": 0.012
+  }
+}

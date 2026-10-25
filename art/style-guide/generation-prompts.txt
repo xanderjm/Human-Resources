@@ -1,0 +1,93 @@
+FINAL REVISION PROMPT — built-in image generation
+
+Revise this SINGLE landscape game asset style guide. Preserve the asset catalogue, colour palette, labels, category organisation, funny model proportions and overall design. The user wants a painterly low-poly model style guide, not a turnaround or animation sheet.
+
+TWO ESSENTIAL CHANGES:
+1. Remove every duplicate top-down inset and every belly-up/floating character pose. Show exactly ONE neutral standing three-quarter view per character/animal and ONE three-quarter view per model. Remove all "top view" and "belly up" captions. The effect trail must have no extra cow/farmer attached. Use freed space to make remaining single character renders larger.
+2. Make every model visibly much more HAND-PAINTED. Retain low-poly 3D geometry and clean mesh silhouettes, but paint broad visible gouache brush patches into surfaces: irregular cream/ochre strokes on cow sides; indigo variation in black patches; coral/rose paint planes on pig; warm cream strokes on sheep; broad blue/lavender fabric strokes on clothes; hand-painted blue/turquoise edge highlights on UFO; warm/cool brushed slate metal on military vehicles; irregular painted plaster and roof marks on buildings; broad olive/sage brush patches on foliage; simple painted wood strokes; sandstone/mauve brush planes on rocks. This must read as 3D game models with expressive painted albedo textures, NOT smooth toy plastic, realistic PBR, generic grain overlay, flat untextured polygons or loose 2D watercolor drawings. Brushwork should be obvious at this board's normal viewing size. Same soft upper-left lighting and short shadows.
+
+CORRECT THE TANK: replace the wheeled armoured car wrongly labelled Tank with a real squat navy TRACKED TANK: two continuous caterpillar treads, angular turret, short cannon, coral chevrons. Only ONE tank render, no overhead inset. Preserve the open-top Jeep and driver separately.
+
+ONE comprehensive high-resolution 3:2 LANDSCAPE sheet on pale warm neutral background. Title "UFO / ASSET STYLE GUIDE"; subtitle "Low-poly forms / Hand-painted textures". Six horizontal sections:
+PLAYER & CHARACTERS: one UFO, Farmer, Sleepy resident, Soldier, Cow, Sheep, Pig, Loose hat. No extra views or action poses.
+MILITARY & EFFECTS: tracked Tank, open Jeep, Missile, mint Capture ring, curved dotted Capture trail without characters, mint Laser & hit spark, coral Threat chevrons.
+FARMLAND: Barn, Silo, Windmill, Hay bale, Fence kit, round Tree variants, Shrubs & rocks, crop Row, crop Circle decal, grass/dirt Ground swatches.
+SUBURBIA: coral-roof House, teal-roof House, Streetlamp, Mailboxes, Bin, Hedge, Kerb & pavement kit, asphalt swatch.
+DESERT ROADSIDE: Cacti, Rock outcrop, Boulders, Scrub, Road posts, Service canopy, Fuel pumps, sand/road modules.
+PALETTE & MATERIALS: compact colour swatches, 4 little hand-painted texture chips (blue fabric, ivory animal, olive leaf, warm wood), small existing HUD sample and BEAM/LASER/SHIELD icons.
+All individually separated and neatly labelled, large clear primary cast, no overlaps or cropping, no giant screenshot backgrounds, no unnecessary captions. One shared coherent mobile low-poly game with noticeably painterly textures.
+
+INITIAL CATALOGUE PROMPT
+
+Use case: stylized-concept.
+Asset: ONE SINGLE LARGE LANDSCAPE asset art-direction reference sheet / production style bible, 3:2 aspect ratio, ideally 3840x2560 or similarly high resolution. This singular image must be a comprehensive, carefully organised SOURCE OF TRUTH for all the model/character/environment asset types in the three supplied gameplay references. Not another gameplay screenshot, not three images, not a scene collage. Extract and present the assets as isolated complete model renders on a consistent warm very pale grey / off-white background. Full bleed, no phone mockup. Do not place miniature screenshots inside the sheet.
+
+REFERENCE ROLES:
+Image 1 = exact shared game cast, UFO and military models, plus farm scenery inventory and approved farm palette.
+Image 2 = exact same game in suburbia, providing the sleepy resident, houses, street props and approved suburb palette.
+Image 3 = exact same game in desert roadside, providing cacti, rock forms, service canopy/pumps and approved desert palette.
+These are all one coherent game. Preserve their specific model identities, funny pear-shaped cattle, tiny heads, amber hats, navy clothes, sleepy robe resident, cobalt UFO and charcoal military vehicles. Do not invent a helicopter, alien pilot, weapon arsenal, extra animal species or unrelated objects.
+
+KEY NEW STYLE DECISION: these are LOW-POLY 3D MODELS WITH PAINTERLY TEXTURES. The final renders MUST visibly have tasteful hand-painted albedo texture: broad soft gouache brush marks inside surfaces, subtle hue variation, painted edge highlights, simplified painted wood grain, gently brushed roof tiles and cloth shading, NOT photo textures, not detailed PBR scratches. Preserve clear low-poly facets and clean mesh silhouettes; do NOT turn assets into flat 2D brush illustrations, fuzzy wool, clay sculptures, wax, voxel blocks or smooth shiny plastic. Painterly treatment is consistent across cows, clothing, vehicles, buildings, plants and terrain. The UFO gets restrained painted satin-blue metal and mint emissive lamps, not mirror reflections. Texture information stays broad enough to read at phone scale. One consistent soft key light from upper-left, matching short soft grounding shadows, orthographic three-quarter model views. Add small genuine straight-down gameplay-view insets ONLY for the UFO, farmer, cow and tank so their overhead readability is clear. Rest are consistent 3/4 isolated asset views. No depth of field.
+
+DESIGN AND PRESENTATION:
+A beautifully laid-out professional game asset reference board. A slim top title: "UFO / ASSET STYLE GUIDE". Smaller subtitle: "Low-poly models • Painterly textures". Then SIX orderly HORIZONTAL BANDS separated by subtle rules and restrained section headings. Give each asset generous separation, no overlaps, no props hidden behind buildings, no diorama terrain bases under each item. Use clean small dark-slate labels directly beneath each item. Every named type below must be visibly present, not merely mentioned in text. Group related variants closely to fit without clutter. Most space goes to the actual assets; captions are short and secondary. Primary cast models are large enough to inspect texture. Scale believable within each category, and provide clear tiny-asset renders rather than mixing wildly inconsistent camera angles.
+
+BAND 1 — "PLAYER & CAST" (largest band):
+1. The shared COBALT-BLUE UFO, round saucer, matching blue glass dome, three bright mint rim lamps, tiny crooked antenna. One large 3/4 hero render plus one small top-down inset.
+2. "Farmer": exact tiny warm-peach comic human, large amber straw hat, navy overalls, warm pale shirt, oversized dark brown boots, slightly long flexible arms. Standing neutral 3/4 plus a small top-down inset.
+3. "Sleepy resident": same human family, flared navy bathrobe with cream belt/trim, mustard nightcap, large slippers.
+4. "Soldier": same comic human proportions, small olive/charcoal helmet and navy uniform as the jeep driver. No realistic soldier detail.
+5. "Cow": the shared comically pear-shaped warm-ivory cow, large black patches, tiny coral muzzle, broad little black ears, thin short legs. Large 3/4 plus small top-down inset. A tiny additional belly-up pose beside it illustrates abduction humour, not a separate animal type.
+6. "Sheep": compact cream scalloped wool body, little dark face and stub legs, visibly low-poly and broad painted wool shapes.
+7. "Pig": round salmon-pink bean body, tiny ears and curly tail.
+8. "Loose hat": isolated amber straw hat. Can sit near farmer.
+
+BAND 2 — "MILITARY & GAMEPLAY FX":
+"Tank": exact small charcoal/navy low-poly tank with coral double chevrons, stubby cannon, short antenna, plus small top-down inset.
+"Jeep": exact navy open-top military jeep with chunky wheels and tiny helmeted driver.
+"Missile": single dark red-tipped rocket from screenshots, isolated, NOT attached to vehicle.
+"Capture ring": mint ground-plane radius decal.
+"Capture trail": one curved mint dotted suction path, small separate ghosted cow and farmer capture pose silhouettes to communicate action.
+"Laser & hit": a slim mint laser stroke and small star-like interception spark, restrained bloom.
+"Threat cue": coral double chevrons and a short coral dotted projectile path. Keep non-model effects on the same neutral background with enough contrast, do not paint bright panels behind them.
+
+BAND 3 — "FARMLAND":
+"Barn": cream timber barn with muted terracotta pitched roof.
+"Silo": small silver/blue-grey farm silo.
+"Windmill": simple dark metal farm windmill.
+"Hay bale": warm wheat cylinder with softly hand-painted circular straw pattern, no fine noisy fibres.
+"Fence kit": straight timber rail section, corner/post variant, warm muted wood.
+"Round tree": one large rounded faceted olive tree and a smaller variant together.
+"Shrubs & rocks": low sage bush cluster and small blue-grey field-stone cluster, both clearly visible.
+"Crops & circle": one short modular planted crop-row section and one faint crop-circle ground decal, visibly separate.
+"Ground kit": two small flat swatches for dusty-sage grass and warm-beige dirt path.
+
+BAND 4 — "SUBURBIA":
+"House A": cream house with muted coral roof, warm amber windows.
+"House B": same house family with petrol-blue/teal roof and cream walls.
+"Streetlamp": narrow dark pole with warm simple lantern.
+"Mailboxes": small red and teal mailbox variants together.
+"Bin": dark charcoal wheeled roadside rubbish bin.
+"Hedge": simple broad painted sage hedge / bush module.
+"Kerb & pavement": straight and curved pale-stone curb/pavement modules, visibly modular.
+"Street": a small dusty blue-grey asphalt ground swatch, subtle broad painterly texture and very few markings.
+
+BAND 5 — "DESERT ROADSIDE":
+"Cacti": tall branching cactus and short cactus variant, dusty sage green.
+"Rock outcrop": the chunky mauve/blush faceted cliff-side rock group from reference.
+"Boulders": medium and small sandstone rock variants with cool mauve painted shadow planes.
+"Scrub": sparse muted straw/olive grass tuft.
+"Road post": short warm grey wooden roadside bollard.
+"Service canopy": small cream-support canopy with muted rust roof, recognizable from bottom-left of reference 3, not an invented large station.
+"Fuel pumps": the two small red and blue-grey pump variants, separately visible.
+"Ground kit": pale ochre sand swatch and plum-grey road strip with a simple pale line.
+
+BAND 6 — "PALETTE & UI":
+A compact run of neat hand-painted colour/material swatches: sage/olive, terracotta/wheat, slate/petrol, ochre/mauve, ivory/salmon/amber for targets, cobalt/navy, mint/coral for effects.
+Show the actual compact HUD elements from references as a little isolated strip: coin and score "12,480", "LV 07", mint XP progress meter, three mint shields.
+Three small established upgrade icon examples with short labels: "BEAM", "LASER", "SHIELD", matching the shared visual style. Keep these small; most space belongs to models.
+Optional exactly two short art-rule captions: "Quiet scenery / Bright targets" and "Mint capture / Coral threats". Do not add paragraphs, fake specifications, version stamps, ratings, meaningless numbers or unrelated branding.
+
+FINAL QUALITY: a single cohesive model sheet that an artist can use to reproduce the game: consistent low-poly faceting, visible painterly surface language, intentionally exaggerated proportions, broad readable colour blocks, shared lighting and clear category organisation. Cover all asset types listed and show each as an individually identifiable item. Distinguish environmental colour variety from the bright warm target palette without making scenery monochrome. No gigantic hero saucer that crowds out the inventory, no screenshot backgrounds, no cluttered accessory piles.
+

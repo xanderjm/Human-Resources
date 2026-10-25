@@ -1,0 +1,134 @@
+{
+  "schema_version": 1,
+  "assets": [
+    {
+      "id": "fx-capture-ring",
+      "png": "assets/graphics/fx-capture-ring/fx-capture-ring.png",
+      "source": "assets/graphics/fx-capture-ring/fx-capture-ring.svg",
+      "audit": "assets/production/records/fx-capture-ring/native-audit.json",
+      "status": "art-review-passed"
+    },
+    {
+      "id": "fx-crop-circle",
+      "png": "assets/graphics/fx-crop-circle/fx-crop-circle.png",
+      "source": "assets/graphics/fx-crop-circle/fx-crop-circle.svg",
+      "audit": "assets/production/records/fx-crop-circle/native-audit.json",
+      "status": "art-review-passed"
+    },
+    {
+      "id": "fx-capture-dot",
+      "png": "assets/graphics/fx-capture-dot/fx-capture-dot.png",
+      "source": "assets/graphics/fx-capture-dot/fx-capture-dot.svg",
+      "audit": "assets/production/records/fx-capture-dot/native-audit.json",
+      "status": "art-review-passed"
+    },
+    {
+      "id": "fx-laser",
+      "png": "assets/graphics/fx-laser/fx-laser.png",
+      "source": "assets/graphics/fx-laser/fx-laser.svg",
+      "audit": "assets/production/records/fx-laser/native-audit.json",
+      "status": "art-review-passed"
+    },
+    {
+      "id": "fx-hit-spark",
+      "png": "assets/graphics/fx-hit-spark/fx-hit-spark.png",
+      "source": "assets/graphics/fx-hit-spark/fx-hit-spark.svg",
+      "audit": "assets/production/records/fx-hit-spark/native-audit.json",
+      "status": "art-review-passed"
+    },
+    {
+      "id": "fx-exhaust-puff",
+      "png": "assets/graphics/fx-exhaust-puff/fx-exhaust-puff.png",
+      "source": "assets/graphics/fx-exhaust-puff/fx-exhaust-puff.svg",
+      "audit": "assets/production/records/fx-exhaust-puff/native-audit.json",
+      "status": "art-review-passed"
+    },
+    {
+      "id": "fx-blob-shadow",
+      "png": "assets/graphics/fx-blob-shadow/fx-blob-shadow.png",
+      "source": "assets/graphics/fx-blob-shadow/fx-blob-shadow.svg",
+      "audit": "assets/production/records/fx-blob-shadow/native-audit.json",
+      "status": "art-review-passed"
+    },
+    {
+      "id": "fx-threat-chevron",
+      "png": "assets/graphics/fx-threat-chevron/fx-threat-chevron.png",
+      "source": "assets/graphics/fx-threat-chevron/fx-threat-chevron.svg",
+      "audit": "assets/production/records/fx-threat-chevron/native-audit.json",
+      "status": "art-review-passed"
+    },
+    {
+      "id": "fx-shield-shell",
+      "png": "assets/graphics/fx-shield-shell/fx-shield-shell.png",
+      "source": "assets/graphics/fx-shield-shell/fx-shield-shell.svg",
+      "audit": "assets/production/records/fx-shield-shell/native-audit.json",
+      "status": "art-review-passed"
+    },
+    {
+      "id": "ui-coin",
+      "png": "assets/graphics/ui-coin/ui-coin.png",
+      "source": "assets/graphics/ui-coin/ui-coin.svg",
+      "audit": "assets/production/records/ui-coin/native-audit.json",
+      "status": "art-review-passed"
+    },
+    {
+      "id": "ui-beam",
+      "png": "assets/graphics/ui-beam/ui-beam.png",
+      "source": "assets/graphics/ui-beam/ui-beam.svg",
+      "audit": "assets/production/records/ui-beam/native-audit.json",
+      "status": "art-review-passed"
+    },
+    {
+      "id": "ui-laser",
+      "png": "assets/graphics/ui-laser/ui-laser.png",
+      "source": "assets/graphics/ui-laser/ui-laser.svg",
+      "audit": "assets/production/records/ui-laser/native-audit.json",
+      "status": "art-review-passed"
+    },
+    {
+      "id": "ui-shield",
+      "png": "assets/graphics/ui-shield/ui-shield.png",
+      "source": "assets/graphics/ui-shield/ui-shield.svg",
+      "audit": "assets/production/records/ui-shield/native-audit.json",
+      "status": "art-review-passed"
+    },
+    {
+      "id": "ui-hud-panel",
+      "png": "assets/graphics/ui-hud-panel/ui-hud-panel.png",
+      "source": "assets/graphics/ui-hud-panel/ui-hud-panel.svg",
+      "audit": "assets/production/records/ui-hud-panel/native-audit.json",
+      "status": "art-review-passed"
+    },
+    {
+      "id": "ui-xp-track",
+      "png": "assets/graphics/ui-xp-track/ui-xp-track.png",
+      "source": "assets/graphics/ui-xp-track/ui-xp-track.svg",
+      "audit": "assets/production/records/ui-xp-track/native-audit.json",
+      "status": "art-review-passed"
+    },
+    {
+      "id": "ui-upgrade-card",
+      "png": "assets/graphics/ui-upgrade-card/ui-upgrade-card.png",
+      "source": "assets/graphics/ui-upgrade-card/ui-upgrade-card.svg",
+      "audit": "assets/production/records/ui-upgrade-card/native-audit.json",
+      "status": "art-review-passed"
+    },
+    {
+      "id": "road-centre-dash",
+      "png": "assets/graphics/road-centre-dash/road-centre-dash.png",
+      "source": "assets/graphics/road-centre-dash/road-centre-dash.svg",
+      "audit": "assets/production/records/road-centre-dash/native-audit.json",
+      "status": "art-review-passed"
+    }
+  ],
+  "asset_count": 17,
+  "transparent_png_count": 18,
+  "self_contained_svg_count": 18,
+  "white_background_references": 17,
+  "laser_repeat_axis": "u",
+  "laser_rgba_edge_difference": 0,
+  "laser_derivative_difference": 0,
+  "contact_sheet": "assets/production/reviews/native-graphics-contact-sheet.png",
+  "repeat_proof": "assets/production/reviews/laser-repeat-proof.png",
+  "runtime_qualified": false
+}

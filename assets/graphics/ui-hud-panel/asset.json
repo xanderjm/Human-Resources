@@ -1,0 +1,23 @@
+{
+  "schema_version": 1,
+  "id": "ui-hud-panel",
+  "type": "native-graphic",
+  "source": "assets/graphics/ui-hud-panel/ui-hud-panel.svg",
+  "png": "assets/graphics/ui-hud-panel/ui-hud-panel.png",
+  "reference": "assets/references/ui-hud-panel/v1.png",
+  "use": "Nine-slice background; cap inset 80px horizontal, 40px vertical. No glyphs/digits.",
+  "colour_space": "sRGB colour, linear alpha",
+  "alpha_encoding": "straight/unassociated alpha",
+  "blend": "source-alpha / one-minus-source-alpha; emissive effects may use additive blend in renderer",
+  "sampler": {
+    "u": "clamp-to-edge",
+    "v": "clamp-to-edge"
+  },
+  "nine_slice_insets_px": [
+    80,
+    40,
+    80,
+    40
+  ],
+  "variants": []
+}

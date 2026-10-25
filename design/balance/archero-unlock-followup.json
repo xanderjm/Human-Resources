@@ -1,0 +1,1242 @@
+{
+  "scope": "Exploratory paired comparison of automatic unlock pool prerequisites.",
+  "seeds": [
+    80000,
+    80099
+  ],
+  "prerequisites": {
+    "heavy_winch": {
+      "beam_splitter": 2,
+      "laser_array": 1
+    },
+    "overtime_reactor": {
+      "beam_splitter": 2
+    },
+    "reserve_battery": {
+      "beam_splitter": 2
+    },
+    "arc_coil": {
+      "laser_array": 1
+    },
+    "mirror_plating": {
+      "shield_generator": 1
+    }
+  },
+  "plan_snapshot": {
+    "version": "archero-ufo-v1-proposal",
+    "status": "Archero-style two-layer progression selected by owner on 24 October 2026. Numerical values and adaptations remain a simulation/playtest candidate.",
+    "targets": {
+      "fresh_regular_median_minutes": [
+        5,
+        10
+      ],
+      "maxed_regular_median_max_minutes": 13,
+      "first_purchase_median_run_at_most": 2,
+      "first_evolution_median_minutes_at_most": 6,
+      "end": "Death only. No time or level cap; observation horizons censor survivors."
+    },
+    "run": {
+      "hardware_slots": 6,
+      "active_blueprints": 16,
+      "next_level_base_xp": 16,
+      "next_level_per_current_level_xp": 3,
+      "ordinary_owned_upgrades": true,
+      "rerolls": 2,
+      "research_bundle_every_levels": 15,
+      "reset": [
+        "run XP",
+        "level",
+        "installed modules and ranks",
+        "research bonuses",
+        "evolutions",
+        "rerolls",
+        "revive availability"
+      ],
+      "preserve": [
+        "Research Credits",
+        "permanent upgrade ranks",
+        "blueprint unlocks",
+        "records",
+        "cosmetic ownership"
+      ]
+    },
+    "permanent": {
+      "costs_per_rank": [
+        80,
+        140,
+        240,
+        400,
+        640
+      ],
+      "tracks": {
+        "damage": {
+          "per_rank": 0.05,
+          "maximum_ranks": 5,
+          "effect": "Add 5% of each unmodified original weapon damage template per rank; maximum +25%. Run modifiers apply afterwards."
+        },
+        "hull": {
+          "per_rank": 6,
+          "maximum_ranks": 5,
+          "effect": "Add 6 starting and maximum hull per rank; maximum +30."
+        },
+        "shield": {
+          "per_rank": 4,
+          "maximum_ranks": 5,
+          "effect": "Add 4 starting and maximum shield per rank; maximum +20. No permanent recharge-speed increase."
+        },
+        "capture": {
+          "per_rank": 0.03,
+          "maximum_ranks": 5,
+          "effect": "Add 3% base biological capture rate per rank; maximum +15%. No additional beam or vehicle capture-rate bonus."
+        }
+      },
+      "purchase_policy_for_simulation": "Buy the lowest-rank affordable track; ties follow a declared account preference. Spend between runs only. Total cost to cap four tracks is 6,000 credits."
+    },
+    "credits": {
+      "seconds_per_credit": 8,
+      "score_per_credit": 5,
+      "per_vehicle_takedown": 2,
+      "per_boss_kill": 5,
+      "minimum_active_seconds": 30,
+      "formula": "For runs lasting at least 30 active seconds: floor(active seconds/8) + floor(score/5) + 2*(jeep kills + tank kills + vehicle captures) + 5*boss kills. No entry fee or reward loss on death.",
+      "bonus": "Optional completed credit ad grants floor(base run credits / 2) extra credits: +50%, once. No extra XP or achievement progress. Hide the offer when all remaining permanent upgrades are affordable. A double-credit scenario is a comparison only."
+    },
+    "starting_blueprints": [
+      "laser_array",
+      "rail_lens",
+      "orbit_drones",
+      "emp_ring",
+      "beam_splitter",
+      "tractor_lens",
+      "shield_generator",
+      "repair_swarm",
+      "vector_thrusters",
+      "bounty_scanner"
+    ],
+    "unlocks": [
+      {
+        "id": "heavy_winch",
+        "counter": "captures",
+        "threshold": 300
+      },
+      {
+        "id": "overtime_reactor",
+        "counter": "captures",
+        "threshold": 700
+      },
+      {
+        "id": "reserve_battery",
+        "counter": "base_credits",
+        "threshold": 800
+      },
+      {
+        "id": "arc_coil",
+        "counter": "military_kills",
+        "threshold": 60
+      },
+      {
+        "id": "mirror_plating",
+        "counter": "active_seconds",
+        "threshold": 1800
+      },
+      {
+        "id": "phase_drive",
+        "counter": "active_seconds",
+        "threshold": 3600
+      }
+    ],
+    "loadout": "No manual blueprint loadout. Ten starter blueprints are initially eligible; all six achievement unlocks automatically join the pool from the next attempt. All sixteen concepts are built for the first playable. Six installed-module slots remain the initial candidate; already installed modules can receive further ranks without another slot. The study compares this with all sixteen families installable.",
+    "revive": {
+      "maximum_per_run": 1,
+      "minimum_run_seconds": 90,
+      "hull_fraction": 0.5,
+      "invulnerability_seconds": 3,
+      "shield_after": 0,
+      "clear": "Clear ordinary active enemies/projectiles for breathing room; retain bosses, active run time, XP and build. Full native geometry remains to be tested.",
+      "unavailable": "Declining or unavailable ads immediately allow ordinary results/restart. No reward is granted for an incomplete or failed ad."
+    },
+    "monetisation": {
+      "first_playable": "Use local placement test doubles; no live SDK or billing integration in this planning pass.",
+      "launch_candidate": [
+        "one optional rewarded revive per eligible run",
+        "one optional end-of-run +50% base-credit reward",
+        "cosmetic saucer packs"
+      ],
+      "excluded": [
+        "ads during active play or level-up choices",
+        "energy or paid entry",
+        "unlimited paid permanent power",
+        "paid random equipment boxes"
+      ],
+      "scenario_ad_seconds": 30,
+      "scenario_note": "Thirty seconds is an assumed wall-clock cost per completed ad, not measured inventory, conversion, fill or revenue. All-ad scenarios are upper-bound exposure cases.",
+      "reward_bonus_numerator": 1,
+      "reward_bonus_denominator": 2
+    },
+    "director": {
+      "health_growth_after_2min": 0.2,
+      "damage_growth_after_2min": 0.25,
+      "soldier_rate": 0.25,
+      "jeep_rate": 0.04,
+      "tank_rate": 0.012,
+      "rate_growth_per_minute": 0.25,
+      "rate_multiplier_cap": 4,
+      "boss_first_second": 150,
+      "boss_interval_seconds": 180,
+      "boss_base_hp": 160,
+      "boss_health_index_coefficient": 0.7,
+      "boss_damage": 18,
+      "pressure": 0.65,
+      "note": "Run-time-based escalation shared by every account. No scaling to permanent power, player level, spending, ad choice or losing streak. Numerical assumptions remain uncalibrated."
+    },
+    "implementation_order": [
+      "Portable UFO run: movement, automatic lasers, capture, military attacks, death/restart and paused three-card level-ups with exact gains.",
+      "Level curve and active-time director; earned evolutions and visible next-sector/record goals. No forced death time or power-matching enemy scaling.",
+      "One Hangar screen: Research Credits, four capped permanent tracks and next rank cost; purchases are optional before immediate retry.",
+      "Free blueprint achievements: new cards join later random draws automatically. Keep prerequisites, module caps and exact per-pick descriptions.",
+      "Atomic account/reward checkpoint settlement and recovery. Run upgrades reset; credits, Hangar ranks, unlocks and records persist.",
+      "Local revive/+50% credit placement test doubles, then repeated human/device tests. Defer live ads, billing and additional progression systems until the loop is measured."
+    ],
+    "supersedes": "short-run-progression.json, especially its manual ten-blueprint loadout. Earlier results remain historical evidence.",
+    "reference": {
+      "game": "Archero",
+      "source": "https://play.google.com/store/apps/details?id=com.habby.archero&hl=en",
+      "adopt": [
+        "simple mobile movement with automatic attacks",
+        "three temporary skill choices at each earned level",
+        "earned permanent starting-power improvements between runs",
+        "equipment and character unlocks that motivate future attempts"
+      ],
+      "adapt": [
+        "Endless UFO runner, ending on death; no room/mission completion requirement.",
+        "Lasers continue to fire while moving. No stationary-fire requirement is adopted.",
+        "Four capped Hangar tracks instead of an equipment inventory, merging, pets or multiple upgrade currencies.",
+        "All unlocked blueprints automatically enter the draw pool; no manual loadout screen.",
+        "Biological capture is an active objective alongside military combat."
+      ]
+    },
+    "selected_profile": "hangar_25",
+    "profiles": {
+      "automatic_fast": {
+        "xp_base": 20,
+        "xp_slope": 2,
+        "module_limit": 6,
+        "damage_per_rank": 0.03,
+        "hull_per_rank": 4,
+        "shield_per_rank": 4,
+        "capture_per_rank": 0.02
+      },
+      "steady": {
+        "xp_base": 16,
+        "xp_slope": 3,
+        "module_limit": 6,
+        "damage_per_rank": 0.03,
+        "hull_per_rank": 4,
+        "shield_per_rank": 4,
+        "capture_per_rank": 0.02
+      },
+      "slower": {
+        "xp_base": 20,
+        "xp_slope": 4,
+        "module_limit": 6,
+        "damage_per_rank": 0.03,
+        "hull_per_rank": 4,
+        "shield_per_rank": 4,
+        "capture_per_rank": 0.02
+      },
+      "open_abilities": {
+        "xp_base": 16,
+        "xp_slope": 3,
+        "module_limit": 16,
+        "damage_per_rank": 0.03,
+        "hull_per_rank": 4,
+        "shield_per_rank": 4,
+        "capture_per_rank": 0.02
+      },
+      "hangar_25": {
+        "xp_base": 16,
+        "xp_slope": 3,
+        "module_limit": 6,
+        "damage_per_rank": 0.05,
+        "hull_per_rank": 6,
+        "shield_per_rank": 4,
+        "capture_per_rank": 0.03
+      },
+      "hangar_50": {
+        "xp_base": 16,
+        "xp_slope": 3,
+        "module_limit": 6,
+        "damage_per_rank": 0.1,
+        "hull_per_rank": 10,
+        "shield_per_rank": 6,
+        "capture_per_rank": 0.04
+      }
+    },
+    "sectors": {
+      "seconds": 90,
+      "rule": "Endless distance/sector records give short goals. Finishing a sector does not reset the ship, pause for a shop, restart difficulty or force a run ending. No sector bonus is added in this experiment."
+    },
+    "eligibility_rule": "Unlocked blueprints join the automatic pool, subject to these visible run prerequisites. Heavy Winch waits for three biological beam slots and one added laser; Overtime/Reserve wait for three beam slots; Arc Coil waits for one added laser; Mirror Plating waits for Shield Generator I. Requirements override the older catalogue prerequisites only in this Archero adaptation. Show requirements on the unlock summary and ingredient previews."
+  },
+  "modified_source_snapshot": {
+    "version": "endless-v2-proposal",
+    "status": "Proposed design, not approved product behavior. Numbers are initial tuning; only card availability is checked, not combat balance.",
+    "supersedes": "The finite ten-minute, eight-line, fixed-pick upgrade proposal in upgrades.json. Historical results.json does not validate this design.",
+    "loop": {
+      "mode": "Endless runner; run ends on death, with no time or level limit. All run upgrades reset for the next run.",
+      "cards_per_level": 3,
+      "selection": "Pause gameplay, draw three different eligible families, choose one, apply it and resume. Preserve surplus XP and process consecutive earned levels individually.",
+      "hardware_slots": 6,
+      "hardware_ranks": 3,
+      "research_uses_hardware_slots": false,
+      "rerolls": 0,
+      "offer_rule": "Every slot is random. No guaranteed starting card, owned card, category or evolution. For each slot, roll an available rarity, then draw a weighted candidate. Remove the entire selected family before drawing the next slot. New hardware is ineligible when six slots are occupied; owned hardware remains eligible until rank III. Research is available from the first level.",
+      "rarity_weights": {
+        "Common": 60,
+        "Uncommon": 35,
+        "Rare": 5
+      },
+      "family_weights": {
+        "hardware": 4,
+        "research": 1
+      },
+      "empty_rarity_rule": "Renormalize among rarities with eligible candidates. Hardware has a fixed rarity; research has one eligible candidate per rarity with different numerical strength.",
+      "no_replacement": "Hardware choices last for the run. All sixteen blueprints are in the launch pool, but a run installs at most six.",
+      "minimum_pool": "Weapon Damage, Hull Reinforcement, Shield Capacity and Specimen Value are always eligible, including at full health and after every hardware rank and bounded research stat is complete. Thus at least four distinct families remain.",
+      "baseline": {
+        "hull": 100,
+        "shield": 20,
+        "shield_regen_per_second": 3,
+        "shield_recharge_delay_seconds": 6,
+        "lasers": 1,
+        "laser_damage": 8,
+        "laser_shots_per_second": 1.5,
+        "tractor_beams": 1,
+        "capture_seconds": 2,
+        "capture_radius_metres": 4,
+        "movement_metres_per_second": 6,
+        "capture_movement_penalty_percent": 15
+      }
+    },
+    "hardware": [
+      {
+        "id": "laser_array",
+        "name": "Laser Array",
+        "rarity": "Common",
+        "ranks": [
+          "Pick 1: Add 1 independently targeting laser (1 -> 2 total lasers). The added laser deals 50% of the original laser damage; the original stays at 100%.",
+          "Pick 2: Add 1 more laser (2 -> 3 total). Both added lasers deal 50% of original-laser damage each.",
+          "Pick 3: Add 1 more laser (3 -> 4 total). All three added lasers deal 50% each. Also unlock Focused Fire: five repeated laser hits build up to +20% damage on that target; expires after 2s without a hit."
+        ],
+        "rank_effects": [
+          {
+            "extra_lasers": 1
+          },
+          {
+            "extra_lasers": 2
+          },
+          {
+            "extra_lasers": 3,
+            "focus_bonus": 0.2
+          }
+        ],
+        "requires": {}
+      },
+      {
+        "id": "rail_lens",
+        "name": "Rail Lens",
+        "rarity": "Uncommon",
+        "ranks": [
+          "Pick 1: Add 1 piercing target (0 -> 1 additional enemy per laser hit), receiving 40% of the original hit damage.",
+          "Pick 2: Add 1 piercing target (1 -> 2 additional enemies), each receiving 40% of original hit damage.",
+          "Pick 3: Add 1 piercing target (2 -> 3 additional enemies), each receiving 40% of original hit damage."
+        ],
+        "rank_effects": [
+          {
+            "pierce": 1
+          },
+          {
+            "pierce": 2
+          },
+          {
+            "pierce": 3
+          }
+        ],
+        "requires": {}
+      },
+      {
+        "id": "arc_coil",
+        "name": "Arc Coil",
+        "rarity": "Rare",
+        "ranks": [
+          "Pick 1: Unlock arcs. Original laser hits gain a 15% chance to arc to 1 nearby enemy for 30% damage.",
+          "Pick 2: Add 10 percentage points of arc chance (15% -> 25%) and 1 arc target (1 -> 2). Each secondary hit still deals 30% damage.",
+          "Pick 3: Add 10 percentage points of arc chance (25% -> 35%) and 1 arc target (2 -> 3). Each secondary hit still deals 30% damage."
+        ],
+        "rules": "5m jump range. Distinct secondary targets; no recursive arcs or arcs from piercing hits.",
+        "rank_effects": [
+          {
+            "arc_chance": 0.15,
+            "arc_targets": 1
+          },
+          {
+            "arc_chance": 0.25,
+            "arc_targets": 2
+          },
+          {
+            "arc_chance": 0.35,
+            "arc_targets": 3
+          }
+        ],
+        "requires": {
+          "laser_array": 1
+        }
+      },
+      {
+        "id": "orbit_drones",
+        "name": "Orbit Drones",
+        "rarity": "Uncommon",
+        "ranks": [
+          "Pick 1: Add 1 orbiting drone (0 -> 1 total), dealing 2 damage twice per second.",
+          "Pick 2: Add 1 orbiting drone (1 -> 2 total). Each deals 2 damage twice per second.",
+          "Pick 3: Add 1 orbiting drone (2 -> 3 total). Each deals 2 damage twice per second."
+        ],
+        "rules": "Damage and fire-rate research apply; drones cannot pierce or trigger Arc Coil.",
+        "rank_effects": [
+          {
+            "drones": 1
+          },
+          {
+            "drones": 2
+          },
+          {
+            "drones": 3
+          }
+        ],
+        "requires": {}
+      },
+      {
+        "id": "emp_ring",
+        "name": "EMP Ring",
+        "rarity": "Uncommon",
+        "ranks": [
+          "Pick 1: Unlock a pulse dealing 10 damage within 4m every 6s.",
+          "Pick 2: Add 6 pulse damage (10 -> 16), add 0.5m radius (4 -> 4.5m), and reduce cooldown by 1s (6 -> 5s).",
+          "Pick 3: Add 6 pulse damage (16 -> 22), add 0.5m radius (4.5 -> 5m), and reduce cooldown by 1s (5 -> 4s). Also unlock a 0.75s nearby non-boss disable on soldier capture, with a shared 5s cooldown."
+        ],
+        "rules": "Pulse damage benefits from damage research, not fire-rate research.",
+        "rank_effects": [
+          {
+            "pulse_damage": 10,
+            "pulse_radius": 4,
+            "pulse_cooldown": 6
+          },
+          {
+            "pulse_damage": 16,
+            "pulse_radius": 4.5,
+            "pulse_cooldown": 5
+          },
+          {
+            "pulse_damage": 22,
+            "pulse_radius": 5,
+            "pulse_cooldown": 4,
+            "emp_duration": 0.75
+          }
+        ],
+        "requires": {}
+      },
+      {
+        "id": "beam_splitter",
+        "name": "Beam Splitter",
+        "rarity": "Common",
+        "ranks": [
+          "Pick 1: Add 1 abduction beam (1 -> 2 simultaneous biological targets).",
+          "Pick 2: Add 1 abduction beam (2 -> 3 simultaneous biological targets).",
+          "Pick 3: Add 1 abduction beam (3 -> 4 simultaneous biological targets). Also unlock Bulk Collection: completing a biological capture gives other occupied beams +25% capture speed for 2s."
+        ],
+        "rules": "Capture-speed burst refreshes, never stacks.",
+        "rank_effects": [
+          {
+            "extra_beams": 1
+          },
+          {
+            "extra_beams": 2
+          },
+          {
+            "extra_beams": 3,
+            "bulk_bonus": 0.25
+          }
+        ],
+        "requires": {}
+      },
+      {
+        "id": "tractor_lens",
+        "name": "Tractor Lens",
+        "rarity": "Common",
+        "ranks": [
+          "Pick 1: Add 10% of base capture radius (4 -> 4.4m) and unlock 0.3s of range grace.",
+          "Pick 2: Add another 10% of base radius (4.4 -> 4.8m; +20% total) and add 0.3s grace (0.3 -> 0.6s).",
+          "Pick 3: Add another 10% of base radius (4.8 -> 5.2m; +30% total) and add 0.3s grace (0.6 -> 0.9s). Also unlock a gentle pull from 15% beyond the ring at up to 0.5m/s."
+        ],
+        "rules": "Pull strength cannot exceed 25% of a target's normal movement speed. No pulling vehicles or bosses.",
+        "rank_effects": [
+          {
+            "radius_bonus": 0.1,
+            "grace_seconds": 0.3
+          },
+          {
+            "radius_bonus": 0.2,
+            "grace_seconds": 0.6
+          },
+          {
+            "radius_bonus": 0.3,
+            "grace_seconds": 0.9,
+            "vacuum": true
+          }
+        ],
+        "requires": {}
+      },
+      {
+        "id": "heavy_winch",
+        "name": "Heavy Winch",
+        "rarity": "Uncommon",
+        "requires": {
+          "beam_splitter": 2,
+          "laser_array": 1
+        },
+        "ranks": [
+          "Pick 1: Unlock capture of jeeps at or below 40% hull.",
+          "Pick 2: Raise the jeep capture threshold by 20 percentage points (40% -> 60% hull), and add +20% vehicle capture speed.",
+          "Pick 3: Raise the jeep threshold by 15 percentage points (60% -> 75% hull); unlock tank capture at or below 35% hull. Add another 20 percentage points of vehicle capture speed (+20% -> +40%). Also unlock +40% biological capture speed for 5s after destroying a military vehicle."
+        ],
+        "rules": "Two occupied beam slots per vehicle, base 3s capture, tank minimum 2s, one vehicle completion per 8s. Lasers skip a vehicle already being lifted; its driver cannot shoot while lifted. Vehicle abductions do not activate kill or biological capture procs.",
+        "rank_effects": [
+          {
+            "jeep_threshold": 0.4
+          },
+          {
+            "jeep_threshold": 0.6,
+            "vehicle_speed_bonus": 0.2
+          },
+          {
+            "jeep_threshold": 0.75,
+            "tank_threshold": 0.35,
+            "vehicle_speed_bonus": 0.4,
+            "hostile_bonus": 0.4
+          }
+        ]
+      },
+      {
+        "id": "overtime_reactor",
+        "name": "Overtime Reactor",
+        "rarity": "Uncommon",
+        "requires": {
+          "beam_splitter": 2
+        },
+        "ranks": [
+          "Pick 1: Unlock +4% firing rate per active beam, capped at +12%.",
+          "Pick 2: Add 3 percentage points per active beam (+4% -> +7%) and raise the maximum bonus by 9 percentage points (+12% -> +21%).",
+          "Pick 3: Add 3 percentage points per active beam (+7% -> +10%) and raise the maximum bonus by 9 percentage points (+21% -> +30%)."
+        ],
+        "rules": "Additive with fire-rate research. A vehicle counts as one active beam, occupying two slots.",
+        "rank_effects": [
+          {
+            "active_fire_bonus": 0.04,
+            "active_fire_cap": 0.12
+          },
+          {
+            "active_fire_bonus": 0.07,
+            "active_fire_cap": 0.21
+          },
+          {
+            "active_fire_bonus": 0.1,
+            "active_fire_cap": 0.3
+          }
+        ]
+      },
+      {
+        "id": "reserve_battery",
+        "name": "Reserve Battery",
+        "rarity": "Uncommon",
+        "requires": {
+          "beam_splitter": 2
+        },
+        "ranks": [
+          "Pick 1: Unlock +8% weapon damage per idle beam, capped at +16%.",
+          "Pick 2: Add 4 percentage points per idle beam (+8% -> +12%) and raise the maximum bonus by 8 percentage points (+16% -> +24%).",
+          "Pick 3: Add 4 percentage points per idle beam (+12% -> +16%) and raise the maximum bonus by 8 percentage points (+24% -> +32%)."
+        ],
+        "rules": "Additive with weapon-damage research. Occupied vehicle slots are not idle.",
+        "rank_effects": [
+          {
+            "idle_damage_bonus": 0.08,
+            "idle_damage_cap": 0.16
+          },
+          {
+            "idle_damage_bonus": 0.12,
+            "idle_damage_cap": 0.24
+          },
+          {
+            "idle_damage_bonus": 0.16,
+            "idle_damage_cap": 0.32
+          }
+        ]
+      },
+      {
+        "id": "shield_generator",
+        "name": "Shield Generator",
+        "rarity": "Common",
+        "ranks": [
+          "Pick 1: Add 20 shield capacity (20 -> 40 before research). Increase recharge by 1/s (3 -> 4/s) and reduce delay by 0.5s (6 -> 5.5s). Fill only the newly added 20 capacity.",
+          "Pick 2: Add 20 shield capacity (40 -> 60 before research; module bonus +20 -> +40). Increase recharge by 1/s (4 -> 5/s) and reduce delay by 0.5s (5.5 -> 5s). Fill only the newly added 20 capacity.",
+          "Pick 3: Add 20 shield capacity (60 -> 80 before research; module bonus +40 -> +60). Increase recharge by 1/s (5 -> 6/s) and reduce delay by 1s (5 -> 4s). Fill only the newly added 20 capacity."
+        ],
+        "rules": "Capacity bonuses are cumulative totals, adding to the starting 20 shield and research. Fill only newly added capacity. Shield size and hitbox do not increase.",
+        "rank_effects": [
+          {
+            "shield_capacity_bonus": 20,
+            "shield_regen": 4,
+            "shield_delay": 5.5
+          },
+          {
+            "shield_capacity_bonus": 40,
+            "shield_regen": 5,
+            "shield_delay": 5
+          },
+          {
+            "shield_capacity_bonus": 60,
+            "shield_regen": 6,
+            "shield_delay": 4
+          }
+        ],
+        "requires": {}
+      },
+      {
+        "id": "repair_swarm",
+        "name": "Repair Swarm",
+        "rarity": "Common",
+        "ranks": [
+          "Pick 1: Unlock a repair of 2 hull after every 12 biological captures.",
+          "Pick 2: Add 1 hull per repair (2 -> 3 per 12 captures). Also unlock restoration of 1 shield per biological capture.",
+          "Pick 3: Add 1 hull per repair (3 -> 4 per 12 captures) and add 1 shield per biological capture (1 -> 2)."
+        ],
+        "rules": "Capture-based shield restoration shares a global 4/s cap. Vehicles and secondary effects cannot trigger healing.",
+        "rank_effects": [
+          {
+            "repair_hull": 2
+          },
+          {
+            "repair_hull": 3,
+            "capture_shield": 1
+          },
+          {
+            "repair_hull": 4,
+            "capture_shield": 2
+          }
+        ],
+        "requires": {}
+      },
+      {
+        "id": "mirror_plating",
+        "name": "Mirror Plating",
+        "rarity": "Rare",
+        "ranks": [
+          "Pick 1: Unlock a 5% chance to reflect incoming projectiles while shield energy remains.",
+          "Pick 2: Add 5 percentage points of reflection chance (5% -> 10%) while shield energy remains.",
+          "Pick 3: Add 5 percentage points of reflection chance (10% -> 15%) while shield energy remains."
+        ],
+        "rules": "Reflection prevents that projectile's hit and returns its original damage. No reflection of contact damage or recursive reflection.",
+        "rank_effects": [
+          {
+            "reflect_chance": 0.05
+          },
+          {
+            "reflect_chance": 0.1
+          },
+          {
+            "reflect_chance": 0.15
+          }
+        ],
+        "requires": {
+          "shield_generator": 1
+        }
+      },
+      {
+        "id": "vector_thrusters",
+        "name": "Vector Thrusters",
+        "rarity": "Common",
+        "ranks": [
+          "Pick 1: Add 6% of base movement speed (+0% -> +6% bonus) and reduce the capture movement penalty by 5 percentage points (15% -> 10%).",
+          "Pick 2: Add another 6% of base movement speed (+6% -> +12% bonus) and reduce the capture penalty by 5 percentage points (10% -> 5%).",
+          "Pick 3: Add another 6% of base movement speed (+12% -> +18% bonus) and remove the remaining 5% capture penalty (5% -> 0%). Also unlock +12% movement for 3s after a biological capture."
+        ],
+        "rules": "Capture boost refreshes without stacking.",
+        "rank_effects": [
+          {
+            "movement_bonus": 0.06,
+            "capture_penalty": 0.1
+          },
+          {
+            "movement_bonus": 0.12,
+            "capture_penalty": 0.05
+          },
+          {
+            "movement_bonus": 0.18,
+            "capture_penalty": 0,
+            "biofuel_bonus": 0.12
+          }
+        ],
+        "requires": {}
+      },
+      {
+        "id": "phase_drive",
+        "name": "Phase Drive",
+        "rarity": "Rare",
+        "ranks": [
+          "Pick 1: Unlock a player-activated 3m dash with 0.2s invulnerability and a 16s cooldown.",
+          "Pick 2: Add 0.05s invulnerability (0.2 -> 0.25s) and reduce cooldown by 3s (16 -> 13s). Dash distance stays 3m.",
+          "Pick 3: Add 0.05s invulnerability (0.25 -> 0.3s) and reduce cooldown by 3s (13 -> 10s). Dash distance stays 3m."
+        ],
+        "rules": "No damage, no cooldown reduction from research and no chain invulnerability.",
+        "rank_effects": [
+          {
+            "dash_duration": 0.2,
+            "dash_cooldown": 16
+          },
+          {
+            "dash_duration": 0.25,
+            "dash_cooldown": 13
+          },
+          {
+            "dash_duration": 0.3,
+            "dash_cooldown": 10
+          }
+        ],
+        "requires": {}
+      },
+      {
+        "id": "bounty_scanner",
+        "name": "Bounty Scanner",
+        "rarity": "Common",
+        "ranks": [
+          "Pick 1: Add +10% specimen score. Also unlock a streak bonus of +2% per 10 uninterrupted biological captures, capped at another +10%.",
+          "Pick 2: Add 10 percentage points of specimen score (+10% -> +20%). Increase each streak step by 1 percentage point (+2% -> +3%) and raise its cap by 5 percentage points (+10% -> +15%).",
+          "Pick 3: Add 10 percentage points of specimen score (+20% -> +30%). Increase each streak step by 1 percentage point (+3% -> +4%) and raise its cap by 5 percentage points (+15% -> +20%)."
+        ],
+        "rules": "Hull damage resets the streak; shield damage does not. Score bonuses add to Specimen Value research and never increase XP.",
+        "rank_effects": [
+          {
+            "score_bonus": 0.1,
+            "streak_step": 0.02,
+            "streak_cap": 0.1
+          },
+          {
+            "score_bonus": 0.2,
+            "streak_step": 0.03,
+            "streak_cap": 0.15
+          },
+          {
+            "score_bonus": 0.3,
+            "streak_step": 0.04,
+            "streak_cap": 0.2
+          }
+        ],
+        "requires": {}
+      }
+    ],
+    "research": [
+      {
+        "id": "weapon_damage",
+        "name": "Weapon Damage",
+        "unit": "percent_of_base",
+        "values": {
+          "Common": 3,
+          "Uncommon": 5,
+          "Rare": 8
+        },
+        "cap": null,
+        "effect": "Add to the weapon-damage bonus, using fixed unmodified base damage. Never multiply the previous research total."
+      },
+      {
+        "id": "hull_reinforcement",
+        "name": "Hull Reinforcement",
+        "unit": "maximum_hull",
+        "values": {
+          "Common": 3,
+          "Uncommon": 5,
+          "Rare": 8
+        },
+        "cap": null,
+        "effect": "Add maximum hull and immediately restore the same flat amount, limited to the new maximum."
+      },
+      {
+        "id": "shield_capacity",
+        "name": "Shield Capacity",
+        "unit": "maximum_shield",
+        "values": {
+          "Common": 2,
+          "Uncommon": 3,
+          "Rare": 5
+        },
+        "cap": null,
+        "effect": "Add capacity and immediately fill only that added capacity. No recharge-speed increase."
+      },
+      {
+        "id": "specimen_value",
+        "name": "Specimen Value",
+        "unit": "percent_of_base_score",
+        "values": {
+          "Common": 2,
+          "Uncommon": 3,
+          "Rare": 5
+        },
+        "cap": null,
+        "effect": "Add to biological capture score bonus. Does not increase XP or future upgrade frequency."
+      },
+      {
+        "id": "capture_speed",
+        "name": "Capture Speed",
+        "unit": "percentage_points_over_base",
+        "values": {
+          "Common": 4,
+          "Uncommon": 6,
+          "Rare": 10
+        },
+        "cap": 100,
+        "effect": "Permanent research capture-speed bonus is capped at +100%. Show the actual remaining gain on a near-cap card. Stop offering at the cap; temporary/module bonuses use the remaining headroom above it."
+      },
+      {
+        "id": "fire_rate",
+        "name": "Fire Rate",
+        "unit": "percentage_points_over_base",
+        "values": {
+          "Common": 3,
+          "Uncommon": 5,
+          "Rare": 8
+        },
+        "cap": 50,
+        "effect": "Permanent research firing-rate bonus is capped at +50%. Show the actual remaining gain near cap. Stop offering at the cap; module bonuses can exceed this research cap within the global ceiling."
+      },
+      {
+        "id": "emergency_repairs",
+        "name": "Emergency Repairs",
+        "unit": "percent_of_maximum_hull_restored",
+        "values": {
+          "Common": 10,
+          "Uncommon": 15,
+          "Rare": 25
+        },
+        "cap": null,
+        "requires_damaged_hull": true,
+        "effect": "Immediate repair, not a permanent stat. Ineligible at full hull."
+      }
+    ],
+    "evolutions": [
+      {
+        "name": "The Great Vacuum",
+        "rarity": "Legendary (earned)",
+        "ingredients": [
+          "beam_splitter",
+          "tractor_lens"
+        ],
+        "effect": "Replace four beams with a six-target biological capture field. No extra radius. Vehicles still consume two slots."
+      },
+      {
+        "name": "Office Shredder",
+        "rarity": "Legendary (earned)",
+        "ingredients": [
+          "laser_array",
+          "rail_lens"
+        ],
+        "effect": "Rotating laser sweep adds +20% total laser output, including against bosses. It does not add mounts or fire-rate bonuses."
+      },
+      {
+        "name": "Hostile Acquisition",
+        "rarity": "Legendary (earned)",
+        "ingredients": [
+          "heavy_winch",
+          "beam_splitter"
+        ],
+        "effect": "Full-health jeeps and tanks at or below 55% hull become eligible. Same two-slot requirement, eight-second vehicle cooldown and tank minimum capture time."
+      },
+      {
+        "name": "Mirrorball",
+        "rarity": "Legendary (earned)",
+        "ingredients": [
+          "shield_generator",
+          "mirror_plating"
+        ],
+        "effect": "Every 8s release stored reflected damage, capped at 40 base damage scaled by weapon-damage research, divided across up to four enemies. No additional reflection roll or damage procs."
+      },
+      {
+        "name": "Employee Benefits",
+        "rarity": "Legendary (earned)",
+        "ingredients": [
+          "orbit_drones",
+          "repair_swarm"
+        ],
+        "effect": "Biological captures grant drones +20% damage for 3s, refreshing without stacking. The whole squad intercepts one ordinary projectile per 6s, consuming 3 shield; unavailable below 3 shield."
+      },
+      {
+        "name": "Storm Drain",
+        "rarity": "Legendary (earned)",
+        "ingredients": [
+          "tractor_lens",
+          "emp_ring"
+        ],
+        "effect": "Pulse radius becomes 6m; hit enemies slow by 25% for 1s. Boss slow is capped at 20%. No extra damage ticks."
+      }
+    ],
+    "evolution_rule": "When both ingredients reach rank III, the recipe evolves immediately without another roll, pick or hardware slot. At most two evolutions per run: the first two recipes completed. Preview an impending evolution on its completing card. After two evolutions, subsequent recipe completions retain only their normal module effects. If one card completes multiple recipes and slots are insufficient, resolve in catalogue order and show that outcome in the preview.",
+    "stacking_and_limits": {
+      "example": "With base damage 100, three Common Weapon Damage picks and one Rare pick give 117 before fixed hardware multipliers, not repeated compounding.",
+      "damage": "Sum all research and conditional Reserve Battery damage percentages against the fixed base. Bounded hardware multipliers then apply. Arcs, pulses and reflected hits cannot trigger other secondary damage effects.",
+      "hull_and_shield": "Capacity adds flat amounts. Recharge, reflection chance and invulnerability do not grow through endless research.",
+      "capture_minimum_seconds": 0.6,
+      "movement_maximum_base_multiplier": 1.5,
+      "firing_rate_maximum_base_multiplier": 2,
+      "capture_shield_restoration_per_second_cap": 4,
+      "bosses": "Immune to capture, pulling and hard disable; slow capped at 20%.",
+      "score": "Score bonuses are additive and do not alter XP. No selected card directly increases XP gain. Each target awards its XP once."
+    },
+    "xp_starting_proposal": {
+      "status": "Initial curve for live tuning, not validated encounter pacing.",
+      "survival_xp_per_second": 1,
+      "biological_capture_xp": 1,
+      "soldier_kill_xp": 0.5,
+      "jeep_kill_or_capture_xp": 2,
+      "tank_kill_or_capture_xp": 4,
+      "boss_kill_xp": 10,
+      "next_level_xp_formula": "At current level L, starting at L=1, next level requires 20 + 4*L XP. Total XP to earn P picks is 2*P*P + 22*P.",
+      "intent": "Survival provides a reliable floor; abduction and combat improve progression without making either the sole XP source. Pause does not grant XP. Score cards cannot accelerate levelling.",
+      "next_level_base_xp": 20,
+      "next_level_per_current_level_xp": 4
+    },
+    "difficulty_starting_proposal": {
+      "status": "Design constraints, not tested combat numbers.",
+      "clock": "Escalate using active run time and biome/sector progression, not the player's level or chosen equipment. Pause does not advance difficulty.",
+      "pressure": "Introduce more coordinated soldier/jeep/tank combinations and increasingly demanding, telegraphed missile patterns; increase enemy durability and damage gradually.",
+      "readability": "Cap active threats, projectile speed and simultaneous warnings for the target devices. Spend later pressure on tougher variants and combinations instead of unlimited entity counts. Preserve at least one traversable escape route and test reaction time with actual movement.",
+      "intent": "No forced death time. Hardware supplies the major build changes; additive research sustains growth while piloting and risk management remain necessary."
+    },
+    "previous_effect_mapping": {
+      "Extra Hands": "Beam Splitter",
+      "Wider Net": "Tractor Lens",
+      "Express Collection": "Capture Speed research",
+      "Firm Grip": "Tractor Lens",
+      "Heavy Lifting": "Heavy Winch",
+      "Vacuum Effect": "Tractor Lens III",
+      "Bulk Collection": "Beam Splitter III",
+      "Exit Interview": "EMP Ring III",
+      "Additional Laser": "Laser Array",
+      "Power Amplifier": "Weapon Damage research",
+      "Rapid Discharge": "Fire Rate research",
+      "Piercing Light": "Rail Lens",
+      "Chain Reaction": "Arc Coil",
+      "Focused Fire": "Laser Array III",
+      "Orbital Security": "Orbit Drones",
+      "Static Discharge": "EMP Ring",
+      "Personal Space": "Shield Generator",
+      "Bigger Bubble": "Shield Capacity research",
+      "Quick Recharge": "Shield Generator",
+      "Reinforced Saucer": "Hull Reinforcement research",
+      "Repair Nanites": "Repair Swarm",
+      "Return to Sender": "Mirror Plating",
+      "Thruster Upgrade": "Vector Thrusters",
+      "Emergency Jump": "Phase Drive",
+      "Tractor Stabiliser": "Vector Thrusters",
+      "Biofuel": "Vector Thrusters III",
+      "Hostile Takeover": "Heavy Winch III",
+      "Power Diversion": "Reserve Battery",
+      "Overtime": "Overtime Reactor",
+      "Shield Siphon": "Repair Swarm",
+      "Performance Bonus": "Bounty Scanner"
+    },
+    "description_rules": {
+      "hardware": "Each listed pick is one separate selection of the same module card at a level-up. Pick 1 installs the module and uses one hardware slot; Picks 2 and 3 improve that same module without using additional slots.",
+      "card_format": "Lead with the exact gain from this pick, followed by the current value -> resulting value. Label newly unlocked effects separately. Show only the next eligible rank.",
+      "maximum": "Any summary of rank III must say Maximum after three separate picks. Never use a maximum-rank effect as the first-pick description.",
+      "previews": "The numerical before/after examples assume the baseline ship and this module alone. In the actual card preview, include current research and other applicable modifiers, global caps and any evolution triggered by the pick.",
+      "percentages": "Say percentage points for an increase in an existing percentage bonus. Say percent of base for additive damage, radius, movement or research bonuses.",
+      "research": "Each displayed research value is the gain from one pick of that rarity, not a cumulative rank total. Show the current stat and resulting stat; near a research cap show the actual remaining gain.",
+      "evolutions": "Label recipe effects as evolution unlocks requiring both ingredients at rank III. Preview any evolution on the card that completes its recipe."
+    },
+    "effect_constants": {
+      "added_laser_damage_multiplier": 0.5,
+      "drone_damage": 2,
+      "drone_shots_per_second": 2,
+      "pierce_damage_multiplier": 0.4,
+      "arc_damage_multiplier": 0.3,
+      "arc_range_metres": 5,
+      "focus_hits": 5,
+      "focus_expiry_seconds": 2,
+      "bulk_duration_seconds": 2,
+      "hostile_duration_seconds": 5,
+      "biofuel_duration_seconds": 3,
+      "repair_every_captures": 12,
+      "emp_cooldown_seconds": 5,
+      "vehicle_base_capture_seconds": 3,
+      "tank_min_capture_seconds": 2,
+      "vehicle_cooldown_seconds": 8,
+      "mirrorball_base_damage_cap": 40,
+      "mirrorball_cooldown_seconds": 8,
+      "drone_capture_damage_bonus": 0.2,
+      "drone_capture_bonus_seconds": 3,
+      "drone_intercept_cooldown_seconds": 6,
+      "drone_intercept_shield_cost": 3,
+      "evolution_limit": 2
+    },
+    "model_input_provenance": {
+      "catalogue_sha256": "f03d96127b8e02ca586018f7d0aaf08f8a55b7dfaf97adffb1f28945e362f183",
+      "scope": "Frozen numerical translation of the catalogue for an offline experiment, not an independent runtime tuning authority. Includes the original per-pick descriptions for audit."
+    }
+  },
+  "results": {
+    "unrestricted": {
+      "unlocks_only": {
+        "Hybrid": {
+          "runs": 100,
+          "median_observed_minutes": 6.34,
+          "p10_observed_minutes": 4.44,
+          "p90_observed_minutes": 9.14,
+          "survival_1min_pct": 100.0,
+          "survival_10min_pct": 5.0,
+          "horizon_survivor_pct": 0.0,
+          "median_first_pick_seconds": 14.0,
+          "median_pick_interval_seconds": 22.0,
+          "median_picks": 17.0,
+          "evolution_any_pct": 43.0,
+          "median_first_evolution_minutes_among_reached": 5.8,
+          "small_offers_pct": 4.6,
+          "median_base_credits": 169.5,
+          "mean_credits_per_active_minute": 26.98,
+          "median_revive_extension_seconds": null
+        },
+        "Collector": {
+          "runs": 100,
+          "median_observed_minutes": 4.7,
+          "p10_observed_minutes": 2.98,
+          "p90_observed_minutes": 7.4,
+          "survival_1min_pct": 100.0,
+          "survival_10min_pct": 1.0,
+          "horizon_survivor_pct": 0.0,
+          "median_first_pick_seconds": 14.0,
+          "median_pick_interval_seconds": 20.0,
+          "median_picks": 13.0,
+          "evolution_any_pct": 38.0,
+          "median_first_evolution_minutes_among_reached": 3.98,
+          "small_offers_pct": 4.2,
+          "median_base_credits": 108.0,
+          "mean_credits_per_active_minute": 24.42,
+          "median_revive_extension_seconds": null
+        },
+        "Gunship": {
+          "runs": 100,
+          "median_observed_minutes": 6.77,
+          "p10_observed_minutes": 4.74,
+          "p90_observed_minutes": 8.89,
+          "survival_1min_pct": 100.0,
+          "survival_10min_pct": 1.0,
+          "horizon_survivor_pct": 0.0,
+          "median_first_pick_seconds": 14.0,
+          "median_pick_interval_seconds": 24.0,
+          "median_picks": 15.5,
+          "evolution_any_pct": 32.0,
+          "median_first_evolution_minutes_among_reached": 5.98,
+          "small_offers_pct": 2.7,
+          "median_base_credits": 150.0,
+          "mean_credits_per_active_minute": 22.37,
+          "median_revive_extension_seconds": null
+        }
+      },
+      "maxed": {
+        "Hybrid": {
+          "runs": 100,
+          "median_observed_minutes": 9.09,
+          "p10_observed_minutes": 6.67,
+          "p90_observed_minutes": 12.06,
+          "survival_1min_pct": 100.0,
+          "survival_10min_pct": 37.0,
+          "horizon_survivor_pct": 0.0,
+          "median_first_pick_seconds": 14.0,
+          "median_pick_interval_seconds": 23.0,
+          "median_picks": 24.0,
+          "evolution_any_pct": 78.0,
+          "median_first_evolution_minutes_among_reached": 5.69,
+          "small_offers_pct": 9.2,
+          "median_base_credits": 303.0,
+          "mean_credits_per_active_minute": 32.85,
+          "median_revive_extension_seconds": null
+        },
+        "Collector": {
+          "runs": 100,
+          "median_observed_minutes": 6.22,
+          "p10_observed_minutes": 4.41,
+          "p90_observed_minutes": 10.2,
+          "survival_1min_pct": 100.0,
+          "survival_10min_pct": 12.0,
+          "horizon_survivor_pct": 0.0,
+          "median_first_pick_seconds": 14.0,
+          "median_pick_interval_seconds": 21.0,
+          "median_picks": 17.0,
+          "evolution_any_pct": 66.0,
+          "median_first_evolution_minutes_among_reached": 4.7,
+          "small_offers_pct": 7.5,
+          "median_base_credits": 172.0,
+          "mean_credits_per_active_minute": 29.53,
+          "median_revive_extension_seconds": null
+        },
+        "Gunship": {
+          "runs": 100,
+          "median_observed_minutes": 8.93,
+          "p10_observed_minutes": 6.46,
+          "p90_observed_minutes": 11.85,
+          "survival_1min_pct": 100.0,
+          "survival_10min_pct": 36.0,
+          "horizon_survivor_pct": 0.0,
+          "median_first_pick_seconds": 14.0,
+          "median_pick_interval_seconds": 26.0,
+          "median_picks": 20.0,
+          "evolution_any_pct": 57.0,
+          "median_first_evolution_minutes_among_reached": 6.58,
+          "small_offers_pct": 4.9,
+          "median_base_credits": 230.0,
+          "mean_credits_per_active_minute": 25.49,
+          "median_revive_extension_seconds": null
+        }
+      }
+    },
+    "contextual": {
+      "unlocks_only": {
+        "Hybrid": {
+          "runs": 100,
+          "median_observed_minutes": 6.28,
+          "p10_observed_minutes": 4.19,
+          "p90_observed_minutes": 9.08,
+          "survival_1min_pct": 100.0,
+          "survival_10min_pct": 5.0,
+          "horizon_survivor_pct": 0.0,
+          "median_first_pick_seconds": 14.0,
+          "median_pick_interval_seconds": 22.0,
+          "median_picks": 17.0,
+          "evolution_any_pct": 43.0,
+          "median_first_evolution_minutes_among_reached": 5.82,
+          "small_offers_pct": 4.6,
+          "median_base_credits": 169.0,
+          "mean_credits_per_active_minute": 26.75,
+          "median_revive_extension_seconds": null
+        },
+        "Collector": {
+          "runs": 100,
+          "median_observed_minutes": 5.06,
+          "p10_observed_minutes": 3.0,
+          "p90_observed_minutes": 8.15,
+          "survival_1min_pct": 100.0,
+          "survival_10min_pct": 1.0,
+          "horizon_survivor_pct": 0.0,
+          "median_first_pick_seconds": 14.0,
+          "median_pick_interval_seconds": 20.0,
+          "median_picks": 14.0,
+          "evolution_any_pct": 44.0,
+          "median_first_evolution_minutes_among_reached": 4.31,
+          "small_offers_pct": 3.0,
+          "median_base_credits": 116.5,
+          "mean_credits_per_active_minute": 24.81,
+          "median_revive_extension_seconds": null
+        },
+        "Gunship": {
+          "runs": 100,
+          "median_observed_minutes": 6.74,
+          "p10_observed_minutes": 4.74,
+          "p90_observed_minutes": 8.87,
+          "survival_1min_pct": 100.0,
+          "survival_10min_pct": 0.0,
+          "horizon_survivor_pct": 0.0,
+          "median_first_pick_seconds": 14.0,
+          "median_pick_interval_seconds": 24.0,
+          "median_picks": 15.5,
+          "evolution_any_pct": 34.0,
+          "median_first_evolution_minutes_among_reached": 5.64,
+          "small_offers_pct": 3.0,
+          "median_base_credits": 149.0,
+          "mean_credits_per_active_minute": 22.39,
+          "median_revive_extension_seconds": null
+        }
+      },
+      "maxed": {
+        "Hybrid": {
+          "runs": 100,
+          "median_observed_minutes": 9.02,
+          "p10_observed_minutes": 6.15,
+          "p90_observed_minutes": 12.01,
+          "survival_1min_pct": 100.0,
+          "survival_10min_pct": 36.0,
+          "horizon_survivor_pct": 0.0,
+          "median_first_pick_seconds": 14.0,
+          "median_pick_interval_seconds": 23.0,
+          "median_picks": 24.0,
+          "evolution_any_pct": 74.0,
+          "median_first_evolution_minutes_among_reached": 5.68,
+          "small_offers_pct": 9.5,
+          "median_base_credits": 303.0,
+          "mean_credits_per_active_minute": 32.46,
+          "median_revive_extension_seconds": null
+        },
+        "Collector": {
+          "runs": 100,
+          "median_observed_minutes": 6.82,
+          "p10_observed_minutes": 4.59,
+          "p90_observed_minutes": 11.7,
+          "survival_1min_pct": 100.0,
+          "survival_10min_pct": 19.0,
+          "horizon_survivor_pct": 0.0,
+          "median_first_pick_seconds": 14.0,
+          "median_pick_interval_seconds": 21.0,
+          "median_picks": 18.5,
+          "evolution_any_pct": 68.0,
+          "median_first_evolution_minutes_among_reached": 4.37,
+          "small_offers_pct": 5.6,
+          "median_base_credits": 197.0,
+          "mean_credits_per_active_minute": 30.15,
+          "median_revive_extension_seconds": null
+        },
+        "Gunship": {
+          "runs": 100,
+          "median_observed_minutes": 8.93,
+          "p10_observed_minutes": 6.55,
+          "p90_observed_minutes": 11.84,
+          "survival_1min_pct": 100.0,
+          "survival_10min_pct": 34.0,
+          "horizon_survivor_pct": 0.0,
+          "median_first_pick_seconds": 14.0,
+          "median_pick_interval_seconds": 26.0,
+          "median_picks": 20.0,
+          "evolution_any_pct": 60.0,
+          "median_first_evolution_minutes_among_reached": 6.41,
+          "small_offers_pct": 4.7,
+          "median_base_credits": 227.5,
+          "mean_credits_per_active_minute": 25.46,
+          "median_revive_extension_seconds": null
+        }
+      }
+    }
+  },
+  "simulated_runs": 1200,
+  "source_sha256": {
+    "tools/check_archero_unlocks.py": "5c23b13d8a1a52d68249bd3f4411d0a1cea4ec294c69d4f7e68e76112e2df2ff",
+    "tools/simulate_short_progression.py": "ee778f220fe7d92ee8b4f922e620fcfecb22c36a7996f0c7a34a92a2519c7e6f",
+    "tools/simulate_endless_balance.py": "d94ebe9319aefaa499d97fe45d7016ce94acbcb924650fd6d32d73ab4df5f0b3",
+    "tools/check_endless_upgrades.py": "791c97dac6db1f1d2aec52b91e8ef62dc42b9387fa7d12cd36182805b3a6b2ff",
+    "tools/endless_balance/__init__.py": "49862419ecb5418e87d03de1195df71170c06d01366a2ab20cceebfffb6f8057",
+    "tools/endless_balance/archero.py": "98d928a502533bf6480e9a8b3f907be8c075b4233f236a12d8f3be84f3ef897b",
+    "tools/endless_balance/journey.py": "dd404ec8e930dfa317fad9aa9cc7728bf3c17c441af8ebab4885352d0dde8dc3",
+    "tools/endless_balance/progression.py": "a4b2082ea6435fbc0d4f75d0f05bf5566ab1f03465aa7bdc14092b2f19c609ae",
+    "tools/endless_balance/run.py": "b469dbcc82f72ef734d94c47d37b6e4ef3b4897dfaac812d8c2422e043114751",
+    "tools/endless_balance/ship.py": "5e49f8f779cda0c97dbdb0082f568d2b86ac32d8d09fd991ab3903b37db64798",
+    "tools/endless_balance/short_run.py": "98374b13169ed1bf5e6c3fa72a580f69ad70cf5325e2632144cc4f4680d72545",
+    "tools/endless_balance/world.py": "51a26d7eb9ed0df4d807edfbb5f08610acb064b7092d50e57fe848de62001587",
+    "design/balance/endless-simulation-input.json": "a1cd02c07e1776e3f6fd8b9c6f2fd280a2e570ece985f2f3cdf90f1855bc9499",
+    "design/balance/endless-encounter-assumptions.json": "d1313643e62b61a848332f18e106383e35bd5486bf6aac31fcb17eba038e14d1",
+    "design/balance/archero-ufo-system.json": "3198f7012faa7cbaf42ea5c198fa633b62c40d6b836f6c774b74ef5164331a50"
+  }
+}

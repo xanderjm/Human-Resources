@@ -1,0 +1,695 @@
+{
+  "version": "endless-v2-proposal",
+  "status": "Proposed design, not approved product behavior. Numbers are initial tuning; only card availability is checked, not combat balance.",
+  "supersedes": "The finite ten-minute, eight-line, fixed-pick upgrade proposal in upgrades.json. Historical results.json does not validate this design.",
+  "loop": {
+    "mode": "Endless runner; run ends on death, with no time or level limit. All run upgrades reset for the next run.",
+    "cards_per_level": 3,
+    "selection": "Pause gameplay, draw three different eligible families, choose one, apply it and resume. Preserve surplus XP and process consecutive earned levels individually.",
+    "hardware_slots": 6,
+    "hardware_ranks": 3,
+    "research_uses_hardware_slots": false,
+    "rerolls": 0,
+    "offer_rule": "Every slot is random. No guaranteed starting card, owned card, category or evolution. For each slot, roll an available rarity, then draw a weighted candidate. Remove the entire selected family before drawing the next slot. New hardware is ineligible when six slots are occupied; owned hardware remains eligible until rank III. Research is available from the first level.",
+    "rarity_weights": {
+      "Common": 60,
+      "Uncommon": 35,
+      "Rare": 5
+    },
+    "family_weights": {
+      "hardware": 4,
+      "research": 1
+    },
+    "empty_rarity_rule": "Renormalize among rarities with eligible candidates. Hardware has a fixed rarity; research has one eligible candidate per rarity with different numerical strength.",
+    "no_replacement": "Hardware choices last for the run. All sixteen blueprints are in the launch pool, but a run installs at most six.",
+    "minimum_pool": "Weapon Damage, Hull Reinforcement, Shield Capacity and Specimen Value are always eligible, including at full health and after every hardware rank and bounded research stat is complete. Thus at least four distinct families remain.",
+    "baseline": {
+      "hull": 100,
+      "shield": 20,
+      "shield_regen_per_second": 3,
+      "shield_recharge_delay_seconds": 6,
+      "lasers": 1,
+      "laser_damage": 8,
+      "laser_shots_per_second": 1.5,
+      "tractor_beams": 1,
+      "capture_seconds": 2,
+      "capture_radius_metres": 4,
+      "movement_metres_per_second": 6,
+      "capture_movement_penalty_percent": 15
+    }
+  },
+  "hardware": [
+    {
+      "id": "laser_array",
+      "name": "Laser Array",
+      "rarity": "Common",
+      "ranks": [
+        "Pick 1: Add 1 independently targeting laser (1 -> 2 total lasers). The added laser deals 50% of the original laser damage; the original stays at 100%.",
+        "Pick 2: Add 1 more laser (2 -> 3 total). Both added lasers deal 50% of original-laser damage each.",
+        "Pick 3: Add 1 more laser (3 -> 4 total). All three added lasers deal 50% each. Also unlock Focused Fire: five repeated laser hits build up to +20% damage on that target; expires after 2s without a hit."
+      ],
+      "rank_effects": [
+        {
+          "extra_lasers": 1
+        },
+        {
+          "extra_lasers": 2
+        },
+        {
+          "extra_lasers": 3,
+          "focus_bonus": 0.2
+        }
+      ]
+    },
+    {
+      "id": "rail_lens",
+      "name": "Rail Lens",
+      "rarity": "Uncommon",
+      "ranks": [
+        "Pick 1: Add 1 piercing target (0 -> 1 additional enemy per laser hit), receiving 40% of the original hit damage.",
+        "Pick 2: Add 1 piercing target (1 -> 2 additional enemies), each receiving 40% of original hit damage.",
+        "Pick 3: Add 1 piercing target (2 -> 3 additional enemies), each receiving 40% of original hit damage."
+      ],
+      "rank_effects": [
+        {
+          "pierce": 1
+        },
+        {
+          "pierce": 2
+        },
+        {
+          "pierce": 3
+        }
+      ]
+    },
+    {
+      "id": "arc_coil",
+      "name": "Arc Coil",
+      "rarity": "Rare",
+      "ranks": [
+        "Pick 1: Unlock arcs. Original laser hits gain a 15% chance to arc to 1 nearby enemy for 30% damage.",
+        "Pick 2: Add 10 percentage points of arc chance (15% -> 25%) and 1 arc target (1 -> 2). Each secondary hit still deals 30% damage.",
+        "Pick 3: Add 10 percentage points of arc chance (25% -> 35%) and 1 arc target (2 -> 3). Each secondary hit still deals 30% damage."
+      ],
+      "rules": "5m jump range. Distinct secondary targets; no recursive arcs or arcs from piercing hits.",
+      "rank_effects": [
+        {
+          "arc_chance": 0.15,
+          "arc_targets": 1
+        },
+        {
+          "arc_chance": 0.25,
+          "arc_targets": 2
+        },
+        {
+          "arc_chance": 0.35,
+          "arc_targets": 3
+        }
+      ]
+    },
+    {
+      "id": "orbit_drones",
+      "name": "Orbit Drones",
+      "rarity": "Uncommon",
+      "ranks": [
+        "Pick 1: Add 1 orbiting drone (0 -> 1 total), dealing 2 damage twice per second.",
+        "Pick 2: Add 1 orbiting drone (1 -> 2 total). Each deals 2 damage twice per second.",
+        "Pick 3: Add 1 orbiting drone (2 -> 3 total). Each deals 2 damage twice per second."
+      ],
+      "rules": "Damage and fire-rate research apply; drones cannot pierce or trigger Arc Coil.",
+      "rank_effects": [
+        {
+          "drones": 1
+        },
+        {
+          "drones": 2
+        },
+        {
+          "drones": 3
+        }
+      ]
+    },
+    {
+      "id": "emp_ring",
+      "name": "EMP Ring",
+      "rarity": "Uncommon",
+      "ranks": [
+        "Pick 1: Unlock a pulse dealing 10 damage within 4m every 6s.",
+        "Pick 2: Add 6 pulse damage (10 -> 16), add 0.5m radius (4 -> 4.5m), and reduce cooldown by 1s (6 -> 5s).",
+        "Pick 3: Add 6 pulse damage (16 -> 22), add 0.5m radius (4.5 -> 5m), and reduce cooldown by 1s (5 -> 4s). Also unlock a 0.75s nearby non-boss disable on soldier capture, with a shared 5s cooldown."
+      ],
+      "rules": "Pulse damage benefits from damage research, not fire-rate research.",
+      "rank_effects": [
+        {
+          "pulse_damage": 10,
+          "pulse_radius": 4,
+          "pulse_cooldown": 6
+        },
+        {
+          "pulse_damage": 16,
+          "pulse_radius": 4.5,
+          "pulse_cooldown": 5
+        },
+        {
+          "pulse_damage": 22,
+          "pulse_radius": 5,
+          "pulse_cooldown": 4,
+          "emp_duration": 0.75
+        }
+      ]
+    },
+    {
+      "id": "beam_splitter",
+      "name": "Beam Splitter",
+      "rarity": "Common",
+      "ranks": [
+        "Pick 1: Add 1 abduction beam (1 -> 2 simultaneous biological targets).",
+        "Pick 2: Add 1 abduction beam (2 -> 3 simultaneous biological targets).",
+        "Pick 3: Add 1 abduction beam (3 -> 4 simultaneous biological targets). Also unlock Bulk Collection: completing a biological capture gives other occupied beams +25% capture speed for 2s."
+      ],
+      "rules": "Capture-speed burst refreshes, never stacks.",
+      "rank_effects": [
+        {
+          "extra_beams": 1
+        },
+        {
+          "extra_beams": 2
+        },
+        {
+          "extra_beams": 3,
+          "bulk_bonus": 0.25
+        }
+      ]
+    },
+    {
+      "id": "tractor_lens",
+      "name": "Tractor Lens",
+      "rarity": "Common",
+      "ranks": [
+        "Pick 1: Add 10% of base capture radius (4 -> 4.4m) and unlock 0.3s of range grace.",
+        "Pick 2: Add another 10% of base radius (4.4 -> 4.8m; +20% total) and add 0.3s grace (0.3 -> 0.6s).",
+        "Pick 3: Add another 10% of base radius (4.8 -> 5.2m; +30% total) and add 0.3s grace (0.6 -> 0.9s). Also unlock a gentle pull from 15% beyond the ring at up to 0.5m/s."
+      ],
+      "rules": "Pull strength cannot exceed 25% of a target's normal movement speed. No pulling vehicles or bosses.",
+      "rank_effects": [
+        {
+          "radius_bonus": 0.1,
+          "grace_seconds": 0.3
+        },
+        {
+          "radius_bonus": 0.2,
+          "grace_seconds": 0.6
+        },
+        {
+          "radius_bonus": 0.3,
+          "grace_seconds": 0.9,
+          "vacuum": true
+        }
+      ]
+    },
+    {
+      "id": "heavy_winch",
+      "name": "Heavy Winch",
+      "rarity": "Uncommon",
+      "requires": {
+        "beam_splitter": 1
+      },
+      "ranks": [
+        "Pick 1: Unlock capture of jeeps at or below 40% hull.",
+        "Pick 2: Raise the jeep capture threshold by 20 percentage points (40% -> 60% hull), and add +20% vehicle capture speed.",
+        "Pick 3: Raise the jeep threshold by 15 percentage points (60% -> 75% hull); unlock tank capture at or below 35% hull. Add another 20 percentage points of vehicle capture speed (+20% -> +40%). Also unlock +40% biological capture speed for 5s after destroying a military vehicle."
+      ],
+      "rules": "Two occupied beam slots per vehicle, base 3s capture, tank minimum 2s, one vehicle completion per 8s. Lasers skip a vehicle already being lifted; its driver cannot shoot while lifted. Vehicle abductions do not activate kill or biological capture procs.",
+      "rank_effects": [
+        {
+          "jeep_threshold": 0.4
+        },
+        {
+          "jeep_threshold": 0.6,
+          "vehicle_speed_bonus": 0.2
+        },
+        {
+          "jeep_threshold": 0.75,
+          "tank_threshold": 0.35,
+          "vehicle_speed_bonus": 0.4,
+          "hostile_bonus": 0.4
+        }
+      ]
+    },
+    {
+      "id": "overtime_reactor",
+      "name": "Overtime Reactor",
+      "rarity": "Uncommon",
+      "requires": {
+        "beam_splitter": 1
+      },
+      "ranks": [
+        "Pick 1: Unlock +4% firing rate per active beam, capped at +12%.",
+        "Pick 2: Add 3 percentage points per active beam (+4% -> +7%) and raise the maximum bonus by 9 percentage points (+12% -> +21%).",
+        "Pick 3: Add 3 percentage points per active beam (+7% -> +10%) and raise the maximum bonus by 9 percentage points (+21% -> +30%)."
+      ],
+      "rules": "Additive with fire-rate research. A vehicle counts as one active beam, occupying two slots.",
+      "rank_effects": [
+        {
+          "active_fire_bonus": 0.04,
+          "active_fire_cap": 0.12
+        },
+        {
+          "active_fire_bonus": 0.07,
+          "active_fire_cap": 0.21
+        },
+        {
+          "active_fire_bonus": 0.1,
+          "active_fire_cap": 0.3
+        }
+      ]
+    },
+    {
+      "id": "reserve_battery",
+      "name": "Reserve Battery",
+      "rarity": "Uncommon",
+      "requires": {
+        "beam_splitter": 1
+      },
+      "ranks": [
+        "Pick 1: Unlock +8% weapon damage per idle beam, capped at +16%.",
+        "Pick 2: Add 4 percentage points per idle beam (+8% -> +12%) and raise the maximum bonus by 8 percentage points (+16% -> +24%).",
+        "Pick 3: Add 4 percentage points per idle beam (+12% -> +16%) and raise the maximum bonus by 8 percentage points (+24% -> +32%)."
+      ],
+      "rules": "Additive with weapon-damage research. Occupied vehicle slots are not idle.",
+      "rank_effects": [
+        {
+          "idle_damage_bonus": 0.08,
+          "idle_damage_cap": 0.16
+        },
+        {
+          "idle_damage_bonus": 0.12,
+          "idle_damage_cap": 0.24
+        },
+        {
+          "idle_damage_bonus": 0.16,
+          "idle_damage_cap": 0.32
+        }
+      ]
+    },
+    {
+      "id": "shield_generator",
+      "name": "Shield Generator",
+      "rarity": "Common",
+      "ranks": [
+        "Pick 1: Add 20 shield capacity (20 -> 40 before research). Increase recharge by 1/s (3 -> 4/s) and reduce delay by 0.5s (6 -> 5.5s). Fill only the newly added 20 capacity.",
+        "Pick 2: Add 20 shield capacity (40 -> 60 before research; module bonus +20 -> +40). Increase recharge by 1/s (4 -> 5/s) and reduce delay by 0.5s (5.5 -> 5s). Fill only the newly added 20 capacity.",
+        "Pick 3: Add 20 shield capacity (60 -> 80 before research; module bonus +40 -> +60). Increase recharge by 1/s (5 -> 6/s) and reduce delay by 1s (5 -> 4s). Fill only the newly added 20 capacity."
+      ],
+      "rules": "Capacity bonuses are cumulative totals, adding to the starting 20 shield and research. Fill only newly added capacity. Shield size and hitbox do not increase.",
+      "rank_effects": [
+        {
+          "shield_capacity_bonus": 20,
+          "shield_regen": 4,
+          "shield_delay": 5.5
+        },
+        {
+          "shield_capacity_bonus": 40,
+          "shield_regen": 5,
+          "shield_delay": 5
+        },
+        {
+          "shield_capacity_bonus": 60,
+          "shield_regen": 6,
+          "shield_delay": 4
+        }
+      ]
+    },
+    {
+      "id": "repair_swarm",
+      "name": "Repair Swarm",
+      "rarity": "Common",
+      "ranks": [
+        "Pick 1: Unlock a repair of 2 hull after every 12 biological captures.",
+        "Pick 2: Add 1 hull per repair (2 -> 3 per 12 captures). Also unlock restoration of 1 shield per biological capture.",
+        "Pick 3: Add 1 hull per repair (3 -> 4 per 12 captures) and add 1 shield per biological capture (1 -> 2)."
+      ],
+      "rules": "Capture-based shield restoration shares a global 4/s cap. Vehicles and secondary effects cannot trigger healing.",
+      "rank_effects": [
+        {
+          "repair_hull": 2
+        },
+        {
+          "repair_hull": 3,
+          "capture_shield": 1
+        },
+        {
+          "repair_hull": 4,
+          "capture_shield": 2
+        }
+      ]
+    },
+    {
+      "id": "mirror_plating",
+      "name": "Mirror Plating",
+      "rarity": "Rare",
+      "ranks": [
+        "Pick 1: Unlock a 5% chance to reflect incoming projectiles while shield energy remains.",
+        "Pick 2: Add 5 percentage points of reflection chance (5% -> 10%) while shield energy remains.",
+        "Pick 3: Add 5 percentage points of reflection chance (10% -> 15%) while shield energy remains."
+      ],
+      "rules": "Reflection prevents that projectile's hit and returns its original damage. No reflection of contact damage or recursive reflection.",
+      "rank_effects": [
+        {
+          "reflect_chance": 0.05
+        },
+        {
+          "reflect_chance": 0.1
+        },
+        {
+          "reflect_chance": 0.15
+        }
+      ]
+    },
+    {
+      "id": "vector_thrusters",
+      "name": "Vector Thrusters",
+      "rarity": "Common",
+      "ranks": [
+        "Pick 1: Add 6% of base movement speed (+0% -> +6% bonus) and reduce the capture movement penalty by 5 percentage points (15% -> 10%).",
+        "Pick 2: Add another 6% of base movement speed (+6% -> +12% bonus) and reduce the capture penalty by 5 percentage points (10% -> 5%).",
+        "Pick 3: Add another 6% of base movement speed (+12% -> +18% bonus) and remove the remaining 5% capture penalty (5% -> 0%). Also unlock +12% movement for 3s after a biological capture."
+      ],
+      "rules": "Capture boost refreshes without stacking.",
+      "rank_effects": [
+        {
+          "movement_bonus": 0.06,
+          "capture_penalty": 0.1
+        },
+        {
+          "movement_bonus": 0.12,
+          "capture_penalty": 0.05
+        },
+        {
+          "movement_bonus": 0.18,
+          "capture_penalty": 0,
+          "biofuel_bonus": 0.12
+        }
+      ]
+    },
+    {
+      "id": "phase_drive",
+      "name": "Phase Drive",
+      "rarity": "Rare",
+      "ranks": [
+        "Pick 1: Unlock a player-activated 3m dash with 0.2s invulnerability and a 16s cooldown.",
+        "Pick 2: Add 0.05s invulnerability (0.2 -> 0.25s) and reduce cooldown by 3s (16 -> 13s). Dash distance stays 3m.",
+        "Pick 3: Add 0.05s invulnerability (0.25 -> 0.3s) and reduce cooldown by 3s (13 -> 10s). Dash distance stays 3m."
+      ],
+      "rules": "No damage, no cooldown reduction from research and no chain invulnerability.",
+      "rank_effects": [
+        {
+          "dash_duration": 0.2,
+          "dash_cooldown": 16
+        },
+        {
+          "dash_duration": 0.25,
+          "dash_cooldown": 13
+        },
+        {
+          "dash_duration": 0.3,
+          "dash_cooldown": 10
+        }
+      ]
+    },
+    {
+      "id": "bounty_scanner",
+      "name": "Bounty Scanner",
+      "rarity": "Common",
+      "ranks": [
+        "Pick 1: Add +10% specimen score. Also unlock a streak bonus of +2% per 10 uninterrupted biological captures, capped at another +10%.",
+        "Pick 2: Add 10 percentage points of specimen score (+10% -> +20%). Increase each streak step by 1 percentage point (+2% -> +3%) and raise its cap by 5 percentage points (+10% -> +15%).",
+        "Pick 3: Add 10 percentage points of specimen score (+20% -> +30%). Increase each streak step by 1 percentage point (+3% -> +4%) and raise its cap by 5 percentage points (+15% -> +20%)."
+      ],
+      "rules": "Hull damage resets the streak; shield damage does not. Score bonuses add to Specimen Value research and never increase XP.",
+      "rank_effects": [
+        {
+          "score_bonus": 0.1,
+          "streak_step": 0.02,
+          "streak_cap": 0.1
+        },
+        {
+          "score_bonus": 0.2,
+          "streak_step": 0.03,
+          "streak_cap": 0.15
+        },
+        {
+          "score_bonus": 0.3,
+          "streak_step": 0.04,
+          "streak_cap": 0.2
+        }
+      ]
+    }
+  ],
+  "research": [
+    {
+      "id": "weapon_damage",
+      "name": "Weapon Damage",
+      "unit": "percent_of_base",
+      "values": {
+        "Common": 3,
+        "Uncommon": 5,
+        "Rare": 8
+      },
+      "cap": null,
+      "effect": "Add to the weapon-damage bonus, using fixed unmodified base damage. Never multiply the previous research total."
+    },
+    {
+      "id": "hull_reinforcement",
+      "name": "Hull Reinforcement",
+      "unit": "maximum_hull",
+      "values": {
+        "Common": 3,
+        "Uncommon": 5,
+        "Rare": 8
+      },
+      "cap": null,
+      "effect": "Add maximum hull and immediately restore the same flat amount, limited to the new maximum."
+    },
+    {
+      "id": "shield_capacity",
+      "name": "Shield Capacity",
+      "unit": "maximum_shield",
+      "values": {
+        "Common": 2,
+        "Uncommon": 3,
+        "Rare": 5
+      },
+      "cap": null,
+      "effect": "Add capacity and immediately fill only that added capacity. No recharge-speed increase."
+    },
+    {
+      "id": "specimen_value",
+      "name": "Specimen Value",
+      "unit": "percent_of_base_score",
+      "values": {
+        "Common": 2,
+        "Uncommon": 3,
+        "Rare": 5
+      },
+      "cap": null,
+      "effect": "Add to biological capture score bonus. Does not increase XP or future upgrade frequency."
+    },
+    {
+      "id": "capture_speed",
+      "name": "Capture Speed",
+      "unit": "percentage_points_over_base",
+      "values": {
+        "Common": 4,
+        "Uncommon": 6,
+        "Rare": 10
+      },
+      "cap": 100,
+      "effect": "Permanent research capture-speed bonus is capped at +100%. Show the actual remaining gain on a near-cap card. Stop offering at the cap; temporary/module bonuses use the remaining headroom above it."
+    },
+    {
+      "id": "fire_rate",
+      "name": "Fire Rate",
+      "unit": "percentage_points_over_base",
+      "values": {
+        "Common": 3,
+        "Uncommon": 5,
+        "Rare": 8
+      },
+      "cap": 50,
+      "effect": "Permanent research firing-rate bonus is capped at +50%. Show the actual remaining gain near cap. Stop offering at the cap; module bonuses can exceed this research cap within the global ceiling."
+    },
+    {
+      "id": "emergency_repairs",
+      "name": "Emergency Repairs",
+      "unit": "percent_of_maximum_hull_restored",
+      "values": {
+        "Common": 10,
+        "Uncommon": 15,
+        "Rare": 25
+      },
+      "cap": null,
+      "requires_damaged_hull": true,
+      "effect": "Immediate repair, not a permanent stat. Ineligible at full hull."
+    }
+  ],
+  "evolutions": [
+    {
+      "name": "The Great Vacuum",
+      "rarity": "Legendary (earned)",
+      "ingredients": [
+        "beam_splitter",
+        "tractor_lens"
+      ],
+      "effect": "Replace four beams with a six-target biological capture field. No extra radius. Vehicles still consume two slots."
+    },
+    {
+      "name": "Office Shredder",
+      "rarity": "Legendary (earned)",
+      "ingredients": [
+        "laser_array",
+        "rail_lens"
+      ],
+      "effect": "Rotating laser sweep adds +20% total laser output, including against bosses. It does not add mounts or fire-rate bonuses."
+    },
+    {
+      "name": "Hostile Acquisition",
+      "rarity": "Legendary (earned)",
+      "ingredients": [
+        "heavy_winch",
+        "beam_splitter"
+      ],
+      "effect": "Full-health jeeps and tanks at or below 55% hull become eligible. Same two-slot requirement, eight-second vehicle cooldown and tank minimum capture time."
+    },
+    {
+      "name": "Mirrorball",
+      "rarity": "Legendary (earned)",
+      "ingredients": [
+        "shield_generator",
+        "mirror_plating"
+      ],
+      "effect": "Every 8s release stored reflected damage, capped at 40 base damage scaled by weapon-damage research, divided across up to four enemies. No additional reflection roll or damage procs."
+    },
+    {
+      "name": "Employee Benefits",
+      "rarity": "Legendary (earned)",
+      "ingredients": [
+        "orbit_drones",
+        "repair_swarm"
+      ],
+      "effect": "Biological captures grant drones +20% damage for 3s, refreshing without stacking. The whole squad intercepts one ordinary projectile per 6s, consuming 3 shield; unavailable below 3 shield."
+    },
+    {
+      "name": "Storm Drain",
+      "rarity": "Legendary (earned)",
+      "ingredients": [
+        "tractor_lens",
+        "emp_ring"
+      ],
+      "effect": "Pulse radius becomes 6m; hit enemies slow by 25% for 1s. Boss slow is capped at 20%. No extra damage ticks."
+    }
+  ],
+  "evolution_rule": "When both ingredients reach rank III, the recipe evolves immediately without another roll, pick or hardware slot. At most two evolutions per run: the first two recipes completed. Preview an impending evolution on its completing card. After two evolutions, subsequent recipe completions retain only their normal module effects. If one card completes multiple recipes and slots are insufficient, resolve in catalogue order and show that outcome in the preview.",
+  "stacking_and_limits": {
+    "example": "With base damage 100, three Common Weapon Damage picks and one Rare pick give 117 before fixed hardware multipliers, not repeated compounding.",
+    "damage": "Sum all research and conditional Reserve Battery damage percentages against the fixed base. Bounded hardware multipliers then apply. Arcs, pulses and reflected hits cannot trigger other secondary damage effects.",
+    "hull_and_shield": "Capacity adds flat amounts. Recharge, reflection chance and invulnerability do not grow through endless research.",
+    "capture_minimum_seconds": 0.6,
+    "movement_maximum_base_multiplier": 1.5,
+    "firing_rate_maximum_base_multiplier": 2,
+    "capture_shield_restoration_per_second_cap": 4,
+    "bosses": "Immune to capture, pulling and hard disable; slow capped at 20%.",
+    "score": "Score bonuses are additive and do not alter XP. No selected card directly increases XP gain. Each target awards its XP once."
+  },
+  "xp_starting_proposal": {
+    "status": "Initial curve for live tuning, not validated encounter pacing.",
+    "survival_xp_per_second": 1,
+    "biological_capture_xp": 1,
+    "soldier_kill_xp": 0.5,
+    "jeep_kill_or_capture_xp": 2,
+    "tank_kill_or_capture_xp": 4,
+    "boss_kill_xp": 10,
+    "next_level_xp_formula": "At current level L, starting at L=1, next level requires 20 + 4*L XP. Total XP to earn P picks is 2*P*P + 22*P.",
+    "intent": "Survival provides a reliable floor; abduction and combat improve progression without making either the sole XP source. Pause does not grant XP. Score cards cannot accelerate levelling.",
+    "next_level_base_xp": 20,
+    "next_level_per_current_level_xp": 4
+  },
+  "difficulty_starting_proposal": {
+    "status": "Design constraints, not tested combat numbers.",
+    "clock": "Escalate using active run time and biome/sector progression, not the player's level or chosen equipment. Pause does not advance difficulty.",
+    "pressure": "Introduce more coordinated soldier/jeep/tank combinations and increasingly demanding, telegraphed missile patterns; increase enemy durability and damage gradually.",
+    "readability": "Cap active threats, projectile speed and simultaneous warnings for the target devices. Spend later pressure on tougher variants and combinations instead of unlimited entity counts. Preserve at least one traversable escape route and test reaction time with actual movement.",
+    "intent": "No forced death time. Hardware supplies the major build changes; additive research sustains growth while piloting and risk management remain necessary."
+  },
+  "previous_effect_mapping": {
+    "Extra Hands": "Beam Splitter",
+    "Wider Net": "Tractor Lens",
+    "Express Collection": "Capture Speed research",
+    "Firm Grip": "Tractor Lens",
+    "Heavy Lifting": "Heavy Winch",
+    "Vacuum Effect": "Tractor Lens III",
+    "Bulk Collection": "Beam Splitter III",
+    "Exit Interview": "EMP Ring III",
+    "Additional Laser": "Laser Array",
+    "Power Amplifier": "Weapon Damage research",
+    "Rapid Discharge": "Fire Rate research",
+    "Piercing Light": "Rail Lens",
+    "Chain Reaction": "Arc Coil",
+    "Focused Fire": "Laser Array III",
+    "Orbital Security": "Orbit Drones",
+    "Static Discharge": "EMP Ring",
+    "Personal Space": "Shield Generator",
+    "Bigger Bubble": "Shield Capacity research",
+    "Quick Recharge": "Shield Generator",
+    "Reinforced Saucer": "Hull Reinforcement research",
+    "Repair Nanites": "Repair Swarm",
+    "Return to Sender": "Mirror Plating",
+    "Thruster Upgrade": "Vector Thrusters",
+    "Emergency Jump": "Phase Drive",
+    "Tractor Stabiliser": "Vector Thrusters",
+    "Biofuel": "Vector Thrusters III",
+    "Hostile Takeover": "Heavy Winch III",
+    "Power Diversion": "Reserve Battery",
+    "Overtime": "Overtime Reactor",
+    "Shield Siphon": "Repair Swarm",
+    "Performance Bonus": "Bounty Scanner"
+  },
+  "description_rules": {
+    "hardware": "Each listed pick is one separate selection of the same module card at a level-up. Pick 1 installs the module and uses one hardware slot; Picks 2 and 3 improve that same module without using additional slots.",
+    "card_format": "Lead with the exact gain from this pick, followed by the current value -> resulting value. Label newly unlocked effects separately. Show only the next eligible rank.",
+    "maximum": "Any summary of rank III must say Maximum after three separate picks. Never use a maximum-rank effect as the first-pick description.",
+    "previews": "The numerical before/after examples assume the baseline ship and this module alone. In the actual card preview, include current research and other applicable modifiers, global caps and any evolution triggered by the pick.",
+    "percentages": "Say percentage points for an increase in an existing percentage bonus. Say percent of base for additive damage, radius, movement or research bonuses.",
+    "research": "Each displayed research value is the gain from one pick of that rarity, not a cumulative rank total. Show the current stat and resulting stat; near a research cap show the actual remaining gain.",
+    "evolutions": "Label recipe effects as evolution unlocks requiring both ingredients at rank III. Preview any evolution on the card that completes its recipe."
+  },
+  "effect_constants": {
+    "added_laser_damage_multiplier": 0.5,
+    "drone_damage": 2,
+    "drone_shots_per_second": 2,
+    "pierce_damage_multiplier": 0.4,
+    "arc_damage_multiplier": 0.3,
+    "arc_range_metres": 5,
+    "focus_hits": 5,
+    "focus_expiry_seconds": 2,
+    "bulk_duration_seconds": 2,
+    "hostile_duration_seconds": 5,
+    "biofuel_duration_seconds": 3,
+    "repair_every_captures": 12,
+    "emp_cooldown_seconds": 5,
+    "vehicle_base_capture_seconds": 3,
+    "tank_min_capture_seconds": 2,
+    "vehicle_cooldown_seconds": 8,
+    "mirrorball_base_damage_cap": 40,
+    "mirrorball_cooldown_seconds": 8,
+    "drone_capture_damage_bonus": 0.2,
+    "drone_capture_bonus_seconds": 3,
+    "drone_intercept_cooldown_seconds": 6,
+    "drone_intercept_shield_cost": 3,
+    "evolution_limit": 2
+  },
+  "model_input_provenance": {
+    "catalogue_sha256": "f03d96127b8e02ca586018f7d0aaf08f8a55b7dfaf97adffb1f28945e362f183",
+    "scope": "Frozen numerical translation of the catalogue for an offline experiment, not an independent runtime tuning authority. Includes the original per-pick descriptions for audit."
+  }
+}

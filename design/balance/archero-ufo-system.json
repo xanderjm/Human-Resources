@@ -1,0 +1,276 @@
+{
+  "version": "archero-ufo-v1-proposal",
+  "status": "Archero-style two-layer progression selected by owner on 24 October 2026. Numerical values and adaptations remain a simulation/playtest candidate.",
+  "targets": {
+    "fresh_regular_median_minutes": [
+      5,
+      10
+    ],
+    "maxed_regular_median_max_minutes": 13,
+    "first_purchase_median_run_at_most": 2,
+    "first_evolution_median_minutes_at_most": 6,
+    "end": "Death only. No time or level cap; observation horizons censor survivors."
+  },
+  "run": {
+    "hardware_slots": 6,
+    "active_blueprints": 16,
+    "next_level_base_xp": 16,
+    "next_level_per_current_level_xp": 3,
+    "ordinary_owned_upgrades": true,
+    "rerolls": 2,
+    "research_bundle_every_levels": 15,
+    "reset": [
+      "run XP",
+      "level",
+      "installed modules and ranks",
+      "research bonuses",
+      "evolutions",
+      "rerolls",
+      "revive availability"
+    ],
+    "preserve": [
+      "Research Credits",
+      "permanent upgrade ranks",
+      "blueprint unlocks",
+      "records",
+      "cosmetic ownership"
+    ]
+  },
+  "permanent": {
+    "costs_per_rank": [
+      80,
+      140,
+      240,
+      400,
+      640
+    ],
+    "tracks": {
+      "damage": {
+        "per_rank": 0.05,
+        "maximum_ranks": 5,
+        "effect": "Add 5% of each unmodified original weapon damage template per rank; maximum +25%. Run modifiers apply afterwards."
+      },
+      "hull": {
+        "per_rank": 6,
+        "maximum_ranks": 5,
+        "effect": "Add 6 starting and maximum hull per rank; maximum +30."
+      },
+      "shield": {
+        "per_rank": 4,
+        "maximum_ranks": 5,
+        "effect": "Add 4 starting and maximum shield per rank; maximum +20. No permanent recharge-speed increase."
+      },
+      "capture": {
+        "per_rank": 0.03,
+        "maximum_ranks": 5,
+        "effect": "Add 3% base biological capture rate per rank; maximum +15%. No additional beam or vehicle capture-rate bonus."
+      }
+    },
+    "purchase_policy_for_simulation": "Buy the lowest-rank affordable track; ties follow a declared account preference. Spend between runs only. Total cost to cap four tracks is 6,000 credits."
+  },
+  "credits": {
+    "seconds_per_credit": 8,
+    "score_per_credit": 5,
+    "per_vehicle_takedown": 2,
+    "per_boss_kill": 5,
+    "minimum_active_seconds": 30,
+    "formula": "For runs lasting at least 30 active seconds: floor(active seconds/8) + floor(score/5) + 2*(jeep kills + tank kills + vehicle captures) + 5*boss kills. No entry fee or reward loss on death.",
+    "bonus": "Optional completed credit ad grants floor(base run credits / 2) extra credits: +50%, once. No extra XP or achievement progress. Hide the offer when all remaining permanent upgrades are affordable. A double-credit scenario is a comparison only."
+  },
+  "starting_blueprints": [
+    "laser_array",
+    "rail_lens",
+    "orbit_drones",
+    "emp_ring",
+    "beam_splitter",
+    "tractor_lens",
+    "shield_generator",
+    "repair_swarm",
+    "vector_thrusters",
+    "bounty_scanner"
+  ],
+  "unlocks": [
+    {
+      "id": "heavy_winch",
+      "counter": "captures",
+      "threshold": 300
+    },
+    {
+      "id": "overtime_reactor",
+      "counter": "captures",
+      "threshold": 700
+    },
+    {
+      "id": "reserve_battery",
+      "counter": "base_credits",
+      "threshold": 800
+    },
+    {
+      "id": "arc_coil",
+      "counter": "military_kills",
+      "threshold": 60
+    },
+    {
+      "id": "mirror_plating",
+      "counter": "active_seconds",
+      "threshold": 1800
+    },
+    {
+      "id": "phase_drive",
+      "counter": "active_seconds",
+      "threshold": 3600
+    }
+  ],
+  "loadout": "No manual blueprint loadout. Ten starter blueprints are initially eligible; all six achievement unlocks automatically join the pool from the next attempt. All sixteen concepts are built for the first playable. Six installed-module slots remain the initial candidate; already installed modules can receive further ranks without another slot. The study compares this with all sixteen families installable.",
+  "revive": {
+    "maximum_per_run": 1,
+    "minimum_run_seconds": 90,
+    "hull_fraction": 0.5,
+    "invulnerability_seconds": 3,
+    "shield_after": 0,
+    "clear": "Clear ordinary active enemies/projectiles for breathing room; retain bosses, active run time, XP and build. Full native geometry remains to be tested.",
+    "unavailable": "Declining or unavailable ads immediately allow ordinary results/restart. No reward is granted for an incomplete or failed ad."
+  },
+  "monetisation": {
+    "first_playable": "Use local placement test doubles; no live SDK or billing integration in this planning pass.",
+    "launch_candidate": [
+      "one optional rewarded revive per eligible run",
+      "one optional end-of-run +50% base-credit reward",
+      "cosmetic saucer packs"
+    ],
+    "excluded": [
+      "ads during active play or level-up choices",
+      "energy or paid entry",
+      "unlimited paid permanent power",
+      "paid random equipment boxes"
+    ],
+    "scenario_ad_seconds": 30,
+    "scenario_note": "Thirty seconds is an assumed wall-clock cost per completed ad, not measured inventory, conversion, fill or revenue. All-ad scenarios are upper-bound exposure cases.",
+    "reward_bonus_numerator": 1,
+    "reward_bonus_denominator": 2
+  },
+  "director": {
+    "health_growth_after_2min": 0.2,
+    "damage_growth_after_2min": 0.25,
+    "soldier_rate": 0.25,
+    "jeep_rate": 0.04,
+    "tank_rate": 0.012,
+    "jeep_start_second": 30,
+    "tank_start_second": 100,
+    "rate_growth_per_minute": 0.25,
+    "rate_multiplier_cap": 4,
+    "boss_first_second": 150,
+    "boss_interval_seconds": 180,
+    "boss_base_hp": 160,
+    "boss_health_index_coefficient": 0.7,
+    "boss_damage": 18,
+    "pressure": 0.65,
+    "note": "Run-time-based escalation shared by every account. No scaling to permanent power, player level, spending, ad choice or losing streak. Numerical assumptions remain uncalibrated."
+  },
+  "implementation_order": [
+    "Portable UFO run: movement, automatic lasers, capture, military attacks, death/restart and paused three-card level-ups with exact gains.",
+    "Level curve and active-time director; earned evolutions and visible next-sector/record goals. No forced death time or power-matching enemy scaling.",
+    "One Hangar screen: Research Credits, four capped permanent tracks and next rank cost; purchases are optional before immediate retry.",
+    "Free blueprint achievements: new cards join later random draws automatically. Keep prerequisites, module caps and exact per-pick descriptions.",
+    "Atomic account/reward checkpoint settlement and recovery. Run upgrades reset; credits, Hangar ranks, unlocks and records persist.",
+    "Local revive/+50% credit placement test doubles, then repeated human/device tests. Defer live ads, billing and additional progression systems until the loop is measured."
+  ],
+  "supersedes": "short-run-progression.json, especially its manual ten-blueprint loadout. Earlier results remain historical evidence.",
+  "reference": {
+    "game": "Archero",
+    "source": "https://play.google.com/store/apps/details?id=com.habby.archero&hl=en",
+    "adopt": [
+      "simple mobile movement with automatic attacks",
+      "three temporary skill choices at each earned level",
+      "earned permanent starting-power improvements between runs",
+      "equipment and character unlocks that motivate future attempts"
+    ],
+    "adapt": [
+      "Endless UFO runner, ending on death; no room/mission completion requirement.",
+      "Lasers continue to fire while moving. No stationary-fire requirement is adopted.",
+      "Four capped Hangar tracks instead of an equipment inventory, merging, pets or multiple upgrade currencies.",
+      "All unlocked blueprints automatically enter the draw pool; no manual loadout screen.",
+      "Biological capture is an active objective alongside military combat."
+    ]
+  },
+  "selected_profile": "hangar_25",
+  "profiles": {
+    "automatic_fast": {
+      "xp_base": 20,
+      "xp_slope": 2,
+      "module_limit": 6,
+      "damage_per_rank": 0.03,
+      "hull_per_rank": 4,
+      "shield_per_rank": 4,
+      "capture_per_rank": 0.02
+    },
+    "steady": {
+      "xp_base": 16,
+      "xp_slope": 3,
+      "module_limit": 6,
+      "damage_per_rank": 0.03,
+      "hull_per_rank": 4,
+      "shield_per_rank": 4,
+      "capture_per_rank": 0.02
+    },
+    "slower": {
+      "xp_base": 20,
+      "xp_slope": 4,
+      "module_limit": 6,
+      "damage_per_rank": 0.03,
+      "hull_per_rank": 4,
+      "shield_per_rank": 4,
+      "capture_per_rank": 0.02
+    },
+    "open_abilities": {
+      "xp_base": 16,
+      "xp_slope": 3,
+      "module_limit": 16,
+      "damage_per_rank": 0.03,
+      "hull_per_rank": 4,
+      "shield_per_rank": 4,
+      "capture_per_rank": 0.02
+    },
+    "hangar_25": {
+      "xp_base": 16,
+      "xp_slope": 3,
+      "module_limit": 6,
+      "damage_per_rank": 0.05,
+      "hull_per_rank": 6,
+      "shield_per_rank": 4,
+      "capture_per_rank": 0.03
+    },
+    "hangar_50": {
+      "xp_base": 16,
+      "xp_slope": 3,
+      "module_limit": 6,
+      "damage_per_rank": 0.1,
+      "hull_per_rank": 10,
+      "shield_per_rank": 6,
+      "capture_per_rank": 0.04
+    }
+  },
+  "sectors": {
+    "seconds": 90,
+    "rule": "Endless distance/sector records give short goals. Finishing a sector does not reset the ship, pause for a shop, restart difficulty or force a run ending. No sector bonus is added in this experiment."
+  },
+  "eligibility_prerequisites": {
+    "heavy_winch": {
+      "beam_splitter": 2,
+      "laser_array": 1
+    },
+    "overtime_reactor": {
+      "beam_splitter": 2
+    },
+    "reserve_battery": {
+      "beam_splitter": 2
+    },
+    "arc_coil": {
+      "laser_array": 1
+    },
+    "mirror_plating": {
+      "shield_generator": 1
+    }
+  },
+  "eligibility_rule": "Unlocked blueprints join the automatic pool, subject to these visible run prerequisites. Heavy Winch waits for three biological beam slots and one added laser; Overtime/Reserve wait for three beam slots; Arc Coil waits for one added laser; Mirror Plating waits for Shield Generator I. Requirements override the older catalogue prerequisites only in this Archero adaptation. Show requirements on the unlock summary and ingredient previews."
+}

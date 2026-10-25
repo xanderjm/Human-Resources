@@ -1,0 +1,16 @@
+{
+  "scope": "Derived model gates only; no native, human fun or commercial qualification.",
+  "simulated_runs": 20080,
+  "gates": {
+    "Fresh regular Hybrid median in 5\u201310 minutes": true,
+    "All maxed regular policy medians at most 13 minutes": true,
+    "Median first purchase by attempt two without ads": true,
+    "Hybrid first evolution median at most six minutes, among reached": true,
+    "At least 90% fresh Hybrid runs survive one minute": true
+  },
+  "source_sha256": {
+    "short-run-results.json": "674a342c64ae979cfedf50d195a3dfa915df9ac965cf2e3a1ed6c83f8a5beef9",
+    "short-run-calibration-results.json": "8b3cc451cc40423777a76240462fb889a61e4d28d194c29ac3fc2b8f873d5f71",
+    "short-run-progression.json": "ad248872f270144bedb82cfd296f9b1973e5ad54bcae169d898271abe5ae10c2"
+  }
+}

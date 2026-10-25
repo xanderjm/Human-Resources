@@ -1,0 +1,17 @@
+{
+  "schema_version": 1,
+  "id": "fx-shield-shell",
+  "type": "native-graphic",
+  "source": "assets/graphics/fx-shield-shell/fx-shield-shell.svg",
+  "png": "assets/graphics/fx-shield-shell/fx-shield-shell.png",
+  "reference": "assets/references/fx-shield-shell/v1.png",
+  "use": "Billboard fallback/style reference only. Unit sphere GLB and HLSL rim helper included for view-dependent 3D field; renderer integration required. Clamp sprite axes.",
+  "colour_space": "sRGB colour, linear alpha",
+  "alpha_encoding": "straight/unassociated alpha",
+  "blend": "source-alpha / one-minus-source-alpha; emissive effects may use additive blend in renderer",
+  "sampler": {
+    "u": "clamp-to-edge",
+    "v": "clamp-to-edge"
+  },
+  "variants": []
+}

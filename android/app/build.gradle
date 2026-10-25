@@ -1,0 +1,108 @@
+plugins {
+    id 'com.android.application'
+}
+
+android {
+    namespace = 'com.xanderjm.humanresources'
+    compileSdk = 36
+    buildToolsVersion = '36.0.0'
+    ndkVersion = '28.2.13676358'
+
+    defaultConfig {
+        applicationId = 'com.xanderjm.humanresources'
+        minSdk = 26
+        targetSdk = 36
+        versionCode = 1
+        versionName = '0.1.0'
+
+        externalNativeBuild {
+            cmake {
+                arguments '-DANDROID_STL=c++_shared',
+                          '-DHUMAN_RESOURCES_BUILD_TESTS=OFF',
+                          '-DHUMAN_RESOURCES_WARNINGS_AS_ERRORS=ON',
+                          "-DGAME_FLATC_EXECUTABLE=${rootDir}/../build/host-tools/flatbuffers/flatc",
+                          "-DGAME_SHADERCROSS_EXECUTABLE=${rootDir}/../build/host-tools/shadercross/shadercross",
+                          '-DGAME_SHADER_PLATFORM=android'
+                abiFilters 'arm64-v8a', 'x86_64'
+            }
+        }
+    }
+
+    buildTypes {
+        debug {
+            debuggable = true
+            jniDebuggable = true
+        }
+        release {
+            minifyEnabled = true
+            shrinkResources = true
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+            ndk.debugSymbolLevel = 'SYMBOL_TABLE'
+        }
+    }
+
+    externalNativeBuild {
+        cmake {
+            path = file('../../CMakeLists.txt')
+            version = '3.31.6'
+        }
+    }
+
+    sourceSets {
+        main {
+            assets.srcDir '../../build/android-assets'
+            java.srcDir '../../external/SDL/android-project/app/src/main/java'
+        }
+    }
+
+    packaging {
+        jniLibs {
+            useLegacyPackaging = false
+        }
+    }
+
+    lint {
+        abortOnError = true
+        checkReleaseBuilds = true
+        warningsAsErrors = true
+        lintConfig = file('lint.xml')
+    }
+}
+
+// Generated folders are registered through AGP's producer API so brand-new
+// resource qualifiers exist before AGP inventories/merges them on the first build.
+abstract class GenerateLauncherIcons extends DefaultTask {
+    @InputFiles abstract ConfigurableFileCollection getIconInputs()
+    @Input abstract Property<String> getPythonExecutable()
+    @OutputDirectory abstract DirectoryProperty getIconRoot()
+    @OutputDirectory abstract DirectoryProperty getResourceDirectory()
+    @OutputDirectory abstract DirectoryProperty getAssetDirectory()
+    @javax.inject.Inject abstract org.gradle.process.ExecOperations getExecOperations()
+
+    @TaskAction void generate() {
+        execOperations.exec {
+            commandLine(pythonExecutable.get(),
+                        new File(project.rootDir, '../tools/generators/cook_app_icons.py').absolutePath,
+                        '--output-root', iconRoot.get().asFile.absolutePath)
+        }
+    }
+}
+def launcherIcons = tasks.register('generateLauncherIcons', GenerateLauncherIcons) {
+    iconInputs.from(['app-icon-1024.png', 'adaptive-foreground-432.png',
+                     'adaptive-monochrome-432.png', 'recipe.json'].collect {
+        file("../../assets/graphics/app-icon/${it}")
+    })
+    iconInputs.from(file('../../tools/generators/cook_app_icons.py'),
+                    file('../../tools/generators/stage_runtime_assets.py'))
+    pythonExecutable.set(System.getenv('GAME_PYTHON_EXECUTABLE') ?:
+        (System.getProperty('os.name').toLowerCase().contains('windows') ? 'python' : 'python3'))
+    iconRoot.set(layout.projectDirectory.dir('../../build/android-app-icon'))
+    resourceDirectory.set(iconRoot.dir('android/res'))
+    assetDirectory.set(iconRoot.dir('android/assets'))
+}
+androidComponents {
+    onVariants(selector().all()) { variant ->
+        variant.sources.res.addGeneratedSourceDirectory(launcherIcons, { task -> task.resourceDirectory })
+        variant.sources.assets.addGeneratedSourceDirectory(launcherIcons, { task -> task.assetDirectory })
+    }
+}

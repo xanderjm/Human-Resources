@@ -1,0 +1,44 @@
+TRIPO MODEL GENERATION WORKFLOW
+
+Use the installed authenticated tripo CLI directly. Do not use the Blender MCP for this workflow.
+Start from individual, isolated asset reference images. The complete asset style guide is not a single-model generation reference.
+
+1. Check balance:
+TRIPO_CLIENT_APP=codex tripo balance --json
+
+Balance checked on 2026-10-24: 5000 available, 0 frozen. Recheck before generation.
+
+2. Set absolute reference/output paths and asset name. Choose a face limit for the asset:
+- Props: approximately 500–3000
+- Characters/animals: approximately 3000–8000
+
+3. Dry-run each intended request:
+TRIPO_CLIENT_APP=codex tripo make "/absolute/path/asset.png" \
+  --model tripo-p1 \
+  -p face_limit=3000 \
+  -p texture=true \
+  -p pbr=false \
+  -p texture_quality=standard \
+  -p texture_alignment=original_image \
+  -p export_uv=true \
+  --then 'convert:format=GLTF,texture_size=1024' \
+  --out "/absolute/path/assets/asset-name" \
+  --name asset-name \
+  --dry-run --json
+
+Require valid: true, no errors and the intended parameters.
+
+4. To execute an approved model-stage request, remove --dry-run and add --yes.
+The CLI handles image upload, authentication, submission, waiting, conversion and download.
+The generation endpoint is POST /v3/generation/image-to-model with model P1-20260311.
+
+5. Inspect model_file, preview and credits_consumed, then check the downloaded model before proceeding.
+
+Textures stay enabled; PBR stays disabled. No rigging, animation or separate retexturing step.
+Conversion enforces 1024px textures and incurs an additional conversion charge.
+
+If a task times out, resume the same task rather than submit it again:
+tripo task watch TASK_ID --download
+
+No model-generation jobs were submitted as part of producing this style guide.
+

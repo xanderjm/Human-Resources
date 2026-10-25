@@ -1,0 +1,59 @@
+name: Foundation Windows
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  native:
+    runs-on: windows-2022
+    timeout-minutes: 120
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+      - uses: actions/setup-python@42375524e23c412d93fb67b49958b491fce71c38 # v5.4.0
+        with:
+          python-version: '3.13.5'
+      - uses: ilammy/msvc-dev-cmd@0b201ec74fa43914dc39ae48a89fd1d8cb592756 # v1
+        with:
+          arch: x64
+      - name: Prepare pinned offline art tools
+        run: python tools/bootstrap_art_tools.py --download-blender
+      - uses: actions/cache@5a3ec84eff668545956fd18022155c47e93e2684 # v4.2.3
+        with:
+          path: |
+            external
+            build/host-tools
+          key: windows-host-tools-${{ hashFiles('dependencies.lock.json') }}
+      - name: Enable long Git paths
+        run: git config --global core.longpaths true
+      - name: Check prerequisites
+        run: python tools/project.py doctor --platform windows
+      - name: Bootstrap exact dependencies and host tools
+        run: python tools/project.py bootstrap
+      - name: Verify foundation
+        run: python tools/project.py verify
+      - name: Smoke Direct3D 12 client
+        shell: pwsh
+        env:
+          FOUNDATION_SMOKE_REPORT: build/evidence/smoke-windows.log
+        run: |
+          New-Item -ItemType Directory -Force build/evidence | Out-Null
+          & build/dev/human_resources_player.exe --smoke-test
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          Get-Content build/evidence/smoke-windows.log
+          python tools/generators/audit_smoke_report.py `
+            --report build/evidence/smoke-windows.log --expected-backend direct3d12
+      - name: Build and audit release package
+        run: python tools/project.py package --platform windows
+      - name: Record exact qualification evidence
+        run: >-
+          python tools/project.py evidence
+          --smoke-log build/evidence/smoke-windows.log
+          --output build/evidence/windows.json
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: foundation-windows-evidence
+          path: build/evidence
+          if-no-files-found: error

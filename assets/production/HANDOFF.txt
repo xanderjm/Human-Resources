@@ -1,0 +1,120 @@
+Human Resources asset authoring handoff — 25 October 2026
+
+READY FOR OWNER ART REVIEW
+92 inventory assets: 56 Tripo models, 12 measured modules, seven tileable
+materials and 17 native graphics. All 92 pass tools/check_asset_collection.py.
+The collection browser loaded all 92 actual previews with zero failures.
+Inventory: assets/production/inventory.json
+Audit: assets/production/collection-audit.json
+Full review: http://127.0.0.1:8767/tools/model-viewer/collection.html
+New set: http://127.0.0.1:8767/tools/model-viewer/collection.html?set=infantry-weapons
+Server: python3 -m http.server 8767 --bind 127.0.0.1 (workspace root).
+
+EIGHT NEW INDEPENDENT MODELS
+Each final file is assets/models/<id>/<id>.glb:
+  infantry-rifleman-body       4,990 triangles; height 1.60 m
+  infantry-shotgunner-body     5,763 triangles; height 1.50 m
+  infantry-rocketeer-body      5,505 triangles; height 1.80 m
+  weapon-carbine              1,348 triangles; length 0.70 m
+  weapon-shotgun              1,537 triangles; length 0.70 m
+  weapon-rocket-launcher      1,729 triangles; length 1.15 m
+  jeep-minigun-head           2,587 triangles; length 0.85 m
+  jeep-minigun-mount            984 triangles; height 1.05 m
+All three bodies are unarmed true T-pose, empty hands, grounded feet, +Y up,
++Z front, metres. Reuse rifleman for future jeep crew. No seated reference was
+submitted to Tripo. No rigs, animations, body poses or equipped assemblies
+were created in this pass. All eight Tripo jobs are downloaded and reviewed;
+no outstanding task or required paid resubmission remains. New cost: 480 credits.
+Source images were generated with built-in image_gen. Three armed character
+images and lineup are style guides only; isolated unarmed T-pose images are
+actual character model inputs. Textures enabled, PBR disabled, P1-20260311,
+GLTF conversion with 1024px albedo. Raw downloads and repair provenance retained.
+
+DELIVERY
+assets/packages/infantry-weapons-v1.zip — 8 GLBs, isolated references, armed
+style guides, prompts, manifest, model audits and measured socket/fit records.
+Actual model sheet: assets/production/reviews/infantry-weapons-final.png
+Prompt log: art/enemies/infantry/prompts.json
+Model/task/credit/hash manifest: art/enemies/infantry/output-manifest.json
+Per-model evidence: assets/production/records/<id>/model-audit.json
+Production contract: assets/production/infantry-weapons-plan.txt
+Rebuild package/proofs: run tools/publish_infantry_review.py with the authoring
+Python containing Pillow/NumPy (path below). ZIP integrity: passed, eight GLBs.
+
+ATTACHMENT DATA — FOR LATER RIG/INTEGRATION OWNER
+assets/production/weapon-sockets.json records measured primary/support grips,
+shoulder contacts and muzzle/loaded-nose datums, with source hashes. All three
+handheld guns use their primary grip as local origin, +Z nominal fire direction.
+No body hand contact is inferred and no final character equipment transform
+is claimed. The launcher has an integral loaded coral nose, not a detachable
+projectile. Fine paint is softer than the approved image in some Tripo outputs.
+
+Minigun neutral head-to-mount fit is passed. With mount at identity, place the
+head origin at [0, 1.0017123287671232, -0.005136986301369864] metres, identity
+quaternion [0,0,0,1]; trunnion/pitch axis +X, aim +Z. Exact hash-bound data:
+assets/production/records/jeep-minigun-head/component-fit.json
+Static clearance: 17.50 mm vertical, 2.46 mm radial. Viewer:
+http://127.0.0.1:8767/tools/model-viewer/minigun-fit.html
+Head collar gap and mount fork fit were repaired without changing original
+paint/UVs. Original downloads preserved. No pitch sweep, crew clearance or
+complete vehicle mounting is qualified. Candidate jeep seat/pedestal datums
+in infantry-weapons-plan.txt remain FUTURE placement data, not final transforms.
+
+SEAMLESS MATERIAL REPLACEMENTS
+Masters: assets/textures/texture-{grass,dirt,soil,asphalt,pavement,sand,wood}/
+texture-<name>.png. Seven 1024 RGB sRGB albedos; repeat both axes (wood grain +U).
+All opposite edge samples and one-sided first differences match exactly in
+both axes. Actual 3x3 visual proofs and hash-bound texture-audit.json records
+are under assets/production/records/texture-<name>/ and assets/textures/.
+A visually detectable asphalt hairline survived edge-only checks; periodic
+interior quilting fixed it and a regression now rejects that older version.
+Current asphalt SHA256:
+1b1821bf91bdddb363680813ca37feac7d5c0a2dfe7fc8bd955e819b7d443017
+Seven legacy art/material-studies copies match current masters; preview cooker
+reads canonical assets/textures directly and records source hashes.
+
+MEASURED LEVEL MODULES
+12 base modules, 30 baked orientation variants and one sand ground variant:
+43 GLBs rebuilt with current embedded textures. Choose the baked orientation,
+translate on integer-metre grid with identity rotation. Surface UV=(world X,Z)
+at one repeat per metre; arbitrary rotations would alter the common UV phase.
+Actual path corner footprint: 7.5x7.5 m. T-road occupied bounds: 16x11 m,
+logical section 16x16 m. Full port/origin/kerb conventions:
+assets/production/measured-modules/README.txt
+Builder: tools/build_measured_modules.py
+Proofs and inventory patch: assets/production/measured-modules/
+All nine tested join pairs have <1e-6m position gap and zero RGB phase delta.
+
+OTHER READY OUTPUTS
+17 native graphics: assets/graphics/<id>/, editable SVG plus transparent PNG.
+Only the laser texture repeats U; other graphics are clamp sprites/instances.
+Existing model repairs/remakes and assemblies are documented in per-model
+records, assets/production/assemblies.json and reviews/assemblies-final.png.
+Application icon derivation is a separate source-bound handoff in
+docs/APP_ICON_HANDOFF.md; it is not one of the 92 level assets.
+
+VERIFICATION AND OWNERSHIP
+Authoring Python:
+/Users/coral/.cache/codex-runtimes/codex-primary-runtime/dependencies/python/bin/python3
+Commands (workspace root, authoring Python for image/mesh checks):
+  tools/check_asset_collection.py              92/92 passed
+  tools/test_seamless_textures.py               4 tests passed
+  tools/build_measured_modules_test.py          3 tests passed
+  tools/capture_texture_check.py                three native location captures
+  python3 tools/project.py verify               passed during asset pass;
+                                               optimized macOS build + 16/16 CTests
+Gallery/index/review-sheet module JS syntax checks passed. Later concurrent
+native owner gates have additional suites; the above is this pass's evidence,
+not a claim of device/release qualification or ownership of their changes.
+Native texture proof: build/captures/seamless-material-check/evidence.json and
+farmland/suburbia/desert PNGs. Actual SDL_GPU captures; visual review passed.
+Authoring dependency rationale: docs/adr/001-offline-asset-review.md (no runtime
+linkage of Pillow/NumPy/Sharp/Three authoring dependencies).
+
+This pass owns assets/production, generated references/models/materials,
+authoring tools and review gallery. Shared native gameplay/progression/client
+changes were preserved; this pass adds no gameplay behavior. No commit/push.
+No remaining level-asset generation subagent is changing these accepted files.
+Later work: owner art judgement; intentional rigging/equipping/seating and
+animation; native attachment/pitch/crew checks; runtime packaging and actual
+mobile performance qualification using the accepted normalized GLBs.

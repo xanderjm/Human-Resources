@@ -1,0 +1,6 @@
+{
+  "dependencies": {
+    "sharp": "0.35.5",
+    "three": "0.186.1"
+  }
+}

@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<lint>
+    <!-- SDL's pinned Android bridge is third-party source. Audit it when the pin
+         changes; keep game-owned Java/Kotlin under the normal strict lint gate. -->
+    <issue id="all">
+        <ignore regexp="external/SDL/android-project/app/src/main/java/org/libsdl/app/" />
+    </issue>
+    <!-- API 36 is the current production/Play target. API 37 remains an
+         Android 17 pre-release test lane at this scaffold's baseline date. -->
+    <issue id="OldTargetApi" severity="ignore" />
+    <issue id="GradleDependency" severity="ignore" />
+</lint>

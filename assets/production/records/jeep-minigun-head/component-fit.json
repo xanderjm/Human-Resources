@@ -1,0 +1,74 @@
+{
+  "status": "passed_neutral_static_authoring_fit",
+  "scope": "Static neutral component fixture only; no jeep, operator, rig or animation.",
+  "head_model": "assets/models/jeep-minigun-head/jeep-minigun-head.glb",
+  "mount_model": "assets/models/jeep-minigun-mount/jeep-minigun-mount.glb",
+  "head_sha256": "9b75f1d8d4a539b3d44bf21c1170fb2f18e71f762502c3b9be92fa81f66d098b",
+  "mount_sha256": "e272fd867a17fd6eb7e1ac9ca8fa358d0b487bbc7110ceb39b37473179353613",
+  "head_translation_m": [
+    4.336808689942018e-19,
+    1.0017123287671232,
+    -0.005136986301369864
+  ],
+  "head_rotation_xyzw": [
+    0,
+    0,
+    0,
+    1
+  ],
+  "head_trunnion_axis": "+X",
+  "head_trunnion_origin_m": [
+    0,
+    0,
+    0
+  ],
+  "mount_bearing_centre_m": [
+    4.336808689942018e-19,
+    1.0017123287671232,
+    -0.005136986301369864
+  ],
+  "mount_bearing_axis": "+X",
+  "measured_slot_clear_width_m": 0.3420657515525818,
+  "head_trunnion_radius_max_m": 0.0417594194874294,
+  "measured_bore_polygon_apothem_min_m": 0.04422163188606229,
+  "radial_clearance_min_m": 0.002462212398632889,
+  "bridge_neck_y_max_under_head_m": 0.8336712353850064,
+  "head_y_min_above_bridge_m": 0.851174168297456,
+  "vertical_clearance_m": 0.01750293291244953,
+  "head_axle_ends_local_m": [
+    [
+      -0.18962818003913895,
+      -0.04075342465753424,
+      -0.04158512720156555
+    ],
+    [
+      0.18962818003913892,
+      0.040753424657534246,
+      0.041585127201565555
+    ]
+  ],
+  "mount_base_bounds_m": [
+    [
+      -0.1356164383561644,
+      0.0,
+      -0.12636986301369865
+    ],
+    [
+      0.14178082191780825,
+      0.05753424657534245,
+      0.12636986301369865
+    ]
+  ],
+  "pitch_sweep": "Not qualified; future owner rig/pose work.",
+  "native_or_physics_qualification": "None; vertex bounds and actual rendered static fixture only.",
+  "visual_review": {
+    "status": "passed",
+    "views": [
+      "Three-quarter",
+      "Front",
+      "Right",
+      "Underside"
+    ],
+    "notes": "Current separate GLBs rendered together only at measured neutral socket; head sits between cheeks and above bridge/neck; side bosses align bearing axes. No jeep/operator/character pose. Future pitch sweep not qualified."
+  }
+}

@@ -1,0 +1,17 @@
+{
+  "schema_version": 1,
+  "id": "ui-laser",
+  "type": "native-graphic",
+  "source": "assets/graphics/ui-laser/ui-laser.svg",
+  "png": "assets/graphics/ui-laser/ui-laser.png",
+  "reference": "assets/references/ui-laser/v1.png",
+  "use": "Standalone upgrade icon, no text/card. Clamp both axes.",
+  "colour_space": "sRGB colour, linear alpha",
+  "alpha_encoding": "straight/unassociated alpha",
+  "blend": "source-alpha / one-minus-source-alpha; emissive effects may use additive blend in renderer",
+  "sampler": {
+    "u": "clamp-to-edge",
+    "v": "clamp-to-edge"
+  },
+  "variants": []
+}

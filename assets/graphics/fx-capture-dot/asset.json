@@ -1,0 +1,17 @@
+{
+  "schema_version": 1,
+  "id": "fx-capture-dot",
+  "type": "native-graphic",
+  "source": "assets/graphics/fx-capture-dot/fx-capture-dot.svg",
+  "png": "assets/graphics/fx-capture-dot/fx-capture-dot.png",
+  "reference": "assets/references/fx-capture-dot/v1.png",
+  "use": "Instance one dot along runtime capture paths; no trail curve baked in. Clamp both axes.",
+  "colour_space": "sRGB colour, linear alpha",
+  "alpha_encoding": "straight/unassociated alpha",
+  "blend": "source-alpha / one-minus-source-alpha; emissive effects may use additive blend in renderer",
+  "sampler": {
+    "u": "clamp-to-edge",
+    "v": "clamp-to-edge"
+  },
+  "variants": []
+}

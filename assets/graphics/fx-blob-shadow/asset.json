@@ -1,0 +1,17 @@
+{
+  "schema_version": 1,
+  "id": "fx-blob-shadow",
+  "type": "native-graphic",
+  "source": "assets/graphics/fx-blob-shadow/fx-blob-shadow.svg",
+  "png": "assets/graphics/fx-blob-shadow/fx-blob-shadow.png",
+  "reference": "assets/references/fx-blob-shadow/v1.png",
+  "use": "Reusable soft ground ellipse; multiply or alpha blend. Scale/tint per actor. Clamp both axes.",
+  "colour_space": "sRGB colour, linear alpha",
+  "alpha_encoding": "straight/unassociated alpha",
+  "blend": "source-alpha / one-minus-source-alpha; emissive effects may use additive blend in renderer",
+  "sampler": {
+    "u": "clamp-to-edge",
+    "v": "clamp-to-edge"
+  },
+  "variants": []
+}

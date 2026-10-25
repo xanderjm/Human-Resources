@@ -1,0 +1,498 @@
+{
+  "version": "first-playable-v1",
+  "status": "Provisional tuning from an abstract encounter simulation; requires live playtesting.",
+  "rules": {
+    "run_seconds": 600,
+    "upgrade_picks": 24,
+    "max_upgrade_lines": 8,
+    "ranks_per_upgrade": 3,
+    "cards_per_pick": 3,
+    "rarity_weights": {
+      "Common": 60,
+      "Uncommon": 35,
+      "Rare": 5
+    },
+    "owned_offer_weight": 1.5,
+    "evolution_check_seconds": [
+      240,
+      360,
+      480
+    ],
+    "maximum_evolutions": 2,
+    "evolution_rule": "Both ingredients at rank 3. At 4, 6 and 8 minutes, grant one eligible evolution, without spending a level-up. Choose if several qualify; maximum two evolutions per run. Ingredient effects remain; the evolution changes only its stated subsystem. No evolution is awarded if no recipe is ready.",
+    "offer_rule": "First pick offers Personal Space, Additional Laser and Extra Hands. Later picks offer three distinct eligible cards, including one owned card whenever possible. Three full-offer rerolls per run. Exclude maxed cards, unmet prerequisites and new lines after eight lines are installed. Remaining random slots roll rarity 60/35/5, then choose a line; renormalize empty tiers. Once eight lines are installed, remaining picks rank them up.",
+    "stacking": "Bonuses within a named stat add; different stats multiply. Cap total firing rate at 2x base including temporary bonuses; cap movement at 1.6x base. Proc damage cannot trigger other procs. Bonus rewards do not grant extra upgrade picks in this model.",
+    "baseline": {
+      "hull": 100,
+      "shield": 0,
+      "lasers": 1,
+      "laser_damage": 8,
+      "shots_per_second_per_laser": 1.5,
+      "tractor_beams": 1,
+      "capture_seconds": 2,
+      "capture_radius_metres": 4,
+      "speed_metres_per_second": 6,
+      "speed_while_capturing_multiplier": 0.8
+    },
+    "shield_rule": "Shield capacity = 25 per Personal Space rank + 15 per Bigger Bubble rank. Recharges at 5/s after 5 seconds without damage. Recharge delay has a 2-second floor. Hull damage, not shield damage, resets Performance Bonus.",
+    "shield_siphon_cap": "At most 4 shield/second across all captures. Employee Benefits uses the same shared cap.",
+    "repair_rule": "Repair Nanites heals 2/3/4 hull per 10 biological captures at ranks 1/2/3. Vehicles never trigger capture procs.",
+    "target_rule": "Tractor beams target biological specimens by default. Lasers skip vehicles already being lifted. Vehicles become eligible only through Heavy Lifting, count as two occupied beams, and yield 5 ordinary-capture reward units. Bosses are immune to capture, hard disable, pulling and instant removal. Slow effects on bosses are capped at 20%.",
+    "vehicle_cooldown_seconds": 8,
+    "shield_siphon_per_capture": [
+      1,
+      2,
+      3
+    ],
+    "temporary_bonus_rule": "Temporary effects refresh duration; they do not stack with themselves. Bulk Collection lasts 2 seconds, Biofuel 3 seconds, Hostile Takeover 5 seconds. EMP has a shared 4-second cooldown. Emergency Jump has no offensive effect.",
+    "rerolls_per_run": 3
+  },
+  "upgrades": [
+    {
+      "id": "extra_hands",
+      "name": "Extra Hands",
+      "category": "Abduction",
+      "rarity": "Uncommon",
+      "ranks": [
+        "+1 beam",
+        "+2 beams",
+        "+3 beams"
+      ],
+      "effect": "Additional simultaneous targets; maximum four base beams."
+    },
+    {
+      "id": "wider_net",
+      "name": "Wider Net",
+      "category": "Abduction",
+      "rarity": "Common",
+      "ranks": [
+        "+15% radius",
+        "+30% radius",
+        "+45% radius"
+      ]
+    },
+    {
+      "id": "express_collection",
+      "name": "Express Collection",
+      "category": "Abduction",
+      "rarity": "Common",
+      "ranks": [
+        "+20% capture speed",
+        "+40% capture speed",
+        "+60% capture speed"
+      ]
+    },
+    {
+      "id": "firm_grip",
+      "name": "Firm Grip",
+      "category": "Abduction",
+      "rarity": "Common",
+      "ranks": [
+        "0.35s range grace",
+        "0.70s range grace",
+        "1.05s range grace"
+      ]
+    },
+    {
+      "id": "heavy_lifting",
+      "name": "Heavy Lifting",
+      "category": "Abduction",
+      "rarity": "Uncommon",
+      "ranks": [
+        "Capture jeeps at or below 40% HP",
+        "Jeeps at or below 55% HP; vehicle capture +20% faster",
+        "Jeeps at or below 70% HP; tanks at or below 35% HP; vehicle capture +40% faster"
+      ],
+      "effect": "Vehicles need two beam slots and base 3 seconds to capture; one vehicle per 8 seconds. Tanks retain a minimum 2-second capture time.",
+      "requires": [
+        "extra_hands"
+      ]
+    },
+    {
+      "id": "vacuum_effect",
+      "name": "Vacuum Effect",
+      "category": "Abduction",
+      "rarity": "Uncommon",
+      "ranks": [
+        "Pull specimens within 1.15x capture radius at 0.5m/s",
+        "1.25x radius; 0.75m/s",
+        "1.35x radius; 1m/s"
+      ],
+      "effect": "Pull strength cannot exceed 25% of a target's normal movement speed. Does not pull vehicles or bosses."
+    },
+    {
+      "id": "bulk_collection",
+      "name": "Bulk Collection",
+      "category": "Abduction",
+      "rarity": "Uncommon",
+      "ranks": [
+        "Capture grants +40% capture speed for 2s",
+        "+60% for 2s",
+        "+80% for 2s"
+      ],
+      "effect": "Affects other occupied beams, not the capture that triggered it.",
+      "requires": [
+        "extra_hands"
+      ]
+    },
+    {
+      "id": "exit_interview",
+      "name": "Exit Interview",
+      "category": "Abduction",
+      "rarity": "Rare",
+      "ranks": [
+        "Soldier capture disables enemies within 4m for 0.5s",
+        "5m; 0.75s",
+        "6m; 1s"
+      ],
+      "effect": "Shared 4-second cooldown; bosses immune."
+    },
+    {
+      "id": "additional_laser",
+      "name": "Additional Laser",
+      "category": "Weapons",
+      "rarity": "Uncommon",
+      "ranks": [
+        "+1 laser at 45% damage",
+        "+2 lasers at 45% damage each",
+        "+3 lasers at 45% damage each"
+      ],
+      "effect": "Original laser stays at 100% damage. New mounts target independently."
+    },
+    {
+      "id": "power_amplifier",
+      "name": "Power Amplifier",
+      "category": "Weapons",
+      "rarity": "Common",
+      "ranks": [
+        "+12% weapon damage",
+        "+24% weapon damage",
+        "+36% weapon damage"
+      ]
+    },
+    {
+      "id": "rapid_discharge",
+      "name": "Rapid Discharge",
+      "category": "Weapons",
+      "rarity": "Common",
+      "ranks": [
+        "+10% firing rate",
+        "+20% firing rate",
+        "+30% firing rate"
+      ]
+    },
+    {
+      "id": "piercing_light",
+      "name": "Piercing Light",
+      "category": "Weapons",
+      "rarity": "Uncommon",
+      "ranks": [
+        "Pierces 1 enemy at 35% damage",
+        "Pierces 2 enemies at 35% damage",
+        "Pierces 3 enemies at 35% damage"
+      ],
+      "effect": "Each secondary target receives 35% of original hit damage; hits require alignment."
+    },
+    {
+      "id": "chain_reaction",
+      "name": "Chain Reaction",
+      "category": "Weapons",
+      "rarity": "Rare",
+      "ranks": [
+        "20% chance to arc to 1 enemy at 35% damage",
+        "30%; 2 enemies",
+        "40%; 3 enemies"
+      ],
+      "effect": "Only original laser hits can trigger an arc. Each arc searches within 5m; no repeat targets."
+    },
+    {
+      "id": "focused_fire",
+      "name": "Focused Fire",
+      "category": "Weapons",
+      "rarity": "Uncommon",
+      "ranks": [
+        "Repeated hits ramp damage to +10%",
+        "Ramp to +20%",
+        "Ramp to +30%"
+      ],
+      "effect": "Five hits to maximum; one shared stack per target across all mounts. Expires after 2s without a laser hit."
+    },
+    {
+      "id": "orbital_security",
+      "name": "Orbital Security",
+      "category": "Weapons",
+      "rarity": "Uncommon",
+      "ranks": [
+        "1 drone",
+        "2 drones",
+        "3 drones"
+      ],
+      "effect": "Each drone deals 2 damage twice per second. Benefits from damage and fire-rate bonuses; cannot pierce or chain."
+    },
+    {
+      "id": "static_discharge",
+      "name": "Static Discharge",
+      "category": "Weapons",
+      "rarity": "Uncommon",
+      "ranks": [
+        "12 damage within 4m every 6s",
+        "18 damage within 4m every 5s",
+        "24 damage within 4m every 4s"
+      ],
+      "effect": "Benefits from Power Amplifier. Fire-rate bonuses do not shorten its cooldown."
+    },
+    {
+      "id": "personal_space",
+      "name": "Personal Space",
+      "category": "Defence",
+      "rarity": "Common",
+      "ranks": [
+        "25 shield",
+        "50 shield",
+        "75 shield"
+      ],
+      "effect": "Adds capacity and immediately fills the added capacity."
+    },
+    {
+      "id": "bigger_bubble",
+      "name": "Bigger Bubble",
+      "category": "Defence",
+      "rarity": "Common",
+      "requires": [
+        "personal_space"
+      ],
+      "ranks": [
+        "+15 shield",
+        "+30 shield",
+        "+45 shield"
+      ],
+      "effect": "Adds capacity and immediately fills the added capacity; no increase to hitbox."
+    },
+    {
+      "id": "quick_recharge",
+      "name": "Quick Recharge",
+      "category": "Defence",
+      "rarity": "Uncommon",
+      "requires": [
+        "personal_space"
+      ],
+      "ranks": [
+        "Recharge delay 4s; 6 shield/s",
+        "3s; 7 shield/s",
+        "2s; 8 shield/s"
+      ]
+    },
+    {
+      "id": "reinforced_saucer",
+      "name": "Reinforced Saucer",
+      "category": "Defence",
+      "rarity": "Common",
+      "ranks": [
+        "+20 maximum hull",
+        "+40 maximum hull",
+        "+60 maximum hull"
+      ],
+      "effect": "Immediately heals the amount of maximum hull added."
+    },
+    {
+      "id": "repair_nanites",
+      "name": "Repair Nanites",
+      "category": "Defence",
+      "rarity": "Uncommon",
+      "ranks": [
+        "2 hull per 10 captures",
+        "3 hull per 10 captures",
+        "4 hull per 10 captures"
+      ]
+    },
+    {
+      "id": "return_to_sender",
+      "name": "Return to Sender",
+      "category": "Defence",
+      "rarity": "Rare",
+      "requires": [
+        "personal_space"
+      ],
+      "ranks": [
+        "10% projectile reflect chance",
+        "15% reflect chance",
+        "20% reflect chance"
+      ],
+      "effect": "Requires shield energy before impact. Reflections prevent that hit and deal the projectile's original damage; cannot trigger weapon procs."
+    },
+    {
+      "id": "thruster_upgrade",
+      "name": "Thruster Upgrade",
+      "category": "Movement",
+      "rarity": "Common",
+      "ranks": [
+        "+8% movement speed",
+        "+16% movement speed",
+        "+24% movement speed"
+      ]
+    },
+    {
+      "id": "emergency_jump",
+      "name": "Emergency Jump",
+      "category": "Movement",
+      "rarity": "Rare",
+      "ranks": [
+        "3m dash; 0.25s invulnerability; 14s cooldown",
+        "3m; 0.30s; 12s",
+        "3m; 0.35s; 10s"
+      ],
+      "effect": "Player activated; no damage or projectile-clearing effect."
+    },
+    {
+      "id": "tractor_stabiliser",
+      "name": "Tractor Stabiliser",
+      "category": "Movement",
+      "rarity": "Common",
+      "ranks": [
+        "Capture movement penalty 15%",
+        "10%",
+        "0%"
+      ],
+      "effect": "Baseline movement penalty while capturing is 20%."
+    },
+    {
+      "id": "biofuel",
+      "name": "Biofuel",
+      "category": "Synergy",
+      "rarity": "Common",
+      "ranks": [
+        "Capture grants +10% movement for 3s",
+        "+20% for 3s",
+        "+30% for 3s"
+      ]
+    },
+    {
+      "id": "hostile_takeover",
+      "name": "Hostile Takeover",
+      "category": "Synergy",
+      "rarity": "Uncommon",
+      "ranks": [
+        "Vehicle kill grants +45% capture speed for 5s",
+        "+75% for 5s",
+        "+105% for 5s"
+      ],
+      "effect": "Vehicle abductions do not count as kills for this proc."
+    },
+    {
+      "id": "power_diversion",
+      "name": "Power Diversion",
+      "category": "Synergy",
+      "rarity": "Uncommon",
+      "ranks": [
+        "+10% weapon damage per idle beam; cap +20%",
+        "+18%; cap +36%",
+        "+26%; cap +52%"
+      ],
+      "effect": "Additive with Power Amplifier; never counts occupied vehicle slots as idle.",
+      "requires": [
+        "extra_hands"
+      ]
+    },
+    {
+      "id": "overtime",
+      "name": "Overtime",
+      "category": "Synergy",
+      "rarity": "Rare",
+      "ranks": [
+        "+8% firing rate per active beam; cap +24%",
+        "+12%; cap +36%",
+        "+16%; cap +48%"
+      ],
+      "effect": "Additive with Rapid Discharge; benefits lasers and drones. Vehicle capture counts as one active beam for this bonus."
+    },
+    {
+      "id": "shield_siphon",
+      "name": "Shield Siphon",
+      "category": "Synergy",
+      "rarity": "Uncommon",
+      "requires": [
+        "personal_space"
+      ],
+      "ranks": [
+        "Capture restores 1 shield",
+        "2 shield",
+        "3 shield"
+      ],
+      "effect": "Shared cap of 4 shield per second, including evolution restoration."
+    },
+    {
+      "id": "performance_bonus",
+      "name": "Performance Bonus",
+      "category": "Synergy",
+      "rarity": "Common",
+      "ranks": [
+        "Every 10 uninterrupted captures adds +2% reward; cap +10%",
+        "+3%; cap +15%",
+        "+4%; cap +20%"
+      ],
+      "effect": "Hull damage resets streak; shield damage does not. Affects end-of-run currency/score only, not XP or upgrade frequency."
+    }
+  ],
+  "evolutions": [
+    {
+      "id": "great_vacuum",
+      "name": "The Great Vacuum",
+      "rarity": "Legendary (earned)",
+      "ingredients": [
+        "extra_hands",
+        "wider_net"
+      ],
+      "effect": "Replace four beams with one field holding six biological targets. +15% capture speed, but -10% movement while capturing. Six targets is a hard cap; no extra radius. Heavy Lifting uses two of those slots per vehicle."
+    },
+    {
+      "id": "office_shredder",
+      "name": "Office Shredder",
+      "rarity": "Legendary (earned)",
+      "ingredients": [
+        "additional_laser",
+        "rapid_discharge"
+      ],
+      "effect": "Laser mounts sweep around the saucer. +25% total laser output against ordinary enemies; -10% against bosses because of reduced focused dwell time. Does not add extra mounts or fire-rate multipliers."
+    },
+    {
+      "id": "hostile_acquisition",
+      "name": "Hostile Acquisition",
+      "rarity": "Legendary (earned)",
+      "ingredients": [
+        "heavy_lifting",
+        "express_collection"
+      ],
+      "effect": "Jeep capture threshold becomes 100% HP; tank threshold 55%. Vehicles yield 7 reward units instead of 5. Still needs two beam slots, tank capture minimum 2s, shared vehicle cooldown 8s; bosses immune."
+    },
+    {
+      "id": "mirrorball",
+      "name": "Mirrorball",
+      "rarity": "Legendary (earned)",
+      "ingredients": [
+        "personal_space",
+        "return_to_sender"
+      ],
+      "effect": "Stores damage from reflected hits. Every 8s releases stored damage, capped at 40, divided among up to four nearby enemies. Does not add a second reflection roll or reflect boss contact damage."
+    },
+    {
+      "id": "employee_benefits",
+      "name": "Employee Benefits",
+      "rarity": "Legendary (earned)",
+      "ingredients": [
+        "orbital_security",
+        "shield_siphon"
+      ],
+      "effect": "Captures grant drones +25% damage for 3s. Drones intercept one ordinary projectile per 6s across the whole squad, consuming 3 shield. At zero shield interception is disabled. Restoration shares Shield Siphon's 4/s cap."
+    },
+    {
+      "id": "storm_drain",
+      "name": "Storm Drain",
+      "rarity": "Legendary (earned)",
+      "ingredients": [
+        "vacuum_effect",
+        "static_discharge"
+      ],
+      "effect": "Static pulse radius increases from 4m to 6m; non-boss enemies hit are slowed by 25% for 1s. Does not pull military units or add damage ticks; bosses receive at most 20% slow."
+    }
+  ]
+}

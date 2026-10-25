@@ -1,0 +1,17 @@
+{
+  "schema_version": 1,
+  "id": "fx-threat-chevron",
+  "type": "native-graphic",
+  "source": "assets/graphics/fx-threat-chevron/fx-threat-chevron.svg",
+  "png": "assets/graphics/fx-threat-chevron/fx-threat-chevron.png",
+  "reference": "assets/references/fx-threat-chevron/v1.png",
+  "use": "Rotate in presentation to point toward threat; clamp both axes. Shape carries meaning beyond colour.",
+  "colour_space": "sRGB colour, linear alpha",
+  "alpha_encoding": "straight/unassociated alpha",
+  "blend": "source-alpha / one-minus-source-alpha; emissive effects may use additive blend in renderer",
+  "sampler": {
+    "u": "clamp-to-edge",
+    "v": "clamp-to-edge"
+  },
+  "variants": []
+}

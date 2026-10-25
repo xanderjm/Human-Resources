@@ -1,0 +1,48 @@
+{
+  "scope": "Card availability, rank/prerequisite limits and random drafting only. No combat, XP earning, evolution execution or survival validation.",
+  "spec_sha256": "f03d96127b8e02ca586018f7d0aaf08f8a55b7dfaf97adffb1f28945e362f183",
+  "source_sha256": "791c97dac6db1f1d2aec52b91e8ef62dc42b9387fa7d12cd36182805b3a6b2ff",
+  "seed_range": [
+    0,
+    999
+  ],
+  "worst_case_full_health_tail_checks": 1000,
+  "policies": {
+    "hardware_first": {
+      "drafts": 1000,
+      "levels_each": 200,
+      "full_hardware_build_completed_pct": 100.0,
+      "median_pick_to_complete_hardware_among_completions": 21.0,
+      "mean_final_hardware_slots": 6,
+      "offered_rarities": {
+        "Uncommon": 209997,
+        "Common": 360200,
+        "Rare": 29803
+      }
+    },
+    "research_first": {
+      "drafts": 1000,
+      "levels_each": 200,
+      "full_hardware_build_completed_pct": 0.0,
+      "median_pick_to_complete_hardware_among_completions": null,
+      "mean_final_hardware_slots": 6,
+      "offered_rarities": {
+        "Uncommon": 209997,
+        "Common": 360200,
+        "Rare": 29803
+      }
+    },
+    "random": {
+      "drafts": 1000,
+      "levels_each": 200,
+      "full_hardware_build_completed_pct": 98.0,
+      "median_pick_to_complete_hardware_among_completions": 39.0,
+      "mean_final_hardware_slots": 6,
+      "offered_rarities": {
+        "Uncommon": 210206,
+        "Common": 359986,
+        "Rare": 29808
+      }
+    }
+  }
+}

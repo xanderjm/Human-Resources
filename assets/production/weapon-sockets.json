@@ -1,0 +1,559 @@
+{
+  "schema_version": 1,
+  "scope": "Independent weapon normalization/pivot metadata only. All character bodies remain unarmed true T-pose. Equipping, seating, rigging and animation are deferred.",
+  "coordinate_convention": "Right-handed metres, +Y up, nominal muzzle/nose +Z. Socket frames are in normalized weapon-local space.",
+  "measurement_method": "Feature selections on actual decoded GLB triangle surfaces, including barycentric interior samples and wood albedo classification where applicable.",
+  "weapons": [
+    {
+      "id": "weapon-carbine",
+      "model_file": "assets/models/weapon-carbine/weapon-carbine.glb",
+      "model_sha256": "375a1b5fb078b026d3b850a508a0980b06d33bfc47b16012942eb823cd7b3741",
+      "raw_model_file": "assets/models/weapon-carbine/tripo-out/weapon-carbine-convert-687a89a3/model.glb",
+      "units": "metres",
+      "up": "+Y",
+      "forward": "+Z",
+      "origin": "primary_grip",
+      "sockets": {
+        "primary_grip": {
+          "position_m": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "up": [
+            0,
+            1,
+            0
+          ],
+          "forward": [
+            0,
+            0,
+            1
+          ],
+          "measurement": {
+            "method": "wood-albedo-selected pistol grip stem; bounds centre",
+            "feature_surface_samples": 1655,
+            "selected_feature_bounds_m": [
+              [
+                -0.028767,
+                -0.04375,
+                -0.04589
+              ],
+              [
+                0.028767,
+                0.04375,
+                0.04589
+              ]
+            ]
+          }
+        },
+        "support_grip": {
+          "position_m": [
+            -0.009932,
+            0.073116,
+            0.261644
+          ],
+          "up": [
+            0,
+            1,
+            0
+          ],
+          "forward": [
+            0,
+            0,
+            1
+          ],
+          "measurement": {
+            "method": "underside of front receiver/collar; no separate handle; bounds centre",
+            "feature_surface_samples": 583,
+            "selected_feature_bounds_m": [
+              [
+                -0.046404,
+                0.05762,
+                0.224658
+              ],
+              [
+                0.026541,
+                0.088613,
+                0.29863
+              ]
+            ]
+          }
+        },
+        "shoulder_rest": {
+          "position_m": [
+            -0.004795,
+            0.040497,
+            -0.222774
+          ],
+          "up": [
+            0,
+            1,
+            0
+          ],
+          "forward": [
+            0,
+            0,
+            1
+          ],
+          "measurement": {
+            "method": "rear stock buttplate contact patch; bounds centre",
+            "feature_surface_samples": 858,
+            "selected_feature_bounds_m": [
+              [
+                -0.046575,
+                -0.021832,
+                -0.237671
+              ],
+              [
+                0.036986,
+                0.102825,
+                -0.207877
+              ]
+            ]
+          }
+        },
+        "muzzle": {
+          "position_m": [
+            -0.020548,
+            0.123887,
+            0.462329
+          ],
+          "up": [
+            0,
+            1,
+            0
+          ],
+          "forward": [
+            0,
+            0,
+            1
+          ],
+          "measurement": {
+            "method": "single barrel terminal rim centre",
+            "feature_surface_samples": 1130,
+            "selected_feature_bounds_m": [
+              [
+                -0.041096,
+                0.102483,
+                0.447432
+              ],
+              [
+                -0.0,
+                0.145291,
+                0.462329
+              ]
+            ]
+          }
+        }
+      },
+      "status": "measured-independent-weapon",
+      "equipment_or_hand_fit_performed": false,
+      "measurement_precision_note": "Geometric art datums derived from inspected mesh feature bounds, not manufactured grip dimensions or an approved character-hand fit.",
+      "barrel_count": 1,
+      "fire_alignment": {
+        "axis": [
+          0,
+          0,
+          1
+        ],
+        "origins": [
+          "muzzle"
+        ],
+        "implemented": false
+      },
+      "socket_visual_evidence": "assets/production/records/weapon-carbine/review-sockets-side.png"
+    },
+    {
+      "id": "weapon-shotgun",
+      "model_file": "assets/models/weapon-shotgun/weapon-shotgun.glb",
+      "model_sha256": "fdfb970d978be03c8cef8e3db03a088cdc9d77fd054169901f8588e08934a3a4",
+      "raw_model_file": "assets/models/weapon-shotgun/tripo-out/weapon-shotgun-convert-76c8dec5/model.glb",
+      "units": "metres",
+      "up": "+Y",
+      "forward": "+Z",
+      "origin": "primary_grip",
+      "sockets": {
+        "primary_grip": {
+          "position_m": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "up": [
+            0,
+            1,
+            0
+          ],
+          "forward": [
+            0,
+            0,
+            1
+          ],
+          "measurement": {
+            "method": "wood-albedo-selected narrow stock neck immediately behind trigger; bounds centre",
+            "feature_surface_samples": 2553,
+            "selected_feature_bounds_m": [
+              [
+                -0.029966,
+                -0.037329,
+                -0.029966
+              ],
+              [
+                0.029966,
+                0.037329,
+                0.029966
+              ]
+            ]
+          }
+        },
+        "support_grip": {
+          "position_m": [
+            0.000514,
+            0.002825,
+            0.288185
+          ],
+          "up": [
+            0,
+            1,
+            0
+          ],
+          "forward": [
+            0,
+            0,
+            1
+          ],
+          "measurement": {
+            "method": "wooden fore-end; bounds centre",
+            "feature_surface_samples": 2443,
+            "selected_feature_bounds_m": [
+              [
+                -0.030308,
+                -0.016781,
+                0.14161
+              ],
+              [
+                0.031336,
+                0.022432,
+                0.43476
+              ]
+            ]
+          }
+        },
+        "shoulder_rest": {
+          "position_m": [
+            0.001884,
+            -0.035445,
+            -0.192637
+          ],
+          "up": [
+            0,
+            1,
+            0
+          ],
+          "forward": [
+            0,
+            0,
+            1
+          ],
+          "measurement": {
+            "method": "rear wooden stock/butt contact patch; bounds centre",
+            "feature_surface_samples": 3776,
+            "selected_feature_bounds_m": [
+              [
+                -0.034418,
+                -0.107192,
+                -0.220034
+              ],
+              [
+                0.038185,
+                0.036301,
+                -0.16524
+              ]
+            ]
+          }
+        },
+        "muzzle_left": {
+          "position_m": [
+            -0.022003,
+            0.044863,
+            0.479966
+          ],
+          "up": [
+            0,
+            1,
+            0
+          ],
+          "forward": [
+            0,
+            0,
+            1
+          ],
+          "measurement": {
+            "method": "negative-X barrel terminal rim centre",
+            "feature_surface_samples": 3660,
+            "selected_feature_bounds_m": [
+              [
+                -0.041781,
+                0.018836,
+                0.460959
+              ],
+              [
+                -0.002226,
+                0.07089,
+                0.479966
+              ]
+            ]
+          }
+        },
+        "muzzle_right": {
+          "position_m": [
+            0.015325,
+            0.043921,
+            0.479966
+          ],
+          "up": [
+            0,
+            1,
+            0
+          ],
+          "forward": [
+            0,
+            0,
+            1
+          ],
+          "measurement": {
+            "method": "positive-X barrel terminal rim centre",
+            "feature_surface_samples": 3130,
+            "selected_feature_bounds_m": [
+              [
+                -0.002055,
+                0.018322,
+                0.460959
+              ],
+              [
+                0.032705,
+                0.069521,
+                0.479966
+              ]
+            ]
+          }
+        }
+      },
+      "status": "measured-independent-weapon",
+      "equipment_or_hand_fit_performed": false,
+      "measurement_precision_note": "Geometric art datums derived from inspected mesh feature bounds, not manufactured grip dimensions or an approved character-hand fit.",
+      "barrel_count": 2,
+      "fire_alignment": {
+        "axis": [
+          0,
+          0,
+          1
+        ],
+        "origins": [
+          "muzzle_left",
+          "muzzle_right"
+        ],
+        "implemented": false
+      },
+      "socket_visual_evidence": "assets/production/records/weapon-shotgun/review-sockets-side.png"
+    },
+    {
+      "id": "weapon-rocket-launcher",
+      "model_file": "assets/models/weapon-rocket-launcher/weapon-rocket-launcher.glb",
+      "model_sha256": "c9e3fa0367dd62ea0142554cb24eb6a516562cbbb7927705ab73280db2561818",
+      "raw_model_file": "assets/models/weapon-rocket-launcher/tripo-out/weapon-rocket-launcher-convert-32b1d5cb/model.glb",
+      "units": "metres",
+      "up": "+Y",
+      "forward": "+Z",
+      "origin": "primary_grip",
+      "sockets": {
+        "primary_grip": {
+          "position_m": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "up": [
+            0,
+            1,
+            0
+          ],
+          "forward": [
+            0,
+            0,
+            1
+          ],
+          "measurement": {
+            "method": "rear pistol grip behind trigger guard; bounds centre",
+            "feature_surface_samples": 2534,
+            "selected_feature_bounds_m": [
+              [
+                -0.045432,
+                -0.072297,
+                -0.048386
+              ],
+              [
+                0.045432,
+                0.072297,
+                0.048386
+              ]
+            ]
+          }
+        },
+        "support_grip": {
+          "position_m": [
+            0.004501,
+            -0.039946,
+            0.261619
+          ],
+          "up": [
+            0,
+            1,
+            0
+          ],
+          "forward": [
+            0,
+            0,
+            1
+          ],
+          "measurement": {
+            "method": "forward hanging grip stem, excluding bottom flange; bounds centre",
+            "feature_surface_samples": 1625,
+            "selected_feature_bounds_m": [
+              [
+                -0.034179,
+                -0.097334,
+                0.214359
+              ],
+              [
+                0.043181,
+                0.017441,
+                0.30888
+              ]
+            ]
+          }
+        },
+        "shoulder_rest": {
+          "position_m": [
+            0.000422,
+            0.084956,
+            -0.160347
+          ],
+          "up": [
+            0,
+            1,
+            0
+          ],
+          "forward": [
+            0,
+            0,
+            1
+          ],
+          "measurement": {
+            "method": "underside of rear tube, not a separate pad; lower tangent patch",
+            "feature_surface_samples": 35,
+            "selected_feature_bounds_m": [
+              [
+                -0.047401,
+                0.084956,
+                -0.200294
+              ],
+              [
+                0.048245,
+                0.100147,
+                -0.120401
+              ]
+            ]
+          }
+        },
+        "loaded_nose_tip": {
+          "position_m": [
+            0.00211,
+            0.190588,
+            0.728596
+          ],
+          "up": [
+            0,
+            1,
+            0
+          ],
+          "forward": [
+            0,
+            0,
+            1
+          ],
+          "measurement": {
+            "method": "terminal coral loaded-nose cap centre",
+            "feature_surface_samples": 1560,
+            "selected_feature_bounds_m": [
+              [
+                -0.031648,
+                0.156409,
+                0.713686
+              ],
+              [
+                0.035867,
+                0.224768,
+                0.728596
+              ]
+            ]
+          }
+        },
+        "tube_mouth_plane": {
+          "position_m": [
+            0.001547,
+            0.178351,
+            0.419716
+          ],
+          "up": [
+            0,
+            1,
+            0
+          ],
+          "forward": [
+            0,
+            0,
+            1
+          ],
+          "measurement": {
+            "method": "Measured rear boundary of distal coral nose surface; tube mouth is occupied by integral loaded nose.",
+            "feature_surface_samples": 9435,
+            "selected_feature_bounds_m": [
+              [
+                -0.103101,
+                0.068077,
+                0.419716
+              ],
+              [
+                0.106195,
+                0.288625,
+                0.728596
+              ]
+            ]
+          }
+        }
+      },
+      "status": "measured-independent-weapon",
+      "equipment_or_hand_fit_performed": false,
+      "measurement_precision_note": "Geometric art datums derived from inspected mesh feature bounds, not manufactured grip dimensions or an approved character-hand fit.",
+      "loaded_state": true,
+      "integral_coral_nose": true,
+      "fire_alignment": {
+        "axis": [
+          0,
+          0,
+          1
+        ],
+        "future_projectile_origin_m": [
+          0.00211,
+          0.190588,
+          0.738596
+        ],
+        "implemented": false,
+        "notes": "Static loaded nose retained. Future projectile marker is 1 cm beyond its measured cap; no extraction, discharge or animation."
+      },
+      "socket_visual_evidence": "assets/production/records/weapon-rocket-launcher/review-sockets-side.png"
+    }
+  ]
+}

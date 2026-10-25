@@ -1,0 +1,17 @@
+{
+  "schema_version": 1,
+  "id": "fx-capture-ring",
+  "type": "native-graphic",
+  "source": "assets/graphics/fx-capture-ring/fx-capture-ring.svg",
+  "png": "assets/graphics/fx-capture-ring/fx-capture-ring.png",
+  "reference": "assets/references/fx-capture-ring/v1.png",
+  "use": "Ground decal; scale to capture radius. Alpha blend, clamp both axes. No ground baked in.",
+  "colour_space": "sRGB colour, linear alpha",
+  "alpha_encoding": "straight/unassociated alpha",
+  "blend": "source-alpha / one-minus-source-alpha; emissive effects may use additive blend in renderer",
+  "sampler": {
+    "u": "clamp-to-edge",
+    "v": "clamp-to-edge"
+  },
+  "variants": []
+}

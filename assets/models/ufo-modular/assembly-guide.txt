@@ -1,0 +1,94 @@
+MODULAR UFO — AUTHORING & ASSEMBLY
+
+Based on the existing UFO body, beam emitter, laser mount and shield references.
+Base size: 2.6 m diameter, 1.398 m tall. Metres, +Y up, +Z forward.
+The ring is wider than v1 (2.2 m); the dome and fixed hull retain their size.
+The existing generated models are preserved in their original folders.
+
+FILES
+ufo-modular.glb               Base craft, 4,824 triangles. Painted panel detail.
+ufo-modular-upgraded.glb      Beam, twin lasers and shield fitted.
+part-outer-ring.glb           Complete clean ring and six separate lens assemblies.
+part-rim-lens.glb             A single lens with its separate bezel.
+part-antenna.glb              Replaceable antenna (local +Y).
+part-shield.glb               Shield upgrade (local +Y).
+part-laser.glb                Laser with rear mounting pivot; muzzle points +Z.
+part-beam.glb                 Annular emitter; top mounting pivot; output -Y.
+ufo-parts.obj                 Assembled base craft with named, welded quad parts.
+ufo-upgraded-parts.obj        Assembled upgraded craft with named quad parts.
+ufo-parts.mtl                 OBJ materials. Keep beside the materials/ folder.
+materials/mapped-ring.png     Ring paint created over its actual top-view capture.
+materials/mapped-dome.png     Dome paint created over its actual top-view capture.
+materials/expressive-blue.png Supporting painted blue finish for hull/modules.
+materials/dome-enamel.png     Quiet blue surface tinted down for navy frames.
+materials/mint-lens.png       Hand-painted mint light/lens face.
+materials/ring-top-template.jpg  Exact orthographic ring UV painting template.
+materials/dome-top-template.jpg  Exact orthographic dome UV painting template.
+materials/ufo-top-layout.jpg     Top capture locating lamps, dome and deck.
+materials/mapped-paint-prompts.json  Exact ImageGen prompts and UV registration.
+ufo-source.json               Welded local-space faces, UVs and both hierarchies.
+model-audit.json              Source topology and dimension checks.
+
+RING ROTATION
+Find the node named Outer_Ring_Pivot. Its rest position is [0, 0.35, 0].
+Rotate its local Y axis. The ring shell, its painted surface, bezels and lenses follow it.
+Keep Fixed_Hull stationary. Do not rotate the complete UFO root.
+An optional Outer_Ring_Spin clip completes one revolution in 8 seconds.
+Loop that clip in the engine, or drive the pivot directly.
+The ring inner vertex radius is 0.604 m; the fixed bearing radius is 0.587 m.
+The nominal radial gap is 17 mm. Even at the middle of an inner polygon edge,
+at least 15.7 mm remains through a full revolution, including fitted upgrades.
+
+UPGRADE SOCKETS (all remain on the fixed hull except rim lenses)
+Socket_Top           [0, 1.012, 0]; attach antenna OR shield, local +Y.
+Socket_Beam          [0, 0.04, 0]; attach beam module without rotation.
+Socket_Laser_Left    [-0.36, -0.16, 0.29]; attach laser, muzzle local +Z.
+Socket_Laser_Right   [ 0.36, -0.16, 0.29]; attach laser, muzzle local +Z.
+Socket_Rim_Lens_01..06 are children of the rotor; local +Y points out of the deck.
+Remove each socket's current module before fitting a replacement.
+Module GLBs have their attachment pivot at their root [0,0,0].
+The complete ring GLB is centred on its own rotor pivot at [0,0,0].
+
+EDITING
+The source is mostly quads with triangle fans only at closed poles.
+Raised panel and chip meshes have been removed. Panel shapes, thin joins, edge
+wear and short ochre/orange brush accents are painted into the ring's UV map.
+The ring and dome were captured directly from the clean model with orthographic
+cameras, then painted with built-in ImageGen using the approved UFO/style sheet.
+The full top view supplied the six lamp positions. The resulting maps are bound
+to matching planar UVs, not applied as repeating generic material swatches.
+
+Ring UV: u = 0.5 + x / 2.652; v = 0.5 + z / 2.652.
+Dome UV: u = 0.5 + x / 1.0302; v = 0.5 + z / 1.0302.
+Both screenshots and maps are 1254px square, looking down +Y with -Z at the top.
+The outer vertex radius is 49.02% of image width. The ring bore is 22.78%.
+Paint extends slightly beyond the footprints for texture filtering bleed.
+No dome, lamps or antenna are baked into the ring map; they remain separate parts.
+The dome has its own cobalt paint and broad pale-blue painted reflection.
+Mint lenses have restrained emission. Faceted normals preserve the game style.
+PNG masters are unmodified ImageGen outputs (1254 px square). Runtime GLBs embed
+JPEG encodings at the same native size to reduce download size; no external
+textures are needed. Material definitions are saved in ufo-source.json.
+Runtime GLBs triangulate those surfaces and split vertices at flat normals/UV seams.
+Each source surface is closed, consistently wound and non-degenerate.
+OBJ keeps named parts and quads but cannot preserve parent-child hierarchy/pivots.
+Use the GLBs or JSON for the hierarchy.
+
+To rebuild with Python + NumPy + Pillow and the saved paint maps:
+  python3 tools/build_ufo_modular.py
+
+To create a native quad Blender scene when Blender is installed:
+  blender --background --python tools/import_ufo_modular_blender.py
+  blender --background --python tools/import_ufo_modular_blender.py -- --upgraded
+This importer creates a new scene, packs the textures, preserves quads, parents the
+parts, converts +Y-up to Blender's +Z-up and adds a ring animation.
+Blender is unavailable on this machine, so this optional importer has not been
+executed here. The delivered GLBs/OBJ/JSON have been validated directly.
+
+PREVIEW
+Serve the repository root and open /tools/model-viewer/modular.html.
+Use Spin ring, Rotation, Explode parts, Wireframe and Configuration.
+For new registered painting captures use ?template=ring, ?template=dome or
+?template=full at a square viewport; use a full-page screenshot to capture all pixels.
+Full-turn clearance concerns the authored geometry; no engine physics or gameplay
+system is included. Upgrade tiers can replace modules under the same sockets.

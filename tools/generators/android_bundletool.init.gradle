@@ -1,0 +1,12 @@
+// Reuse bundletool already supplied by the pinned Android Gradle plugin.
+// This diagnostic task never assembles, signs or publishes an application.
+gradle.projectsEvaluated {
+    rootProject.tasks.register('hrBundleTool', JavaExec) {
+        classpath = rootProject.buildscript.configurations.classpath
+        mainClass = 'com.android.tools.build.bundletool.BundleToolMain'
+        if (System.getProperty('hr.bundleOutput')) {
+            standardOutput = new FileOutputStream(System.getProperty('hr.bundleOutput'))
+        }
+        args = new groovy.json.JsonSlurper().parse(new File(System.getProperty('hr.bundleArgs')))
+    }
+}

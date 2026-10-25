@@ -1,0 +1,43 @@
+{
+  "schema_version": 1,
+  "date": "2026-10-24",
+  "purpose": "Source provenance only; sibling repositories are not build dependencies.",
+  "references": {
+    "game_scaffold": {
+      "head": "8a524737c9a4b432460afb8f7f586541cca1ff88",
+      "working_tree_sources": {
+        "README.md": "b124ac896bfa3dc10ba7abc9976ad1a6d9b1afb287864a119e8f500275970183",
+        "native_game_foundation/create_project.py": "e1550bc8ad070f5a498f123f8a93a50ba5f3852d348bd3c63ad1898ad7fdeee1",
+        "native_game_foundation/foundation_manifest.json": "cc2135dca6398e94c28c21b95c252aeb610d9c3503cb292ee886a3a8708b9354"
+      }
+    },
+    "midnight_menu": {
+      "head": "e21751fa91a986d617f7eb6078d8fc711d7ef0bb",
+      "working_tree_sources": {
+        "CMakePresets.json": "882ad2683ba27cd66a1eb4eea81e985e8535da3e989085226958cab9f0b9ad10",
+        "dependencies.lock.json": "a916070b3ab36257125abe034af696542bee8f0d90d16f2b88af333c5162ee9a",
+        ".github/workflows/foundation-macos.yml": "a4ef7bd04df5b2f34b2e40ac82c964b8107256cbbbd89b53650e0a280a51feaa",
+        "docs/FOUNDATIONAL_ARCHITECTURE.md": "1f83d745e3a3089e8cf75ec13030ac5c8a547dfc0b6a7f96383bbb82ab81447b"
+      }
+    }
+  },
+  "generation": {
+    "foundation_lock": "foundation.lock.json",
+    "platforms": [
+      "macos",
+      "windows",
+      "linux",
+      "ios",
+      "android"
+    ],
+    "features": [],
+    "orientation": "landscape",
+    "git_initialized": false,
+    "merge": "Refused existing-file collisions; only .gitignore was combined."
+  },
+  "local_cache_verification": {
+    "dependencies": "Both exact source commits, origins, clean trees and recursive submodules verified.",
+    "host_tool": "Supplied compiler bundle copied locally by bootstrap; @loader_path resolves adjacent libraries.",
+    "limitations": "Existing caches were reused; no fresh network bootstrap is claimed."
+  }
+}

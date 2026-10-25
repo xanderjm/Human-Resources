@@ -1,0 +1,161 @@
+{
+  "schema_version": 1,
+  "units": "metres",
+  "coordinates": "Y up, +Z forward; Blender authoring converts to Z up, -Y forward",
+  "fps": 30,
+  "output_root": "build/animation",
+  "characters": [
+    {
+      "id": "cow",
+      "rig": "quadruped",
+      "height": 1.265,
+      "hip_height": 0.32,
+      "head_pivot": [
+        0,
+        0.78,
+        0.28
+      ],
+      "head_tip": [
+        0,
+        0.67,
+        0.78
+      ],
+      "ear_x": 0.48,
+      "special": "graze",
+      "walk_seconds": 1.2,
+      "stride_m": 0.33230809
+    },
+    {
+      "id": "pig",
+      "rig": "quadruped",
+      "height": 0.65,
+      "hip_height": 0.22,
+      "head_pivot": [
+        0,
+        0.4,
+        0.21
+      ],
+      "head_tip": [
+        0,
+        0.32,
+        0.51
+      ],
+      "ear_x": 0.18,
+      "special": "sniff",
+      "walk_seconds": 1.2,
+      "stride_m": 0.24836064
+    },
+    {
+      "id": "sheep",
+      "rig": "quadruped",
+      "height": 0.8,
+      "hip_height": 0.23,
+      "head_pivot": [
+        0,
+        0.52,
+        0.23
+      ],
+      "head_tip": [
+        0,
+        0.43,
+        0.46
+      ],
+      "ear_x": 0.2,
+      "special": "nibble",
+      "walk_seconds": 1.2,
+      "stride_m": 0.25066809
+    },
+    {
+      "id": "farmer-body",
+      "rig": "humanoid",
+      "height": 1.6,
+      "shoulder_x": 0.27,
+      "hand_x": 0.52,
+      "hand_y": 0.57,
+      "hip_height": 0.58,
+      "head_y": 1.1,
+      "special": "shoo",
+      "walk_seconds": 1.1,
+      "stride_m": 0.71935437,
+      "headwear": "straw-hat"
+    },
+    {
+      "id": "resident-body",
+      "rig": "humanoid",
+      "height": 1.6,
+      "shoulder_x": 0.29,
+      "hand_x": 0.55,
+      "hand_y": 0.55,
+      "hip_height": 0.47,
+      "head_y": 1.1,
+      "special": "yawn",
+      "walk_seconds": 1.1,
+      "stride_m": 0.55126505,
+      "headwear": "nightcap"
+    },
+    {
+      "id": "soldier-body",
+      "rig": "humanoid",
+      "height": 1.6,
+      "shoulder_x": 0.29,
+      "hand_x": 0.53,
+      "hand_y": 0.43,
+      "hip_height": 0.55,
+      "head_y": 1.06,
+      "special": "signal",
+      "walk_seconds": 1.1,
+      "stride_m": 0.67336451
+    }
+  ],
+  "clips": {
+    "idle": {
+      "seconds": 3.0,
+      "loop": true,
+      "purpose": "Breathing, weight shift and quiet observation"
+    },
+    "walk": {
+      "loop": true,
+      "purpose": "In-place wandering / patrol; speed = stride_m / duration"
+    },
+    "run": {
+      "seconds": 0.7,
+      "loop": true,
+      "purpose": "In-place fleeing; quadruped diagonal trot, human sprint"
+    },
+    "alert": {
+      "seconds": 1.8,
+      "loop": false,
+      "purpose": "Notice saucer and look upward, return to neutral"
+    },
+    "special": {
+      "seconds": 3.2,
+      "loop": true,
+      "purpose": "Species/role-specific idle behaviour, named per character"
+    },
+    "startle": {
+      "seconds": 0.9,
+      "loop": false,
+      "purpose": "Anticipation, small recoil/hop and settle"
+    },
+    "hit_react": {
+      "seconds": 0.6,
+      "loop": false,
+      "purpose": "Short nonfatal flinch; no death or gameplay rule implied"
+    },
+    "beam_lift": {
+      "seconds": 1.5,
+      "loop": false,
+      "purpose": "Lift root to 0.55m, spread limbs; ends at struggle pose"
+    },
+    "beam_struggle": {
+      "seconds": 1.2,
+      "loop": true,
+      "purpose": "Suspended at 0.55m; kicking/paddling with a seamless loop"
+    },
+    "beam_release": {
+      "seconds": 1.4,
+      "loop": false,
+      "purpose": "From suspended pose, descend, cushion landing and return to neutral"
+    }
+  }
+}

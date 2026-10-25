@@ -1,0 +1,17 @@
+{
+  "schema_version": 1,
+  "id": "fx-laser",
+  "type": "native-graphic",
+  "source": "assets/graphics/fx-laser/fx-laser.svg",
+  "png": "assets/graphics/fx-laser/fx-laser.png",
+  "reference": "assets/references/fx-laser/v1.png",
+  "use": "Repeat U (longitudinal X), clamp V. Stretch/instance strip between endpoints. Ends need separately authored runtime caps only if desired.",
+  "colour_space": "sRGB colour, linear alpha",
+  "alpha_encoding": "straight/unassociated alpha",
+  "blend": "source-alpha / one-minus-source-alpha; emissive effects may use additive blend in renderer",
+  "sampler": {
+    "u": "repeat",
+    "v": "clamp-to-edge"
+  },
+  "variants": []
+}

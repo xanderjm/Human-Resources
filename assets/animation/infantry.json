@@ -1,0 +1,256 @@
+{
+  "schema_version": 1,
+  "scope": "Isolated equipped infantry authoring candidate; no current native soldier replacement",
+  "fps": 30,
+  "coordinates": "metres, +Y up, +Z forward; socket frame delta = posed * inverse(rest)",
+  "fit_source": "assets/animation/infantry-fit.json",
+  "fit_sha256": "0a516e0369e4899795daafc24f5e99495604636525573043d08c8f51ae1a3f66",
+  "output_root": "build/animation/infantry",
+  "walk_profile": {
+    "cycle_seconds": 1.1,
+    "stride_per_leg_length": 1.55,
+    "stance_fraction": 0.6,
+    "foot_clearance_per_leg_length": 0.2,
+    "body_lower_per_leg_length": 0.18,
+    "body_bob_per_leg_length": 0.023,
+    "heel_strike_degrees": -12,
+    "toe_off_degrees": 26,
+    "footfalls": {
+      "L": 0.0,
+      "R": 0.5
+    },
+    "sole_clearance_m": 0.002
+  },
+  "variants": [
+    {
+      "id": "infantry-rifleman-body",
+      "role": "rifleman",
+      "body_source": "assets/models/infantry-rifleman-body/infantry-rifleman-body.glb",
+      "weapon_source": "assets/models/weapon-carbine/weapon-carbine.glb",
+      "weapon_id": "weapon-carbine",
+      "grip_offsets": {
+        "R": [
+          -7.1e-07,
+          0.0,
+          -0.03000042
+        ],
+        "L": [
+          -7.3e-07,
+          0.0,
+          3.6e-07
+        ]
+      },
+      "weapon_sockets": {
+        "socket_primary": [
+          -7.1e-07,
+          0.0,
+          -0.03000042
+        ],
+        "socket_support": [
+          -0.00993273,
+          0.073116,
+          0.26164436
+        ],
+        "socket_stock": [
+          -0.004795,
+          0.040497,
+          -0.222774
+        ],
+        "socket_muzzle": [
+          -0.020548,
+          0.123887,
+          0.462329
+        ]
+      },
+      "carry_pitch_degrees": 12,
+      "carry_lower_m": 0.03,
+      "mitten_curl_degrees": {
+        "R": 80,
+        "L": 25
+      },
+      "recoil_m": 0.015,
+      "recoil_pitch_degrees": 3,
+      "sole_clearance_m": 0.002,
+      "carry_shoulder_drop_m": 0.03,
+      "carry_protraction_m": 0.02,
+      "chest_recoil_degrees": 3,
+      "chest_recoil_back_m": 0.012
+    },
+    {
+      "id": "infantry-shotgunner-body",
+      "role": "shotgunner",
+      "body_source": "assets/models/infantry-shotgunner-body/infantry-shotgunner-body.glb",
+      "weapon_source": "assets/models/weapon-shotgun/weapon-shotgun.glb",
+      "weapon_id": "weapon-shotgun",
+      "grip_offsets": {
+        "R": [
+          8e-08,
+          0.0,
+          -0.02999937
+        ],
+        "L": [
+          5.6e-07,
+          -0.02,
+          6.5e-07
+        ]
+      },
+      "weapon_sockets": {
+        "socket_primary": [
+          8e-08,
+          0.0,
+          -0.02999937
+        ],
+        "socket_support": [
+          0.00051456,
+          -0.017175,
+          0.28818565
+        ],
+        "socket_stock": [
+          0.001884,
+          -0.035445,
+          -0.192637
+        ],
+        "socket_muzzle_left": [
+          -0.022003,
+          0.044863,
+          0.479966
+        ],
+        "socket_muzzle_right": [
+          0.015325,
+          0.043921,
+          0.479966
+        ]
+      },
+      "carry_pitch_degrees": 10,
+      "carry_lower_m": 0.03,
+      "mitten_curl_degrees": {
+        "R": 80,
+        "L": 25
+      },
+      "recoil_m": 0.024,
+      "recoil_pitch_degrees": 4,
+      "sole_clearance_m": 0.002,
+      "carry_shoulder_drop_m": 0.03,
+      "carry_protraction_m": 0.015,
+      "chest_recoil_degrees": 5,
+      "chest_recoil_back_m": 0.024
+    },
+    {
+      "id": "infantry-rocketeer-body",
+      "role": "rocketeer",
+      "body_source": "assets/models/infantry-rocketeer-body/infantry-rocketeer-body.glb",
+      "weapon_source": "assets/models/weapon-rocket-launcher/weapon-rocket-launcher.glb",
+      "weapon_id": "weapon-rocket-launcher",
+      "grip_offsets": {
+        "R": [
+          -2.4e-07,
+          0.0,
+          -0.04000049
+        ],
+        "L": [
+          -5.8e-07,
+          -0.0,
+          4e-08
+        ]
+      },
+      "weapon_sockets": {
+        "socket_primary": [
+          -2.4e-07,
+          0.0,
+          -0.04000049
+        ],
+        "socket_support": [
+          0.00450042,
+          -0.039946,
+          0.26161904
+        ],
+        "socket_stock": [
+          0.000422,
+          0.084956,
+          -0.160347
+        ],
+        "socket_nose": [
+          0.00211,
+          0.190588,
+          0.728596
+        ],
+        "socket_tube": [
+          0.001547,
+          0.178351,
+          0.419716
+        ]
+      },
+      "carry_pitch_degrees": 2,
+      "carry_lower_m": 0.01,
+      "mitten_curl_degrees": {
+        "R": 80,
+        "L": 20
+      },
+      "recoil_m": 0.012,
+      "recoil_pitch_degrees": 2,
+      "sole_clearance_m": 0.002,
+      "carry_shoulder_drop_m": 0,
+      "carry_protraction_m": 0,
+      "chest_recoil_degrees": 3,
+      "chest_recoil_back_m": 0.015
+    }
+  ],
+  "clips": {
+    "idle": {
+      "seconds": 3,
+      "loop": true
+    },
+    "walk": {
+      "seconds": 1.1,
+      "loop": true
+    },
+    "run": {
+      "seconds": 0.75,
+      "loop": true
+    },
+    "alert": {
+      "seconds": 1.8,
+      "loop": false
+    },
+    "scan": {
+      "seconds": 3.2,
+      "loop": true
+    },
+    "startle": {
+      "seconds": 0.9,
+      "loop": false
+    },
+    "hit_react": {
+      "seconds": 0.6,
+      "loop": false
+    },
+    "beam_lift": {
+      "seconds": 1.5,
+      "loop": false
+    },
+    "beam_struggle": {
+      "seconds": 1.2,
+      "loop": true
+    },
+    "beam_release": {
+      "seconds": 1.4,
+      "loop": false
+    },
+    "aim_enter": {
+      "seconds": 0.5,
+      "loop": false
+    },
+    "aim": {
+      "seconds": 2,
+      "loop": true
+    },
+    "fire": {
+      "seconds": 0.6,
+      "loop": false
+    },
+    "aim_exit": {
+      "seconds": 0.5,
+      "loop": false
+    }
+  }
+}

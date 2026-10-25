@@ -1,0 +1,1752 @@
+{
+  "schema_version": 1,
+  "coordinates": "Metres; +Y up; +Z front; L=+X and R=-X, matching existing authoring rigs. Matrix fields are 3x3 row-major; quaternions XYZW.",
+  "scope": "Source-preserving static fit measurement and authoring proposals only. No body source modification, rig pose or runtime integration.",
+  "measurement_method": "Normalized GLB world hierarchy decoded by tools/normalize_glb.py; 45 barycentric samples per triangle and embedded albedo skin classification; anatomical section centres inspected against actual normalized front/right review images. Palm normals from visibly flat XZ hand surfaces.",
+  "global_limitations": [
+    "Hands are flat open mittens with thumb projection, no curled finger topology or grip hole. Rigid hand posing cannot deliver a literal closed grip.",
+    "Old A-pose skeleton dimensions are unsuitable; use measured T-pose \u00b1X wrists and per-body arm heights.",
+    "Stock-to-support span is approximately 0.48 m while short cartoon arms are approximately 0.4 m to wrist. Forward-only +Z gun orientation with buttplate on shoulder puts support outside opposite-hand reach. Cross-body yaw and real wrist-to-palm offset are required.",
+    "Launcher has integral loaded nose; do not spawn/remove it as a separate source object. Shoulder/head/backpack clearance remains a posed visual gate.",
+    "Optional broad mitten curl can preserve source topology and UV through skinning but is not articulated finger anatomy.",
+    "Candidate L clavicle protraction is an explicit authored pose change, not a measured source landmark: +Z0.08/0.04/0.05m for rifle/shotgun/launcher. Deformation at these shoulders remains a visual acceptance gate; do not silently clamp arm reach."
+  ],
+  "weapon_socket_source": {
+    "file": "assets/production/weapon-sockets.json",
+    "sha256": "e53aaddffab7c9de5e347704c2e19580639e69e89b22ca94b0d4a2217a99d675"
+  },
+  "bodies": [
+    {
+      "id": "infantry-rifleman-body",
+      "model_file": "assets/models/infantry-rifleman-body/infantry-rifleman-body.glb",
+      "model_sha256": "876d638d28bbff3514da68d4b5cb5b70ec1483e190ab5c2e90ba7cb6f8a7e84f",
+      "bounds_m": [
+        [
+          -0.875375,
+          0.0,
+          -0.35803
+        ],
+        [
+          0.875375,
+          1.6,
+          0.35803
+        ]
+      ],
+      "landmarks_m": {
+        "shoulder.L": [
+          0.275,
+          0.990364,
+          -0.031692
+        ],
+        "elbow.L": [
+          0.465,
+          0.99015,
+          -0.014989
+        ],
+        "wrist.L": [
+          0.665,
+          1.001499,
+          0.042184
+        ],
+        "palm_contact.L": [
+          0.735118,
+          0.942184,
+          0.053105
+        ],
+        "hand_tip.L": [
+          0.875375,
+          0.997002,
+          0.073662
+        ],
+        "hip.L": [
+          0.152891,
+          0.55,
+          -0.008137
+        ],
+        "knee.L": [
+          0.189293,
+          0.29,
+          -0.014775
+        ],
+        "ankle.L": [
+          0.229764,
+          0.13,
+          0.053961
+        ],
+        "sole_center.L": [
+          0.241542,
+          0.0,
+          0.077088
+        ],
+        "shoulder.R": [
+          -0.275,
+          0.991435,
+          -0.031692
+        ],
+        "elbow.R": [
+          -0.465,
+          0.993362,
+          -0.015846
+        ],
+        "wrist.R": [
+          -0.665,
+          1.009422,
+          0.041542
+        ],
+        "palm_contact.R": [
+          -0.735118,
+          0.952462,
+          0.050107
+        ],
+        "hand_tip.R": [
+          -0.875375,
+          1.005567,
+          0.071949
+        ],
+        "hip.R": [
+          -0.150749,
+          0.55,
+          -0.008137
+        ],
+        "knee.R": [
+          -0.19015,
+          0.29,
+          -0.016488
+        ],
+        "ankle.R": [
+          -0.231263,
+          0.13,
+          0.053961
+        ],
+        "sole_center.R": [
+          -0.246681,
+          0.0,
+          0.077088
+        ],
+        "pelvis": [
+          0,
+          0.55,
+          0
+        ],
+        "head_pivot": [
+          0,
+          1.12,
+          0.03
+        ],
+        "head_tip": [
+          0,
+          1.57,
+          0.03
+        ]
+      },
+      "section_measurements": {
+        "shoulder.L": {
+          "selection_axis": "x",
+          "selection_value_m": 0.275,
+          "half_window_m": 0.012,
+          "surface_samples": 298,
+          "bounds_m": [
+            [
+              0.263383,
+              0.882227,
+              -0.152463
+            ],
+            [
+              0.286938,
+              1.098501,
+              0.089079
+            ]
+          ]
+        },
+        "elbow.L": {
+          "selection_axis": "x",
+          "selection_value_m": 0.465,
+          "half_window_m": 0.012,
+          "surface_samples": 1708,
+          "bounds_m": [
+            [
+              0.453105,
+              0.880086,
+              -0.137901
+            ],
+            [
+              0.47666,
+              1.100214,
+              0.107923
+            ]
+          ]
+        },
+        "wrist.L": {
+          "selection_axis": "x",
+          "selection_value_m": 0.665,
+          "half_window_m": 0.012,
+          "surface_samples": 702,
+          "bounds_m": [
+            [
+              0.653105,
+              0.947323,
+              -0.037259
+            ],
+            [
+              0.67666,
+              1.055675,
+              0.121627
+            ]
+          ]
+        },
+        "hip.L": {
+          "selection_axis": "y",
+          "selection_value_m": 0.55,
+          "half_window_m": 0.008,
+          "surface_samples": 528,
+          "bounds_m": [
+            [
+              0.029122,
+              0.542184,
+              -0.143041
+            ],
+            [
+              0.27666,
+              0.557602,
+              0.126767
+            ]
+          ]
+        },
+        "knee.L": {
+          "selection_axis": "y",
+          "selection_value_m": 0.29,
+          "half_window_m": 0.008,
+          "surface_samples": 493,
+          "bounds_m": [
+            [
+              0.097645,
+              0.282227,
+              -0.099786
+            ],
+            [
+              0.280942,
+              0.297645,
+              0.070236
+            ]
+          ]
+        },
+        "ankle.L": {
+          "selection_axis": "y",
+          "selection_value_m": 0.13,
+          "half_window_m": 0.008,
+          "surface_samples": 764,
+          "bounds_m": [
+            [
+              0.100214,
+              0.122056,
+              -0.111349
+            ],
+            [
+              0.359315,
+              0.137901,
+              0.219272
+            ]
+          ]
+        },
+        "shoulder.R": {
+          "selection_axis": "x",
+          "selection_value_m": -0.275,
+          "half_window_m": 0.012,
+          "surface_samples": 309,
+          "bounds_m": [
+            [
+              -0.286938,
+              0.883083,
+              -0.152463
+            ],
+            [
+              -0.263383,
+              1.099786,
+              0.089079
+            ]
+          ]
+        },
+        "elbow.R": {
+          "selection_axis": "x",
+          "selection_value_m": -0.465,
+          "half_window_m": 0.012,
+          "surface_samples": 1621,
+          "bounds_m": [
+            [
+              -0.47666,
+              0.883512,
+              -0.137901
+            ],
+            [
+              -0.453105,
+              1.103212,
+              0.10621
+            ]
+          ]
+        },
+        "wrist.R": {
+          "selection_axis": "x",
+          "selection_value_m": -0.665,
+          "half_window_m": 0.012,
+          "surface_samples": 704,
+          "bounds_m": [
+            [
+              -0.67666,
+              0.956317,
+              -0.038544
+            ],
+            [
+              -0.653105,
+              1.062527,
+              0.121627
+            ]
+          ]
+        },
+        "hip.R": {
+          "selection_axis": "y",
+          "selection_value_m": 0.55,
+          "half_window_m": 0.008,
+          "surface_samples": 528,
+          "bounds_m": [
+            [
+              -0.275803,
+              0.542184,
+              -0.143041
+            ],
+            [
+              -0.025696,
+              0.557602,
+              0.126767
+            ]
+          ]
+        },
+        "knee.R": {
+          "selection_axis": "y",
+          "selection_value_m": 0.29,
+          "half_window_m": 0.008,
+          "surface_samples": 615,
+          "bounds_m": [
+            [
+              -0.281799,
+              0.282227,
+              -0.103212
+            ],
+            [
+              -0.098501,
+              0.297645,
+              0.070236
+            ]
+          ]
+        },
+        "ankle.R": {
+          "selection_axis": "y",
+          "selection_value_m": 0.13,
+          "half_window_m": 0.008,
+          "surface_samples": 748,
+          "bounds_m": [
+            [
+              -0.358886,
+              0.122056,
+              -0.111349
+            ],
+            [
+              -0.10364,
+              0.137901,
+              0.219272
+            ]
+          ]
+        }
+      },
+      "hands": {
+        "L": {
+          "wrist_to_palm_contact_m": [
+            0.070118,
+            -0.059315,
+            0.010921
+          ],
+          "finger_axis": [
+            1,
+            0,
+            0
+          ],
+          "palm_normal": [
+            0,
+            -1,
+            0
+          ],
+          "thumb_direction": [
+            0,
+            0,
+            1
+          ],
+          "hand_bounds_m": [
+            [
+              0.690364,
+              0.942184,
+              -0.02227
+            ],
+            [
+              0.850107,
+              1.05182,
+              0.169593
+            ]
+          ],
+          "palm_patch_bounds_m": [
+            [
+              0.690364,
+              0.942184,
+              -0.02227
+            ],
+            [
+              0.779872,
+              1.05182,
+              0.12848
+            ]
+          ],
+          "palm_patch_samples": 3275,
+          "distal_mitten_curl_threshold_abs_x_m": 0.765,
+          "curl_limit_degrees": 35,
+          "note": "Optional broad distal mitten bend only; thumb requires separate spatial mask. No finger chain/trigger finger is present."
+        },
+        "R": {
+          "wrist_to_palm_contact_m": [
+            -0.070118,
+            -0.05696,
+            0.008565
+          ],
+          "finger_axis": [
+            -1,
+            0,
+            0
+          ],
+          "palm_normal": [
+            0,
+            -1,
+            0
+          ],
+          "thumb_direction": [
+            0,
+            0,
+            1
+          ],
+          "hand_bounds_m": [
+            [
+              -0.850107,
+              0.952462,
+              -0.025696
+            ],
+            [
+              -0.690364,
+              1.058672,
+              0.169593
+            ]
+          ],
+          "palm_patch_bounds_m": [
+            [
+              -0.779872,
+              0.952462,
+              -0.025696
+            ],
+            [
+              -0.690364,
+              1.058672,
+              0.12591
+            ]
+          ],
+          "palm_patch_samples": 3235,
+          "distal_mitten_curl_threshold_abs_x_m": 0.765,
+          "curl_limit_degrees": 35,
+          "note": "Optional broad distal mitten bend only; thumb requires separate spatial mask. No finger chain/trigger finger is present."
+        }
+      },
+      "landmark_precision_note": "Internal anatomical joints inferred from bounded actual mesh cross-section centres and source visual landmarks; not scanned anatomy. Cross-section bounds and palm contact patches are measured. Head and pelvis pivots are authored proposals.",
+      "equipment_candidate": {
+        "weapon_id": "weapon-carbine",
+        "weapon_file": "assets/models/weapon-carbine/weapon-carbine.glb",
+        "weapon_sha256": "375a1b5fb078b026d3b850a508a0980b06d33bfc47b16012942eb823cd7b3741",
+        "position_m": [
+          -0.069084,
+          0.954503,
+          0.274134
+        ],
+        "rotation_xyzw": [
+          0,
+          0.38268343,
+          0,
+          0.92387953
+        ],
+        "yaw_degrees": 45,
+        "scale": 1,
+        "shoulder_contact_target_m": [
+          -0.23,
+          0.995,
+          0.12
+        ],
+        "transformed_sockets_m": {
+          "primary_grip": [
+            -0.069084,
+            0.954503,
+            0.274134
+          ],
+          "support_grip": [
+            0.108903,
+            1.027619,
+            0.466168
+          ],
+          "shoulder_rest": [
+            -0.23,
+            0.995,
+            0.12
+          ],
+          "muzzle": [
+            0.243302,
+            1.07839,
+            0.61558
+          ]
+        },
+        "grip_results": {
+          "R": {
+            "posed_shoulder_target_m": [
+              -0.275,
+              0.991435,
+              -0.031692
+            ],
+            "clavicle_protraction_m": 0,
+            "contact_socket": "primary_grip",
+            "contact_target_m": [
+              -0.090298,
+              0.954503,
+              0.252921
+            ],
+            "wrist_target_m": [
+              -0.124518,
+              1.024621,
+              0.206588
+            ],
+            "hand_world_rotation_row_major": [
+              [
+                0.0,
+                -0.707107,
+                -0.707107
+              ],
+              [
+                1.0,
+                0.0,
+                0.0
+              ],
+              [
+                0.0,
+                -0.707107,
+                0.707107
+              ]
+            ],
+            "arm_chain_length_m": 0.399359,
+            "shoulder_to_wrist_target_m": 0.283767,
+            "reach_margin_m": 0.115592
+          },
+          "L": {
+            "posed_shoulder_target_m": [
+              0.275,
+              0.990364,
+              0.048308
+            ],
+            "clavicle_protraction_m": 0.08,
+            "contact_socket": "support_grip",
+            "contact_target_m": [
+              0.108903,
+              1.027619,
+              0.466168
+            ],
+            "wrist_target_m": [
+              0.120734,
+              0.968304,
+              0.396197
+            ],
+            "hand_world_rotation_row_major": [
+              [
+                -0.316475,
+                0.0,
+                0.948601
+              ],
+              [
+                0.0,
+                -1.0,
+                0.0
+              ],
+              [
+                0.948601,
+                0.0,
+                0.316475
+              ]
+            ],
+            "arm_chain_length_m": 0.399054,
+            "shoulder_to_wrist_target_m": 0.381198,
+            "reach_margin_m": 0.017856
+          }
+        },
+        "status": "Reach feasible with the explicit posed shoulder/protraction targets. Candidate only; requires equipped deforming visual review. No intersection/skin/animation acceptance implied.",
+        "posture": "Stock on right front shoulder, cross-body barrel, left support palm under fore-end. Whole actor facing can compensate cross-body aim yaw."
+      }
+    },
+    {
+      "id": "infantry-shotgunner-body",
+      "model_file": "assets/models/infantry-shotgunner-body/infantry-shotgunner-body.glb",
+      "model_sha256": "26988121870f9ef1d041b6a34ce7dc454597d817bf433a41f79464950212cb13",
+      "bounds_m": [
+        [
+          -0.865124,
+          0.0,
+          -0.401242
+        ],
+        [
+          0.865124,
+          1.5,
+          0.401242
+        ]
+      ],
+      "landmarks_m": {
+        "shoulder.L": [
+          0.295,
+          0.920147,
+          0.002751
+        ],
+        "elbow.L": [
+          0.455,
+          0.935384,
+          0.002116
+        ],
+        "wrist.L": [
+          0.665,
+          0.944484,
+          0.057985
+        ],
+        "palm_contact.L": [
+          0.734975,
+          0.876975,
+          0.056081
+        ],
+        "hand_tip.L": [
+          0.865124,
+          0.938135,
+          0.076185
+        ],
+        "hip.L": [
+          0.180093,
+          0.51,
+          -0.00254
+        ],
+        "knee.L": [
+          0.195965,
+          0.29,
+          -0.007619
+        ],
+        "ankle.L": [
+          0.22792,
+          0.14,
+          0.01693
+        ],
+        "sole_center.L": [
+          0.272573,
+          0.0,
+          0.042325
+        ],
+        "shoulder.R": [
+          -0.295,
+          0.964588,
+          -0.079148
+        ],
+        "elbow.R": [
+          -0.455,
+          0.94533,
+          0.0
+        ],
+        "wrist.R": [
+          -0.665,
+          0.967762,
+          0.048039
+        ],
+        "palm_contact.R": [
+          -0.734975,
+          0.900677,
+          0.044653
+        ],
+        "hand_tip.R": [
+          -0.865124,
+          0.963318,
+          0.064334
+        ],
+        "hip.R": [
+          -0.177342,
+          0.51,
+          -0.000423
+        ],
+        "knee.R": [
+          -0.202102,
+          0.29,
+          0.001481
+        ],
+        "ankle.R": [
+          -0.228767,
+          0.14,
+          0.015872
+        ],
+        "sole_center.R": [
+          -0.286117,
+          0.0,
+          0.042325
+        ],
+        "pelvis": [
+          0,
+          0.51,
+          0
+        ],
+        "head_pivot": [
+          0,
+          1.035,
+          0.03
+        ],
+        "head_tip": [
+          0,
+          1.47,
+          0.03
+        ]
+      },
+      "section_measurements": {
+        "shoulder.L": {
+          "selection_axis": "x",
+          "selection_value_m": 0.295,
+          "half_window_m": 0.012,
+          "surface_samples": 1307,
+          "bounds_m": [
+            [
+              0.283155,
+              0.780051,
+              -0.111315
+            ],
+            [
+              0.306857,
+              1.060243,
+              0.116817
+            ]
+          ]
+        },
+        "elbow.L": {
+          "selection_axis": "x",
+          "selection_value_m": 0.455,
+          "half_window_m": 0.012,
+          "surface_samples": 2746,
+          "bounds_m": [
+            [
+              0.443143,
+              0.822799,
+              -0.114278
+            ],
+            [
+              0.466845,
+              1.047968,
+              0.11851
+            ]
+          ]
+        },
+        "wrist.L": {
+          "selection_axis": "x",
+          "selection_value_m": 0.665,
+          "half_window_m": 0.012,
+          "surface_samples": 1734,
+          "bounds_m": [
+            [
+              0.653076,
+              0.879515,
+              -0.041479
+            ],
+            [
+              0.676778,
+              1.009453,
+              0.157449
+            ]
+          ]
+        },
+        "hip.L": {
+          "selection_axis": "y",
+          "selection_value_m": 0.51,
+          "half_window_m": 0.008,
+          "surface_samples": 601,
+          "bounds_m": [
+            [
+              0.026665,
+              0.502398,
+              -0.179881
+            ],
+            [
+              0.333521,
+              0.517635,
+              0.174802
+            ]
+          ]
+        },
+        "knee.L": {
+          "selection_axis": "y",
+          "selection_value_m": 0.29,
+          "half_window_m": 0.008,
+          "surface_samples": 1174,
+          "bounds_m": [
+            [
+              0.051637,
+              0.282308,
+              -0.179458
+            ],
+            [
+              0.340293,
+              0.297968,
+              0.164221
+            ]
+          ]
+        },
+        "ankle.L": {
+          "selection_axis": "y",
+          "selection_value_m": 0.14,
+          "half_window_m": 0.008,
+          "surface_samples": 476,
+          "bounds_m": [
+            [
+              0.096501,
+              0.132054,
+              -0.182844
+            ],
+            [
+              0.35934,
+              0.147714,
+              0.216704
+            ]
+          ]
+        },
+        "shoulder.R": {
+          "selection_axis": "x",
+          "selection_value_m": -0.295,
+          "half_window_m": 0.012,
+          "surface_samples": 975,
+          "bounds_m": [
+            [
+              -0.306857,
+              0.829571,
+              -0.272573
+            ],
+            [
+              -0.283155,
+              1.099605,
+              0.114278
+            ]
+          ]
+        },
+        "elbow.R": {
+          "selection_axis": "x",
+          "selection_value_m": -0.455,
+          "half_window_m": 0.012,
+          "surface_samples": 3236,
+          "bounds_m": [
+            [
+              -0.466845,
+              0.827455,
+              -0.12105
+            ],
+            [
+              -0.443143,
+              1.063205,
+              0.12105
+            ]
+          ]
+        },
+        "wrist.R": {
+          "selection_axis": "x",
+          "selection_value_m": -0.665,
+          "half_window_m": 0.012,
+          "surface_samples": 1706,
+          "bounds_m": [
+            [
+              -0.676778,
+              0.90364,
+              -0.049944
+            ],
+            [
+              -0.653076,
+              1.031885,
+              0.146021
+            ]
+          ]
+        },
+        "hip.R": {
+          "selection_axis": "y",
+          "selection_value_m": 0.51,
+          "half_window_m": 0.008,
+          "surface_samples": 636,
+          "bounds_m": [
+            [
+              -0.327173,
+              0.502398,
+              -0.175226
+            ],
+            [
+              -0.027511,
+              0.517635,
+              0.174379
+            ]
+          ]
+        },
+        "knee.R": {
+          "selection_axis": "y",
+          "selection_value_m": 0.29,
+          "half_window_m": 0.008,
+          "surface_samples": 1113,
+          "bounds_m": [
+            [
+              -0.352144,
+              0.282308,
+              -0.1693
+            ],
+            [
+              -0.05206,
+              0.297968,
+              0.172263
+            ]
+          ]
+        },
+        "ankle.R": {
+          "selection_axis": "y",
+          "selection_value_m": 0.14,
+          "half_window_m": 0.008,
+          "surface_samples": 444,
+          "bounds_m": [
+            [
+              -0.358493,
+              0.132054,
+              -0.182844
+            ],
+            [
+              -0.099041,
+              0.147714,
+              0.214588
+            ]
+          ]
+        }
+      },
+      "hands": {
+        "L": {
+          "wrist_to_palm_contact_m": [
+            0.069975,
+            -0.067509,
+            -0.001904
+          ],
+          "finger_axis": [
+            1,
+            0,
+            0
+          ],
+          "palm_normal": [
+            0,
+            -1,
+            0
+          ],
+          "thumb_direction": [
+            0,
+            0,
+            1
+          ],
+          "hand_bounds_m": [
+            [
+              0.690322,
+              0.876975,
+              -0.038939
+            ],
+            [
+              0.839729,
+              0.999295,
+              0.191309
+            ]
+          ],
+          "palm_patch_bounds_m": [
+            [
+              0.690322,
+              0.876975,
+              -0.038939
+            ],
+            [
+              0.779628,
+              0.999295,
+              0.1511
+            ]
+          ],
+          "palm_patch_samples": 3828,
+          "distal_mitten_curl_threshold_abs_x_m": 0.765,
+          "curl_limit_degrees": 35,
+          "note": "Optional broad distal mitten bend only; thumb requires separate spatial mask. No finger chain/trigger finger is present."
+        },
+        "R": {
+          "wrist_to_palm_contact_m": [
+            -0.069975,
+            -0.067085,
+            -0.003386
+          ],
+          "finger_axis": [
+            -1,
+            0,
+            0
+          ],
+          "palm_normal": [
+            0,
+            -1,
+            0
+          ],
+          "thumb_direction": [
+            0,
+            0,
+            1
+          ],
+          "hand_bounds_m": [
+            [
+              -0.839729,
+              0.900677,
+              -0.049097
+            ],
+            [
+              -0.690322,
+              1.025959,
+              0.177765
+            ]
+          ],
+          "palm_patch_bounds_m": [
+            [
+              -0.779628,
+              0.900677,
+              -0.049097
+            ],
+            [
+              -0.690322,
+              1.025959,
+              0.138403
+            ]
+          ],
+          "palm_patch_samples": 3849,
+          "distal_mitten_curl_threshold_abs_x_m": 0.765,
+          "curl_limit_degrees": 35,
+          "note": "Optional broad distal mitten bend only; thumb requires separate spatial mask. No finger chain/trigger finger is present."
+        }
+      },
+      "landmark_precision_note": "Internal anatomical joints inferred from bounded actual mesh cross-section centres and source visual landmarks; not scanned anatomy. Cross-section bounds and palm contact patches are measured. Head and pelvis pivots are authored proposals.",
+      "equipment_candidate": {
+        "weapon_id": "weapon-shotgun",
+        "weapon_file": "assets/models/weapon-shotgun/weapon-shotgun.glb",
+        "weapon_sha256": "fdfb970d978be03c8cef8e3db03a088cdc9d77fd054169901f8588e08934a3a4",
+        "position_m": [
+          -0.093282,
+          0.980445,
+          0.272035
+        ],
+        "rotation_xyzw": [
+          0,
+          0.46174861,
+          0,
+          0.88701083
+        ],
+        "yaw_degrees": 55,
+        "scale": 1,
+        "shoulder_contact_target_m": [
+          -0.25,
+          0.945,
+          0.16
+        ],
+        "transformed_sockets_m": {
+          "primary_grip": [
+            -0.093282,
+            0.980445,
+            0.272035
+          ],
+          "support_grip": [
+            0.143081,
+            0.98327,
+            0.43691
+          ],
+          "shoulder_rest": [
+            -0.25,
+            0.945,
+            0.16
+          ],
+          "muzzle_left": [
+            0.287263,
+            1.025308,
+            0.565356
+          ],
+          "muzzle_right": [
+            0.308674,
+            1.024366,
+            0.534779
+          ]
+        },
+        "grip_results": {
+          "R": {
+            "posed_shoulder_target_m": [
+              -0.295,
+              0.964588,
+              -0.079148
+            ],
+            "clavicle_protraction_m": 0,
+            "contact_socket": "primary_grip",
+            "contact_target_m": [
+              -0.117856,
+              0.980445,
+              0.254828
+            ],
+            "wrist_target_m": [
+              -0.174751,
+              1.05042,
+              0.219123
+            ],
+            "hand_world_rotation_row_major": [
+              [
+                0.0,
+                -0.819152,
+                -0.573576
+              ],
+              [
+                1.0,
+                0.0,
+                0.0
+              ],
+              [
+                0.0,
+                -0.573576,
+                0.819152
+              ]
+            ],
+            "arm_chain_length_m": 0.396131,
+            "shoulder_to_wrist_target_m": 0.332855,
+            "reach_margin_m": 0.063276
+          },
+          "L": {
+            "posed_shoulder_target_m": [
+              0.295,
+              0.920147,
+              0.042751
+            ],
+            "clavicle_protraction_m": 0.04,
+            "contact_socket": "support_grip",
+            "contact_target_m": [
+              0.143081,
+              0.96327,
+              0.43691
+            ],
+            "wrist_target_m": [
+              0.167989,
+              0.895761,
+              0.371491
+            ],
+            "hand_world_rotation_row_major": [
+              [
+                -0.33028,
+                0.0,
+                0.943883
+              ],
+              [
+                0.0,
+                -1.0,
+                0.0
+              ],
+              [
+                0.943883,
+                0.0,
+                0.33028
+              ]
+            ],
+            "arm_chain_length_m": 0.37822,
+            "shoulder_to_wrist_target_m": 0.353265,
+            "reach_margin_m": 0.024955
+          }
+        },
+        "status": "Reach feasible with the explicit posed shoulder/protraction targets. Candidate only; requires equipped deforming visual review. No intersection/skin/animation acceptance implied.",
+        "posture": "Stock on right front shoulder, cross-body barrel, left support palm under fore-end. Whole actor facing can compensate cross-body aim yaw."
+      }
+    },
+    {
+      "id": "infantry-rocketeer-body",
+      "model_file": "assets/models/infantry-rocketeer-body/infantry-rocketeer-body.glb",
+      "model_sha256": "e825433728deb3b321cea7426ad0e76db7329175c9e10745984f1f96f9d5ac62",
+      "bounds_m": [
+        [
+          -0.93666,
+          0.0,
+          -0.364766
+        ],
+        [
+          0.93666,
+          1.8,
+          0.364766
+        ]
+      ],
+      "landmarks_m": {
+        "shoulder.L": [
+          0.29,
+          1.202444,
+          0.050407
+        ],
+        "elbow.L": [
+          0.49,
+          1.210922,
+          0.063238
+        ],
+        "wrist.L": [
+          0.715,
+          1.221461,
+          0.104481
+        ],
+        "palm_contact.L": [
+          0.78498,
+          1.15112,
+          0.093483
+        ],
+        "hand_tip.L": [
+          0.93666,
+          1.217108,
+          0.113646
+        ],
+        "hip.L": [
+          0.106314,
+          0.75,
+          0.077673
+        ],
+        "knee.L": [
+          0.162449,
+          0.44,
+          0.081568
+        ],
+        "ankle.L": [
+          0.229582,
+          0.16,
+          0.074236
+        ],
+        "sole_center.L": [
+          0.263951,
+          0.0,
+          0.124644
+        ],
+        "shoulder.R": [
+          -0.29,
+          1.201069,
+          0.050407
+        ],
+        "elbow.R": [
+          -0.49,
+          1.209776,
+          0.063238
+        ],
+        "wrist.R": [
+          -0.715,
+          1.222607,
+          0.087067
+        ],
+        "palm_contact.R": [
+          -0.78498,
+          1.147454,
+          0.088671
+        ],
+        "hand_tip.R": [
+          -0.93666,
+          1.215275,
+          0.111813
+        ],
+        "hip.R": [
+          -0.105855,
+          0.75,
+          0.074695
+        ],
+        "knee.R": [
+          -0.160616,
+          0.44,
+          0.081568
+        ],
+        "ankle.R": [
+          -0.229812,
+          0.16,
+          0.074007
+        ],
+        "sole_center.R": [
+          -0.262118,
+          0.0,
+          0.124644
+        ],
+        "pelvis": [
+          0,
+          0.75,
+          0
+        ],
+        "head_pivot": [
+          0,
+          1.35,
+          0.03
+        ],
+        "head_tip": [
+          0,
+          1.77,
+          0.03
+        ]
+      },
+      "section_measurements": {
+        "shoulder.L": {
+          "selection_axis": "x",
+          "selection_value_m": 0.29,
+          "half_window_m": 0.012,
+          "surface_samples": 360,
+          "bounds_m": [
+            [
+              0.278615,
+              1.108045,
+              -0.047658
+            ],
+            [
+              0.298778,
+              1.296843,
+              0.148473
+            ]
+          ]
+        },
+        "elbow.L": {
+          "selection_axis": "x",
+          "selection_value_m": 0.49,
+          "half_window_m": 0.012,
+          "surface_samples": 492,
+          "bounds_m": [
+            [
+              0.478411,
+              1.121792,
+              -0.027495
+            ],
+            [
+              0.501782,
+              1.300051,
+              0.153971
+            ]
+          ]
+        },
+        "wrist.L": {
+          "selection_axis": "x",
+          "selection_value_m": 0.715,
+          "half_window_m": 0.012,
+          "surface_samples": 845,
+          "bounds_m": [
+            [
+              0.703411,
+              1.161202,
+              0.005499
+            ],
+            [
+              0.726782,
+              1.281721,
+              0.203462
+            ]
+          ]
+        },
+        "hip.L": {
+          "selection_axis": "y",
+          "selection_value_m": 0.75,
+          "half_window_m": 0.008,
+          "surface_samples": 349,
+          "bounds_m": [
+            [
+              0.026578,
+              0.742363,
+              -0.051324
+            ],
+            [
+              0.186049,
+              0.757943,
+              0.20667
+            ]
+          ]
+        },
+        "knee.L": {
+          "selection_axis": "y",
+          "selection_value_m": 0.44,
+          "half_window_m": 0.008,
+          "surface_samples": 392,
+          "bounds_m": [
+            [
+              0.045825,
+              0.432128,
+              -0.034827
+            ],
+            [
+              0.279073,
+              0.447709,
+              0.197963
+            ]
+          ]
+        },
+        "ankle.L": {
+          "selection_axis": "y",
+          "selection_value_m": 0.16,
+          "half_window_m": 0.008,
+          "surface_samples": 1166,
+          "bounds_m": [
+            [
+              0.110896,
+              0.152138,
+              -0.071487
+            ],
+            [
+              0.348269,
+              0.167719,
+              0.219959
+            ]
+          ]
+        },
+        "shoulder.R": {
+          "selection_axis": "x",
+          "selection_value_m": -0.29,
+          "half_window_m": 0.012,
+          "surface_samples": 360,
+          "bounds_m": [
+            [
+              -0.298778,
+              1.108045,
+              -0.047658
+            ],
+            [
+              -0.278615,
+              1.294094,
+              0.148473
+            ]
+          ]
+        },
+        "elbow.R": {
+          "selection_axis": "x",
+          "selection_value_m": -0.49,
+          "half_window_m": 0.012,
+          "surface_samples": 512,
+          "bounds_m": [
+            [
+              -0.501782,
+              1.121792,
+              -0.027495
+            ],
+            [
+              -0.478411,
+              1.29776,
+              0.153971
+            ]
+          ]
+        },
+        "wrist.R": {
+          "selection_axis": "x",
+          "selection_value_m": -0.715,
+          "half_window_m": 0.012,
+          "surface_samples": 653,
+          "bounds_m": [
+            [
+              -0.726782,
+              1.165784,
+              0.0
+            ],
+            [
+              -0.703411,
+              1.27943,
+              0.174134
+            ]
+          ]
+        },
+        "hip.R": {
+          "selection_axis": "y",
+          "selection_value_m": 0.75,
+          "half_window_m": 0.008,
+          "surface_samples": 297,
+          "bounds_m": [
+            [
+              -0.186049,
+              0.742363,
+              -0.050407
+            ],
+            [
+              -0.025662,
+              0.757943,
+              0.199796
+            ]
+          ]
+        },
+        "knee.R": {
+          "selection_axis": "y",
+          "selection_value_m": 0.44,
+          "half_window_m": 0.008,
+          "surface_samples": 395,
+          "bounds_m": [
+            [
+              -0.279073,
+              0.432128,
+              -0.034827
+            ],
+            [
+              -0.042159,
+              0.447709,
+              0.197963
+            ]
+          ]
+        },
+        "ankle.R": {
+          "selection_axis": "y",
+          "selection_value_m": 0.16,
+          "half_window_m": 0.008,
+          "surface_samples": 1194,
+          "bounds_m": [
+            [
+              -0.348727,
+              0.152138,
+              -0.071487
+            ],
+            [
+              -0.110896,
+              0.167719,
+              0.219501
+            ]
+          ]
+        }
+      },
+      "hands": {
+        "L": {
+          "wrist_to_palm_contact_m": [
+            0.06998,
+            -0.070341,
+            -0.010998
+          ],
+          "finger_axis": [
+            1,
+            0,
+            0
+          ],
+          "palm_normal": [
+            0,
+            -1,
+            0
+          ],
+          "thumb_direction": [
+            0,
+            0,
+            1
+          ],
+          "hand_bounds_m": [
+            [
+              0.740071,
+              1.15112,
+              -0.009165
+            ],
+            [
+              0.911456,
+              1.283096,
+              0.236456
+            ]
+          ],
+          "palm_patch_bounds_m": [
+            [
+              0.740071,
+              1.15112,
+              -0.009165
+            ],
+            [
+              0.829888,
+              1.283096,
+              0.19613
+            ]
+          ],
+          "palm_patch_samples": 3836,
+          "distal_mitten_curl_threshold_abs_x_m": 0.815,
+          "curl_limit_degrees": 35,
+          "note": "Optional broad distal mitten bend only; thumb requires separate spatial mask. No finger chain/trigger finger is present."
+        },
+        "R": {
+          "wrist_to_palm_contact_m": [
+            -0.06998,
+            -0.075153,
+            0.001604
+          ],
+          "finger_axis": [
+            -1,
+            0,
+            0
+          ],
+          "palm_normal": [
+            0,
+            -1,
+            0
+          ],
+          "thumb_direction": [
+            0,
+            0,
+            1
+          ],
+          "hand_bounds_m": [
+            [
+              -0.911456,
+              1.147454,
+              -0.012831
+            ],
+            [
+              -0.740071,
+              1.283096,
+              0.236456
+            ]
+          ],
+          "palm_patch_bounds_m": [
+            [
+              -0.829888,
+              1.147454,
+              -0.012831
+            ],
+            [
+              -0.740071,
+              1.283096,
+              0.190173
+            ]
+          ],
+          "palm_patch_samples": 4028,
+          "distal_mitten_curl_threshold_abs_x_m": 0.815,
+          "curl_limit_degrees": 35,
+          "note": "Optional broad distal mitten bend only; thumb requires separate spatial mask. No finger chain/trigger finger is present."
+        }
+      },
+      "landmark_precision_note": "Internal anatomical joints inferred from bounded actual mesh cross-section centres and source visual landmarks; not scanned anatomy. Cross-section bounds and palm contact patches are measured. Head and pelvis pivots are authored proposals.",
+      "equipment_candidate": {
+        "weapon_id": "weapon-rocket-launcher",
+        "weapon_file": "assets/models/weapon-rocket-launcher/weapon-rocket-launcher.glb",
+        "weapon_sha256": "c9e3fa0367dd62ea0142554cb24eb6a516562cbbb7927705ab73280db2561818",
+        "position_m": [
+          -0.277254,
+          1.205044,
+          0.163104
+        ],
+        "rotation_xyzw": [
+          0,
+          0.34202014,
+          0,
+          0.93969262
+        ],
+        "yaw_degrees": 40,
+        "scale": 1,
+        "shoulder_contact_target_m": [
+          -0.38,
+          1.29,
+          0.04
+        ],
+        "transformed_sockets_m": {
+          "primary_grip": [
+            -0.277254,
+            1.205044,
+            0.163104
+          ],
+          "support_grip": [
+            -0.105641,
+            1.165098,
+            0.360623
+          ],
+          "shoulder_rest": [
+            -0.38,
+            1.29,
+            0.04
+          ],
+          "loaded_nose_tip": [
+            0.192695,
+            1.395632,
+            0.719885
+          ],
+          "tube_mouth_plane": [
+            -0.006281,
+            1.383395,
+            0.483631
+          ]
+        },
+        "grip_results": {
+          "R": {
+            "posed_shoulder_target_m": [
+              -0.29,
+              1.201069,
+              0.050407
+            ],
+            "clavicle_protraction_m": 0,
+            "contact_socket": "primary_grip",
+            "contact_target_m": [
+              -0.302966,
+              1.205044,
+              0.132462
+            ],
+            "wrist_target_m": [
+              -0.350044,
+              1.275024,
+              0.073861
+            ],
+            "hand_world_rotation_row_major": [
+              [
+                0.0,
+                -0.642788,
+                -0.766044
+              ],
+              [
+                1.0,
+                0.0,
+                0.0
+              ],
+              [
+                0.0,
+                -0.766044,
+                0.642788
+              ]
+            ],
+            "arm_chain_length_m": 0.427222,
+            "shoulder_to_wrist_target_m": 0.098106,
+            "reach_margin_m": 0.329116
+          },
+          "L": {
+            "posed_shoulder_target_m": [
+              0.29,
+              1.202444,
+              0.100407
+            ],
+            "clavicle_protraction_m": 0.05,
+            "contact_socket": "support_grip",
+            "contact_target_m": [
+              -0.105641,
+              1.165098,
+              0.360623
+            ],
+            "wrist_target_m": [
+              -0.043785,
+              1.094757,
+              0.326098
+            ],
+            "hand_world_rotation_row_major": [
+              [
+                -0.786941,
+                0.0,
+                0.617028
+              ],
+              [
+                0.0,
+                -1.0,
+                0.0
+              ],
+              [
+                0.617028,
+                0.0,
+                0.786941
+              ]
+            ],
+            "arm_chain_length_m": 0.429582,
+            "shoulder_to_wrist_target_m": 0.417067,
+            "reach_margin_m": 0.012515
+          }
+        },
+        "status": "Reach feasible with the explicit posed shoulder/protraction targets. Candidate only; requires equipped deforming visual review. No intersection/skin/animation acceptance implied.",
+        "posture": "Right outer shoulder launcher, left hand forward hanging grip; keep tube outside helmet/backpack."
+      }
+    }
+  ],
+  "surface_sampling": {
+    "barycentric_grid_divisions": 8,
+    "samples_per_triangle": 45,
+    "skin_albedo_classifier": "R>1.13*G and G>1.25*B and R>100; channel values0..255",
+    "palm_patch_selection": "Skin-coloured arm samples with side*X betweenwrist_abs_X+0.025 andtip_abs_X-0.025; restrictedtoside*X<wrist_abs_X+0.115 and Z<68thpercentile; contactispatchboundcentreX/Z andminimumY. See per-handpatchbounds."
+  }
+}

@@ -1,0 +1,15 @@
+{
+  "schema_version": 2,
+  "foundation_version": "2.1.0-dev",
+  "source_distribution_sha256": "394a3bbd55f0024bf6213e65503f8722e51c4decf6028b7a0cdea7f9f5011af1",
+  "source_template_sha256": "3fe4c76c83f1eadc4bf0ac0a5c794239fa14db6a7e5998fe93d18f4082557c03",
+  "generated_tree_sha256_before_lock": "19bc9475f95f8f909ed0897202e575b625174d2e2b233c8ceee3241fb8a8ed51",
+  "selected_platforms": [
+    "macos",
+    "windows",
+    "linux",
+    "ios",
+    "android"
+  ],
+  "selected_features": []
+}

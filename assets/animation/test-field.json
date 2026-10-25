@@ -1,0 +1,93 @@
+{
+  "schema_version": 1,
+  "scope": "Offline motion/scale review fixture; not gameplay or a shipping level",
+  "duration_seconds": 30,
+  "fps": 30,
+  "dimensions": [
+    1280,
+    720
+  ],
+  "characters": [
+    {
+      "id": "cow",
+      "center": [
+        -3.4,
+        -1.8
+      ],
+      "radius": 0.75,
+      "phase": 0.7,
+      "gait_phase": 0.0
+    },
+    {
+      "id": "pig",
+      "center": [
+        0,
+        -1.8
+      ],
+      "radius": 0.75,
+      "phase": 2.4,
+      "gait_phase": 0.3
+    },
+    {
+      "id": "sheep",
+      "center": [
+        3.4,
+        -1.8
+      ],
+      "radius": 0.75,
+      "phase": 4.2,
+      "gait_phase": 0.6
+    },
+    {
+      "id": "farmer-body",
+      "center": [
+        -3.4,
+        1.8
+      ],
+      "radius": 0.75,
+      "phase": 1.7,
+      "gait_phase": 0.2
+    },
+    {
+      "id": "resident-body",
+      "center": [
+        0,
+        1.8
+      ],
+      "radius": 0.75,
+      "phase": 3.3,
+      "gait_phase": 0.5
+    },
+    {
+      "id": "soldier-body",
+      "center": [
+        3.4,
+        1.8
+      ],
+      "radius": 0.75,
+      "phase": 5.0,
+      "gait_phase": 0.8
+    }
+  ],
+  "road": {
+    "radii": [
+      8.1,
+      6.5
+    ],
+    "half_width": 1.6
+  },
+  "vehicles": [
+    {
+      "id": "jeep",
+      "assembly": "jeep-four-wheels",
+      "speed_mps": 1.5,
+      "phase": -1.0
+    },
+    {
+      "id": "tank",
+      "assembly": "tank-with-turret",
+      "speed_mps": 1.05,
+      "phase": 2.3
+    }
+  ]
+}

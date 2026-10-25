@@ -1,0 +1,23 @@
+{
+  "schema_version": 1,
+  "id": "ui-upgrade-card",
+  "type": "native-graphic",
+  "source": "assets/graphics/ui-upgrade-card/ui-upgrade-card.svg",
+  "png": "assets/graphics/ui-upgrade-card/ui-upgrade-card.png",
+  "reference": "assets/references/ui-upgrade-card/v1.png",
+  "use": "Nine-slice card background; inset [64,224,64,64]px. Populate icon and dynamic text separately.",
+  "colour_space": "sRGB colour, linear alpha",
+  "alpha_encoding": "straight/unassociated alpha",
+  "blend": "source-alpha / one-minus-source-alpha; emissive effects may use additive blend in renderer",
+  "sampler": {
+    "u": "clamp-to-edge",
+    "v": "clamp-to-edge"
+  },
+  "nine_slice_insets_px": [
+    64,
+    224,
+    64,
+    64
+  ],
+  "variants": []
+}

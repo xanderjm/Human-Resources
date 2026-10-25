@@ -1,0 +1,12 @@
+{
+  "status": "approved_candidate",
+  "reviewers": [
+    "root agent",
+    "project coordinator (approval relayed by root)"
+  ],
+  "approval_recorded_at": "2026-10-25T00:14:39.267089+00:00",
+  "contact_sheet": "assets/graphics/app-icon/small-size-review.png",
+  "contact_sheet_sha256": "54c564076c504ab27bc4bf229de73c952fa2774a97aefa855120ac9652d8dae1",
+  "recipe_sha256": "bde67280ff1bccd5b3a91d3fa60f573ff09599066cf3aa0c52e370ffe03659f8",
+  "notes": "Parent confirmed visual inspection and approval of the actual current small-size sheet and requested no further decorative iteration. Approval is for the authoring candidate, not packaged platform/device qualification."
+}

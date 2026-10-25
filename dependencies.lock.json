@@ -1,0 +1,25 @@
+{
+  "schema_version": 1,
+  "dependencies": [
+    {
+      "name": "SDL",
+      "path": "external/SDL",
+      "url": "https://github.com/libsdl-org/SDL.git",
+      "ref": "release-3.4.10",
+      "commit": "8e37db5e797b6167f3a00d697d816a684bd259c7",
+      "recursive": false,
+      "default": true,
+      "license": "zlib"
+    },
+    {
+      "name": "SDL_shadercross",
+      "path": "external/SDL_shadercross",
+      "url": "https://github.com/libsdl-org/SDL_shadercross.git",
+      "ref": "e55cf5e31ced6f3d1be5cc6d0c50e99384f9f4ba",
+      "commit": "e55cf5e31ced6f3d1be5cc6d0c50e99384f9f4ba",
+      "recursive": true,
+      "default": true,
+      "license": "zlib with separately licensed compiler dependencies"
+    }
+  ]
+}

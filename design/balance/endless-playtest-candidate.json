@@ -1,0 +1,45 @@
+{
+  "version": "endless-playtest-candidate-v1",
+  "status": "Recommendation for a playable experiment; not adopted runtime rules or a validated balance.",
+  "base_catalogue": "endless-upgrade-system.json",
+  "target": {
+    "good_run_minutes": [
+      20,
+      30
+    ],
+    "end_condition": "Death only; no automatic time cutoff.",
+    "note": "Design target informed by genre benchmarks, not an observed average in this game."
+  },
+  "keep": [
+    "Three distinct random eligible choices per level, with gameplay paused.",
+    "Six hardware slots; three separate incremental picks per module.",
+    "16 module blueprints, seven research families and six earned evolution recipes.",
+    "First two completed evolution recipes activate.",
+    "Four uncapped research families preserve at least three eligible choices.",
+    "Rarity weights 60/35/5 for new blueprints and research quality; draw weights renormalize when a bucket is empty."
+  ],
+  "test_changes": {
+    "ordinary_owned_upgrades": true,
+    "rerolls": 2,
+    "research_bundle_every_levels": 15
+  },
+  "display_rules": [
+    "An owned module keeps its original rarity label but its next rank uses the Common draw bucket. This does not grant a guaranteed owned card.",
+    "Permanent uncapped research gains use 1 + floor((upgrade choice ordinal - 1) / 15): picks 1\u201315 give 1\u00d7, 16\u201330 give 2\u00d7, 31\u201345 give 3\u00d7. Old gains do not multiply.",
+    "Apply research bundles only to Weapon Damage, Hull Reinforcement, Shield Capacity and Specimen Value. Keep fire rate, capture speed and immediate repairs unchanged. Show actual values before selection.",
+    "Rerolls refresh all three options and preserve all eligibility rules. Two per run, with no automatic refill."
+  ],
+  "unresolved_before_balance_signoff": [
+    "Retune post-10-minute encounter pressure and sustain so mixed builds meet the 20\u201330-minute good-run target. No tested profile yet meets that target robustly.",
+    "Give capture specialists a clear score or resource payoff for their survival tradeoff; model vehicle capture score is an arbitrary flat five.",
+    "Spread late difficulty escalation across encounters; deaths cluster around scheduled boss windows.",
+    "Check whether easier owned ranks and rerolls make the same six-module roster too repeatable.",
+    "Measure actual lateral movement, capture retention, attack telegraphs and dodging before trusting simulated survival."
+  ],
+  "evidence": [
+    "endless-game-results.json",
+    "endless-research-tier-results.json",
+    "endless-long-tail-results.json"
+  ],
+  "fun_status": "Unmeasured. Requires human hands-on playtests."
+}

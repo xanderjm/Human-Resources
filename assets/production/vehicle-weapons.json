@@ -1,0 +1,227 @@
+{
+  "schema": 1,
+  "status": "accepted_offline_bounded_unmanned_assembly",
+  "units": "metres",
+  "axes": "+Y up, +Z forward, column vectors; matrices multiply right to left",
+  "M_jeep_definition": "Resolved vehicle actor frame at ground Y=0. It does NOT include the chassis +0.12m child translation. Apply actor placement/scale once outside this frame.",
+  "chassis_parent_translation_m": [
+    0,
+    0.12,
+    0
+  ],
+  "anchor_actor_m": [
+    0.0,
+    0.4960820179858087,
+    -1.0
+  ],
+  "yaw_pivot_mount_m": [
+    4.336808689942018e-19,
+    0.8037945054981808,
+    -0.005136986301369864
+  ],
+  "pitch_pivot_mount_m": [
+    4.336808689942018e-19,
+    1.0017123287671232,
+    -0.005136986301369864
+  ],
+  "pitch_offset_from_yaw_m": [
+    0,
+    0.19791782326894247,
+    0
+  ],
+  "yaw_axis": [
+    0,
+    1,
+    0
+  ],
+  "upward_pitch_axis": [
+    -1,
+    0,
+    0
+  ],
+  "muzzles": [
+    {
+      "id": "muzzle_1",
+      "component": 2,
+      "raw_head_position_m": [
+        -0.04823874755381602,
+        0.05738747553816047,
+        0.4274951076320939
+      ],
+      "raw_forward": [
+        0,
+        0,
+        1
+      ]
+    },
+    {
+      "id": "muzzle_2",
+      "component": 3,
+      "raw_head_position_m": [
+        0.07818003913894327,
+        0.014970645792563603,
+        0.4274951076320939
+      ],
+      "raw_forward": [
+        0,
+        0,
+        1
+      ]
+    },
+    {
+      "id": "muzzle_3",
+      "component": 4,
+      "raw_head_position_m": [
+        0.03243639921722116,
+        0.07568493150684932,
+        0.4274951076320939
+      ],
+      "raw_forward": [
+        0,
+        0,
+        1
+      ]
+    },
+    {
+      "id": "muzzle_4",
+      "component": 5,
+      "raw_head_position_m": [
+        -0.07318982387475535,
+        -0.017465753424657535,
+        0.4274951076320939
+      ],
+      "raw_forward": [
+        0,
+        0,
+        1
+      ]
+    },
+    {
+      "id": "muzzle_5",
+      "component": 6,
+      "raw_head_position_m": [
+        0.05489236790606655,
+        -0.058219178082191785,
+        0.4274951076320939
+      ],
+      "raw_forward": [
+        0,
+        0,
+        1
+      ]
+    },
+    {
+      "id": "muzzle_6",
+      "component": 7,
+      "raw_head_position_m": [
+        -0.02162426614481406,
+        -0.07318982387475537,
+        0.4274951076320939
+      ],
+      "raw_forward": [
+        0,
+        0,
+        1
+      ]
+    }
+  ],
+  "split": {
+    "fixed_triangles": 424,
+    "yaw_cap_triangles": 560,
+    "source_triangles": 984,
+    "rotating_component_ids": [
+      0,
+      1,
+      2,
+      4
+    ]
+  },
+  "source_GLb_node_matrices_column_major": {
+    "jeep-chassis": [
+      -3.1060665362035227,
+      0.0,
+      -3.8038344415003506e-16,
+      0.0,
+      0.0,
+      3.1060665362035227,
+      0.0,
+      0.0,
+      3.8038344415003506e-16,
+      0.0,
+      -3.1060665362035227,
+      0.0,
+      1.6653345369377348e-16,
+      0.6400195694716243,
+      1.1102230246251565e-16,
+      1.0
+    ],
+    "jeep-minigun-mount": [
+      6.441977683186078e-17,
+      0.0,
+      1.052054794520548,
+      0.0,
+      0.0,
+      1.052054794520548,
+      0.0,
+      0.0,
+      -1.052054794520548,
+      0.0,
+      6.441977683186078e-17,
+      0.0,
+      0.003082191780821919,
+      0.525,
+      -0.0,
+      1.0
+    ],
+    "jeep-minigun-head": [
+      5.214934314960158e-17,
+      0.0,
+      0.8516634050880626,
+      0.0,
+      0.0,
+      0.8516634050880626,
+      0.0,
+      0.0,
+      -0.8516634050880626,
+      0.0,
+      5.214934314960158e-17,
+      0.0,
+      0.0024951076320939335,
+      0.02827788649706458,
+      0.0024951076320939335,
+      1.0
+    ]
+  },
+  "source_sha256": {
+    "assets/models/jeep-minigun-head/jeep-minigun-head.glb": "9b75f1d8d4a539b3d44bf21c1170fb2f18e71f762502c3b9be92fa81f66d098b",
+    "assets/models/jeep-minigun-mount/jeep-minigun-mount.glb": "e272fd867a17fd6eb7e1ac9ca8fa358d0b487bbc7110ceb39b37473179353613",
+    "assets/models/jeep-chassis/jeep-chassis.glb": "f5c3216456bd78d2f842d42154838b8fb58b40f9df9b22cdbd8cf1db9eb1e0b1",
+    "assets/production/assemblies.json": "d13dd8940dad1003364cbc2674823a5c1d5c25ec5881f3fc66975287482dfec9",
+    "assets/production/records/jeep-minigun-head/component-fit.json": "c1557d20214a69aef91718f16c79599f9e6532931a5c3a614941725bb272f361",
+    "assets/models/jeep-wheel/jeep-wheel.glb": "2f39e7a7db81504cb2ce47c17d0cb510416a47c10d815df9f1cda6dc21f6debd",
+    "assets/models/tank-hull/tank-hull.glb": "dc840c7ce2168942a51b7ad02225cc0ba2180ec58071cbd0543e986cdc5515c8",
+    "assets/models/tank-turret/tank-turret.glb": "d99d8b1a49dac32adacae4e806434b0d685dc407d7515cc47816c1f9e650c4e0",
+    "assets/models/missile/missile.glb": "58f91f8339fa33a10ac7d75bd661fceaf107832a2800940d66c0f191269e1ea1"
+  },
+  "source_review": "docs/JEEP_MINIGUN_SWEEP_HANDOFF.md",
+  "normalization": "Original source GLB node transforms applied once; fixed post baked normalized; yaw cap baked normalized and pivot-subtracted.",
+  "cannon": {
+    "muzzle": [
+      -0.006042052873,
+      0.528119092772,
+      1.284246575342
+    ],
+    "forward": [
+      0,
+      0,
+      1
+    ],
+    "launch_forward_offset": 0.01,
+    "visible_missile_scale": 0.2,
+    "inner_aperture_radius": 0.09969489,
+    "projected_bore_radius": 0.09682826,
+    "visible_missile_bounding_sphere": 0.08700022,
+    "launch_to_turret_surface_minimum": 0.09993625,
+    "measurement": "tools/measure_tank_cannon.py: connected dark bore, closed ten-edge actual inner rim; area centroid and source+Z projection; 10mm forward launch; full original missile bounded sphere."
+  }
+}

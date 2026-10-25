@@ -1,0 +1,148 @@
+{
+  "status": "passed",
+  "fonts": [
+    {
+      "font": "HR-Abduction-Logo-Black-Italic",
+      "status": "passed",
+      "characters": 374,
+      "glyphs": 387,
+      "outline_glyphs": 378,
+      "tabular_advance": 731,
+      "ttf_bytes": 81684,
+      "checks": [
+        "table checksums",
+        "ASCII / Latin-1 / Extended-A coverage",
+        "name and embedding metadata",
+        "vertical bounds and bearings",
+        "tabular and proportional numbers",
+        "kerning",
+        "NFC/NFD equivalence",
+        "HarfBuzz shaping",
+        "FreeType rendering",
+        "WOFF2 round-trip",
+        "genuine italic metadata",
+        "saucer A stylistic set",
+        "initial R stylistic set"
+      ]
+    },
+    {
+      "font": "HR-Abduction-Compact-Black-Italic",
+      "status": "passed",
+      "characters": 374,
+      "glyphs": 387,
+      "outline_glyphs": 378,
+      "tabular_advance": 621,
+      "ttf_bytes": 79236,
+      "checks": [
+        "table checksums",
+        "ASCII / Latin-1 / Extended-A coverage",
+        "name and embedding metadata",
+        "vertical bounds and bearings",
+        "tabular and proportional numbers",
+        "kerning",
+        "NFC/NFD equivalence",
+        "HarfBuzz shaping",
+        "FreeType rendering",
+        "WOFF2 round-trip",
+        "genuine italic metadata",
+        "saucer A stylistic set",
+        "initial R stylistic set"
+      ]
+    },
+    {
+      "font": "HR-Beam-UI-Medium",
+      "status": "passed",
+      "characters": 374,
+      "glyphs": 385,
+      "outline_glyphs": 376,
+      "tabular_advance": 661,
+      "ttf_bytes": 101956,
+      "checks": [
+        "table checksums",
+        "ASCII / Latin-1 / Extended-A coverage",
+        "name and embedding metadata",
+        "vertical bounds and bearings",
+        "tabular and proportional numbers",
+        "kerning",
+        "NFC/NFD equivalence",
+        "HarfBuzz shaping",
+        "FreeType rendering",
+        "WOFF2 round-trip"
+      ]
+    },
+    {
+      "font": "HR-Beam-UI-SemiBold",
+      "status": "passed",
+      "characters": 374,
+      "glyphs": 385,
+      "outline_glyphs": 376,
+      "tabular_advance": 677,
+      "ttf_bytes": 101216,
+      "checks": [
+        "table checksums",
+        "ASCII / Latin-1 / Extended-A coverage",
+        "name and embedding metadata",
+        "vertical bounds and bearings",
+        "tabular and proportional numbers",
+        "kerning",
+        "NFC/NFD equivalence",
+        "HarfBuzz shaping",
+        "FreeType rendering",
+        "WOFF2 round-trip"
+      ]
+    },
+    {
+      "font": "HR-Beam-UI-Bold",
+      "status": "passed",
+      "characters": 374,
+      "glyphs": 385,
+      "outline_glyphs": 376,
+      "tabular_advance": 694,
+      "ttf_bytes": 100356,
+      "checks": [
+        "table checksums",
+        "ASCII / Latin-1 / Extended-A coverage",
+        "name and embedding metadata",
+        "vertical bounds and bearings",
+        "tabular and proportional numbers",
+        "kerning",
+        "NFC/NFD equivalence",
+        "HarfBuzz shaping",
+        "FreeType rendering",
+        "WOFF2 round-trip"
+      ]
+    },
+    {
+      "font": "HR-Field-Lettering-Regular",
+      "status": "passed",
+      "characters": 374,
+      "glyphs": 385,
+      "outline_glyphs": 376,
+      "tabular_advance": 681,
+      "ttf_bytes": 142112,
+      "checks": [
+        "table checksums",
+        "ASCII / Latin-1 / Extended-A coverage",
+        "name and embedding metadata",
+        "vertical bounds and bearings",
+        "tabular and proportional numbers",
+        "kerning",
+        "NFC/NFD equivalence",
+        "HarfBuzz shaping",
+        "FreeType rendering",
+        "WOFF2 round-trip"
+      ]
+    }
+  ],
+  "limitations": [
+    "Fonts have no manual TrueType hinting; rendering uses the host rasterizer.",
+    "Latin coverage only; other writing systems need separate fallback fonts.",
+    "Engine-specific import and distance-field atlas settings require in-engine QA."
+  ],
+  "logo_provenance": "Ten main letter faces and an initial R recovered from the user-supplied game logo; missing glyphs drawn to complete the font.",
+  "browser_preview": {
+    "status": "passed",
+    "loaded_styles": 6,
+    "method": "Browser loading status and visual inspection beside the supplied reference."
+  }
+}
