@@ -59,6 +59,15 @@ remains. Boss raking/recovery design is separate and still needs whole-cycle
 scroll drift resolved; the existing tiny startup velocity/sweep transient is a
 future gameplay follow-up, not silently changed in this presentation slice.
 
+A separate two-source Android fix bounds native accessibility publication at the
+Activity's outer UI dispatcher, deduplicates complete payloads and invalidates
+closed/destroyed sessions. Six actual-Activity host-Java queue/lifecycle contracts
+pass; the original Activity fails five. A small actual API36/real SDL classpath
+javac compile also passes. Independent review is under
+`android-ax-independent-review/`; no current APK/runtime/TalkBack/FPS claim follows.
+The historical327.501ms host hitch remains unattributed. Boss authority8 work is
+separate in-progress source and cannot inherit the accepted checkpoints above.
+
 ## Historical853169 qualification and subsequent slice preparation
 
 The latest owner-requested normal launch is **Human Resources Latest Playtest**,

@@ -31,6 +31,14 @@ focused5/45suite/native/App-semantic evidence is under
 BeamView projection ABI changes require matching headers/archives. It is not in
 the frozen b99c373 mobile packages and cannot inherit this qualification.
 
+Later Android Activity source also coalesces/deduplicates accessibility snapshots
+into one pending UI task, with close-watermark and Activity-lifetime protection.
+Six focused actual-source Java tests run without skips here; the original source
+fails five. Existing API36/real SDL classpath javac compilation passes at matching
+Java11 bytecode. `android-ax-publication-fix/` and `android-ax-independent-review/`
+record this bounded source proof. No Gradle/D8/R8/APK refresh, device execution,
+TalkBack or physical performance qualification is transferred to the change.
+
 ## Historical reviewed two-mesh checkpoint
 
 
