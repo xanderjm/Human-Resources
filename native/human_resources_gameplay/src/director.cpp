@@ -60,7 +60,7 @@ Vec2 tactical_target(const Snapshot& run, const Actor& actor) {
     break;
   }
   const auto index = military_index(actor.view.kind);
-  const float edge = tuning::field_half_width - tuning::military_contact_radius[index];
+  const float edge = tuning::field_half_width - tuning::military_body_radius[index];
   return {std::clamp(run.player.x + side * flank, -edge, edge), run.player.z + range};
 }
 } // namespace
@@ -224,6 +224,7 @@ void Game::State::spawn(EntityKind kind, bool initial, std::optional<Vec2> pocke
       a.view.position.z += static_cast<float>(slot % 2) * tuning::encounter_herd_forward_step;
       a.view.position.x = right ? lateral : -lateral;
     }
+    place_military(a);
     const float growth = 1 + std::max(0.0F, static_cast<float>(view.stats.active_seconds / 60) - 2) * tuning::director_health_growth_after_2min;
     const float boss_index = static_cast<float>(std::max(0.0, (view.stats.active_seconds - tuning::director_boss_first_second) / tuning::director_boss_interval_seconds));
     const float hp = kind == EntityKind::boss ? tuning::director_boss_base_hp * (1 + boss_index * tuning::director_boss_health_index_coefficient) : tuning::enemy_hp[index] * growth;
@@ -288,7 +289,7 @@ void Game::State::enemies(float dt) {
     const bool planted = a.view.warning_seconds > 0 || (infantry && a.view.fire_recovery_seconds > 0) || shot_recovery;
     const float arrival = std::min(1.F, std::sqrt(length_squared(route)) / tuning::tactics_arrival_radius);
     const float speed = planted ? 0.F : tuning::military_movement_speed[index] * (1 - slow) * arrival;
-    a.view.velocity = scaled(direction(route), speed);
+    a.view.velocity = planted ? Vec2{} : military_velocity(a, scaled(direction(route), speed), dt);
     if (!infantry && length_squared(a.view.velocity) > .0001F) {
       a.locomotion_velocity = a.view.velocity;
       a.view.body_heading = std::atan2(a.view.velocity.x, -a.view.velocity.z);

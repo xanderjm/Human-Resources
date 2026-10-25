@@ -122,3 +122,36 @@ proofs bind a separate source epoch from the already launched Game6 preview and
 mobile packages. Narrow framing remains a structural concern: low props fitting
 below a flying hull does not establish clear ground warnings or vehicle optics.
 Preserve those constraints rather than placing obstacles inward for decoration.
+
+## Follow-up: military approach and authority 7
+
+Ordinary authority-6 runs reproduced coincident military roots: same-role,
+same-side enemies pursued the same flank destination without separation.
+Body-aware ingress and a bounded local heading search now keep consumed heavy
+assemblies apart. The search uses existing velocity and stable actor identities,
+adds no random draws or saved state, and changes ordinary approach velocity only.
+Committed warning, recovery, disabled and captured roots remain planted. Captured
+bodies reserve their ground projection until removal so a cancelled beam does
+not return an actor into a newly occupied lane. Physical contact/damage and
+encounter rates/caps remain unchanged; measured body clearance is distinct from
+contact-radius semantics.
+
+Changed runtime motion requires authority 7, fingerprint `3869579699016858964`,
+with codec 1/account 2 unchanged. A genuine historical native authority-6 QA
+account remains opaque/protected, verifies exact backup before replacement and
+settles its recorded 24-credit reward once under the current AccountSession.
+Fresh native Game7 separately covers earned draft termination/cold recovery,
+choice, natural death and exact-once settlement. These semantic-input host checks
+do not establish physical input or human pacing.
+
+Presentation independently exposes actual boss health and at most two recently
+engaged damaged-vehicle meters. Bounds follow consumed assembled silhouettes;
+out-of-field, crowded or capturing targets yield instead of leaving detached
+ground meters. Actual impact events drive brief actor-local feedback. Stopped
+vehicle roots now use the same persisted body heading as their assembled muzzle
+geometry. Narrow Overdrive captions retain the readable floor and full accessible
+benefit. These changes add no Game state. Root and independent review accept the
+bounded native comparisons/motion; the final combined host aggregate passes all
+43 suites. Shorter scripted survival is not sufficient evidence for a pressure
+nerf: the dense policy repeatedly commands into the rear/left boundaries despite
+visible open space. Longer fresh-run progression remains under review.

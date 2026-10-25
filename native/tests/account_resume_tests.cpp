@@ -5,6 +5,7 @@
 #include "test_support.h"
 
 #include <algorithm>
+#include <cmath>
 
 namespace {
 namespace gp = human_resources::gameplay;
@@ -143,9 +144,21 @@ void dead_checkpoint_cannot_resume_or_revive() {
       "dead run preserves exact earned reward and cannot revive through restart");
 }
 void completed_revive_commits_the_actual_live_continuation() {
-  // This ordinary idle run naturally survives past the 90-second revive gate.
-  MemoryBackend backend; pr::AccountSession session(backend); gp::Game game; start(session, game, 2, 514);
-  for (unsigned frame = 0; frame < 20000 && game.snapshot().phase != gp::Phase::dead; ++frame) tick(game);
+  // Earn eligibility through ordinary forward weaving and ready Dash, then
+  // release the controls after 91 seconds and let actual combat end the run.
+  MemoryBackend backend; pr::AccountSession session(backend); gp::Game game; start(session, game, 2, 1);
+  for (unsigned frame = 0; frame < 20000 && game.snapshot().phase != gp::Phase::dead; ++frame) {
+    if (game.snapshot().phase == gp::Phase::choosing_upgrade) {
+      require(game.choose_upgrade(0), "actual earned choice in revive fixture");
+      continue;
+    }
+    gp::Control control{};
+    if (game.snapshot().stats.active_seconds < 91) {
+      control.movement = {static_cast<float>(std::sin(game.snapshot().stats.active_seconds * .8)), 1};
+      control.dash = game.snapshot().dash_cooldown_seconds <= 0;
+    }
+    game.advance(.25F, control);
+  }
   require(game.snapshot().phase == gp::Phase::dead && game.revive_available(), "eligible real death fixture");
   const auto dead = receipt(session, game);
   gp::Game candidate;

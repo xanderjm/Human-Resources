@@ -47,12 +47,12 @@ void rigid_assemblies() {
   }
 }
 void true_muzzle_and_static_source_death() {
-  for(unsigned barrel=0;barrel<6;++barrel) for(unsigned heading=0;heading<24;++heading) {
+  for(bool stopped : {false, true}) for(unsigned barrel=0;barrel<6;++barrel) for(unsigned heading=0;heading<24;++heading) {
     hr::gameplay::Snapshot run;run.stats.active_seconds=10;run.player={0,0};
     const float yaw=static_cast<float>(heading)*2*std::numbers::pi_v<float>/24;
     run.entities.push_back({.id=7,.kind=hr::gameplay::EntityKind::jeep,.position={1,12},
-        .velocity={std::sin(yaw),-std::cos(yaw)},.warning_aim=run.player,.warning_seconds=.5F,
-        .minigun_barrel=static_cast<std::uint8_t>(barrel)});
+        .velocity=stopped ? hr::gameplay::Vec2{} : hr::gameplay::Vec2{std::sin(yaw),-std::cos(yaw)},.warning_aim=run.player,.warning_seconds=.5F,
+        .minigun_barrel=static_cast<std::uint8_t>(barrel), .body_heading=stopped ? std::optional{yaw} : std::nullopt});
     const auto shot=hr::gameplay::jeep_minigun_shot(run.entities[0],run.player,static_cast<std::uint8_t>(barrel));
     require(shot.valid,"source solution eligible for native assembly proof");
     run.presentation_events[0]={.sequence=1,.active_seconds=10,.kind=hr::gameplay::PresentationEventKind::enemy_shot,.actor_id=7};
@@ -123,12 +123,12 @@ void vehicle_capture_enter_return() {
       hr::presentation::model_matrix(mesh(hr::product::scene(run,390.F/844.F,false),"jeep-chassis")));
 }
 void cannon_origin_and_guided_departure() {
-  for(const auto kind:{hr::gameplay::EntityKind::tank,hr::gameplay::EntityKind::boss})
+  for(bool stopped : {false, true}) for(const auto kind:{hr::gameplay::EntityKind::tank,hr::gameplay::EntityKind::boss})
     for(unsigned heading=0;heading<24;++heading) {
       hr::gameplay::Snapshot run;run.stats.active_seconds=10;run.player={-2,0};
       const float yaw=static_cast<float>(heading)*2*std::numbers::pi_v<float>/24;
-      run.entities.push_back({.id=7,.kind=kind,.position={1,12},.velocity={std::sin(yaw),-std::cos(yaw)},
-          .warning_aim=run.player,.warning_seconds=.5F});
+      run.entities.push_back({.id=7,.kind=kind,.position={1,12},.velocity=stopped ? hr::gameplay::Vec2{} : hr::gameplay::Vec2{std::sin(yaw),-std::cos(yaw)},
+          .warning_aim=run.player,.warning_seconds=.5F,.body_heading=stopped ? std::optional{yaw} : std::nullopt});
       const auto shot=hr::gameplay::vehicle_cannon_shot(run.entities.front(),run.player);
       require(shot.valid,"tank and boss cannon source solver accepts normal attack");
       run.presentation_events[0]={.sequence=1,.active_seconds=10,.kind=hr::gameplay::PresentationEventKind::enemy_shot,.actor_id=7};

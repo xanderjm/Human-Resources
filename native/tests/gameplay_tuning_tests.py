@@ -108,6 +108,17 @@ class NativeTuningTests(unittest.TestCase):
                     lambda v: v['native_director'].update(tank_start_second=1))
         self.reject()
 
+    def test_military_spacing_changes_invalidate_resume(self):
+        original = self.fingerprint()
+        self.mutate('native/human_resources_gameplay/runtime-spatial.json',
+                    lambda v: v['military_spacing'].update(lookahead_seconds=.5))
+        self.assertNotEqual(original, self.fingerprint())
+
+    def test_invalid_military_spacing_radius_rejected(self):
+        self.mutate('native/human_resources_gameplay/runtime-spatial.json',
+                    lambda v: v['military_spacing']['body_radius'].__setitem__(1, -1))
+        self.reject()
+
     def test_invalid_starter_dash_rejected(self):
         self.mutate('native/human_resources_gameplay/runtime-spatial.json',
                     lambda v: v['starter_dash'].update(cooldown=.1))

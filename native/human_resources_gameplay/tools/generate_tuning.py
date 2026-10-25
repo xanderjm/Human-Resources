@@ -82,6 +82,15 @@ def validate(arch, cat, encounter, spatial):
         raise ValueError('spatial population caps inconsistent')
     if sum(row['active_cap'] for row in encounter['enemies'].values()) + spatial['biological_active_cap'] + spatial['boss_active_cap'] > 128:
         raise ValueError('combined actor budget exceeds bounded native capacity')
+    spacing = spatial['military_spacing']
+    if len(spacing['body_radius']) != 4:
+        raise ValueError('military spacing requires soldier, jeep, tank and boss envelopes')
+    for radius in spacing['body_radius']:
+        finite(radius, 'military body radius', .1, spatial['field_half_width'] / 2)
+    finite(spacing['lookahead_seconds'], 'military lookahead', .1, 1)
+    finite(spacing['margin_metres'], 'military spacing margin', .01, .3)
+    if spacing['spawn_rows'] != 8:
+        raise ValueError('bounded military ingress requires eight candidate rows')
     finite(spatial['attack_prediction_fraction'], 'attack prediction', 0, 1)
     scroll = spatial['scroll_progression']
     finite(scroll['maximum_metres_per_second'], 'maximum forward speed', spatial['forward_scroll_metres_per_second'], 8)
@@ -202,6 +211,11 @@ def generate(root, output):
         raise ValueError('Minigun operating envelope exceeds reviewed source')
     if minigun['minimum_elevation_degrees'] != 0 or not 0 < spatial['capture_return_seconds'] <= 2:
         raise ValueError('Invalid capture/minigun contract')
+    spacing = spatial['military_spacing']
+    array('military_body_radius', spacing['body_radius'])
+    scalar('military_spacing_lookahead', spacing['lookahead_seconds'])
+    scalar('military_spacing_margin', spacing['margin_metres'])
+    integer('military_spawn_rows', spacing['spawn_rows'])
     scalar('capture_return_seconds', spatial['capture_return_seconds'])
     scalar('minigun_minimum_range', minigun['minimum_muzzle_range'])
     scalar('minigun_maximum_elevation', math.radians(minigun['maximum_elevation_degrees']))

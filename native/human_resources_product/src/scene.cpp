@@ -1,6 +1,7 @@
 #include <human_resources/product/presentation.h>
 #include <human_resources/product/scene_effects.h>
 #include <human_resources/product/gear_presentation.h>
+#include <human_resources/product/combat_feedback.h>
 #include "infantry_equipment.generated.h"
 #include "vehicle_assembly.h"
 #include "vehicle_projectile.h"
@@ -128,13 +129,13 @@ void beats(StyleFrame& frame, const SceneEffects* effects, float distance, Vec3 
                                                                                     : std::array<float, 4>{1, .45F, .24F, fade};
     const Vec3 p = capture || shield || hull ? Vec3{ship.x, ship.y + .08F, ship.z} : Vec3{beat.position.x, defeat ? .35F : .8F, distance - beat.position.z + 2.3F};
     const float radius = capture ? 1.35F + .75F * u : shield || hull ? 1.45F + .3F * u
-                                                                     : .18F + (defeat ? 1.2F : .45F) * u;
+                                                                     : defeat ? .55F + 1.25F * u : .18F + .45F * u;
     add(frame, "ring", p, {radius, 1, radius}, {}, color, true);
     if (!reduced_motion && !capture && !shield && !hull)
-      for (unsigned i = 0; i < (defeat ? 5U : 3U); ++i) {
+      for (unsigned i = 0; i < (defeat ? 7U : 3U); ++i) {
         const float angle = static_cast<float>(i) * 2.39996F + static_cast<float>(beat.actor_id);
-        const Vec3 end{p.x + std::cos(angle) * radius, p.y + .45F * u, p.z + std::sin(angle) * radius};
-        line(frame, lerp(p, end, .55F), end, defeat ? .04F : .025F, color);
+        const Vec3 end{p.x + std::cos(angle) * radius, p.y + (defeat ? 1.6F : .45F) * u, p.z + std::sin(angle) * radius};
+        line(frame, lerp(p, end, .55F), end, defeat ? .085F : .025F, color);
       }
   }
 }
@@ -162,7 +163,7 @@ presentation::StyleFrame scene(const gameplay::Snapshot& run, float aspect, bool
   // A world-space camera follows forward travel; lateral movement remains visible
   // across the entire lane, so the player can judge the danger around the saucer.
   const float camera_width = (aspect < 1 ? 17.F : 31.F) / .75F;
-  presentation::set_overhead_camera(frame, aspect, camera_width, {0, 0, -.15F}, 27.F);
+  set_gameplay_camera(frame, aspect);
   const float threat_unit = threat_pixel(camera_width, aspect);
   const auto velocity = effects && !attract ? effects->flight_velocity() : run.velocity;
   const float response = effects && !attract ? effects->capture_response() : 0;
@@ -212,7 +213,7 @@ presentation::StyleFrame scene(const gameplay::Snapshot& run, float aspect, bool
     const auto shot = gameplay::infantry_shot(e.infantry_role, e.position, e.warning_aim);
     const auto attack = gameplay::infantry_attack(e.infantry_role);
     const bool planted = gear && (e.warning_seconds > 0 || e.fire_recovery_seconds > 0);
-    float yaw = speed > .08F ? std::atan2(e.velocity.x, -e.velocity.z) : static_cast<float>(e.id) * 1.7F;
+    float yaw = !organic ? gameplay::vehicle_body_yaw(e) : speed > .08F ? std::atan2(e.velocity.x, -e.velocity.z) : static_cast<float>(e.id) * 1.7F;
     if (planted && shot.valid) yaw = std::atan2(shot.direction.x, -shot.direction.z) - attack.weapon_yaw_radians;
     Vec3 rotation{reduced_motion ? 0 : lift * (organic ? .92F : .32F),
         yaw + (reduced_motion || !organic ? 0 : lift * .65F),
@@ -270,6 +271,17 @@ presentation::StyleFrame scene(const gameplay::Snapshot& run, float aspect, bool
       detail::append_tank(frame,{.position=p,.scale={size*boss,size*boss,size*boss},.rotation=rotation},
           e,committed ? e.warning_aim : run.player,
           e.capture_progress==0 && e.fire_recovery_seconds==0 ? fire_age : -1);
+    }
+    if (e.kind >= gameplay::EntityKind::soldier) {
+      const float hit_strength = enemy_hit_strength(run, e.id, reduced_motion);
+      for (std::size_t i = body_index; i < frame.instances.size(); ++i)
+        if (!frame.instances[i].effect) {
+          // Brief warm enamel/cloth response, local to the actor actually hit.
+          // No displacement: source muzzles and physical rays stay coherent.
+          frame.instances[i].tint[0] *= 1 + .8F * hit_strength;
+          frame.instances[i].tint[1] *= 1 + .45F * hit_strength;
+          frame.instances[i].tint[2] *= 1 + .12F * hit_strength;
+        }
     }
     if (organic) {
       auto& body = frame.instances[body_index];

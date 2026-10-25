@@ -224,5 +224,17 @@
     "civilian_turn_acceleration": 4,
     "civilian_fear_radius": 7,
     "civilian_travel_lateral_bias": 0.22
+  },
+  "military_spacing": {
+    "body_radius": [
+      0.75,
+      1.74,
+      1.53,
+      2.448
+    ],
+    "body_radius_source": "Soldier uses its existing 0.75m contact envelope, not an animated extremity collider. Jeep 1.74m encloses consumed chassis and wheel assembly ground vertices; tank 1.53m encloses tank-hull.hrm and turret yaw sweep about its actual offset; boss uses the same assembly at 1.6 scale. See tools/gameplay_qa/military_spacing.py.",
+    "lookahead_seconds": 0.4,
+    "margin_metres": 0.08,
+    "spawn_rows": 8
   }
 }

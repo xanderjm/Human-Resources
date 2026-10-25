@@ -521,11 +521,33 @@ void harvest_feedback_explains_sweeps_boost_and_dash_without_expanding_top_hud()
         require(copy.find(boosted ? (scale == 1 ? "OVERDRIVE5s" : "BOOST5s") : "SWEEP2/3") != std::string::npos, "actual timed sweep/Overdrive state is visible without inferring reward from animation");
         const auto pause = std::find_if(ui.buttons.begin(), ui.buttons.end(), [](const auto& b){return b.command == Command::pause;})->bounds;
         require(pause.y == original_pause.y && pause.bottom() == original_pause.bottom(), "harvest payoff leaves tactical top ingress and Pause bounds unchanged");
+        if (boosted && scale == 1) {
+          const auto safe = hr::ui::inset(view.viewport, view.safe_area);
+          const float fit = std::min(safe.width / 390.F, safe.height / 844.F);
+          const float ox = safe.x + (safe.width - 390.F * fit) * .5F;
+          const float oy = safe.y + (safe.height - 844.F * fit) * .5F;
+          const hr::ui::Rect panel{ox + 20 * fit, oy + 752 * fit, 190 * fit, 60 * fit};
+          unsigned caption_glyphs = 0;
+          for (const auto& q : ui.quads) {
+            if (!glyph(q)) continue;
+            const float size = q.rect[2] * phone.width * 48.F / 64.F;
+            const float origin_y = q.rect[1] * phone.height + size * 8.F / 48.F;
+            if (std::abs(origin_y - (oy + 785 * fit)) > .1F) continue;
+            ++caption_glyphs;
+            const hr::ui::Rect ink_guard{q.rect[0] * phone.width, origin_y, q.rect[2] * phone.width, size * 1.25F};
+            require(size >= 13.99F, "Overdrive caption retains the readable physical text floor");
+            require(ink_guard.x >= panel.x && ink_guard.right() <= panel.right() &&
+                ink_guard.y >= panel.y && ink_guard.bottom() <= panel.bottom() + .1F,
+                "Overdrive caption including horizontal atlas bearings stays inside its existing mint panel, clear of Dash");
+          }
+          require(caption_glyphs > 0, "ordinary Overdrive keeps a visible benefit caption");
+        }
         if (scale > 1) readable_page_is_real_safe_and_scaled(view, ui);
         auto dash = std::find_if(ui.buttons.begin(), ui.buttons.end(), [](const auto& b){return b.command == Command::dash;});
         require(dash != ui.buttons.end() && dash->enabled && dash->label.find("DASH") != std::string::npos, "fresh run exposes immediately usable starter Dash action");
         const auto semantics = accessibility_snapshot(view, ui);
         require(std::any_of(semantics.begin(), semantics.end(), [&](const auto& n){return n.value.find(boosted ? "Overdrive active" : "Sweep chain 2 of 3") != std::string::npos;}), "native spoken tactical summary describes the actual reward and time");
+        if (boosted) require(std::any_of(semantics.begin(), semantics.end(), [](const auto& n){return n.value.find("Capture and firing are boosted.") != std::string::npos;}), "concise visual Overdrive caption retains the full accessible benefit description at every text size");
       }
       run.dash_cooldown_seconds = 1.2F;
       const auto charging = interface(view);

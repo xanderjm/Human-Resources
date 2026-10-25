@@ -94,6 +94,8 @@ struct Game::State final {
   void spawn(EntityKind kind, bool initial = false, std::optional<Vec2> pocket_position = std::nullopt);
   [[nodiscard]] bool place_biological(detail::Actor& target, float lateral_sample, float forward_sample, bool initial);
   void move_biological(float dt);
+  [[nodiscard]] Vec2 military_velocity(const detail::Actor& actor, Vec2 preferred, float dt) const;
+  void place_military(detail::Actor& actor);
   void enemies(float dt);
   void shoot(detail::Actor& enemy);
   void capture(float dt);

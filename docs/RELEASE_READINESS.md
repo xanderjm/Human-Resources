@@ -10,15 +10,19 @@ change together. Prior landscape captures are historical integration evidence.
 
 ## Current truth
 
-The latest accepted production checkpoint is `e71bf642` (711 source files).
-An isolated clean archive now freshly cooks/builds the product and passes all
+The accepted Game7 combat checkpoint is recorded in
+`build/evidence/game7-combat-source-checkpoint/checkpoint.json`. Its preceding
+production checkpoint is `e71bf642` (711 source files); portable QA tooling/docs
+separately commit as `88688529`.
+An isolated clean archive of e71bf642 freshly cooks/builds the product and passes all
 41 suites/static/source-bound asset audits using pinned dependency/tool caches.
 Refreshed iOS/Android compile and package evidence for its graphics is in
 `build/evidence/game6-mobile-world-threat/REPORT.json`; physical execution remains
-separate. Later military-spacing and enemy-vitality candidates are in progress
-and have no combined/native acceptance yet. Current Game6 ordinary traces confirm
-coincident military roots, and the first nonoverlapping AI changes exposure
-materially, requiring quality review rather than automatic acceptance.
+separate. The later authority-7 military-spacing/enemy-vitality source is accepted
+as a bounded combat milestone, with 43-suite aggregate, actual native comparisons,
+fresh draft/death/account flow and protected older-account recovery. It is not
+yet a refreshed mobile package. Current
+Farmland canopy/outer-boss-warning work is a separate unaccepted candidate.
 
 The latest working-source presentation pass additionally improves Farmland
 terrain/scroll cues and small-phone hostile trails/warning separation. Root and
@@ -29,7 +33,7 @@ and earlier mobile package epoch below, which remain preserved separately. Narro
 landmark framing and human pacing remain open quality concerns; three matched
 bot runs demonstrate useful evasive play but do not establish human fun.
 
-The current source is authority 6, fingerprint `6476198946152464138`, with outer
+The current source is authority 7, fingerprint `3869579699016858964`, with outer
 account schema 2. It retains expanded flight, faster escalation, role-based enemy
 positioning, power-linked scrolling, starter Dash/counter-volley, close-sweep
 bursts and explicit damage feedback. Varied two-dimensional harvest groups and
@@ -40,18 +44,41 @@ ranks/keyboard cues, and a 0.8-second nonblocking selection receipt. Root and th
 independent critic accepted these measured layouts after rejecting clipped small
 phone titles in the first render.
 
-Current aggregate passes 41/41 tests, static and diff checks. The first current
-aggregate exposed a revive fixture dying before the unchanged 90-second
-eligibility threshold; a naturally eligible seed replaces only that fixture,
-retaining quota/retry/cold-state assertions. Current native proof includes an
-eight-second fresh-run composition film and real un-beamed ground displacement.
+Body-aware ingress and ordinary approach keep military silhouettes distinct
+without changing committed warnings, muzzles, pressure/caps or damage. Boss health,
+restrained engaged-vehicle meters and actual actor-local impact feedback expose
+combat progress. Narrow captions fit the readable floor; lifted vehicles yield
+their ground vitality meters. Independent native review accepts this milestone;
+the dense evasive policy's repeated rear/left corner trap does not establish
+unavoidable pressure or justify a nerf. Longer fresh-run progression remains
+under review.
+
+Current aggregate passes 43/43 tests, static and diff checks. Its first run
+exposed the fixed-seed idle revive fixture dying at 56.9s before the unchanged
+90-second eligibility threshold. Ordinary forward weaving/Dash in seed1 earns
+eligibility and naturally dies at 162.533s; only the fixture changes, retaining
+quota/retry/cold-state assertions. Current motion includes approach, dense natural
+death and an earned boss checkpoint; the final caption/capture feedback fixes
+have separately bound 320/390 pixels. A genuine closed Game6 native QA account
+remains protected and banks its recorded 24CR exactly once through current
+AccountSession/in-memory failure injection. A fresh hidden Game7 App/SDL-storage
+run also passes earned draft termination/cold exact recovery, choice, natural
+death/34CR settlement and cold exact ledger. See
+`build/evidence/quality-native-integration/game7-combat-native/combined-qualified.json`.
+All six protected app bundles remain exact. No current mobile, OS input, human
+pacing or physical storage-failure qualification follows. The portable fresh/maxed
+30-aggregate-minute probe reports zero active allocations and mean advance at
+most 5.769 microseconds, explicitly shared-host CPU-only evidence.
+
+Earlier Game6 native proof includes an eight-second composition film and real
+un-beamed ground displacement.
 Genuine prior Game4/5 continuations retain exact-once protected account recovery
-under current portable AccountSession tests; their enclosing legacy accounts are
-explicitly synthetic fixtures. Current native account integration also passes
+under Game6 portable AccountSession tests; their enclosing legacy accounts are
+explicitly synthetic fixtures. Earlier native account integration also passes
 interrupted-draft recovery, actual selection/reroll, natural death/banking,
 earned purchase, exact cold retention and protected-copy backup/reset through
-the real App/SDL storage path. Evidence-only accelerated callbacks and semantic
-contacts do not qualify human timing or OS/physical touch. Current iPhoneOS and
+the real Game6 App/SDL storage path. Evidence-only accelerated callbacks and semantic
+contacts do not qualify human timing or OS/physical touch. Game6 iPhoneOS and
 Simulator Release builds plus Android both-ABI debug/release, lint, APK and
 unsigned AAB/package audits pass; current mobile execution remains unqualified.
 

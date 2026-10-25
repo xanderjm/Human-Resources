@@ -7,7 +7,7 @@ namespace {
 constexpr std::uint32_t magic = 0x31535248U; // HRS1, explicit little-endian bytes.
 constexpr std::uint32_t schema = 1;
 // Increment when authority semantics/field meaning change independently of tuning.
-constexpr std::uint32_t authority_revision = 6;
+constexpr std::uint32_t authority_revision = 7;
 constexpr std::size_t maximum_bytes = 48 * 1024;
 constexpr std::uint32_t maximum_actors = 128, maximum_projectiles = 96;
 

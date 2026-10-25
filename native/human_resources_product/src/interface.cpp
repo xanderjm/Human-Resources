@@ -3,6 +3,7 @@
 #include <cmath>
 #include <human_resources/gameplay/tuning.h>
 #include <human_resources/product/presentation.h>
+#include <human_resources/product/combat_feedback.h>
 #include <product_glyphs.generated.h>
 #include <sstream>
 #include "privacy_policy.h"
@@ -771,7 +772,11 @@ Interface standard_interface(const View& v) {
       const auto color = overdrive ? navy : white;
       c.fill(20, 752, 190, 60, overdrive ? mint : navy);
       c.fitted(28, 758, 174, overdrive ? "OVERDRIVE " + number(static_cast<unsigned>(std::ceil(run.harvest_overdrive_seconds))) + "s" : "SWEEP " + number(run.harvest_chain) + "/" + number(gameplay::tuning::harvest_chain_target), 17, color, false, true);
-      c.fitted(28, 785, 174, overdrive ? "CAPTURE + FIRE BOOST" : number(gameplay::tuning::harvest_chain_target - run.harvest_chain) + " TO OVERDRIVE", 14, color, false, true);
+      // Reserve the atlas bearings as well as advances at the physical text
+      // floor: tight phones use the shorter label without reducing legibility.
+      const float caption_bearing = std::max(14.F, 14.F / c.scale) * 64.F / 48.F;
+      const std::string benefit = overdrive ? (c.measure("CAPTURE/FIRE", 14) + caption_bearing <= 174 ? "CAPTURE/FIRE" : "BOOST") : number(gameplay::tuning::harvest_chain_target - run.harvest_chain) + " TO OVERDRIVE";
+      c.fitted(28, 785, 174, benefit, 14, color, false, true);
       const float remaining = overdrive ? run.harvest_overdrive_seconds / gameplay::tuning::harvest_overdrive_seconds : run.harvest_chain_seconds / gameplay::tuning::harvest_chain_window_seconds;
       c.fill(32, 807, 166, 2, panel);
       c.fill(32, 807, 166 * std::clamp(remaining, 0.F, 1.F), 2, overdrive ? navy : mint);
@@ -999,7 +1004,38 @@ Interface interface(const View& v) {
   if (v.screen == Screen::settings && v.show_privacy) return readable_interface(v);
   if (v.screen == Screen::pause && v.show_build && !v.save_error) return large ? readable_interface(v) : build_overview(v);
   const auto finish = [&](Interface result) {
-    if (v.screen != Screen::run || v.save_error || !v.promotion.installed) return result;
+    if (v.screen != Screen::run || v.save_error) return result;
+    {
+      Canvas feedback{v};
+      feedback.scale = feedback.type_scale = 1;
+      feedback.ox = feedback.oy = 0;
+      const float text_size = 14 * (std::isfinite(v.text_scale) ? std::max(1.F, v.text_scale) : 1.F);
+      float top = feedback.safe.y + 68, bottom = feedback.safe.bottom() - 100;
+      for (const auto& button : result.buttons) {
+        if (button.command == Command::pause) top = std::max(top, button.bounds.bottom() + 12);
+        if (button.command == Command::dash) bottom = std::min(bottom, button.bounds.y - 12);
+      }
+      // Installation confirmation owns its existing strip under the HUD.
+      if (v.promotion.installed) top += std::max(36.F, text_size + 16) + 12;
+      const ui::Rect field{feedback.safe.x + 8, top, feedback.safe.width - 16, std::max(0.F, bottom - top)};
+      for (const auto& vitality : enemy_vitality(*v.run, v.viewport, field, text_size)) {
+        const auto& r = vitality.bounds;
+        feedback.fill(r.x, r.y, r.width, r.height, navy);
+        const float bar_y = vitality.boss ? r.bottom() - 9 : r.y + 2;
+        const float bar_height = vitality.boss ? 6.F : 4.F;
+        feedback.fill(r.x + 2, bar_y, r.width - 4, bar_height, panel);
+        feedback.fill(r.x + 2, bar_y, (r.width - 4) * vitality.fraction, bar_height, vitality.boss ? coral : gold);
+        if (vitality.boss) {
+          const auto percent = static_cast<unsigned>(std::ceil(vitality.fraction * 100));
+          feedback.centered(r.x, r.y + 2, r.width, "BOSS " + number(percent) + "%", text_size, white);
+          // Quarter marks convey length even when coral is hard to distinguish.
+          for (unsigned i = 1; i < 4; ++i)
+            feedback.fill(r.x + 2 + (r.width - 4) * static_cast<float>(i) / 4, bar_y, 1, bar_height, navy);
+        }
+      }
+      result.quads.insert(result.quads.end(), feedback.output.quads.begin(), feedback.output.quads.end());
+    }
+    if (!v.promotion.installed) return result;
     Canvas c{v};
     c.scale = 1;
     c.ox = c.safe.x;
