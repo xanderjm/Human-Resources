@@ -118,6 +118,34 @@ void overdrive_engine(StyleFrame& frame, const gameplay::Snapshot& run, ShipPose
   add(frame, "ring", world(pose, {0, -.15F, 0}), {.63F, 1, .63F},
       {pose.pitch, 0, pose.bank}, {.55F, 1, .77F, .85F * pulse * fade}, true);
 }
+void sweep_charge(StyleFrame& frame, const gameplay::Snapshot& run, ShipPose pose, float distance, bool reduced) {
+  if (run.harvest_overdrive_seconds > 0)
+    return;
+  const gameplay::BeamView* leading = nullptr;
+  for (const auto& beam : run.beams)
+    if (!beam.vehicle && beam.sweep_fraction > 0 && (!leading || beam.sweep_fraction > leading->sweep_fraction))
+      leading = &beam;
+  if (!leading)
+    return;
+  // One charge arc stays on the visible annulus, including when the specimen
+  // is hidden beneath the hull. Six beams cannot become six competing gauges.
+  const float fraction = std::clamp(leading->sweep_fraction, 0.F, 1.F);
+  const bool qualified = fraction >= 1;
+  const auto target = point(leading->target, distance, pose.position.y);
+  const float facing = std::atan2(target.z - pose.position.z, target.x - pose.position.x);
+  const float span = std::numbers::pi_v<float> * fraction;
+  const float pulse = !reduced && leading->sweep_active && !qualified ? .025F * std::sin(static_cast<float>(run.stats.active_seconds) * 10) : 0;
+  const float radius = 1.47F + pulse;
+  const std::array<float, 4> color = qualified ? std::array<float, 4>{.95F, 1, .57F, .98F}
+                                            : std::array<float, 4>{.70F, 1, .86F, .96F};
+  constexpr unsigned segments = 8;
+  for (unsigned i = 0; i < segments; ++i) {
+    const float a = facing - span * .5F + span * static_cast<float>(i) / static_cast<float>(segments);
+    const float b = facing - span * .5F + span * static_cast<float>(i + 1) / static_cast<float>(segments);
+    ray(frame, world(pose, {std::cos(a) * radius, .52F, std::sin(a) * radius}),
+        world(pose, {std::cos(b) * radius, .52F, std::sin(b) * radius}), .075F, color);
+  }
+}
 void sweep_finish(StyleFrame& frame, float age, ShipPose pose, bool reduced) {
   if (age >= .34F)
     return;
@@ -246,6 +274,7 @@ void append_gear_shots(StyleFrame& frame, const gameplay::Snapshot& run, ShipPos
 }
 void append_gear_effects(StyleFrame& frame, const gameplay::Snapshot& run, const SceneEffects* effects, ShipPose pose, float distance, bool reduced_motion) {
   overdrive_engine(frame, run, pose, reduced_motion);
+  sweep_charge(frame, run, pose, distance, reduced_motion);
   if (run.drone_burst_seconds > 0 && evolved(run, Evolution::employee_benefits))
     for (unsigned i = 0; i < rank(run, Module::orbit_drones); ++i) {
       const auto p = drone_position(run, pose, i, reduced_motion);

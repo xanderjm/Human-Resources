@@ -1,4 +1,37 @@
-# Mobile qualification — reviewed two-mesh checkpoint
+# Mobile qualification — Hangar, onboarding and shadow checkpoint
+
+Current compiled/package source is
+**b99c373bc69e4250211b3b59b270e56b9c242be5**: all738tracked and554focused inputs
+are exact. iPhoneOS/Simulator arm64 optimized Release, Android both-ABI debug/
+release, strict lint, APK ZIP/ELF16KiB and unsigned AAB/bundletool audits pass.
+Five frozen artifacts retain all81runtime payloads, eight HRA animations, textures
+and shaders exactly from853169. Only runtime package source metadata changes,
+98→103authorities. Six current renderer objects consume the new shadow header;
+24core compile contracts include current Hangar projections and input provenance.
+New renderer objects/header/dependencies and enumerated predecessor artifacts
+have immutable retention. No build retry or source repair was needed.
+
+Evidence: `build/evidence/hangar-shadow-mobile/REPORT.json` SHA
+`df083a67ac8a53e3d3888ceb17de8551cb42d5d068cec42e76cd5bd85105f4e1`;
+source-final SHA `41b409aaefe4e93a0b9caa9cd49e9977e02a2deae087f6abca5c556586b56349`;
+artifact ledger SHA `cd4c9e74e8b28784ab0760f05dac3c28e199a9888f477b69c2544432722cc9e2`.
+Independent qualification review accepts the frozen host/mobile evidence; see
+`build/evidence/qualification-independent-b99c373/independent-review.json` SHA
+`66349ca52d11a1fbd0daebdddc80e0fe1248dd84e3ca3faa9570e3ce5930cf13`.
+This does not add physical
+or emulator execution, development/distribution signing or store acceptance.
+Latest isolated Android runtime evidence remains the853169 settled startup/render
+diagnostic below; earlier full recovery/progression retains its own epoch.
+
+A newer host-accepted fourteen-source slice adds direct Hangar Next Flight,
+rounded-surface held response and truthful moving-sweep charge feedback. Its
+focused5/45suite/native/App-semantic evidence is under
+`ui-flow-quality-b99c373/`, `sweep-world-feedback/` and
+`ui-sweep-independent-review-b99c373/`. Rules/save bytes remain exact; C++ View/
+BeamView projection ABI changes require matching headers/archives. It is not in
+the frozen b99c373 mobile packages and cannot inherit this qualification.
+
+## Historical reviewed two-mesh checkpoint
 
 
 Current source epoch **853169defd705a9570fb871373ae25964f7bbf5d** includes

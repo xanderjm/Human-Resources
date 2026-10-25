@@ -355,7 +355,10 @@ presentation::StyleFrame scene(const gameplay::Snapshot& run, const GameplayFram
     const bool overdrive = run.harvest_overdrive_seconds > 0;
     cone(frame, target, intake, beam.vehicle ? 1.15F : .72F, (overdrive ? .19F : .12F) + .07F * beam.progress);
     capture_guides(frame, target, intake, beam.vehicle ? 1.15F : .72F, t * (overdrive ? 1.7F : 1.F), reduced_motion);
-    add(frame, "ring", target, {.85F, 1, .85F}, {}, {.5F, 1, .76F, .82F}, true);
+    const bool sweep = !beam.vehicle && !overdrive && beam.sweep_fraction > 0;
+    const bool qualified = sweep && beam.sweep_fraction >= 1;
+    add(frame, "ring", target, {.85F, 1, .85F}, {},
+        qualified ? std::array<float, 4>{.95F, 1, .57F, .98F} : std::array<float, 4>{.5F, 1, .76F, .82F}, true);
     const float acquisition = .40F + .30F * (1 - beam.progress);
     add(frame, "ring", intake, {acquisition, 1, acquisition}, {}, {.48F, 1, .76F, .7F}, true);
   }

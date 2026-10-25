@@ -39,6 +39,13 @@ float Game::State::capture_seconds(const Actor& target) const {
   const float seconds = std::max(tuning::capture_minimum_seconds, tuning::base_capture_seconds * soldier / (1 + bonus));
   return seconds / (view.harvest_overdrive_seconds > 0 ? tuning::harvest_overdrive_multiplier : 1.F);
 }
+bool Game::State::sweep_eligible(const Actor& target) const {
+  const Vec2 pilot_velocity{view.velocity.x, view.velocity.z - view.forward_speed};
+  const float core = view.capture_radius * tuning::harvest_core_radius_fraction;
+  return biological(target.view.kind) &&
+      length_squared(pilot_velocity) >= tuning::harvest_minimum_pilot_speed * tuning::harvest_minimum_pilot_speed &&
+      distance_squared(view.player, target.view.position) <= core * core;
+}
 void Game::State::capture(float dt) {
   const float radius2 = view.capture_radius * view.capture_radius;
   for (auto& a : actors) {
@@ -123,11 +130,7 @@ void Game::State::capture(float dt) {
     if (!target->lifted) {
       continue;
     }
-    const Vec2 pilot_velocity{view.velocity.x, view.velocity.z - view.forward_speed};
-    const float core = view.capture_radius * tuning::harvest_core_radius_fraction;
-    const bool sweep = biological(target->view.kind) &&
-        length_squared(pilot_velocity) >= tuning::harvest_minimum_pilot_speed * tuning::harvest_minimum_pilot_speed &&
-        distance_squared(view.player, target->view.position) <= core * core;
+    const bool sweep = sweep_eligible(*target);
     const float progress = dt / capture_seconds(*target) * (sweep ? tuning::harvest_sweep_multiplier : 1.F);
     // Qualification follows actual participation, so faster earned builds
     // cannot complete before an arbitrary minimum exposure time elapses.

@@ -79,6 +79,12 @@ void describe_control(ui::AccessibilityNode& node, const View& view, const Butto
     node.label = "Back up saved run and bank credits";
     node.value = "A verified copy of the original is preserved before ending the incompatible run and banking only its recorded checkpoint credits.";
     break;
+  case Command::start:
+    if (view.screen == Screen::hangar) {
+      node.label = "Next flight";
+      node.value = "Start in " + std::string(location_name(view.theme)) + " with your purchased permanent Hangar bonuses. Temporary flight upgrades reset.";
+    }
+    break;
   case Command::resume:
     if (view.restored_run) {
       node.label = "Resume saved run";
@@ -158,7 +164,7 @@ std::string screen_summary(const View& view) {
     return std::string(view.damage_feedback.age >= 0 ? damage_announcement(view.damage_feedback) : "") + "Hull " + std::to_string(static_cast<unsigned>(std::max(0.F, run.hull))) + " of " +
            std::to_string(static_cast<unsigned>(run.maximum_hull)) + ". Shield " +
            std::to_string(static_cast<unsigned>(std::max(0.F, run.shield))) + ". Level " + std::to_string(run.stats.level) +
-           ". Score " + std::to_string(run.stats.score) + ". Captures " + std::to_string(run.stats.captures) + ". " + boss_health + (run.harvest_overdrive_seconds > 0 ? "Overdrive active, " + std::to_string(static_cast<unsigned>(std::ceil(run.harvest_overdrive_seconds))) + " seconds remaining. Capture and firing are boosted. " : run.harvest_chain ? "Sweep chain " + std::to_string(run.harvest_chain) + " of " + std::to_string(gameplay::tuning::harvest_chain_target) + ". " + std::to_string(static_cast<unsigned>(std::ceil(run.harvest_chain_seconds))) + " seconds to keep the chain. " : "") + "Drag to fly. Pass close to specimens for faster captures. Chain three quick sweeps for Overdrive. Capture and fire are automatic.";
+           ". Score " + std::to_string(run.stats.score) + ". Captures " + std::to_string(run.stats.captures) + ". " + boss_health + (run.harvest_overdrive_seconds > 0 ? "Overdrive active, " + std::to_string(static_cast<unsigned>(std::ceil(run.harvest_overdrive_seconds))) + " seconds remaining. Capture and firing are boosted. " : run.harvest_chain ? "Sweep chain " + std::to_string(run.harvest_chain) + " of " + std::to_string(gameplay::tuning::harvest_chain_target) + ". " + std::to_string(static_cast<unsigned>(std::ceil(run.harvest_chain_seconds))) + " seconds to keep the chain. " : "") + "Drag to fly. Pass close to specimens for faster captures. Keep moving through targets. Three sweeps trigger Overdrive. Capture and fire are automatic.";
   }
   case Screen::upgrade:
     return "Level " + std::to_string(run.stats.level) + ". Choose one upgrade. Your run is paused. " + std::to_string(hardware_count(run)) + " of six hardware slots installed. New hardware uses a slot; ranking up improves installed hardware.";

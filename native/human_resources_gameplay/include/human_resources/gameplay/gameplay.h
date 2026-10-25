@@ -176,6 +176,10 @@ struct BeamView final {
   Vec2 target;
   float progress{};
   bool vehicle{};
+  // Derived presentation only: accepted moving-core participation normalized
+  // to the existing sweep threshold. Neither field is a saved authority.
+  float sweep_fraction{};
+  bool sweep_active{};
 };
 enum class ShotKind : std::uint8_t { laser, rail, arc, drone, emp, reflection, mirrorball };
 struct ShotView final {

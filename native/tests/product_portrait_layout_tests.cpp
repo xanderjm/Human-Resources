@@ -150,7 +150,7 @@ void hangar_shows_owned_and_next_power_with_visible_basis() {
         require(copy.find(compact(track.bonus_basis)) != std::string::npos,
             "ordinary cards retain complete original damage, starting/max pools and base capture basis");
       }
-      require(ui.buttons.size() == 6, "four comparisons and stable Back/Blueprints remain together");
+      require(ui.buttons.size() == 7, "four comparisons, Next Flight and stable Back/Blueprints remain together");
       for (unsigned i = 0; i < 4; ++i)
         require(ui.buttons[i].enabled == (rank < 5), "capped cards retain owned power but no purchase action");
       const auto safe = hr::ui::inset(view.viewport, view.safe_area);
@@ -189,6 +189,11 @@ void hangar_shows_owned_and_next_power_with_visible_basis() {
   }
   View enlarged{Screen::hangar, &game.snapshot(), &store, {0,0,390,844}, {0,47,0,34}};
   enlarged.text_scale = 2;
+  const auto first_enlarged = interface(enlarged);
+  require(first_enlarged.page_text.find("Weapon") != std::string::npos && first_enlarged.page_text.find("Calibration") != std::string::npos,
+      "shared flight footer leaves the full first track name readable on page one");
+  const auto back = std::find_if(first_enlarged.buttons.begin(), first_enlarged.buttons.end(), [](const auto& b){return b.command == Command::home;});
+  require(back != first_enlarged.buttons.end() && back->label == "BACK" && back->bounds.width >= 44, "compact visible Back arrow keeps its complete semantic name and target");
   std::string all;
   const auto count = interface(enlarged).page_count;
   for (unsigned page = 0; page < count; ++page) {
@@ -198,6 +203,68 @@ void hangar_shows_owned_and_next_power_with_visible_basis() {
   for (const auto& track : store.hangar())
     require(compact(all).find(compact("Owned: " + track.owned_bonus + " " + track.bonus_basis)) != std::string::npos,
         "enlarged fallback retains complete maximum owned power and basis");
+}
+
+void hangar_next_flight_is_reachable_without_hiding_purchases() {
+  progression_tests::MemoryBackend backend;
+  hr::progression::AccountStore store{backend}; require(store.load().playable(), "Hangar fixture loads");
+  hr::gameplay::Game game; game.start();
+  for (const auto viewport : {hr::ui::Rect{0,0,320,568}, hr::ui::Rect{0,0,390,844}, hr::ui::Rect{0,0,844,390}, hr::ui::Rect{0,0,320,320}}) {
+    for (const float scale : {1.F, 2.F}) {
+      View view{Screen::hangar, &game.snapshot(), &store, viewport, {}}; view.text_scale = scale;
+      std::set<Command> reachable;
+      const auto pages = interface(view).page_count;
+      for (unsigned page = 0; page < pages; ++page) {
+        view.ui_page = page; const auto ui = interface(view);
+        for (std::size_t i = 0; i < ui.buttons.size(); ++i) {
+          const auto& b = ui.buttons[i]; reachable.insert(b.command);
+          require(b.bounds.width >= 44 && b.bounds.height >= 44, "every Hangar control remains touch sized");
+          require(b.bounds.x >= 0 && b.bounds.y >= 0 && b.bounds.right() <= viewport.width + .01F && b.bounds.bottom() <= viewport.height + .01F, "Hangar controls stay within the viewport");
+          for (std::size_t j = i + 1; j < ui.buttons.size(); ++j) {
+            const auto overlap = hr::ui::intersect(b.bounds, ui.buttons[j].bounds);
+            require(overlap.width < .01F || overlap.height < .01F, "Hangar direct-flight and existing targets never overlap");
+          }
+        }
+      }
+      for (const auto command : {Command::start, Command::home, Command::blueprints, Command::buy0, Command::buy1, Command::buy2, Command::buy3})
+        require(reachable.contains(command), "complete Hangar navigation and every purchase remain reachable");
+    }
+  }
+}
+void held_button_feedback_preserves_targets_glyphs_and_geometry() {
+  progression_tests::MemoryBackend backend;
+  hr::progression::AccountStore store{backend}; require(store.load().playable(), "button fixture loads");
+  hr::gameplay::Game game; game.start();
+  for (const auto screen : {Screen::title, Screen::hangar, Screen::run, Screen::settings}) {
+    for (const float scale : {1.F, 2.F}) {
+      View view{screen, &game.snapshot(), &store, {0,0,390,844}, {}}; view.text_scale = scale;
+      const auto idle = interface(view);
+      for (const auto& target : idle.buttons) {
+        view.held_command = target.command;
+        const auto held = interface(view);
+        require(held.buttons.size() == idle.buttons.size(), "pressure creates no new control");
+        for (std::size_t i = 0; i < held.buttons.size(); ++i)
+          require(held.buttons[i].bounds.x == idle.buttons[i].bounds.x && held.buttons[i].bounds.y == idle.buttons[i].bounds.y && held.buttons[i].bounds.width == idle.buttons[i].bounds.width && held.buttons[i].bounds.height == idle.buttons[i].bounds.height && held.buttons[i].command == idle.buttons[i].command && held.buttons[i].enabled == idle.buttons[i].enabled, "pressure never moves targets or changes activation");
+        require(held.quads.size() == idle.quads.size(), "pressure adds no geometry or new draw commands");
+        unsigned changed = 0;
+        for (std::size_t i = 0; i < idle.quads.size(); ++i) {
+          const auto& q = held.quads[i]; const auto& original = idle.quads[i];
+          require(q.rect == original.rect && q.uv == original.uv, "pressure preserves original rounded surfaces and layout geometry");
+          if (glyph(q) || q.uv[2] >= 0) require(q.color == original.color, "pressure preserves glyph and icon colors");
+          if (q.color != original.color) {
+            ++changed;
+            const hr::ui::Rect r{q.rect[0]*view.viewport.width, q.rect[1]*view.viewport.height, q.rect[2]*view.viewport.width, q.rect[3]*view.viewport.height};
+            require(r.x >= target.bounds.x - .01F && r.y >= target.bounds.y - .01F && r.right() <= target.bounds.right() + .01F && r.bottom() <= target.bounds.bottom() + .01F, "only the explicitly owned button surface responds to pressure");
+          }
+        }
+        require((changed > 0) == target.enabled, "enabled pressure changes its surface and disabled pressure does nothing");
+      }
+      view.held_command = Command::none;
+      require(interface(view).quads.size() == idle.quads.size(), "released or cancelled pressure disappears completely");
+      view.held_command = Command::back_up_bank;
+      require(interface(view).quads.size() == idle.quads.size(), "a command absent from this page cannot light a control");
+    }
+  }
 }
 
 void readable_page_is_real_safe_and_scaled(const View& view, const Interface& page) {
@@ -313,9 +380,11 @@ void larger_text_preserves_whole_offers_and_all_menu_actions() {
             all_text += page.page_text.empty() ? atlas_copy(page) : page.page_text;
             for (const auto& button : page.buttons) reachable.insert(button.command);
           }
-          if (view.screen == Screen::hangar)
+          if (view.screen == Screen::hangar) {
             for (unsigned i = 0; i < 4; ++i)
               require(reachable.contains(static_cast<Command>(static_cast<unsigned>(Command::buy0) + i)), "all permanent purchases remain reachable");
+            require(reachable.contains(Command::start) && reachable.contains(Command::blueprints) && reachable.contains(Command::home), "readable Hangar preserves direct flight, library and return actions");
+          }
           if (view.screen == Screen::settings)
             require(reachable.contains(Command::motion) && reachable.contains(Command::audio) && reachable.contains(Command::haptics) && reachable.contains(Command::home), "all settings and fixed Back are reachable");
           if (view.screen == Screen::blueprints && recipes && count == 1 && interface(view).page_text.empty()) {
@@ -541,10 +610,12 @@ void run_onboarding_names_the_actual_input_without_moving_controls() {
     }
     run.stats.active_seconds = 4;
     const auto later_touch = interface(view);
+    const auto coaching = compact(atlas_copy(later_touch));
+    require((coaching.find("KEEPMOVINGTHROUGHTARGETS") != std::string::npos || coaching.find("MOVETHROUGHTARGETS") != std::string::npos) && coaching.find("3SWEEPS=OVERDRIVE") != std::string::npos, "sweep coaching teaches movement through targets and the three-sweep goal");
     view.hint_device = hr::input::DeviceKind::keyboard;
     require(compact(atlas_copy(interface(view))) == compact(atlas_copy(later_touch)), "capture and Overdrive coaching retains the established four-second transition independent of input");
     run.stats.active_seconds = 12;
-    require(compact(atlas_copy(interface(view))).find("CAPTUREFASTER") == std::string::npos, "coaching retains its established twelve-second cutoff");
+    require(compact(atlas_copy(interface(view))).find("KEEPMOVINGTHROUGHTARGETS") == std::string::npos, "coaching retains its established twelve-second cutoff");
     run.stats.active_seconds = 0;
   }
 }
@@ -1107,6 +1178,8 @@ int main(int argc, char** argv) {
   require(hr::assets::decode_preview_mesh(bytes, atlas), "actual production atlas decodes");
   bounded_damage_hud_keeps_ingress_vitality_clear();
   hangar_shows_owned_and_next_power_with_visible_basis();
+  hangar_next_flight_is_reachable_without_hiding_purchases();
+  held_button_feedback_preserves_targets_glyphs_and_geometry();
   enlarged_run_preserves_two_bands_and_complete_semantics();
   banded_framing_keeps_pixel_fit_and_global_contacts();
   late_value_hud_keeps_level_at_small_portrait();

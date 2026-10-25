@@ -24,9 +24,10 @@ struct Canvas final {
   Interface output;
   float w, h, scale, ox, oy, vx, vy;
   float type_scale{1};
+  Command held_command{Command::none};
   ui::Rect safe;
   std::vector<ui::Rect> text_lines;
-  explicit Canvas(const View& v, bool wide = false) : w(v.viewport.width), h(v.viewport.height), vx(v.viewport.x), vy(v.viewport.y) {
+  explicit Canvas(const View& v, bool wide = false) : w(v.viewport.width), h(v.viewport.height), vx(v.viewport.x), vy(v.viewport.y), held_command(v.held_command) {
     safe = ui::inset(v.viewport, v.safe_area);
     if (v.screen == Screen::run) {
       const auto framing = v.framing ? *v.framing : gameplay_framing(v.viewport, v.safe_area, v.text_scale);
@@ -44,6 +45,17 @@ struct Canvas final {
   void fill(float x, float y, float width, float height, Color color) {
     const auto r = rect(x, y, width, height);
     output.quads.push_back({{(r.x - vx) / w, (r.y - vy) / h, r.width / w, r.height / h}, {r.width, r.height, -std::max(.5F, std::min({12.F * scale, r.width * .5F, r.height * .5F})), 0}, color});
+  }
+  Color button_color(Color color, Command command, bool enabled = true) const {
+    if (enabled && command != Command::none && command == held_command) {
+      const bool dark = color[0] + color[1] + color[2] < 1;
+      for (unsigned i = 0; i < 3; ++i)
+        color[i] = dark ? color[i] + .14F * (1 - color[i]) : color[i] * .82F;
+    }
+    return color;
+  }
+  void button_fill(float x, float y, float width, float height, Color color, Command command, bool enabled = true) {
+    fill(x, y, width, height, button_color(color, command, enabled));
   }
   float measure(std::string_view text, float size, bool title = false) const {
     size = std::max(size, 14.F / scale) * type_scale;
@@ -110,9 +122,9 @@ struct Canvas final {
     if (!line.empty())
       text(x, y, line, size, color);
   }
-  void sprite(float x, float y, float width, float height, float sx, float sy, float sw, float sh) {
+  void sprite(float x, float y, float width, float height, float sx, float sy, float sw, float sh, Color color = {1, 1, 1, 1}) {
     const auto r = rect(x, y, width, height);
-    output.quads.push_back({{(r.x - vx) / w, (r.y - vy) / h, r.width / w, r.height / h}, {sx / 1024.F, sy / 2048.F, sw / 1024.F, sh / 2048.F}, {1, 1, 1, 1}});
+    output.quads.push_back({{(r.x - vx) / w, (r.y - vy) / h, r.width / w, r.height / h}, {sx / 1024.F, sy / 2048.F, sw / 1024.F, sh / 2048.F}, color});
   }
   void icon(float x, float y, unsigned id, float size = 28) {
     sprite(x, y, size, size, static_cast<float>(id) * 128, 1024, 128, 128);
@@ -126,7 +138,7 @@ struct Canvas final {
   }
   void button(float x, float y, float width, std::string label, Command command, bool enabled = true, Color color = mint, float height = 46) {
     if (type_scale > 1 && (measure(label, 17) > width - 12 || std::max(17.F, 14.F / scale) * type_scale > height - 8)) output.text_overflow = true;
-    fill(x, y, width, height, enabled ? color : Color{.15F, .23F, .28F, 1});
+    button_fill(x, y, width, height, enabled ? color : Color{.15F, .23F, .28F, 1}, command, enabled);
     centered(x, y + (height - 22) * .5F - 2, width, label, 17, enabled ? navy : muted);
     auto target = rect(x, y, width, height);
     if (target.height < 44) {
@@ -242,8 +254,9 @@ Interface wide_interface(const View& v) {
       c.wrap(x + 10, 226, 164, track.bonus_basis, 14, muted, 2);
       c.button(x, 282, 184, track.rank >= track.maximum_rank ? "MAXED" : number(track.cost) + " CR", static_cast<Command>(static_cast<unsigned>(Command::buy0) + i), track.affordable, mint, 64);
     }
-    c.button(688, 28, 124, "BACK", Command::home, true, white, 64);
-    c.button(514, 28, 160, "BLUEPRINTS", Command::blueprints, true, mint, 64);
+    c.button(688, 20, 124, "BACK", Command::home, true, white, 48);
+    c.button(514, 20, 160, "BLUEPRINTS", Command::blueprints, true, white, 48);
+    c.button(292, 20, 208, "NEXT FLIGHT", Command::start, true, mint, 48);
     break;
   }
   case Screen::blueprints: {
@@ -381,6 +394,7 @@ std::vector<ReadableSection> readable_sections(const View& v) {
       add("HANGAR / " + number(account.credits) + " RESEARCH CREDITS\nPermanent bonuses apply to your next flight.\n" + std::string(track.title) + " / rank " + number(track.rank) + " of " + number(track.maximum_rank) + "\nOwned: " + track.owned_bonus + " " + track.bonus_basis + "." + (track.next_bonus.empty() ? " Maximum rank." : "\nNext: " + track.next_bonus + " " + track.bonus_basis + "."), static_cast<Command>(static_cast<unsigned>(Command::buy0) + i), track.rank >= track.maximum_rank ? "MAXED" : "BUY / " + number(track.cost) + " CR", track.affordable);
     }
     add("BLUEPRINT LIBRARY\nFree milestones unlock hardware in future upgrade draws.", Command::blueprints, "BLUEPRINTS");
+    add("NEXT FLIGHT\nStart in " + std::string(location_name(v.theme)) + " with your purchased permanent Hangar bonuses. Temporary flight upgrades reset.", Command::start, "NEXT FLIGHT");
     break;
   }
   case Screen::blueprints:
@@ -397,7 +411,7 @@ std::vector<ReadableSection> readable_sections(const View& v) {
     }
     break;
   case Screen::settings:
-    add("FLIGHT SETTINGS\nDrag to fly / WASD or arrows / controller left stick. Capture and fire stay active while you move. Fly close for faster captures. Chain three quick sweeps for Overdrive. Dash through danger: press Space or tap Dash. Phase Drive improves it.");
+    add("FLIGHT SETTINGS\nDrag to fly / WASD or arrows / controller left stick. Capture and fire stay active while you move. Fly close for faster captures. Keep moving through targets. Three sweeps trigger Overdrive. Dash through danger: press Space or tap Dash. Phase Drive improves it.");
     add("REDUCED MOTION\n" + std::string(account.settings.reduced_motion ? "On" : "Off") + ". System reduced motion is also respected.", Command::motion, account.settings.reduced_motion ? "MOTION: ON" : "MOTION: OFF");
     add("SOUND EFFECTS\n" + std::string(account.settings.audio ? "On" : "Off"), Command::audio, account.settings.audio ? "SOUND: ON" : "SOUND: OFF");
     add("HAPTICS\n" + std::string(v.haptics_available ? account.settings.haptics ? "On" : "Off" : "Unavailable on this device"), Command::haptics, v.haptics_available ? account.settings.haptics ? "HAPTICS: ON" : "HAPTICS: OFF" : "UNAVAILABLE", v.haptics_available);
@@ -459,16 +473,23 @@ Interface readable_interface(const View& v) {
   const float content_top = upgrade_tabs ? row + 20 : visible_counter ? count_size * 1.25F + 20 : 12.F;
   const Command back = v.save_error ? Command::none : v.show_privacy && v.screen == Screen::settings ? Command::privacy : v.show_build ? Command::current_build : v.screen == Screen::hangar || v.screen == Screen::settings || v.screen == Screen::blueprints ? Command::home : Command::none;
   auto sections = readable_sections(v);
-  const auto button_height = [&](std::string_view label) {
-    const auto lines = readable_lines(c, label, width - 24, button_size);
+  const auto button_height = [&](std::string_view label, float target_width = -1) {
+    const auto lines = readable_lines(c, label, (target_width < 0 ? width : target_width) - 24, button_size);
     return std::max(44.F, button_size + static_cast<float>(lines.empty() ? 0 : lines.size() - 1) * button_size * 1.25F + 12);
   };
   // Keep useful primary menu actions together. Only genuinely overflowing
   // content/items page; a small text preference does not turn menus into tours.
   std::vector<ReadableSection> primary;
+  const float hangar_flight_width = width - 44 - gap;
+  const float hangar_footer_height = button_height("NEXT FLIGHT", hangar_flight_width);
+  const bool hangar_split_footer = v.screen == Screen::hangar && !v.save_error &&
+      c.measure("FLIGHT", button_size) <= hangar_flight_width - 24 &&
+      safe.height - content_top - hangar_footer_height - gap - 2 * (row + gap) - 12 >= heading_size + body_size;
+  const float back_height = hangar_split_footer ? hangar_footer_height : row;
+  if (hangar_split_footer) sections.pop_back();
   const bool primary_screen = !v.save_error && !v.show_build && !v.show_privacy && (v.screen == Screen::title || v.screen == Screen::pause || v.screen == Screen::settings || v.screen == Screen::death || v.screen == Screen::results);
   if (primary_screen) {
-    float dock_height = back == Command::none ? 0.F : row + gap;
+    float dock_height = back == Command::none ? 0.F : back_height + gap;
     for (auto section : sections)
       if (section.command != Command::none) {
         if (section.command == Command::location_next) section.label = std::string(location_name(v.theme)) + " >";
@@ -490,9 +511,9 @@ Interface readable_interface(const View& v) {
   std::vector<Page> pages;
   for (unsigned i = 0; i < sections.size(); ++i) {
     const auto& section = sections[i];
-    float dock_height = back == Command::none ? 0.F : row + gap;
+    float dock_height = back == Command::none ? 0.F : back_height + gap;
     for (const auto& action : primary) dock_height += button_height(action.label) + gap;
-    if (primary.empty() && section.command != Command::none) dock_height += button_height(section.label) + gap;
+    if (section.command != Command::none && (primary.empty() || !primary_screen)) dock_height += button_height(section.label) + gap;
     const float room = safe.height - content_top - dock_height - row - gap - 12;
     std::vector<Line> lines;
     std::istringstream paragraphs(section.text);
@@ -531,7 +552,7 @@ Interface readable_interface(const View& v) {
     for (unsigned i = 0; i < 3; ++i) {
       const float x = 16 + static_cast<float>(i) * (tab_width + gap);
       const bool selected = i == std::min(v.upgrade_preview, 2U);
-      c.fill(x, 8, tab_width, row, selected ? mint : panel);
+      c.button_fill(x, 8, tab_width, row, selected ? mint : panel, static_cast<Command>(static_cast<unsigned>(Command::preview0) + i));
       if (tab_width >= 88) {
         c.fill(x + 7, 8 + (row - 32) * .5F, 32, 32, panel);
         c.icon(x + 10, 8 + (row - 26) * .5F, choice_icon(v.run->choices[i]), 26);
@@ -548,7 +569,7 @@ Interface readable_interface(const View& v) {
     y += line.size * 1.25F;
   }
   const auto button = [&](float x, float top, float w, float height, std::string label, Command command, bool enabled = true) {
-    c.fill(x, top, w, height, enabled ? mint : panel);
+    c.button_fill(x, top, w, height, enabled ? mint : panel, command, enabled);
     const auto lines = readable_lines(c, label, w - 24, button_size);
     const float text_height = button_size + static_cast<float>(lines.empty() ? 0 : lines.size() - 1) * button_size * 1.25F;
     float baseline = top + (height - text_height) * .5F;
@@ -560,8 +581,12 @@ Interface readable_interface(const View& v) {
   };
   float footer = safe.height - 12;
   if (back != Command::none) {
-    footer -= row;
-    button(16, footer, width, row, "BACK", back);
+    footer -= back_height;
+    if (hangar_split_footer) {
+      button(16, footer, 44, back_height, "<", back);
+      c.output.buttons.back().label = "BACK";
+      button(16 + 44 + gap, footer, hangar_flight_width, back_height, "NEXT FLIGHT", Command::start);
+    } else button(16, footer, width, row, "BACK", back);
     footer -= gap;
   }
   footer -= row;
@@ -579,7 +604,8 @@ Interface readable_interface(const View& v) {
       footer -= gap;
     }
     std::reverse(c.output.buttons.begin() + static_cast<std::ptrdiff_t>(first_action), c.output.buttons.end());
-  } else if (section.command != Command::none) {
+  }
+  if (section.command != Command::none && (primary.empty() || !primary_screen)) {
     const float height = button_height(section.label);
     button(16, footer - height, width, height, section.label, section.command, section.enabled);
     if (upgrade_tabs && page.section == 0 && footer - height - y >= 104) {
@@ -592,6 +618,11 @@ Interface readable_interface(const View& v) {
           c.fill(safe.width * .5F - 23 + static_cast<float>(rank) * 17, icon_top + 70, 12, 4,
               rank + 1 < pick.next_rank ? mint : rank + 1 == pick.next_rank ? gold : navy);
     }
+  }
+  // Enter/accept keeps activating the visible section before the footer flight.
+  if (hangar_split_footer) {
+    const auto flight = std::find_if(c.output.buttons.begin(), c.output.buttons.end(), [](const auto& b) { return b.command == Command::start; });
+    std::rotate(flight, flight + 1, c.output.buttons.end());
   }
   return std::move(c.output);
 }
@@ -735,7 +766,7 @@ Interface enlarged_run(const View& v, const GameplayFraming& framing) {
       bar(sx, row - 2, shield_width, v.run->shield / std::max(1.F, v.run->maximum_shield), {.57F, .83F, 1, 1});
     }
   }
-  c.fill(pause_x, 0, row, row, white);
+  c.button_fill(pause_x, 0, row, row, white, Command::pause);
   // Familiar pause marks need no oversized textual bearings.
   c.fill(pause_x + 13, 12, 6, 20, navy);
   c.fill(pause_x + 25, 12, 6, 20, navy);
@@ -753,7 +784,7 @@ Interface enlarged_run(const View& v, const GameplayFraming& framing) {
   const bool ready = v.run->dash_cooldown_seconds <= 0;
   const auto seconds = number(static_cast<unsigned>(std::ceil(v.run->dash_cooldown_seconds))) + "s";
   const std::string dash = ready ? (dash_icon ? ">>" : "DASH") : detailed && !dash_icon ? "DASH " + seconds : seconds;
-  c.fill(dash_x, bottom, dash_width, row, ready ? mint : panel);
+  c.button_fill(dash_x, bottom, dash_width, row, ready ? mint : panel, Command::dash, ready);
   line(dash_x + 4, bottom, dash_width - 8, dash, ready ? navy : muted, true);
   c.output.buttons.push_back({c.rect(dash_x, bottom, dash_width, row), Command::dash, ready ? "DASH" : "DASH " + seconds, ready});
 
@@ -775,8 +806,8 @@ Interface enlarged_run(const View& v, const GameplayFraming& framing) {
     fraction = v.run->harvest_chain_seconds / gameplay::tuning::harvest_chain_window_seconds;
     status_color = mint;
   } else if (v.run->stats.active_seconds < 12) {
-    status = v.run->stats.active_seconds < 4 ? "DRAG TO FLY" : "FLY CLOSE";
-    if (c.measure(status, size) > status_width - 8) status = v.run->stats.active_seconds < 4 ? "DRAG" : "CLOSE";
+    status = v.run->stats.active_seconds < 4 ? "DRAG TO FLY" : "KEEP MOVING";
+    if (c.measure(status, size) > status_width - 8) status = v.run->stats.active_seconds < 4 ? "DRAG" : "MOVE";
   } else {
     status = "LV " + number(v.run->stats.level);
     if (c.measure(status, size) > status_width - 8) status = "LEVEL";
@@ -838,11 +869,11 @@ Interface compact_run(const View& v, const GameplayFraming& framing) {
   if (y > left.bottom() - 4) c.output.text_overflow = true;
   const float rx = right.x + 4, rw = right.width - 8, button_height = std::max(44.F, size + 16);
   const float pause_y = right.y + 8, dash_y = right.bottom() - button_height - 8;
-  c.fill(rx, pause_y, rw, button_height, white);
+  c.button_fill(rx, pause_y, rw, button_height, white, Command::pause);
   c.centered(rx, pause_y + (button_height - size) * .5F, rw, "II", size, navy);
   c.output.buttons.push_back({{rx, pause_y, rw, button_height}, Command::pause, "PAUSE", true});
   const bool ready = v.run->dash_cooldown_seconds <= 0;
-  c.fill(rx, dash_y, rw, button_height, ready ? mint : panel);
+  c.button_fill(rx, dash_y, rw, button_height, ready ? mint : panel, Command::dash, ready);
   c.centered(rx, dash_y + (button_height - size) * .5F, rw, "DASH", size, ready ? navy : muted);
   c.output.buttons.push_back({{rx, dash_y, rw, button_height}, Command::dash,
       ready ? "DASH" : "DASH " + number(static_cast<unsigned>(std::ceil(v.run->dash_cooldown_seconds))) + "s", ready});
@@ -868,7 +899,7 @@ Interface compact_run(const View& v, const GameplayFraming& framing) {
   }
   else if (v.run->harvest_overdrive_seconds > 0) status("BOOST\n" + number(static_cast<unsigned>(std::ceil(v.run->harvest_overdrive_seconds))) + "s", mint);
   else if (v.run->harvest_chain) status("SWEEP\n" + number(v.run->harvest_chain) + "/" + number(gameplay::tuning::harvest_chain_target), mint);
-  else if (v.run->stats.active_seconds < 12) status(v.run->stats.active_seconds < 4 ? "DRAG TO FLY" : "FLY CLOSE", white);
+  else if (v.run->stats.active_seconds < 12) status(v.run->stats.active_seconds < 4 ? "DRAG TO FLY" : "KEEP MOVING", white);
   if (v.stick_active) {
     c.fill(v.stick_origin.x - 24, v.stick_origin.y - 24, 48, 48, {.06F, .2F, .25F, .35F});
     const float dx = std::clamp(v.stick_position.x - v.stick_origin.x, -38.F, 38.F), dy = std::clamp(v.stick_position.y - v.stick_origin.y, -38.F, 38.F);
@@ -1001,8 +1032,9 @@ Interface standard_interface(const View& v) {
       const bool controller = v.hint_device == input::DeviceKind::gamepad;
       const auto movement_hint = keyboard ? "WASD / ARROWS TO FLY" : controller ? "LEFT STICK TO FLY" : "DRAG TO FLY";
       const auto dash_hint = keyboard ? "SPACE TO DODGE" : controller ? "RIGHT FACE BUTTON TO DODGE" : "TAP DASH TO DODGE";
-      c.fitted(28, 675, 334, run.stats.active_seconds < 4 ? movement_hint : "FLY CLOSE. CAPTURE FASTER.", 17, white, false, true);
-      c.fitted(28, 703, 334, run.stats.active_seconds < 4 ? dash_hint : "3 QUICK SWEEPS = OVERDRIVE", 14, muted, false, true);
+      const auto sweep_hint = c.measure("KEEP MOVING THROUGH TARGETS", 17) <= 334 ? "KEEP MOVING THROUGH TARGETS" : "MOVE THROUGH TARGETS";
+      c.fitted(28, 675, 334, run.stats.active_seconds < 4 ? movement_hint : sweep_hint, 17, white, false, true);
+      c.fitted(28, 703, 334, run.stats.active_seconds < 4 ? dash_hint : "3 SWEEPS = OVERDRIVE", 14, muted, false, true);
     }
     if (overdrive || run.harvest_chain) {
       const auto color = overdrive ? navy : white;
@@ -1083,8 +1115,10 @@ Interface standard_interface(const View& v) {
         const auto& pick = run.choices[i];
         const float y = card_y, card_height = heights[i];
         card_y += card_height + row_gap;
-        c.sprite(20, y, 350, header_height, 536, 1432, 464, 180);
-        c.sprite(20, y + header_height, 350, card_height - header_height, 536, 1612, 464, 412);
+        const auto command = static_cast<Command>(static_cast<unsigned>(Command::pick0) + i);
+        const auto surface = c.button_color({1, 1, 1, 1}, command);
+        c.sprite(20, y, 350, header_height, 536, 1432, 464, 180, surface);
+        c.sprite(20, y + header_height, 350, card_height - header_height, 536, 1612, 464, 412, surface);
         const auto color = pick.rarity == gameplay::Rarity::rare ? gold : pick.rarity == gameplay::Rarity::uncommon ? mint : white;
         c.fill(29, y + 9, 48, 48, panel);
         c.icon(33, y + 13, choice_icon(pick), 40);
@@ -1120,7 +1154,7 @@ Interface standard_interface(const View& v) {
     }
     case Screen::pause:
       heading(v.restored_run ? "RUN SAVED" : "ON HOLD", std::string(location_name(v.theme)) + " / LV " + number(run.stats.level) + " / SCORE " + number(run.stats.score) + " / Clock paused.");
-      c.wrap(26, 152, 338, v.restored_run ? "Level " + number(run.stats.level) + " / " + time_text(run.stats.active_seconds) + " saved. " + (run.phase == gameplay::Phase::choosing_upgrade ? "Your earned upgrade is waiting. " : "") + "Resume your flight or end it and bank credits." : "Fly close to capture faster. Chain 3 quick sweeps for Overdrive. Dash through danger: tap Dash or press Space. Avoid coral warnings.", 19, white, 7);
+      c.wrap(26, 152, 338, v.restored_run ? "Level " + number(run.stats.level) + " / " + time_text(run.stats.active_seconds) + " saved. " + (run.phase == gameplay::Phase::choosing_upgrade ? "Your earned upgrade is waiting. " : "") + "Resume your flight or end it and bank credits." : "Fly close to capture faster. Keep moving through targets. Three sweeps trigger Overdrive. Dash through danger: tap Dash or press Space. Avoid coral warnings.", 19, white, 7);
       c.button(26, 360, 338, "RESUME", Command::resume, true, mint, 56);
       c.button(26, 438, 338, "SETTINGS", Command::settings, true, white, 56);
       c.button(26, 516, 338, "CURRENT BUILD", Command::current_build, true, white, 56);
@@ -1150,8 +1184,9 @@ Interface standard_interface(const View& v) {
         c.wrap(34, y + 70, 180, track.bonus_basis, 14, muted, 2, 1.F);
         c.button(226, y + 67, 130, track.rank >= track.maximum_rank ? "MAXED" : number(track.cost) + " CR", static_cast<Command>(static_cast<int>(Command::buy0) + static_cast<int>(i)), track.affordable, mint, 48);
       }
-      c.button(26, 756, 148, "BACK", Command::home, true, white, 56);
-      c.button(192, 756, 172, "BLUEPRINTS", Command::blueprints, true, mint, 56);
+      c.button(26, 714, 148, "BACK", Command::home, true, white, 44);
+      c.button(192, 714, 172, "BLUEPRINTS", Command::blueprints, true, white, 44);
+      c.button(26, 780, 338, "NEXT FLIGHT", Command::start, true, mint, 52);
       break;
     }
     case Screen::blueprints: {
@@ -1192,7 +1227,7 @@ Interface standard_interface(const View& v) {
       c.button(26, 170, 338, account.settings.reduced_motion ? "REDUCED MOTION: ON" : "REDUCED MOTION: OFF", Command::motion, true, white, 60);
       c.button(26, 254, 338, account.settings.audio ? "SOUND EFFECTS: ON" : "SOUND EFFECTS: OFF", Command::audio, true, white, 60);
       c.button(26, 338, 338, v.haptics_available ? (account.settings.haptics ? "HAPTICS: ON" : "HAPTICS: OFF") : "HAPTICS: UNAVAILABLE", Command::haptics, v.haptics_available, white, 60);
-      c.wrap(26, 438, 338, "Fly close to capture faster. Chain 3 sweeps for Overdrive. Dash: Space or tap Dash. Capture and fire are automatic. Phase Drive improves Dash.", 18, muted, 9);
+      c.wrap(26, 438, 338, "Fly close to capture faster. Keep moving through targets. Three sweeps trigger Overdrive. Dash: Space or tap Dash. Capture and fire are automatic. Phase Drive improves Dash.", 18, muted, 9);
       c.button(26, 628, 338, "PRIVACY POLICY", Command::privacy, true, white, 56);
       c.button(26, 744, 338, "BACK", Command::home, true, mint, 60);
       break;
@@ -1290,7 +1325,18 @@ Interface interface(const View& v) {
     }
   }
   auto standard = standard_interface(v);
-  if ((v.screen == Screen::death || v.screen == Screen::results || v.screen == Screen::upgrade) && standard.text_overflow) return readable_interface(v);
+  if (v.screen == Screen::hangar && !v.save_error) {
+    const auto safe = ui::inset(v.viewport, v.safe_area);
+    for (std::size_t i = 0; i < standard.buttons.size(); ++i) {
+      const auto& bounds = standard.buttons[i].bounds;
+      if (bounds.x < safe.x || bounds.y < safe.y || bounds.right() > safe.right() + .01F || bounds.bottom() > safe.bottom() + .01F) standard.text_overflow = true;
+      for (std::size_t j = i + 1; j < standard.buttons.size(); ++j) {
+        const auto overlap = ui::intersect(bounds, standard.buttons[j].bounds);
+        if (overlap.width > .01F && overlap.height > .01F) standard.text_overflow = true;
+      }
+    }
+  }
+  if ((v.screen == Screen::death || v.screen == Screen::results || v.screen == Screen::upgrade || v.screen == Screen::hangar) && standard.text_overflow) return readable_interface(v);
   if (!large || !standard.text_overflow) return finish(std::move(standard));
   return finish(v.screen == Screen::run && !v.save_error ? enlarged_run(v, framing) : readable_interface(v));
 }

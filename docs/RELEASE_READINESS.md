@@ -10,6 +10,57 @@ change together. Prior landscape captures are historical integration evidence.
 
 ## Current truth
 
+The latest owner-requested normal launch is **Human Resources Latest Playtest
+b99c373**, confirmed at PID22511 from committed source
+**b99c373bc69e4250211b3b59b270e56b9c242be5**. It includes the cumulative Hangar
+values, input-specific onboarding and conservative shadow work, retaining the
+original apparent ship size. All104 staged files, qualified raw executable and
+strict signature are independently verified before normal LaunchServices launch.
+A fresh separate test save is used; all eleven user previews/accounts are
+protected. Exact delivery/launch evidence is in
+`build/evidence/latest-playtest-b99c373/`.
+
+This738-file epoch passes a fresh optimized clean-source cook/build,45native
+suites, seven mesh/checkout contracts, source-closure regression and112-file
+package audit. iPhoneOS/Simulator arm64 Release and Android both-ABI debug/release,
+strict lint, ZIP/ELF16KiB, unsigned AAB and bundletool checks pass. The mobile
+refresh binds554focused inputs and all738tracked sources. Supplemental MinGW
+strictly compiles/links the full current GUI/DXIL client and audits112package
+files plus127internal notice-delivery entries. Reports are
+`clean-hangar-shadow/REPORT.json`, `hangar-shadow-mobile/REPORT.json` and
+`hangar-shadow-windows/REPORT.json` under `build/evidence/`. Independent host/mobile
+review accepts the frozen evidence; root separately verifies Windows package,
+objects, archive membership and PE. Review records are under
+`qualification-independent-b99c373/` (the Windows owner's own recheck is explicitly
+labelled).
+
+All81runtime payloads, every texture and eight animations remain exact against
+853169. The runtime manifest now binds103derived source authorities, correcting
+the previous98-entry closure; actual current shadow/header and Hangar/input
+compile ownership is checked. Older source/packages and enumerated auxiliary
+bindings remain preserved. These are build/package and host-rendering results;
+the latest actual isolated Android runtime proof remains853169. No current
+physical-mobile, Windows/Linux execution, human-fun or store claim follows.
+
+A newer fourteen-source host slice now implements direct Hangar→Next Flight
+through the existing durable start, held-button surface response and actual
+moving-sweep charge on the visible ship annulus. Readable Hangar shares Back/Next
+Flight in one row without starving the track title. Root rejects first ground
+brackets/square outlines/crowded footer, then accepts one structural revision.
+Final focused5/45suite/static/diff gates, actual App semantic failure/retry checks
+and nine native PNGs pass. Four same-state cue comparisons add one world draw and
+96triangles, zero shadow work; six beams retain one indicator. Rules/timing/save
+bytes/authority stay unchanged, while current C++ projection ABI requires matching
+headers/archives. `ui-flow-quality-b99c373/FINAL_REPORT.json`,
+`sweep-world-feedback/FINAL_REPORT.json` and `ui-sweep-independent-review-b99c373/`
+bind final source/native evidence. The later source does not hot-update the
+owner's open b99c373 app or inherit its platform qualification. Original cow art
+remains. Boss raking/recovery design is separate and still needs whole-cycle
+scroll drift resolved; the existing tiny startup velocity/sweep transient is a
+future gameplay follow-up, not silently changed in this presentation slice.
+
+## Historical853169 qualification and subsequent slice preparation
+
 The latest owner-requested normal launch is **Human Resources Latest Playtest**,
 PID93951, from accepted source **853169defd705a9570fb871373ae25964f7bbf5d**.
 It includes the reviewed reward UI, Farmland frontage/rotor and crop/grass exports,

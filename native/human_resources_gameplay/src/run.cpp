@@ -203,6 +203,11 @@ void Game::State::sync() {
       view.entities.push_back(entity);
     }
   }
+  for (auto& beam : view.beams) {
+    const auto* target = actor(beam.target_id);
+    beam.sweep_fraction = target ? std::clamp(target->sweep_progress / tuning::harvest_sweep_fraction, 0.F, 1.F) : 0;
+    beam.sweep_active = target && target->lifted && sweep_eligible(*target);
+  }
   view.projectiles.clear();
   for (const auto& p : bullets) {
     if (!p.removed) {

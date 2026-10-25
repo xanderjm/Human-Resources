@@ -84,6 +84,7 @@ struct Game::State final {
   [[nodiscard]] unsigned used_beam_slots() const;
   [[nodiscard]] detail::Actor* actor(std::uint32_t id);
   [[nodiscard]] bool capture_eligible(const detail::Actor& actor) const;
+  [[nodiscard]] bool sweep_eligible(const detail::Actor& actor) const;
   void sync();
   void present(PresentationEventKind kind, Vec2 position, std::uint32_t actor_id = 0, float radius = 0, DamageCause cause = DamageCause::unknown);
   void step(float dt, Control control);

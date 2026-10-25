@@ -110,6 +110,7 @@ struct View final {
   float report_entry_seconds{-1}; // Disposable, nonblocking presentation timing.
   const GameplayFraming* framing{};
   input::DeviceKind hint_device{input::DeviceKind::touch}; // Last actual semantic input; touch-first before use.
+  Command held_command{Command::none}; // Valid owned contact currently inside its original enabled target.
 };
 [[nodiscard]] constexpr std::string_view location_name(presentation::SceneryTheme theme) {
   switch (theme) {

@@ -95,6 +95,63 @@ void actual_convergence_and_rays() {
     }
   }
 }
+void sweep_acquisition_shows_only_real_projected_participation() {
+  hr::gameplay::Snapshot run;
+  run.phase = hr::gameplay::Phase::active;
+  run.entities.push_back({.id = 1, .kind = hr::gameplay::EntityKind::cow, .position = {1, 0}, .capture_progress = .4F});
+  run.beams.push_back({.target_id = 1, .target = {1, 0}, .progress = .4F});
+  const auto pointers = [](const hr::presentation::StyleFrame& frame) {
+    std::vector<hr::presentation::StyleInstance> result;
+    for (const auto& instance : frame.instances)
+      if (instance.mesh == "cube" && (instance.tint == std::array<float, 4>{.70F, 1, .86F, .96F} ||
+                                       instance.tint == std::array<float, 4>{.95F, 1, .57F, .98F})) result.push_back(instance);
+    return result;
+  };
+  const auto ordinary = hr::product::scene(run, 390.F / 844.F, false);
+  require(pointers(ordinary).empty(), "ordinary capture progress never claims accepted moving participation");
+  run.beams[0].sweep_fraction = .5F;
+  run.beams[0].sweep_active = true;
+  const auto moving = hr::product::scene(run, 390.F / 844.F, false);
+  const auto active = pointers(moving);
+  require(active.size() == 8 && moving.instances.size() == ordinary.instances.size() + 8,
+          "accepted participation adds one bounded eight-segment charge arc");
+  for (const auto& pointer : active)
+    require(pointer.effect && !pointer.casts_shadow && pointer.position.y > mesh(moving, "ufo-modular").position.y,
+            "charge arc stays on the visible upper hull and adds no shadow work");
+  run.stats.active_seconds = .1;
+  const auto moving_later = pointers(hr::product::scene(run, 390.F / 844.F, false));
+  require(hr::presentation::model_matrix(active[0]) != hr::presentation::model_matrix(moving_later[0]),
+          "a contributing unfinished sweep gives a small live charge response");
+  const auto reduced = pointers(hr::product::scene(run, 390.F / 844.F, true));
+  run.stats.active_seconds = 2;
+  const auto reduced_later = pointers(hr::product::scene(run, 390.F / 844.F, true));
+  require(reduced.size() == 8 && hr::presentation::model_matrix(reduced[0]) ==
+          hr::presentation::model_matrix(reduced_later[0]), "reduced motion keeps the actual partial sweep marker static");
+  run.beams[0].sweep_fraction = 1;
+  const auto qualified_frame = hr::product::scene(run, 390.F / 844.F, false);
+  const auto qualified = pointers(qualified_frame);
+  require(qualified.size() == 8 && qualified[0].tint[0] == .95F,
+          "qualified contribution earns a distinct gold marker before collection");
+  run.stats.active_seconds = 3;
+  const auto qualified_later_frame = hr::product::scene(run, 390.F / 844.F, false);
+  const auto qualified_later = pointers(qualified_later_frame);
+  require_near(qualified[0].position.x, qualified_later[0].position.x, .00001F,
+               "qualified arc stops pulsing along the hull");
+  require_near(qualified[0].position.y - mesh(qualified_frame, "ufo-modular").position.y,
+      qualified_later[0].position.y - mesh(qualified_later_frame, "ufo-modular").position.y, .00001F,
+      "qualified arc remains attached while the ordinary hull floats");
+  run.beams.resize(6, run.beams[0]);
+  require(pointers(hr::product::scene(run, 390.F / 844.F, false)).size() == 8,
+          "six contributing beams coalesce to one bounded arc instead of six gauges");
+  run.beams.resize(1);
+  run.harvest_overdrive_seconds = 1;
+  require(pointers(hr::product::scene(run, 390.F / 844.F, false)).empty(),
+          "active Overdrive cannot claim participation toward another chain");
+  run.harvest_overdrive_seconds = 0;
+  run.beams[0].vehicle = true;
+  require(pointers(hr::product::scene(run, 390.F / 844.F, false)).empty(),
+          "vehicle capture never claims a biological sweep");
+}
 void actual_damage_is_local_typed_and_pause_safe() {
   hr::product::SceneEffects effects;
   hr::gameplay::Snapshot run;
@@ -564,6 +621,7 @@ int main() {
   windmill_uses_saved_active_time_and_keeps_its_assembly();
   actual_damage_is_local_typed_and_pause_safe();
   actual_convergence_and_rays();
+  sweep_acquisition_shows_only_real_projected_participation();
   history_requires_authority_and_freezes();
   actual_game_events_match_confirmed_outcomes();
   semantic_feedback_never_replays_persistent_flashes();

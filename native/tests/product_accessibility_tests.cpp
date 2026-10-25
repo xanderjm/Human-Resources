@@ -92,6 +92,12 @@ void replaced_offer_and_purchase_reject_stale_actions() {
   interface = hr::product::interface(view);
   nodes = accessibility_snapshot(view, interface);
   require(session.publish(nodes), "hangar snapshot publishes");
+  const auto& next_flight = named(nodes, "Next flight");
+  require(next_flight.value.find("Farmland") != std::string::npos && next_flight.value.find("permanent Hangar bonuses") != std::string::npos && next_flight.value.find("Temporary flight upgrades reset") != std::string::npos,
+      "direct flight describes selected location and the actual permanent/reset scope");
+  require(session.request(next_flight.stable_id, hr::accessibility::ActionKind::activate), "native Hangar next-flight control queues activation");
+  const auto flight_actions = session.drain_actions();
+  require(flight_actions.size() == 1 && accessibility_command(flight_actions[0], interface) == Command::start, "next flight uses existing durable start command");
   const auto& weapon = named(nodes, "Weapon Calibration");
   require(weapon.value.find("Owned: +0% original weapon damage. Next: +5% original weapon damage.") != std::string::npos &&
       weapon.value.find("next flight") != std::string::npos, "Hangar speaks owned and next totals with complete stat basis and permanent scope");

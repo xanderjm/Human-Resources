@@ -147,6 +147,63 @@ void lost_capture_clears_exposure() {
   require(s.actors.front().sweep_progress == 0 && s.actors.front().view.capture_progress == 0,
           "broken ordinary beam resets both capture progress and sweep qualification");
 }
+void sweep_feedback_follows_accepted_participation() {
+  auto s = harvest();
+  const float core = s.view.capture_radius * tune::harvest_core_radius_fraction;
+  target(s, core);
+  s.view.velocity.x = tune::harvest_minimum_pilot_speed;
+  s.capture(dt); s.sync();
+  require(s.view.beams.size() == 1 && s.view.beams[0].sweep_active,
+          "exact moving/core boundaries contribute to the actual sweep and its feedback");
+  require_near(s.view.beams[0].sweep_fraction, s.actors[0].sweep_progress / tune::harvest_sweep_fraction, .000001F,
+               "feedback projects accepted participation, not total capture progress");
+  const float accepted = s.view.beams[0].sweep_fraction;
+  s.view.velocity.x = tune::harvest_minimum_pilot_speed - .001F;
+  s.capture(dt); s.sync();
+  require(!s.view.beams[0].sweep_active && s.view.beams[0].sweep_fraction == accepted,
+          "slower hovering pauses contribution without inventing or losing the earned fraction");
+  s.view.velocity.x = tune::harvest_minimum_pilot_speed;
+  s.actors[0].view.position.x = core + .001F;
+  s.capture(dt); s.sync();
+  require(!s.view.beams[0].sweep_active && s.view.beams[0].sweep_fraction == accepted,
+          "movement outside the real core cannot brighten the sweep contribution");
+  s.actors[0].view.position.x = core;
+  for (unsigned i = 0; i < 11; ++i) s.capture(dt);
+  s.sync();
+  require(s.view.beams[0].sweep_fraction == 1 && s.actors[0].view.capture_progress < 1,
+          "actual participation reaches its qualified marker before ordinary capture completes");
+  s.view.velocity.x = 0;
+  s.capture(dt); s.sync();
+  require(!s.view.beams[0].sweep_active && s.view.beams[0].sweep_fraction == 1,
+          "qualification remains earned when the pilot stops after a real moving pass");
+  s.view.player.x = 20;
+  s.capture(dt); s.sync();
+  require(s.view.beams.empty() && s.actors[0].sweep_progress == 0,
+          "a broken beam loses the marker together with its actual saved participation");
+
+  auto idle = harvest(); target(idle); idle.capture(dt); idle.sync();
+  require(!idle.view.beams[0].sweep_active && idle.view.beams[0].sweep_fraction == 0,
+          "ordinary automatic scrolling never acquires the skill marker");
+}
+void sweep_feedback_is_derived_after_restore() {
+  gp::Game original; original.start({.seed = 514});
+  auto& s = *original.state_;
+  s.actors.clear(); s.view.beams.clear(); target(s);
+  s.view.velocity = {2, s.view.forward_speed};
+  s.capture(dt); s.sync();
+  const auto bytes = original.save_state();
+  require(!bytes.empty() && s.view.beams.size() == 1 && s.view.beams[0].sweep_fraction > 0,
+          "a real partially contributing beam has a valid checkpoint");
+  const auto expected = s.view.beams[0];
+  s.view.beams[0].sweep_fraction = 0; s.view.beams[0].sweep_active = false;
+  require(original.save_state() == bytes, "derived cue metadata adds no continuation bytes");
+  gp::Game restored;
+  require(restored.restore_state(bytes) == gp::SaveStateIssue::none && restored.save_state() == bytes,
+          "unchanged codec roundtrips the original participation exactly");
+  const auto& actual = restored.snapshot().beams[0];
+  require(actual.sweep_fraction == expected.sweep_fraction && actual.sweep_active == expected.sweep_active,
+          "cold restore derives the same cue from existing participation, velocity and lifted state");
+}
 void save_pause_and_future() {
   for (const bool active_burst : {false, true}) {
     gp::Game original;
@@ -320,6 +377,8 @@ int main() {
   capture_upgrades_preserve_skill_rewards();
   burst_expiry_boundary();
   lost_capture_clears_exposure();
+  sweep_feedback_follows_accepted_participation();
+  sweep_feedback_is_derived_after_restore();
   save_pause_and_future();
   starter_evade_and_countervolley();
   evade_preserves_existing_protection();

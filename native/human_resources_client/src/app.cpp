@@ -109,7 +109,7 @@ struct App final {
   std::uint64_t previous_profile_ticks{};
   int focus{};
   float focus_x{}, focus_y{};
-  bool keyboard_focus{};
+  bool keyboard_focus{}, pressed_inside{};
   hr::input::DeviceKind hint_device{hr::input::DeviceKind::touch};
   bool show_recipes{};
   unsigned recipe_page{}, ui_page{}, upgrade_preview{};
@@ -578,6 +578,7 @@ void rebuild(App& app) {
   view.report_entry_seconds = app.report_entry_seconds;
   view.framing = &app.framing;
   view.hint_device = app.hint_device;
+  view.held_command = app.pressed_inside ? app.pressed : Command::none;
   app.ui = hr::product::interface(view);
   app.ui_page = app.ui.page;
   Command focused = Command::none;
@@ -645,7 +646,10 @@ void semantic(App& app, const hr::input::Action& a) {
       app.pressed = button;
       app.pressed_contact = a.contact;
       app.pressed_device = a.device;
+      app.pressed_inside = true;
     }
+    if (a.has_position && app.pressed_contact == a.contact && app.pressed_device == a.device)
+      app.pressed_inside = app.pressed != Command::none && button == app.pressed;
     if (a.phase == hr::input::ActionPhase::cancelled) {
       if (app.pressed_contact == a.contact && app.pressed_device == a.device)
         app.pressed = Command::none;

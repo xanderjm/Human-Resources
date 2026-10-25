@@ -27,6 +27,27 @@ Rows not selected in `project.json` are informative extension capabilities, not 
 
 ## Current product qualification,25October2026
 
+Sourceb99c373 adds cumulative Hangar values, actual-device onboarding and
+conservative shadow work. Its exact738-file clean archive freshly cooks/builds,
+passes45native suites and source-bound112-file package checks. Current iOS device/
+Simulator Release and Android both-ABI compile/package/lint/alignment/AAB audits
+bind554focused inputs and all738tracked files. All81runtime payloads remain exact;
+source closure is103authorities. Supplemental MinGW compiles/links the current
+Windows GUI/DXIL client with package/internal-notice audits. These reports are
+under `clean-hangar-shadow/`, `hangar-shadow-mobile/` and
+`hangar-shadow-windows/` in `build/evidence/`. Independent host/mobile review and
+root Windows package/object/archive recheck accept their compile/package scope.
+The owner's latest separate macOS playtest runsb99c373; eleven user previews and
+their saves are protected. No physical-mobile/Windows/Linux execution, human feel
+or store qualification is inferred. Actual isolated Android runtime remains853169.
+
+Later direct-flight/held-surface/sweep-charge source has separate host45suite and
+native/App-semantic acceptance, recorded in `ui-sweep-independent-review-b99c373/`.
+It does not change the frozen b99c373 mobile/Windows epoch or open user preview;
+matching C++ projection headers/archives remain required despite unchanged saves.
+
+## Historical853169 qualification
+
 Source853169 reviewed crop/grass exports, reward UI and Farmland motion pass
 current iOS device/Simulator Release and Android both-ABI compile/package audits.
 Root checks550focused inputs/five artifacts; independent review checks exact
