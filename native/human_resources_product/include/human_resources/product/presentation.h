@@ -1,5 +1,6 @@
 #pragma once
 #include <human_resources/gameplay/gameplay.h>
+#include <human_resources/input/input.h>
 #include <human_resources/product/promotion.h>
 #include <human_resources/product/damage_feedback.h>
 #include <human_resources/product/gameplay_framing.h>
@@ -108,7 +109,7 @@ struct View final {
   const progression::RunReceipt* current_receipt{}; // Actual client receipt; preview never changes rewards.
   float report_entry_seconds{-1}; // Disposable, nonblocking presentation timing.
   const GameplayFraming* framing{};
-  bool keyboard_hints{}; // Set only by actual semantic keyboard input.
+  input::DeviceKind hint_device{input::DeviceKind::touch}; // Last actual semantic input; touch-first before use.
 };
 [[nodiscard]] constexpr std::string_view location_name(presentation::SceneryTheme theme) {
   switch (theme) {

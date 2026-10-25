@@ -1,6 +1,7 @@
 #include <human_resources/renderer/preview_viewport.h>
 #include <human_resources/renderer/style_renderer.h>
 
+#include "shadow_influence.h"
 #include "style_animation.h"
 #include "style_resources.h"
 #include "style_surfaces.h"
@@ -288,6 +289,18 @@ struct StyleRenderer::State final {
                                         {mesh->average[0], mesh->average[1], mesh->average[2], i.texture_detail}},
           visible, caster});
     }
+    double receiver_floor = std::numeric_limits<double>::infinity();
+    for (const auto& p : prepared)
+      receiver_floor = std::min(receiver_floor, shadow_detail::receiver_floor(p.uniforms.model, p.mesh->minimum, p.mesh->maximum));
+    for (const auto& surface : frame.surfaces)
+      for (const auto& vertex : surface.vertices)
+        receiver_floor = std::min(receiver_floor, static_cast<double>(vertex.position.y));
+    const shadow_detail::Influence influence(frame.camera, frame.light, receiver_floor, shadow_size);
+    for (auto& p : prepared)
+      if (p.caster && !p.visible && influence.rejects(p.uniforms.model, p.mesh->minimum, p.mesh->maximum)) {
+        p.caster = false;
+        --stats.shadow_instances;
+      }
     return true;
   }
   void draw(SDL_GPUCommandBuffer* command, SDL_GPURenderPass* pass, const presentation::StyleFrame& frame, bool shadow_pass, bool effects_pass) {

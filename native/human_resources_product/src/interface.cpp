@@ -997,8 +997,12 @@ Interface standard_interface(const View& v) {
     const bool overdrive = run.harvest_overdrive_seconds > 0;
     if (run.stats.active_seconds < 12 && !overdrive && !run.harvest_chain) {
       c.fill(20, 666, 350, 64, navy);
-      c.fitted(28, 675, 334, run.stats.active_seconds < 4 ? "DRAG / ARROWS TO FLY" : "FLY CLOSE. CAPTURE FASTER.", 17, white, false, true);
-      c.fitted(28, 703, 334, run.stats.active_seconds < 4 ? "DASH / SPACE TO DODGE" : "3 QUICK SWEEPS = OVERDRIVE", 14, muted, false, true);
+      const bool keyboard = v.hint_device == input::DeviceKind::keyboard;
+      const bool controller = v.hint_device == input::DeviceKind::gamepad;
+      const auto movement_hint = keyboard ? "WASD / ARROWS TO FLY" : controller ? "LEFT STICK TO FLY" : "DRAG TO FLY";
+      const auto dash_hint = keyboard ? "SPACE TO DODGE" : controller ? "RIGHT FACE BUTTON TO DODGE" : "TAP DASH TO DODGE";
+      c.fitted(28, 675, 334, run.stats.active_seconds < 4 ? movement_hint : "FLY CLOSE. CAPTURE FASTER.", 17, white, false, true);
+      c.fitted(28, 703, 334, run.stats.active_seconds < 4 ? dash_hint : "3 QUICK SWEEPS = OVERDRIVE", 14, muted, false, true);
     }
     if (overdrive || run.harvest_chain) {
       const auto color = overdrive ? navy : white;
@@ -1084,9 +1088,9 @@ Interface standard_interface(const View& v) {
         const auto color = pick.rarity == gameplay::Rarity::rare ? gold : pick.rarity == gameplay::Rarity::uncommon ? mint : white;
         c.fill(29, y + 9, 48, 48, panel);
         c.icon(33, y + 13, choice_icon(pick), 40);
-        c.fitted(87, y + 6, v.keyboard_hints ? 210.F : 265.F, !pick.evolution_preview.empty() ? pick.evolution_preview : choice_status(pick), 14, !pick.evolution_preview.empty() ? gold : color);
+        c.fitted(87, y + 6, (v.hint_device == input::DeviceKind::keyboard) ? 210.F : 265.F, !pick.evolution_preview.empty() ? pick.evolution_preview : choice_status(pick), 14, !pick.evolution_preview.empty() ? gold : color);
         c.fitted(87, y + 29, 265, pick.title, 19);
-        if (v.keyboard_hints) c.fitted(304, y + 7, 48, "KEY " + number(i + 1), 14, muted, false, true);
+        if ((v.hint_device == input::DeviceKind::keyboard)) c.fitted(304, y + 7, 48, "KEY " + number(i + 1), 14, muted, false, true);
         if (pick.hardware) {
           for (unsigned rank = 0; rank < 3; ++rank)
             c.fill(87 + static_cast<float>(rank) * 16, y + header_height - 9, 12, 4, rank + 1 < pick.next_rank ? mint : rank + 1 == pick.next_rank ? gold : panel);

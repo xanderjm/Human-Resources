@@ -32,6 +32,15 @@ readable acceptance under `build/evidence/hangar-bonus-review/`, but is newer th
 the853169 platform artifacts above. Source/tooling changes are not silently
 inherited by those packages; the next coherent refresh must include them.
 
+A further combined host slice now passes45native suites: conservative offscreen
+shadow-influence rejection plus touch-first/actual-device onboarding hints. Four
+current-ABI shipping-renderer A/B scenes keep every pixel; four input fixtures
+keep controls/world pixels and introductory timing. Submission reduction is
+10.5–23.6percent in sampled scenes, not phone FPS. The next platform refresh must
+include this slice, the Hangar change and f424862 tooling. Source will contain738
+tracked files, with two new renderer/test authorities added to focused inputs.
+Current853169 packages and exact Android runtime scope remain as recorded above.
+
 ## Historical accepted reward/world checkpoint
 
 Current source epoch **aa5975e04065af9ac98b330e996ebcb1cf00a2b8** includes the

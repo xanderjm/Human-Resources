@@ -510,6 +510,45 @@ void current_build_separates_temporary_and_permanent_identity() {
   }
 }
 
+void run_onboarding_names_the_actual_input_without_moving_controls() {
+  progression_tests::MemoryBackend backend;
+  hr::progression::AccountStore store{backend};
+  require(store.load().playable(), "onboarding account loads");
+  hr::gameplay::Game game;
+  game.start();
+  auto run = game.snapshot();
+  for (const auto phone : std::array<hr::ui::Rect, 2>{{{0, 0, 320, 568}, {0, 0, 390, 844}}}) {
+    View view{Screen::run, &run, &store, phone, {0, 20, 0, 0}};
+    const auto touch = interface(view);
+    const auto touch_copy = compact(atlas_copy(touch));
+    require(touch_copy.find("DRAGTOFLY") != std::string::npos && touch_copy.find("TAPDASHTODODGE") != std::string::npos, "initial mobile hints explain drag and the actual Dash target");
+    require(touch_copy.find("ARROWS") == std::string::npos && touch_copy.find("SPACE") == std::string::npos, "default hints do not advertise a keyboard");
+    for (const auto device : {hr::input::DeviceKind::pointer, hr::input::DeviceKind::keyboard, hr::input::DeviceKind::gamepad}) {
+      view.hint_device = device;
+      const auto ui = interface(view);
+      const auto copy = compact(atlas_copy(ui));
+      if (device == hr::input::DeviceKind::keyboard)
+        require(copy.find("WASD/ARROWSTOFLY") != std::string::npos && copy.find("SPACETODODGE") != std::string::npos, "keyboard hints name the actual movement and dash bindings");
+      else if (device == hr::input::DeviceKind::gamepad)
+        require(copy.find("LEFTSTICKTOFLY") != std::string::npos && copy.find("RIGHTFACEBUTTONTODODGE") != std::string::npos, "controller hints use the bound stick and physical east-face button without a family-specific label");
+      else
+        require(copy == touch_copy, "pointer drag uses the same direct manipulation hints");
+      require(ui.buttons.size() == touch.buttons.size(), "onboarding modality preserves controls");
+      for (std::size_t i = 0; i < ui.buttons.size(); ++i) {
+        const auto& a = ui.buttons[i]; const auto& b = touch.buttons[i];
+        require(a.command == b.command && a.enabled == b.enabled && a.bounds.x == b.bounds.x && a.bounds.y == b.bounds.y && a.bounds.width == b.bounds.width && a.bounds.height == b.bounds.height, "onboarding copy never moves or changes a hit target");
+      }
+    }
+    run.stats.active_seconds = 4;
+    const auto later_touch = interface(view);
+    view.hint_device = hr::input::DeviceKind::keyboard;
+    require(compact(atlas_copy(interface(view))) == compact(atlas_copy(later_touch)), "capture and Overdrive coaching retains the established four-second transition independent of input");
+    run.stats.active_seconds = 12;
+    require(compact(atlas_copy(interface(view))).find("CAPTUREFASTER") == std::string::npos, "coaching retains its established twelve-second cutoff");
+    run.stats.active_seconds = 0;
+  }
+}
+
 void upgrade_board_exposes_actual_build_and_projected_benefits() {
   progression_tests::MemoryBackend backend;
   hr::progression::AccountStore store{backend};
@@ -531,7 +570,7 @@ void upgrade_board_exposes_actual_build_and_projected_benefits() {
     for (const auto& choice : run.choices)
       require(copy.find(compact(choice.description)) != std::string::npos, "complete actual effects remain present beside benefit hierarchy");
     require(copy.find("KEY1")==std::string::npos && copy.find("KEY2")==std::string::npos && copy.find("KEY3")==std::string::npos,"touch-first offers do not advertise unavailable keyboard input");
-    auto keyboard = view; keyboard.keyboard_hints = true;
+    auto keyboard = view; keyboard.hint_device = hr::input::DeviceKind::keyboard;
     const auto keyboard_ui = interface(keyboard);
     const auto keyboard_copy = compact(atlas_copy(keyboard_ui));
     require(keyboard_copy.find("KEY1")!=std::string::npos && keyboard_copy.find("KEY2")!=std::string::npos && keyboard_copy.find("KEY3")!=std::string::npos,"actual keyboard mode names the three available shortcuts");
@@ -1076,6 +1115,7 @@ int main(int argc, char** argv) {
   actual_damage_feedback_stays_inside_the_tactical_hud();
   harvest_feedback_explains_sweeps_boost_and_dash_without_expanding_top_hud();
   compact_phone_cards_preserve_effects_and_scene_stage();
+  run_onboarding_names_the_actual_input_without_moving_controls();
   upgrade_board_exposes_actual_build_and_projected_benefits();
   earned_offers_show_one_projected_benefit_and_all_conditions();
   grouped_build_keeps_full_loadout_research_and_hangar_in_three_pages();

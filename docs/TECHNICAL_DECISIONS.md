@@ -1,5 +1,33 @@
 # Technical Decisions
 
+## 25 October 2026 — Conservative shadow-influence rejection
+
+Keep the existing world/caster visibility and margin policy. The renderer may
+reject an offscreen caster only when its entire conservative light-ray volume
+cannot intersect the camera rectangle. Use actual transformed/skinned prepared
+bounds and surface vertices for the minimum receiver floor, actual affine light
+for direction and filter axes, and include PCF/linear-filter, positive-bias and
+float-error guards. Visible, uncertain, nonfinite or unsupported projections keep
+the caster. No asset thinning, world culling change or runtime quality framework.
+
+A private pure-math header owns the rule; SDL-free production tests exercise
+contributing tall/edge shadows, negative transforms and unsupported contexts.
+Native A/B compares the shipping archive with the original renderer using the
+same current product ABI/UI. Keep private repeated CPU benchmarking outside
+shipping. Fewer submitted triangles are not measured phone frame-time savings.
+Current shader-side deformation must fit its prepared bounds within the guard;
+new deformation contracts need their own bound review.
+
+## 25 October 2026 — Hint copy follows actual semantic input
+
+Retain portable DeviceKind through the existing meaningful-input gate and default
+to touch. Use verified keyboard/controller bindings only after that actual input;
+unknown/pointer sources keep direct-manipulation copy. The existing input target
+is already a public product dependency; no SDL or platform check enters product
+logic. Keep the reward-key-hint condition keyboard-only and preserve controls,
+UI targets and simulation-owned introductory timing. Diagnostic input does not
+masquerade as an actual device.
+
 ## 25 October 2026 — Hangar displays cumulative purchase value
 
 AccountStore::hangar projects owned and next cumulative permanent bonuses from

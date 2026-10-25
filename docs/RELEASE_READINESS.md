@@ -28,6 +28,22 @@ accept them. `build/evidence/hangar-bonus-review/` binds source, pixels and reta
 binaries. It is newer than the running owner preview and qualified mobile/Windows
 packages; a subsequent combined platform refresh must include it.
 
+The next host-accepted combined slice adds conservative offscreen shadow-influence
+rejection and actual-device onboarding copy. Touch begins with drag/tap guidance;
+verified keyboard/controller input selects its own instructions. Controls/timing
+stay unchanged. One45-suite aggregate passes; four current-ABI renderer A/B scenes
+are pixel-identical while combined triangle submissions fall10.5–23.6percent.
+Added private host maths costs61–81microseconds with no new heap allocation.
+Four hint fixtures alter only tutorial-copy pixels. These are bounded native/host
+results, not physical phone FPS/input qualification. Source/evidence and final
+independent review are under `shadow-influence-production/`,
+`onboarding-input-hints/` and `combined-onboarding-shadow-independent/`.
+
+The original cow remains after rejected private automatic colour-cleanup studies;
+no weakened character surface is promoted. The next coherent mobile/Windows
+refresh must include tooling, Hangar and both combined slices; existing source853169
+platform artifacts below retain their exact earlier epoch.
+
 The same734-file source checkpoint passes a fresh optimized archive build/cook,
 44native suites, six new mesh-tool tests and its112-file source-bound package
 allowlist using pinned existing dependency/tool caches. Fresh product/SDL objects,
