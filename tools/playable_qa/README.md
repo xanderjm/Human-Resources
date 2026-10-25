@@ -51,6 +51,56 @@ provenance report. Source assets and archives are never eligible for removal.
 All evidence remains host-specific. Mac portrait aspect does not establish
 physical phone performance, thermal behavior, touch quality or release status.
 
+`engagement_proof.py` builds an isolated public-Game review executable from the
+existing optimized Ninja graph. It supports a fresh checkout after ordinary
+bootstrap/build; historical previews and ignored qualification reports are not
+prerequisites. On a host with the documented compiler/SDK, Python 3.11+, CMake and
+Ninja, first run:
+
+```
+python3 tools/project.py bootstrap
+python3 tools/project.py test --preset dev
+python3 tools/playable_qa/engagement_proof.py --output build/evidence/engagement-build --build-only
+```
+
+The last command compiles only its private executable and runs CPU-only public
+Game validation; it never initializes the GPU or changes production build
+targets. For native captures, use the pinned art Python with Pillow, have FFmpeg
+and FFprobe on PATH, coordinate the GPU slot, and select a new output directory:
+
+```
+build/tools/art-python/bin/python tools/playable_qa/engagement_proof.py --output build/evidence/engagement-composition --composition
+build/tools/art-python/bin/python tools/playable_qa/engagement_proof.py --output build/evidence/engagement-ui --ui-only
+```
+
+Every mode inventories all existing `.app` bundles under `build/dev` and
+`build/evidence` before work, then compares file hashes and symlink targets after
+work, including failed captures. It does not execute or control protected apps,
+or read their saves. Missing historical previews are valid; discovered bundles
+are always protected. Add `--protected-app /absolute/path/Other.app` for bundles
+outside those roots. Review output inside any app bundle is rejected. Newly
+appearing, deleted or changed bundles fail protection rather than being ignored.
+
+The generated `protected-apps-before.json` is also an optional canonical input
+for a later run: pass `--protected-app-manifest PATH`. Schema 1 contains a
+`bundles` array, each entry with `path`, relative `files` mapped to SHA-256 and
+optional relative `symlinks` mapped to literal targets. Relative app paths resolve
+against the manifest directory. The complete canonical inventory must match all
+discovered/explicit bundles exactly; missing apps/manifests, omitted bundles,
+unsafe entries and mismatched hashes fail before compiling. Never reuse an old
+manifest as a fresh baseline without validating its intended bundle set.
+
+`protection.json` and `qualified.json` retain actual inventory counts and selected
+Python/C++ producer hashes before/after. A failed protection check stays explicit
+even if capture already produced a report. These are file/symlink integrity
+checks, not app signature, permission-mode or release qualification. The default
+discovery roots are bounded to local build/evidence trees; use explicit paths for
+other copies. Focused no-GPU tests use temporary fake bundles:
+
+```
+python3 -m unittest tools.tests.test_protected_apps -v
+```
+
 An explicit `--qa-metrics` native run now retains at most four exact Game blobs
 beside the CSV, under `<metrics-path>.game-checkpoints/`: first actual jeep,
 tank and boss projectile, plus first positive vehicle capture if encountered.

@@ -21,27 +21,58 @@ import wave
 
 import visual_stress
 from profile import ROOT, digest
+from protected_apps import ProtectedApps
 
 SOURCE = Path(__file__).resolve().with_suffix(".cpp")
 
 
-def bundle_tree(root: Path = ROOT / "build/dev/Human Resources.app") -> dict:
-    return {str(p.relative_to(root)): digest(p) for p in sorted(root.rglob("*")) if p.is_file()}
-
-
 def run(args: argparse.Namespace) -> dict:
     output = args.output.resolve()
+    protected = ProtectedApps([ROOT / "build/dev", ROOT / "build/evidence"],
+                              args.protected_app, output, args.protected_app_manifest)
     output.mkdir(parents=True, exist_ok=False)
+    (output / "protected-apps-before.json").write_text(json.dumps(protected.document(), indent=2) + "\n")
+    tool_root = Path(__file__).resolve().parent
+    producer_root = tool_root.parents[1]
+    producers = [Path(__file__).resolve(), SOURCE, Path(visual_stress.__file__).resolve(),
+                 tool_root / "profile.py", tool_root / "protected_apps.py"]
+    before = {str(path.relative_to(producer_root)): digest(path) for path in producers}
+    try:
+        result = capture(args, output)
+    finally:
+        protection = protected.verify()
+        after, producer_errors = {}, []
+        for path in producers:
+            name = str(path.relative_to(producer_root))
+            try:
+                after[name] = digest(path)
+            except OSError as error:
+                after[name] = None
+                producer_errors.append({"path": str(path), "error": str(error)})
+        record = {"protected_apps": protection, "producer_before": before,
+                  "producer_after": after, "producers_stable": before == after,
+                  "producer_errors": producer_errors}
+        (output / "protection.json").write_text(json.dumps(record, indent=2) + "\n")
+        qualified = output / "qualified.json"
+        if qualified.exists():
+            report = json.loads(qualified.read_text())
+            report.update(record)
+            qualified.write_text(json.dumps(report, indent=2) + "\n")
+        if not protection["unchanged"] or before != after:
+            raise RuntimeError("Protected apps or review producers changed; protection.json records the failed check")
+    qualified = output / "qualified.json"
+    report = json.loads(qualified.read_text()) if qualified.exists() else {
+        "scope": "Standalone public-Game review compile and CPU-only validation; no GPU capture.", "build": result}
+    report.update(record)
+    qualified.write_text(json.dumps(report, indent=2) + "\n")
+    result.update({"protected_apps_unchanged": True, "protected_app_count": len(protected.paths),
+                   "producer_sha256": before})
+    return result
+
+
+def capture(args: argparse.Namespace, output: Path) -> dict:
     if shutil.disk_usage(output).free < 256 * 1024 * 1024:
         raise RuntimeError("Insufficient free disk for bounded native readbacks; preserve user save capacity first")
-    before_bundle = bundle_tree()
-    original_baseline = json.loads((ROOT / "build/evidence/quality-native-integration/user-app-before.json").read_text())["files"]
-    if before_bundle != original_baseline:
-        raise RuntimeError("Protected original user app differs from its recorded baseline")
-    preliminary_path = ROOT / "build/evidence/quality-native-integration/Human Resources Gameplay Preview.app"
-    preliminary_baseline = json.loads((preliminary_path.parent / "preview-qualified.json").read_text())["bundle_files"]
-    if bundle_tree(preliminary_path) != preliminary_baseline:
-        raise RuntimeError("Protected running Gameplay Preview differs from its staged baseline")
     executable, build = visual_stress.build(output, SOURCE)
     if args.build_only:
         return build
@@ -98,12 +129,12 @@ def run(args: argparse.Namespace) -> dict:
             raise RuntimeError("Actual Game must resume while the installed receipt remains visible")
         raw_return.unlink()
         if args.ui_only:
-            report = {"scope": "UI-only epoch: real public-Game earned choice at320/390, injected text/layout/damage fixtures, selected receipt at0.3s after120ms hold, and45native-frame short selection-return sequence. No combat film rerun.", "build": build, "source_before": source_before, "source_after": visual_stress.state(executable, SOURCE), "images": images, "ui_return": {"path": str(return_movie.relative_to(ROOT)), "sha256": digest(return_movie), "frames":45, "fps":30, "trace":str((output / "ui-return.csv").relative_to(ROOT)), "active_seconds_start": return_rows[0]["active_seconds"], "active_seconds_end":return_rows[-1]["active_seconds"], "confirmation_hold_frames":sum(r["hold"] == "1" for r in return_rows), "nonblocking_receipt_frames":sum(r["hold"] == "0" and r["receipt"] == "1" for r in return_rows), "audio":"Silent visual proof; no audio qualification"}, "user_bundle_unchanged": before_bundle == bundle_tree(), "preliminary_preview_unchanged":preliminary_baseline == bundle_tree(preliminary_path), "limits":["View fixtures inject text preferences/damage presentation; no actual OS preference, human input, fun or phone qualification claim.", "Selection return uses actual earned Game choice plus product PromotionFlow; no account I/O or persistence-ledger qualification.", "All four staged app bundles are separately protected by the evidence launcher."]}
+            report = {"scope": "UI-only epoch: real public-Game earned choice at320/390, injected text/layout/damage fixtures, selected receipt at0.3s after120ms hold, and45native-frame short selection-return sequence. No combat film rerun.", "build": build, "source_before": source_before, "source_after": visual_stress.state(executable, SOURCE), "images": images, "ui_return": {"path": str(return_movie.relative_to(ROOT)), "sha256": digest(return_movie), "frames":45, "fps":30, "trace":str((output / "ui-return.csv").relative_to(ROOT)), "active_seconds_start": return_rows[0]["active_seconds"], "active_seconds_end":return_rows[-1]["active_seconds"], "confirmation_hold_frames":sum(r["hold"] == "1" for r in return_rows), "nonblocking_receipt_frames":sum(r["hold"] == "0" and r["receipt"] == "1" for r in return_rows), "audio":"Silent visual proof; no audio qualification"}, "limits":["View fixtures inject text preferences/damage presentation; no actual OS preference, human input, fun or phone qualification claim.", "Selection return uses actual earned Game choice plus product PromotionFlow; no account I/O or persistence-ledger qualification.", "All discovered and explicitly supplied app bundles are inventoried before/after this isolated review; see protected_apps."]}
             report["source_stable"] = report["source_before"] == report["source_after"]
             (output / "qualified.json").write_text(json.dumps(report,indent=2)+"\n")
-            if not report["source_stable"] or not report["user_bundle_unchanged"] or not report["preliminary_preview_unchanged"]:
-                raise RuntimeError("UI epoch source or protected bundle changed")
-            return {key:report[key] for key in ("source_stable","user_bundle_unchanged","preliminary_preview_unchanged","images","ui_return")}
+            if not report["source_stable"]:
+                raise RuntimeError("UI epoch source changed")
+            return {key:report[key] for key in ("source_stable","images","ui_return")}
     fifo = output / "movie.rgba"
     os.mkfifo(fifo)
     movie = output / "silent.mp4"
@@ -188,17 +219,21 @@ def run(args: argparse.Namespace) -> dict:
     source_after = visual_stress.state(executable, SOURCE)
     native_lines = (output / "native.log").read_text().splitlines()
     result = next(json.loads(line) for line in reversed(native_lines) if line.startswith('{"frames":'))
-    report = {"scope": ("Actual compatible public-Game boss checkpoint restored without state edits, followed for at most12active seconds or natural death. " if args.boss_checkpoint else ("Actual public Game5 fresh start with held forward for5active seconds then held back through15active seconds or natural death; no position injection. " if args.extents else "Actual public Game6 short encounter-composition route: held forward0.7s, neutral0.6s, then ordinary pursuit through8active seconds; no injected actor/player positions. " if args.composition else "Actual public Game5 fresh start followed for up to120active seconds or natural death with programmatic nearest-target movement, voluntary/real-danger starter Dash and first earned upgrade selections. PromotionFlow controls entry/selection presentation and120ms combat hold. UI fixtures explicitly labelled. ")) + "Offscreen native SDL_GPU rendering with source Mixer audio; no human-input/live-pacing claim.", "build": build, "source_stable": source_before == source_after, "source_before": source_before, "source_after": source_after, "user_bundle_unchanged": before_bundle == bundle_tree(), "user_bundle_files": len(before_bundle), "preliminary_preview_unchanged": preliminary_baseline == bundle_tree(preliminary_path), "preliminary_preview_files": len(preliminary_baseline), "images": images, "movie": str(movie.relative_to(ROOT)), "movie_sha256": digest(movie), "native_rgba_stream_hash": (output / "native-frame-stream.sha256").read_text().strip(), "raw_stream_bytes": frame_count * 390 * 844 * 4, "frame_count": frame_count, "probe": final_probe, "source_mixer_wav": {"path": str(wav.relative_to(ROOT)), "sha256": digest(wav), "pcm_sha256": hashlib.sha256(pcm).hexdigest(), "frames": len(rows) * 800, "scope": "Offline exact product Mixer synthesis and source feedback coalescing; no OS output-device/listening qualification"}, "full_decode": "pass", "wall_seconds_including_native_capture_encode": time.monotonic() - started, "outcome": result, "observed": observed, "checkpoints": [{"path": str(p.relative_to(ROOT)), "bytes": p.stat().st_size, "sha256": digest(p)} for p in sorted(output.glob("*.hrs"))], "boss_continuation": {"path": str(args.boss_checkpoint), "sha256": digest(args.boss_checkpoint)} if args.boss_checkpoint else None, "commands": {"native": native_command, "encode": encoder_command, "audio_mux": mux_command}, "limits": ["The film records fixed60Hz public-Game simulation, rendered every second step and encoded30fps without interpolated frames.", "The route is an active scripted pursuit policy, not human pacing or input evidence.", "Synthetic View fixtures do not prove naturally earned maximum gear or delivered OS text preferences.", "No primary save, installed bundle refresh, signing, packaging or store action occurred."]}
+    report = {"scope": ("Actual compatible public-Game boss checkpoint restored without state edits, followed for at most12active seconds or natural death. " if args.boss_checkpoint else ("Actual current-source public-Game fresh start with held forward for5active seconds then held back through15active seconds or natural death; no position injection. " if args.extents else "Actual current-source public-Game short encounter-composition route: held forward0.7s, neutral0.6s, then ordinary pursuit through8active seconds; no injected actor/player positions. " if args.composition else "Actual current-source public-Game fresh start followed for up to120active seconds or natural death with programmatic nearest-target movement, voluntary/real-danger starter Dash and first earned upgrade selections. PromotionFlow controls entry/selection presentation and120ms combat hold. UI fixtures explicitly labelled. ")) + "Offscreen native SDL_GPU rendering with source Mixer audio; no human-input/live-pacing claim.", "build": build, "source_stable": source_before == source_after, "source_before": source_before, "source_after": source_after, "images": images, "movie": str(movie.relative_to(ROOT)), "movie_sha256": digest(movie), "native_rgba_stream_hash": (output / "native-frame-stream.sha256").read_text().strip(), "raw_stream_bytes": frame_count * 390 * 844 * 4, "frame_count": frame_count, "probe": final_probe, "source_mixer_wav": {"path": str(wav.relative_to(ROOT)), "sha256": digest(wav), "pcm_sha256": hashlib.sha256(pcm).hexdigest(), "frames": len(rows) * 800, "scope": "Offline exact product Mixer synthesis and source feedback coalescing; no OS output-device/listening qualification"}, "full_decode": "pass", "wall_seconds_including_native_capture_encode": time.monotonic() - started, "outcome": result, "observed": observed, "checkpoints": [{"path": str(p.relative_to(ROOT)), "bytes": p.stat().st_size, "sha256": digest(p)} for p in sorted(output.glob("*.hrs"))], "boss_continuation": {"path": str(args.boss_checkpoint), "sha256": digest(args.boss_checkpoint)} if args.boss_checkpoint else None, "commands": {"native": native_command, "encode": encoder_command, "audio_mux": mux_command}, "limits": ["The film records fixed60Hz public-Game simulation, rendered every second step and encoded30fps without interpolated frames.", "The route is an active scripted pursuit policy, not human pacing or input evidence.", "Synthetic View fixtures do not prove naturally earned maximum gear or delivered OS text preferences.", "No primary save, installed bundle refresh, signing, packaging or store action occurred."]}
     (output / "qualified.json").write_text(json.dumps(report, indent=2) + "\n")
-    if not report["source_stable"] or not report["user_bundle_unchanged"] or not report["preliminary_preview_unchanged"]:
-        raise RuntimeError("Source or user bundle changed; retained report is not qualified")
-    return {key: report[key] for key in ("source_stable", "user_bundle_unchanged", "preliminary_preview_unchanged", "frame_count", "outcome", "movie", "images")}
+    if not report["source_stable"]:
+        raise RuntimeError("Source changed; retained report is not qualified")
+    return {key: report[key] for key in ("source_stable", "frame_count", "outcome", "movie", "images")}
 
 
 def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--output", required=True, type=Path)
     parser.add_argument("--build-only", action="store_true")
+    parser.add_argument("--protected-app", action="append", type=Path, default=[],
+                        help="Additional existing .app to protect; default build/dev and build/evidence discovery always remains enabled")
+    parser.add_argument("--protected-app-manifest", type=Path,
+                        help="Optional schema-1 canonical inventory; must match every discovered/explicit app exactly")
     parser.add_argument("--ui-only", action="store_true", help="Render only labelled UI fixtures and short earned selection return; skip combat film")
     modes = parser.add_mutually_exclusive_group()
     modes.add_argument("--boss-checkpoint", type=Path, help="Restore an actual compatible public-Game boss checkpoint for a bounded12active-second proof")

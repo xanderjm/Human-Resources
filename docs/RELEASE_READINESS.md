@@ -10,12 +10,22 @@ change together. Prior landscape captures are historical integration evidence.
 
 ## Current truth
 
+The latest accepted production checkpoint is `e71bf642` (711 source files).
+An isolated clean archive now freshly cooks/builds the product and passes all
+41 suites/static/source-bound asset audits using pinned dependency/tool caches.
+Refreshed iOS/Android compile and package evidence for its graphics is in
+`build/evidence/game6-mobile-world-threat/REPORT.json`; physical execution remains
+separate. Later military-spacing and enemy-vitality candidates are in progress
+and have no combined/native acceptance yet. Current Game6 ordinary traces confirm
+coincident military roots, and the first nonoverlapping AI changes exposure
+materially, requiring quality review rather than automatic acceptance.
+
 The latest working-source presentation pass additionally improves Farmland
 terrain/scroll cues and small-phone hostile trails/warning separation. Root and
 an independent critic accept native 320/390 comparisons and a bounded actual
 strafe sequence; the combined aggregate passes 41/41/static/diff. Game rules and
 ship size remain unchanged. These graphics follow the launched Current Preview
-and mobile package epoch below, which remain preserved separately. Narrow tall
+and earlier mobile package epoch below, which remain preserved separately. Narrow tall
 landmark framing and human pacing remain open quality concerns; three matched
 bot runs demonstrate useful evasive play but do not establish human fun.
 
@@ -60,6 +70,13 @@ does not block ongoing quality work. Exact bindings and limits are in
 `build/evidence/game6-mobile/REPORT.json`. The later accepted scenery/threat
 epoch is under `build/evidence/quality-native-integration/threat-readability-native/`;
 it does not modify this user build or qualify current mobile execution.
+
+A sixth isolated Input QA wrapper now remains potentially user-controlled after
+an external state change during a long CUA bind. No automated click, key or drag
+was sent, so the attempted ordinary desktop controls check remains unexecuted.
+Do not operate, quit or overwrite that wrapper/account or any of the five prior
+user apps. Its exact provenance and scope are recorded in
+`build/evidence/quality-native-integration/os-input-game6-checkpoint/report.json`.
 
 The qualification below describes the earlier authority-3 checkpoint; its
 packages, performance observations and 39-suite result do not qualify the new
