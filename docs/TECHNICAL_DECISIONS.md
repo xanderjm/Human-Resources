@@ -1,5 +1,22 @@
 # Technical Decisions
 
+## 25 October 2026 — Structured reward presentation
+
+Keep exact projected benefit labels, units and secondary conditions beside the
+existing before/after calculation in make_choice. UpgradeChoice adds derived
+presentation strings; legacy complete descriptions remain byte-identical and
+saved choice identities regenerate all metadata. UI consumes these values rather
+than parsing prose or calculating upgrade rules again. Spoken mechanics retain
+the full description, rank/status and evolution context.
+
+Choose the three-card board only if its measured cards/footer fit; otherwise
+reuse the existing selected-offer tabs/pages without shrinking text or controls.
+Semantic source provenance owns keyboard hints, including meaningful partial
+controller axes; synthetic diagnostics do not masquerade as keyboard use. Cosmetic
+icon/receipt accents reuse existing PromotionFlow ages, preserving stationary
+hit targets,250ms entrance,120ms confirmation and800ms nonblocking receipt. Reduced
+motion settles immediately. No new assets, timing owner, dependency or save field.
+
 ## 25 October 2026 — Strict portable client compilation
 
 Keep the selected Windows Visual Studio/SDK profile unchanged. An installed

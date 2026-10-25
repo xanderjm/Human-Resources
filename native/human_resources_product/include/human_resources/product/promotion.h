@@ -8,6 +8,7 @@ struct PromotionFrame final {
   float entry_seconds{-1};
   const gameplay::UpgradeChoice* installed{};
   bool reduced_motion{};
+  float installed_seconds{-1}; // Cosmetic receipt age; never advances gameplay.
 };
 // Disposable presentation timing. The Game applies and saves a selection before
 // confirmation starts; the client collects controls while briefly holding advance.
@@ -46,7 +47,7 @@ public:
     return installed_.has_value() && confirmation_seconds_ < confirmation_duration;
   }
   [[nodiscard]] PromotionFrame frame(bool reduced_motion = false) const {
-    return {entry_seconds_, installed_ ? &*installed_ : nullptr, reduced_motion};
+    return {entry_seconds_, installed_ ? &*installed_ : nullptr, reduced_motion, installed_ ? confirmation_seconds_ : -1};
   }
 
 private:

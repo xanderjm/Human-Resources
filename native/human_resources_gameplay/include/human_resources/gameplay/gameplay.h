@@ -222,6 +222,9 @@ struct UpgradeChoice final {
   float gain{}, before{}, after{};
   std::string title, description;
   std::string evolution_preview;
+  // Derived offer presentation; reconstructed from the saved choice identity.
+  // Conditions retain secondary rules separately from the before/after metric.
+  std::string effect_label{}, effect_unit{}, conditions{};
 };
 struct Snapshot final {
   Phase phase{Phase::ready};

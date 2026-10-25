@@ -108,6 +108,7 @@ struct View final {
   const progression::RunReceipt* current_receipt{}; // Actual client receipt; preview never changes rewards.
   float report_entry_seconds{-1}; // Disposable, nonblocking presentation timing.
   const GameplayFraming* framing{};
+  bool keyboard_hints{}; // Set only by actual semantic keyboard input.
 };
 [[nodiscard]] constexpr std::string_view location_name(presentation::SceneryTheme theme) {
   switch (theme) {

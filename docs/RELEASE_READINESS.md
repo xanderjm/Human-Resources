@@ -20,7 +20,7 @@ from automation, replacement and quit. Exact104-file staging/signature/source
 and normal-launch records are under `build/evidence/current-playtest-20261025/`.
 Initial copied values describe launch time; the owner may now change that save.
 
-The frozen production source passes44host suites/static/diff and five byte-exact
+The accepted portable checkpoint33edb97 passes44host suites/static/diff and five byte-exact
 native before/after comparisons. Portability adds explicit empty member defaults,
 bounded glyph index conversion, standard typed size diagnostics, equivalent
 Windows UTF-8 path construction and the Windows GUI entry setting. No gameplay,
@@ -28,6 +28,17 @@ layout, save or dependency contract changes. Root rehashes twelve source files,
 334native inputs and all bound evidence. See
 `build/evidence/windows-portability-integration/REPORT.json` and
 `root-verification.json`.
+
+The later reward-choice slice is now independently accepted on host: ordinary
+cards show one projected benefit plus complete conditions, larger existing icons
+and rank marks; keyboard hints follow actual input modality. Measured board fit
+routes short windows to existing paged choices, preserving44point targets and all
+previews. Cosmetic entrance/receipt motion keeps established timing and settled
+reduced motion. Final44suites,30native stills and a45-frame semantic film pass;
+258,273complete projection bytes and rolling save digest match across698choices/
+96natural deaths. See `build/evidence/reward-choice-quality/` and its independent/
+root reviews. This source follows the running owner build and qualified mobile
+packages below; those artifacts remain protected and do not inherit this slice.
 
 A coherent current mobile refresh passes iPhoneOS/Simulator arm64 Release,
 Android both-ABI debug/release, strict lint, APK ZIP/ELF16KiB and unsigned AAB

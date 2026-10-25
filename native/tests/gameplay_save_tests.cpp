@@ -94,7 +94,11 @@ void phases_and_future() {
       require(restored.restore_state(bytes) == game::SaveStateIssue::none, "choice restores");
       for (std::size_t i = 0; i < 3; ++i) {
         require(restored.snapshot().choices[i].title == cards[i].title && restored.snapshot().choices[i].description == cards[i].description &&
-            restored.snapshot().choices[i].evolution_preview == cards[i].evolution_preview, "draft identity rebuilds exact readable text without reroll");
+            restored.snapshot().choices[i].evolution_preview == cards[i].evolution_preview &&
+            restored.snapshot().choices[i].effect_label == cards[i].effect_label &&
+            restored.snapshot().choices[i].effect_unit == cards[i].effect_unit &&
+            restored.snapshot().choices[i].conditions == cards[i].conditions,
+            "draft identity rebuilds exact complete and structured offer text without reroll");
       }
       require(run.reroll() == restored.reroll(), "reroll availability retained");
       same(run, restored);

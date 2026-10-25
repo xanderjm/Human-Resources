@@ -454,7 +454,16 @@ void upgrade_board_exposes_actual_build_and_projected_benefits() {
     require(copy.find("NEWHARDWARE") != std::string::npos && copy.find("RANKUP/2OF3") != std::string::npos && copy.find("FLIGHTRESEARCH") != std::string::npos, "new slots, installed ranks and research are distinct decisions");
     for (const auto& choice : run.choices)
       require(copy.find(compact(choice.description)) != std::string::npos, "complete actual effects remain present beside benefit hierarchy");
-    require(copy.find("KEY1")!=std::string::npos && copy.find("KEY2")!=std::string::npos && copy.find("KEY3")!=std::string::npos,"choice shortcuts explicitly say Key and cannot masquerade as hardware ranks");
+    require(copy.find("KEY1")==std::string::npos && copy.find("KEY2")==std::string::npos && copy.find("KEY3")==std::string::npos,"touch-first offers do not advertise unavailable keyboard input");
+    auto keyboard = view; keyboard.keyboard_hints = true;
+    const auto keyboard_ui = interface(keyboard);
+    const auto keyboard_copy = compact(atlas_copy(keyboard_ui));
+    require(keyboard_copy.find("KEY1")!=std::string::npos && keyboard_copy.find("KEY2")!=std::string::npos && keyboard_copy.find("KEY3")!=std::string::npos,"actual keyboard mode names the three available shortcuts");
+    require(keyboard_ui.buttons.size()==ui.buttons.size(),"input hints do not change available offers");
+    for(std::size_t i=0;i<ui.buttons.size();++i) {
+      const auto& a=ui.buttons[i]; const auto& b=keyboard_ui.buttons[i];
+      require(a.command==b.command && a.enabled==b.enabled && a.bounds.x==b.bounds.x && a.bounds.y==b.bounds.y && a.bounds.width==b.bounds.width && a.bounds.height==b.bounds.height,"switching input hints keeps every choice target and command stable");
+    }
     if(phone.width==390) {
       float last_bottom=0;
       for(const auto& button:ui.buttons)last_bottom=std::max(last_bottom,button.bounds.bottom());
@@ -477,6 +486,60 @@ void upgrade_board_exposes_actual_build_and_projected_benefits() {
     }
     const auto semantic = accessibility_snapshot(view, ui);
     require(std::any_of(semantic.begin(), semantic.end(), [](const auto& node) { return node.value.find("Uses one of six hardware slots") != std::string::npos; }), "new hardware slot consequence is available to assistive input");
+  }
+}
+void earned_offers_show_one_projected_benefit_and_all_conditions() {
+  progression_tests::MemoryBackend backend;
+  hr::progression::AccountStore store{backend};
+  require(store.load().playable(), "reward-choice account loads");
+  hr::gameplay::Game game; game.start({.seed=514});
+  for(unsigned step=0;step<1800 && game.snapshot().phase==hr::gameplay::Phase::active;++step) game.advance(1.F/60);
+  require(game.snapshot().phase==hr::gameplay::Phase::choosing_upgrade,"reward layout consumes a naturally earned draft");
+  const auto& run=game.snapshot();
+  // Ordinary system text still needs the measured selected-offer layout when a
+  // short window cannot hold all three cards above its footer.
+  for(unsigned preview=0;preview<3;++preview) {
+    View short_view{Screen::upgrade,&run,&store,{0,0,320,320},{0,20,0,0}};
+    short_view.upgrade_preview=preview;
+    const auto first=interface(short_view);
+    require(!first.page_text.empty(),"short ordinary-text draft uses the readable offer layout");
+    std::string all;
+    for(unsigned page=0;page<first.page_count;++page) {
+      short_view.ui_page=page;
+      const auto ui=interface(short_view);readable_page_is_real_safe_and_scaled(short_view,ui);all+=ui.page_text;
+      if(page==0)for(unsigned i=0;i<3;++i)require(std::any_of(ui.buttons.begin(),ui.buttons.end(),[&](const auto& b){return b.command==static_cast<Command>(static_cast<unsigned>(Command::preview0)+i) && b.enabled;}),"short ordinary text keeps direct access to every offer preview");
+    }
+    require(compact(all).find(compact(run.choices[preview].conditions))!=std::string::npos,"short ordinary-text pagination preserves the complete selected mechanics");
+  }
+  for(const auto phone:std::array<hr::ui::Rect,2>{{{0,0,320,568},{0,0,390,844}}}) {
+    View view{Screen::upgrade,&run,&store,phone,{0,20,0,0}};
+    const auto board=interface(view);
+    const auto copy=compact(atlas_copy(board));
+    for(unsigned i=0;i<3;++i) {
+      const auto& pick=run.choices[i];
+      const auto label=compact(pick.effect_label);
+      const auto start=copy.find(label);
+      require(start!=std::string::npos && copy.find(label,start+label.size())==std::string::npos,"each projected metric is visible exactly once on the ordinary board");
+      require(copy.find(compact(pick.conditions))!=std::string::npos,"secondary mechanics remain visible once beside the benefit");
+      require(copy.find(compact(pick.description))==std::string::npos,"structured offers no longer repeat the full numeric description");
+      const auto command=static_cast<Command>(static_cast<unsigned>(Command::pick0)+i);
+      require(std::any_of(board.buttons.begin(),board.buttons.end(),[&](const auto& button){return button.command==command && button.enabled;}),"all three earned offers retain immediate ordinary-size selection");
+      const auto nodes=accessibility_snapshot(view,board);
+      require(std::any_of(nodes.begin(),nodes.end(),[&](const auto& node){return node.label=="Choose "+pick.title && node.value.find(pick.description)!=std::string::npos;}),"assistive choice retains the exact complete original mechanics");
+    }
+    for(float scale:{2.F,3.2F})for(unsigned preview=0;preview<3;++preview) {
+      auto readable=view;readable.text_scale=scale;readable.upgrade_preview=preview;
+      std::string all;
+      const auto first=interface(readable);
+      for(unsigned page=0;page<first.page_count;++page) {
+        readable.ui_page=page;
+        const auto ui=interface(readable);readable_page_is_real_safe_and_scaled(readable,ui);
+        all+=ui.page_text;
+      }
+      const auto label=compact(run.choices[preview].effect_label);const auto text=compact(all);const auto start=text.find(label);
+      require(start!=std::string::npos && text.find(label,start+label.size())==std::string::npos,"enlarged offer keeps one labelled benefit across pages");
+      require(text.find(compact(run.choices[preview].conditions))!=std::string::npos,"all actual conditions survive enlarged pagination");
+    }
   }
 }
 void grouped_build_keeps_full_loadout_research_and_hangar_in_three_pages() {
@@ -937,6 +1000,7 @@ int main(int argc, char** argv) {
   harvest_feedback_explains_sweeps_boost_and_dash_without_expanding_top_hud();
   compact_phone_cards_preserve_effects_and_scene_stage();
   upgrade_board_exposes_actual_build_and_projected_benefits();
+  earned_offers_show_one_projected_benefit_and_all_conditions();
   grouped_build_keeps_full_loadout_research_and_hangar_in_three_pages();
   larger_text_preserves_whole_offers_and_all_menu_actions();
   current_build_separates_temporary_and_permanent_identity();

@@ -62,6 +62,7 @@ void draft_and_restart() {
   const auto& choices = run.snapshot().choices;
   for (std::size_t i = 0; i < choices.size(); ++i) {
     require(!choices[i].title.empty() && !choices[i].description.empty(), "upgrade communicates its result");
+    require(!choices[i].effect_label.empty(), "real offers expose the projected metric without parsing their description");
     for (std::size_t j = i + 1; j < choices.size(); ++j) {
       require(choices[i].hardware != choices[j].hardware || (choices[i].hardware ? choices[i].module != choices[j].module : choices[i].research != choices[j].research), "offer has distinct families");
     }

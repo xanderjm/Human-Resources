@@ -47,6 +47,20 @@ inline std::string metric_number(float value) {
   return result;
 }
 inline std::string choice_change(const gameplay::UpgradeChoice& choice) {
-  return metric_number(choice.before) + " > " + metric_number(choice.after) + std::string(choice_metric(choice).unit);
+  const auto unit = choice.effect_label.empty() ? choice_metric(choice).unit : std::string_view(choice.effect_unit);
+  return metric_number(choice.before) + " > " + metric_number(choice.after) + std::string(unit);
+}
+inline std::string_view choice_effect_label(const gameplay::UpgradeChoice& choice) {
+  return choice.effect_label.empty() ? choice_metric(choice).label : std::string_view(choice.effect_label);
+}
+inline std::string_view choice_conditions(const gameplay::UpgradeChoice& choice) {
+  // Hand-authored/older presentation fixtures retain their complete copy.
+  // Runtime offers always provide the structured projection from make_choice.
+  return choice.effect_label.empty() ? std::string_view(choice.description) : std::string_view(choice.conditions);
+}
+inline unsigned choice_icon(const gameplay::UpgradeChoice& choice) {
+  if (!choice.hardware)
+    return choice.research == gameplay::Research::shield_capacity ? 1U : 0U;
+  return choice.module == gameplay::Module::shield_generator ? 1U : choice.module <= gameplay::Module::emp_ring ? 3U : 2U;
 }
 } // namespace human_resources::product

@@ -110,6 +110,7 @@ struct App final {
   int focus{};
   float focus_x{}, focus_y{};
   bool keyboard_focus{};
+  bool keyboard_hints{};
   bool show_recipes{};
   unsigned recipe_page{}, ui_page{}, upgrade_preview{};
   bool show_build{}, show_privacy{};
@@ -576,6 +577,7 @@ void rebuild(App& app) {
   view.current_receipt = &current_receipt;
   view.report_entry_seconds = app.report_entry_seconds;
   view.framing = &app.framing;
+  view.keyboard_hints = app.keyboard_hints;
   app.ui = hr::product::interface(view);
   app.ui_page = app.ui.page;
   Command focused = Command::none;
@@ -601,6 +603,10 @@ Command hit(const App& app, hr::ui::Point p) {
 void semantic(App& app, const hr::input::Action& a) {
   const auto id = static_cast<ControlAction>(a.id);
   const bool begin = a.phase == hr::input::ActionPhase::started;
+  const bool moving_controller = a.source_kind == hr::input::DeviceKind::gamepad &&
+      a.phase == hr::input::ActionPhase::changed && std::abs(a.value) > .01F;
+  if ((begin || moving_controller) && !app.qa && !app.playthrough && a.device != hr::input::invalid_device_id)
+    app.keyboard_hints = a.source_kind == hr::input::DeviceKind::keyboard;
   const auto button = a.has_position ? hit(app, {a.position.x, a.position.y}) : Command::none;
   app.controls.apply(a, app.screen == Screen::run, button != Command::none);
   if (app.screen != Screen::run) {

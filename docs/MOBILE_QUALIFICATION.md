@@ -30,6 +30,13 @@ DDI services unavailable, lock state unknown; no physical Android is attached.
 No new device/pairing/settings operation follows. The authority3 record below is
 historical; its uses of “current” belong only to that exact source epoch.
 
+The later accepted reward-choice presentation is host-qualified in
+`build/evidence/reward-choice-quality/`:44suites and native compact/phone/enlarged
+composition pass, with unchanged rule/save projection. It is not included in
+the33edb97 mobile artifacts above. Those five exact artifacts are preserved under
+`build/evidence/reward-world-mobile/`; the next combined reward/world source must
+freeze and pass its own mobile builds before acquiring package qualification.
+
 ## Historical authority3 native UI qualification
 
 This 25 October 2026 checkpoint refreshes the qualified authority-3 vehicle/Privacy build with native-resolution UI composition. Game authority remains **3**, outer account schema remains **2**, and the rules fingerprint is unchanged: `13238298123916137634`. It is a source-bound platform checkpoint, not a release-ready declaration.

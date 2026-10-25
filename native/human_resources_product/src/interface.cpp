@@ -353,7 +353,7 @@ std::vector<ReadableSection> readable_sections(const View& v) {
   case Screen::upgrade: {
     const unsigned i = std::min(v.upgrade_preview, 2U);
     const auto& pick = run.choices[i];
-    add(pick.title + "\n" + choice_change(pick) + "\n" + std::string(choice_metric(pick).label) + "\n" + pick.description + "\n" + choice_status(pick) + "\n" + number(hardware_count(run)) + " of 6 hardware slots occupied." + (pick.evolution_preview.empty() ? "" : "\nEvolves: " + pick.evolution_preview), static_cast<Command>(static_cast<unsigned>(Command::pick0) + i), "CHOOSE " + number(i + 1));
+    add(pick.title + "\n" + std::string(choice_effect_label(pick)) + "\n" + choice_change(pick) + (choice_conditions(pick).empty() ? "" : "\n" + std::string(choice_conditions(pick))) + "\n" + choice_status(pick) + "\n" + number(hardware_count(run)) + " of 6 hardware slots occupied." + (pick.evolution_preview.empty() ? "" : "\nEvolves: " + pick.evolution_preview), static_cast<Command>(static_cast<unsigned>(Command::pick0) + i), "CHOOSE " + number(i + 1));
     if (run.rerolls_remaining) add("REROLL\nReplace all three offers. " + number(run.rerolls_remaining) + " remaining.", Command::reroll, "REROLL");
     add("EVOLUTIONS\nRead all six recipes and your ingredient ranks.", Command::recipe0, "EVOLUTIONS");
     break;
@@ -530,7 +530,11 @@ Interface readable_interface(const View& v) {
       const float x = 16 + static_cast<float>(i) * (tab_width + gap);
       const bool selected = i == std::min(v.upgrade_preview, 2U);
       c.fill(x, 8, tab_width, row, selected ? mint : panel);
-      c.centered(x, 14, tab_width, number(i + 1), button_size, selected ? navy : white);
+      if (tab_width >= 88) {
+        c.fill(x + 7, 8 + (row - 32) * .5F, 32, 32, panel);
+        c.icon(x + 10, 8 + (row - 26) * .5F, choice_icon(v.run->choices[i]), 26);
+        c.centered(x + 42, 14, tab_width - 48, number(i + 1), button_size, selected ? navy : white);
+      } else c.centered(x, 14, tab_width, number(i + 1), button_size, selected ? navy : white);
       c.output.buttons.push_back({c.rect(x, 8, tab_width, row), static_cast<Command>(static_cast<unsigned>(Command::preview0) + i), "PREVIEW " + number(i + 1), true});
     }
   }
@@ -576,6 +580,16 @@ Interface readable_interface(const View& v) {
   } else if (section.command != Command::none) {
     const float height = button_height(section.label);
     button(16, footer - height, width, height, section.label, section.command, section.enabled);
+    if (upgrade_tabs && page.section == 0 && footer - height - y >= 104) {
+      const auto& pick = v.run->choices[std::min(v.upgrade_preview, 2U)];
+      const float icon_top = y + (footer - height - y - 80) * .5F;
+      c.fill(safe.width * .5F - 40, icon_top, 80, 80, panel);
+      c.icon(safe.width * .5F - 30, icon_top + 8, choice_icon(pick), 60);
+      if (pick.hardware)
+        for (unsigned rank = 0; rank < 3; ++rank)
+          c.fill(safe.width * .5F - 23 + static_cast<float>(rank) * 17, icon_top + 70, 12, 4,
+              rank + 1 < pick.next_rank ? mint : rank + 1 == pick.next_rank ? gold : navy);
+    }
   }
   return std::move(c.output);
 }
@@ -1021,30 +1035,33 @@ Interface standard_interface(const View& v) {
       c.button(204, 738, 150, "SETTINGS", Command::settings, true, white, 56);
       break;
     case Screen::upgrade: {
-      // Keep the authored frame's header at a stable height. The body follows
-      // actual text instead of stretching a large empty illustration region.
       const float body_size = std::max(14.F, 14.F / c.scale);
       const float title_size = std::max(19.F, 14.F / c.scale) * c.type_scale;
-      const float summary_size = std::max(14.F, 14.F / c.scale) * c.type_scale;
-      // The physical type floor grows relative to the logical canvas on short
-      // phones. Reserve its actual line height before the cream body begins.
-      const float header_height = 27 + title_size * 1.25F + 4;
+      const float summary_size = body_size * c.type_scale;
+      const float header_height = std::max(66.F, 27 + title_size * 1.25F + 10);
       const float first_y = std::max(110.F, 88 + summary_size * 1.25F + 8);
-      constexpr float row_gap = 6.F;
-      std::array<float, 3> heights{}, description_heights{};
+      constexpr float row_gap = 8.F;
+      std::array<float, 3> heights{}, label_heights{};
       float required = first_y + 6;
       for (unsigned i = 0; i < 3; ++i) {
-        description_heights[i] = static_cast<float>(readable_lines(c, run.choices[i].description, 322, body_size).size()) * body_size * 1.08F;
-        heights[i] = header_height + 6 + description_heights[i] + 8;
+        const auto& pick = run.choices[i];
+        const float copy_height = static_cast<float>(readable_lines(c, choice_conditions(pick), 322, body_size).size()) * body_size * 1.08F;
+        label_heights[i] = static_cast<float>(readable_lines(c, choice_effect_label(pick), 322, body_size).size()) * body_size * 1.08F;
+        heights[i] = header_height + 8 + copy_height + 10;
         required += heights[i] + row_gap;
       }
-      // Hero values are useful when there is room; the complete description
-      // always retains the same authoritative values and secondary mechanics.
-      const float metric_height = std::max(24.F, body_size) + 10;
-      const bool headline = c.scale >= .8F && required + 3 * metric_height <= 774;
-      if (headline) for (auto& height : heights) height += metric_height;
+      const float value_height = std::max(26.F, body_size) + 10;
+      // Runtime offers have a structured benefit, so they always show it once.
+      // Legacy hand-authored fixtures keep their full description and receive
+      // the extra value hierarchy only when the three-card board has room.
+      const bool legacy_headline = c.scale >= .8F && required + 3 * (value_height + body_size * 1.08F) <= 774;
+      for (unsigned i = 0; i < 3; ++i)
+        if (!run.choices[i].effect_label.empty() || legacy_headline)
+          heights[i] += label_heights[i] + value_height;
       float footer = first_y + 6;
       for (const auto height : heights) footer += height + row_gap;
+      if (c.rect(20, first_y, 350, footer + 60 - first_y).bottom() > c.safe.bottom() + .01F)
+        c.output.text_overflow = true;
       c.fill(8, 8, 374, std::min(828.F, footer + 66), navy);
       c.text(24, 24, "PROMOTION / LV " + number(run.stats.level), 29, white, true);
       c.fitted(24, 66, 342, "Choose one. Your flight is paused.", 16, muted);
@@ -1060,36 +1077,32 @@ Interface standard_interface(const View& v) {
         const auto& pick = run.choices[i];
         const float y = card_y, card_height = heights[i];
         card_y += card_height + row_gap;
-        // Split the existing atlas frame at its actual header/body boundary.
         c.sprite(20, y, 350, header_height, 536, 1432, 464, 180);
         c.sprite(20, y + header_height, 350, card_height - header_height, 536, 1612, 464, 412);
-        const auto color = pick.rarity == gameplay::Rarity::rare ? gold : pick.rarity == gameplay::Rarity::uncommon ? mint
-                                                                                                                    : white;
-        c.icon(32, y + 10, pick.hardware ? (pick.module == gameplay::Module::shield_generator ? 1U : pick.module <= gameplay::Module::emp_ring ? 3U
-                                                                                                                                               : 2U)
-                                         : 0U,
-            30);
-        c.fitted(74, y + 5, 226, !pick.evolution_preview.empty() ? pick.evolution_preview : choice_status(pick), 14, !pick.evolution_preview.empty() ? gold : color);
-        c.fitted(74, y + 27, 226, pick.title, 19);
-        c.fitted(304, y + 7, 48, "KEY " + number(i + 1), 14, muted, false, true);
-        const float body_top = header_height + 6;
-        if (headline) {
-          c.fitted(34, y + body_top, 175, choice_metric(pick).label, 14, navy);
-          c.fitted(210, y + body_top - 2, 144, choice_change(pick), 23, navy, false, true);
-        }
-        const float copy_y = body_top + (headline ? metric_height : 0.F);
-        c.wrap(34, y + copy_y, 322, pick.description, body_size, navy, 12, 1.08F);
+        const auto color = pick.rarity == gameplay::Rarity::rare ? gold : pick.rarity == gameplay::Rarity::uncommon ? mint : white;
+        c.fill(29, y + 9, 48, 48, panel);
+        c.icon(33, y + 13, choice_icon(pick), 40);
+        c.fitted(87, y + 6, v.keyboard_hints ? 210.F : 265.F, !pick.evolution_preview.empty() ? pick.evolution_preview : choice_status(pick), 14, !pick.evolution_preview.empty() ? gold : color);
+        c.fitted(87, y + 29, 265, pick.title, 19);
+        if (v.keyboard_hints) c.fitted(304, y + 7, 48, "KEY " + number(i + 1), 14, muted, false, true);
         if (pick.hardware) {
           for (unsigned rank = 0; rank < 3; ++rank)
-            c.fill(32 + static_cast<float>(rank) * 10, y + 44, 7, 3, rank + 1 < pick.next_rank ? mint : rank + 1 == pick.next_rank ? gold
-                                                                                                                                   : panel);
+            c.fill(87 + static_cast<float>(rank) * 16, y + header_height - 9, 12, 4, rank + 1 < pick.next_rank ? mint : rank + 1 == pick.next_rank ? gold : panel);
         }
+        float copy_y = y + header_height + 8;
+        if (!pick.effect_label.empty() || legacy_headline) {
+          c.wrap(34, copy_y, 322, choice_effect_label(pick), body_size, navy, 4, 1.08F);
+          copy_y += label_heights[i];
+          c.fitted(34, copy_y, 322, choice_change(pick), 26, navy);
+          copy_y += value_height;
+        }
+        c.wrap(34, copy_y, 322, choice_conditions(pick), body_size, navy, 12, 1.08F);
         c.output.buttons.push_back({c.rect(20, y, 350, card_height), static_cast<Command>(static_cast<unsigned>(Command::pick0) + i), "CHOOSE " + number(i + 1), true});
         if (v.promotion.entry_seconds >= 0 && !v.promotion.reduced_motion) {
           const float t = std::clamp((v.promotion.entry_seconds - static_cast<float>(i) * .025F) / .2F, 0.F, 1.F);
           const float eased = 1 - (1-t) * (1-t) * (1-t);
           for (std::size_t q = first_quad; q < c.output.quads.size(); ++q) {
-            c.output.quads[q].rect[1] += 6 * c.scale * (1-eased) / c.h;
+            c.output.quads[q].rect[1] += 8 * c.scale * (1-eased) / c.h;
             c.output.quads[q].color[3] *= .85F + .15F * eased;
           }
         }
@@ -1247,6 +1260,12 @@ Interface interface(const View& v) {
     c.fill(16, top, width, height, navy);
     c.fill(16, top, 3, height, mint);
     c.text(28, top + 8, label, font, mint);
+    // The saved selection gets one brief travelling accent while the existing
+    // confirmation releases combat on its unchanged120ms schedule.
+    if (!v.promotion.reduced_motion && v.promotion.installed_seconds >= 0) {
+      const float t = std::clamp(v.promotion.installed_seconds / .35F, 0.F, 1.F);
+      c.fill(16, top + height - 2, width * (1 - (1-t) * (1-t)), 2, mint);
+    }
     result.quads.insert(result.quads.end(), c.output.quads.begin(), c.output.quads.end());
     result.page_text = "INSTALLED " + v.promotion.installed->title;
     result.text_overflow |= c.output.text_overflow;
@@ -1264,7 +1283,7 @@ Interface interface(const View& v) {
     }
   }
   auto standard = standard_interface(v);
-  if ((v.screen == Screen::death || v.screen == Screen::results) && standard.text_overflow) return readable_interface(v);
+  if ((v.screen == Screen::death || v.screen == Screen::results || v.screen == Screen::upgrade) && standard.text_overflow) return readable_interface(v);
   if (!large || !standard.text_overflow) return finish(std::move(standard));
   return finish(v.screen == Screen::run && !v.save_error ? enlarged_run(v, framing) : readable_interface(v));
 }

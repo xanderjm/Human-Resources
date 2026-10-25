@@ -114,47 +114,59 @@ UpgradeChoice Game::State::make_choice(bool hardware, std::size_t index, std::si
     }
     choice.before = view.research[index];
     choice.after = choice.before + choice.gain;
-    std::string label = choice.title, unit;
+    std::string label = choice.title, unit, qualifier;
     switch (choice.research) {
     case Research::weapon_damage:
       choice.before = view.weapon_damage;
       choice.after = choice.before + tuning::base_laser_damage * (1 + permanent(0)) * choice.gain / 100 * (evolved(Evolution::office_shredder) ? 1 + tuning::evolution_laser_bonus : 1);
       label = "Original laser damage";
       unit = " per shot";
+      choice.effect_unit = " /shot";
       break;
     case Research::hull_reinforcement:
       choice.before = view.maximum_hull;
       choice.after = choice.before + choice.gain;
       label = "Maximum hull";
-      unit = "; restore " + number(choice.gain) + " hull";
+      qualifier = "restore " + number(choice.gain) + " hull";
+      unit = "; " + qualifier;
       break;
     case Research::shield_capacity:
       choice.before = view.maximum_shield;
       choice.after = choice.before + choice.gain;
       label = "Shield capacity";
-      unit = "; fill only the new capacity";
+      qualifier = "fill only the new capacity";
+      unit = "; " + qualifier;
       break;
     case Research::specimen_value:
       label = "Specimen score bonus";
-      unit = "% of base score; XP unchanged";
+      qualifier = "of base score; XP unchanged";
+      unit = "% " + qualifier;
+      choice.effect_unit = "%";
       break;
     case Research::capture_speed:
       label = "Capture speed bonus";
-      unit = "% of base rate";
+      qualifier = "of base rate";
+      unit = "% " + qualifier;
+      choice.effect_unit = "%";
       break;
     case Research::fire_rate:
       label = "Fire rate bonus";
-      unit = "% of base rate; upgrade cap " + number(tuning::firing_rate_maximum_base_multiplier * 100) + "% of base, before temporary Overdrive";
+      qualifier = "of base rate; upgrade cap " + number(tuning::firing_rate_maximum_base_multiplier * 100) + "% of base, before temporary Overdrive";
+      unit = "% " + qualifier;
+      choice.effect_unit = "%";
       break;
     case Research::emergency_repairs:
       choice.before = view.hull;
       choice.after = std::min(view.maximum_hull, view.hull + view.maximum_hull * choice.gain / 100);
       label = "Hull";
-      unit = "; immediate repair";
+      qualifier = "immediate repair";
+      unit = "; " + qualifier;
       break;
     case Research::count:
       break;
     }
+    choice.effect_label = label;
+    choice.conditions = qualifier.empty() ? "" : qualifier + ".";
     choice.description = change(label, choice.before, choice.after, unit);
     return choice;
   }
@@ -186,7 +198,7 @@ UpgradeChoice Game::State::make_choice(bool hardware, std::size_t index, std::si
     choice.after = choice.before + 1;
     label = "Independent lasers";
     unit = " total";
-    extra = " New laser: " + number(projected.view.weapon_damage * tuning::added_laser_fraction) + " damage/shot (50% of original).";
+    extra = "New laser: " + number(projected.view.weapon_damage * tuning::added_laser_fraction) + " damage/shot (50% of original).";
     if (after == 3) {
       extra += " Repeated hits focus up to +20%.";
     }
@@ -195,26 +207,26 @@ UpgradeChoice Game::State::make_choice(bool hardware, std::size_t index, std::si
     choice.before = before;
     choice.after = after;
     label = "Additional piercing targets";
-    extra = " Each takes 40% of the initial hit; no extra chains.";
+    extra = "Each takes 40% of the initial hit; no extra chains.";
     break;
   case Module::arc_coil:
     choice.before = before == 0 ? 0 : (tuning::arc_chance_base + (before - 1) * tuning::arc_chance_step) * 100;
     choice.after = (tuning::arc_chance_base + (after - 1) * tuning::arc_chance_step) * 100;
     label = "Arc chance";
     unit = "%";
-    extra = " Hits up to " + number(after) + (after == 1 ? " nearby enemy" : " different nearby enemies") + " at 30% damage each.";
+    extra = "Hits up to " + number(after) + (after == 1 ? " nearby enemy" : " different nearby enemies") + " at 30% damage each.";
     break;
   case Module::orbit_drones:
     choice.before = before;
     choice.after = after;
     label = "Orbit drones";
-    extra = " Each: " + number(tuning::drone_damage * damage_multiplier()) + " damage, 2 shots/s before rate bonuses.";
+    extra = "Each: " + number(tuning::drone_damage * damage_multiplier()) + " damage, 2 shots/s before rate bonuses.";
     break;
   case Module::emp_ring:
     choice.before = before == 0 ? 0 : (tuning::pulse_damage_base + (before - 1) * tuning::pulse_damage_step) * damage_multiplier();
     choice.after = (tuning::pulse_damage_base + (after - 1) * tuning::pulse_damage_step) * damage_multiplier();
     label = "EMP pulse damage";
-    extra = " Radius " + number(projected.evolved(Evolution::storm_drain) ? tuning::storm_radius : tuning::pulse_radius_base + (after - 1) * tuning::pulse_radius_step) + "m; cooldown " + number(tuning::pulse_cooldown_base - (after - 1)) + "s.";
+    extra = "Radius " + number(projected.evolved(Evolution::storm_drain) ? tuning::storm_radius : tuning::pulse_radius_base + (after - 1) * tuning::pulse_radius_step) + "m; cooldown " + number(tuning::pulse_cooldown_base - (after - 1)) + "s.";
     if (after == 3) {
       extra += " Soldier capture: 0.75s disable, 5s cooldown.";
     }
@@ -224,7 +236,7 @@ UpgradeChoice Game::State::make_choice(bool hardware, std::size_t index, std::si
     choice.after = static_cast<float>(projected.view.beam_capacity);
     label = "Simultaneous biological targets";
     if (after == 3) {
-      extra = " Captures: +25% other beam speed for 2s.";
+      extra = "Captures: +25% other beam speed for 2s.";
     }
     break;
   case Module::tractor_lens:
@@ -232,7 +244,7 @@ UpgradeChoice Game::State::make_choice(bool hardware, std::size_t index, std::si
     choice.after = projected.view.capture_radius;
     label = "Capture radius";
     unit = "m";
-    extra = " Beams hold " + number(after * tuning::lens_grace_step) + "s out of range.";
+    extra = "Beams hold " + number(after * tuning::lens_grace_step) + "s out of range.";
     if (after == 3) {
       extra += " Pulls specimens from 15% beyond the ring.";
     }
@@ -242,7 +254,7 @@ UpgradeChoice Game::State::make_choice(bool hardware, std::size_t index, std::si
     choice.after = projected.evolved(Evolution::hostile_acquisition) ? 100 : tuning::jeep_capture_threshold[static_cast<std::size_t>(after) - 1];
     label = "Jeep capture hull";
     unit = "%";
-    extra = " Uses 2 beam slots; 8s vehicle cooldown.";
+    extra = "Uses 2 beam slots; 8s vehicle cooldown.";
     if (after == 3) {
       extra += " Tanks <=" + number((projected.evolved(Evolution::hostile_acquisition) ? tuning::evolution_tank_threshold : tuning::tank_capture_threshold) * 100) + "% hull. Vehicle kills: +40% bio speed, 5s.";
     }
@@ -252,27 +264,27 @@ UpgradeChoice Game::State::make_choice(bool hardware, std::size_t index, std::si
     choice.after = (tuning::overtime_base + (after - 1) * tuning::overtime_step) * 100;
     label = "Firing rate per active beam";
     unit = "% of base";
-    extra = " Cap +" + number(choice.after * 3) + "%; a vehicle counts as one beam.";
+    extra = "Cap +" + number(choice.after * 3) + "%; a vehicle counts as one beam.";
     break;
   case Module::reserve_battery:
     choice.before = before == 0 ? 0 : (tuning::reserve_base + (before - 1) * tuning::reserve_step) * 100;
     choice.after = (tuning::reserve_base + (after - 1) * tuning::reserve_step) * 100;
     label = "Weapon damage per idle beam";
     unit = "% of base";
-    extra = " Cap +" + number(choice.after * 2) + "%; occupied vehicle slots excluded.";
+    extra = "Cap +" + number(choice.after * 2) + "%; occupied vehicle slots excluded.";
     break;
   case Module::shield_generator:
     choice.before = view.maximum_shield;
     choice.after = projected.view.maximum_shield;
     label = "Shield capacity";
-    extra = " Fill new capacity only; recharge " + number(tuning::base_shield_regen_per_second + after * tuning::shield_recharge_step) + "/s after " + number(tuning::shield_delays[choice.next_rank - 1]) + "s safe.";
+    extra = "Fill new capacity only; recharge " + number(tuning::base_shield_regen_per_second + after * tuning::shield_recharge_step) + "/s after " + number(tuning::shield_delays[choice.next_rank - 1]) + "s safe.";
     break;
   case Module::repair_swarm:
     choice.before = before == 0 ? 0 : tuning::repair_base + before - 1;
     choice.after = tuning::repair_base + after - 1;
     label = "Hull restored every 12 captures";
     if (after >= 2) {
-      extra = " Restore " + number(after - 1) + " shield per biological capture, capped at 4/s.";
+      extra = "Restore " + number(after - 1) + " shield per biological capture, capped at 4/s.";
     }
     break;
   case Module::mirror_plating:
@@ -286,7 +298,7 @@ UpgradeChoice Game::State::make_choice(bool hardware, std::size_t index, std::si
     choice.after = std::min(tuning::movement_maximum_base_multiplier, 1 + after * tuning::movement_step) * tuning::base_movement_metres_per_second;
     label = "Free-flight speed";
     unit = "m/s";
-    extra = " Capture movement penalty becomes " + number(std::max(0.0F, tuning::base_capture_movement_penalty_percent - after * tuning::capture_penalty_step * 100)) + "%.";
+    extra = "Capture movement penalty becomes " + number(std::max(0.0F, tuning::base_capture_movement_penalty_percent - after * tuning::capture_penalty_step * 100)) + "%.";
     if (after == 3) {
       extra += " Captures grant +12% movement for 3s.";
     }
@@ -296,19 +308,22 @@ UpgradeChoice Game::State::make_choice(bool hardware, std::size_t index, std::si
     choice.after = tuning::dash_invulnerability + (after - 1) * tuning::dash_invulnerability_step;
     label = "Dash invulnerability";
     unit = "s";
-    extra = " Activate a 3m dash; cooldown " + number(tuning::dash_cooldown - (after - 1) * tuning::dash_cooldown_step) + "s.";
+    extra = "Activate a 3m dash; cooldown " + number(tuning::dash_cooldown - (after - 1) * tuning::dash_cooldown_step) + "s.";
     break;
   case Module::bounty_scanner:
     choice.before = before * tuning::bounty_step * 100 + research(Research::specimen_value);
     choice.after = choice.before + tuning::bounty_step * 100;
     label = "Biological score bonus";
     unit = "%";
-    extra = " Streak adds score; hull damage resets it. XP unchanged.";
+    extra = "Streak adds score; hull damage resets it. XP unchanged.";
     break;
   case Module::count:
     break;
   }
-  choice.description = change(label, choice.before, choice.after, unit) + extra;
+  choice.effect_label = label;
+  choice.effect_unit = choice.module == Module::mirror_plating ? "%" : unit;
+  choice.conditions = choice.module == Module::mirror_plating ? "While shield remains." : extra;
+  choice.description = change(label, choice.before, choice.after, unit) + (extra.empty() ? "" : " " + extra);
 
   return choice;
 }
