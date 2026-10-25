@@ -4,6 +4,7 @@
 #include <cstddef>
 #include <cstdint>
 #include <memory>
+#include <optional>
 #include <span>
 #include <string>
 #include <string_view>
@@ -127,6 +128,7 @@ struct EntityView final {
   InfantryRole infantry_role{InfantryRole::none};
   float fire_recovery_seconds{};
   std::uint8_t minigun_barrel{}; // Jeep's committed/last barrel, advanced only on accepted warning.
+  std::optional<float> body_heading; // Actual vehicle orientation; absent in legacy/synthetic presentation values.
 };
 struct MinigunGeometry final {
   std::array<float,3> anchor, yaw_pivot, pitch_offset;
@@ -147,6 +149,8 @@ struct MinigunShot final {
 struct CannonGeometry final {
   std::array<float,3> socket, muzzle;
   float visible_missile_scale{}, launch_forward_offset{};
+  unsigned boss_projectiles{};
+  float boss_spread_radians{};
 };
 struct CannonShot final {
   Vec2 origin, direction;
@@ -194,7 +198,9 @@ enum class PresentationEventKind : std::uint8_t { capture,
   mirrorball,
   phase_dash,
   repair,
-  enemy_shot };
+  enemy_shot,
+  sweep_capture,
+  harvest_overdrive };
 struct PresentationEvent final {
   std::uint64_t sequence{};
   double active_seconds{};
@@ -218,6 +224,7 @@ struct Snapshot final {
   Phase phase{Phase::ready};
   Vec2 player, velocity;
   float runner_distance{}; // monotonic world-camera station; player dodges within its band
+  float forward_speed{}; // Derived from earned level/captures; not an independent saved clock.
   float hull{}, maximum_hull{}, shield{}, maximum_shield{};
   float xp{}, next_level_xp{}, capture_radius{}, movement_speed{}, weapon_damage{};
   float dash_cooldown_seconds{}, invulnerability_seconds{};
@@ -226,6 +233,9 @@ struct Snapshot final {
   std::array<float, static_cast<std::size_t>(Research::count)> research{};
   std::uint32_t evolution_bits{};
   float drone_burst_seconds{}, capture_burst_seconds{}, movement_burst_seconds{};
+  // Actual close moving captures build a temporary active-time harvest chain.
+  std::uint8_t harvest_chain{};
+  float harvest_chain_seconds{}, harvest_overdrive_seconds{};
   std::uint64_t director_spawn_attempts{}, director_schedule_hash{};
   RunStats stats;
   std::vector<EntityView> entities;

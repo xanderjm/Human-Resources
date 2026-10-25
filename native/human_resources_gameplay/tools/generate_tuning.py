@@ -83,6 +83,73 @@ def validate(arch, cat, encounter, spatial):
     if sum(row['active_cap'] for row in encounter['enemies'].values()) + spatial['biological_active_cap'] + spatial['boss_active_cap'] > 128:
         raise ValueError('combined actor budget exceeds bounded native capacity')
     finite(spatial['attack_prediction_fraction'], 'attack prediction', 0, 1)
+    scroll = spatial['scroll_progression']
+    finite(scroll['maximum_metres_per_second'], 'maximum forward speed', spatial['forward_scroll_metres_per_second'], 8)
+    for key in ('per_capture_metres_per_second', 'per_level_metres_per_second'):
+        finite(scroll[key], 'scroll progression ' + key, .0001, .5)
+    if any(speed >= spatial['forward_scroll_metres_per_second'] for speed in spatial['biological_movement_speed']):
+        raise ValueError('civilian fleeing must remain slower than starting world travel')
+    gates = spatial['native_director']
+    if set(gates) != {'jeep_start_second', 'tank_start_second', 'boss_first_second'}:
+        raise ValueError('native encounter gate keys changed')
+    if not 0 < gates['jeep_start_second'] < gates['tank_start_second'] < gates['boss_first_second']:
+        raise ValueError('native threats must enter in an ordered ramp')
+    for key, value in gates.items():
+        finite(value, 'native encounter gate ' + key, .1, 600)
+    for key, value in spatial['enemy_tactics'].items():
+        finite(value, 'enemy tactics ' + key, .01, 16)
+    finite(spatial['encounter_rhythm']['military_pressure_multiplier'], 'military pressure multiplier', .1, 4)
+    rhythm = spatial['encounter_rhythm']
+    for key in ('period_seconds', 'build_seconds', 'assault_seconds',
+                'build_soldier_multiplier', 'assault_soldier_multiplier', 'assault_heavy_multiplier',
+                'boss_ingress_quiet_seconds', 'open_route_half_width', 'boss_entry_half_width'):
+        finite(rhythm[key], 'encounter rhythm ' + key, .001, 120)
+    if rhythm['build_seconds'] + rhythm['assault_seconds'] >= rhythm['period_seconds']:
+        raise ValueError('encounter rhythm must retain a recovery window')
+    finite(rhythm['recovery_soldier_multiplier'], 'recovery soldier rate', .001, 4)
+    soldier_total = (rhythm['build_seconds'] * rhythm['build_soldier_multiplier'] +
+                     rhythm['assault_seconds'] * rhythm['assault_soldier_multiplier'] +
+                     (rhythm['period_seconds'] - rhythm['build_seconds'] - rhythm['assault_seconds']) *
+                     rhythm['recovery_soldier_multiplier'])
+    if abs(soldier_total - rhythm['period_seconds']) > .0001 or abs(
+            rhythm['assault_seconds'] * rhythm['assault_heavy_multiplier'] - rhythm['period_seconds']) > .0001:
+        raise ValueError('encounter rhythm must distribute the existing per-cycle spawn budget')
+    for key in ('build_warning_cap', 'assault_warning_cap', 'boss_warning_cap', 'recovery_warning_cap'):
+        value = rhythm[key]
+        if isinstance(value, bool) or not isinstance(value, int) or not 1 <= value <= spatial['warning_active_cap']:
+            raise ValueError('encounter warning cap exceeds bounded military budget')
+    if any(radius + spatial['player_radius'] + rhythm['open_route_half_width'] >= spatial['field_half_width']
+           for radius in spatial['military_contact_radius'][:3]):
+        raise ValueError('encounter flank has no legal entry interval')
+    if rhythm['boss_entry_half_width'] >= spatial['field_half_width']:
+        raise ValueError('boss entry must remain within the field')
+    if 2 * rhythm['boss_ingress_quiet_seconds'] >= arch['director']['boss_interval_seconds']:
+        raise ValueError('boss ingress gap cannot cover the entire boss interval')
+    if isinstance(rhythm['cohort_size'], bool) or not isinstance(rhythm['cohort_size'], int) or rhythm['cohort_size'] != 4:
+        raise ValueError('social pocket geometry requires four specimens')
+    if spatial['initial_biological_count'] % rhythm['cohort_size']:
+        raise ValueError('opening population must contain whole social pockets')
+    for key in ('herd_lane_metres', 'herd_lateral_step', 'herd_forward_step', 'opening_near',
+                'opening_group_step', 'opening_lane_metres', 'herd_lane_jitter_metres',
+                'cattle_lateral_step', 'cattle_lane_offset_metres', 'intro_escort_second', 'warning_entry_ahead'):
+        finite(rhythm[key], 'encounter delivery ' + key, .001, 32)
+    if rhythm['warning_entry_ahead'] >= spatial['enemy_spawn_ahead']:
+        raise ValueError('military must enter visibly before warning commitment')
+    finite(rhythm['warning_retire_behind'], 'visible warning retirement', .1, spatial['enemy_retire_behind'])
+    harvest = spatial['harvest']
+    for key in ('core_radius_fraction', 'minimum_pilot_speed', 'sweep_fraction', 'sweep_multiplier',
+                'chain_window_seconds', 'overdrive_seconds', 'overdrive_multiplier'):
+        finite(harvest[key], 'harvest ' + key, .001, 32)
+    if not 0 < harvest['core_radius_fraction'] < 1 or not 0 < harvest['sweep_fraction'] <= 1 or not 1 <= harvest['sweep_multiplier'] <= 8 or not 1 <= harvest['overdrive_multiplier'] <= 2:
+        raise ValueError('harvest gain must retain bounded normal capture')
+    if isinstance(harvest['chain_target'], bool) or not isinstance(harvest['chain_target'], int) or not 2 <= harvest['chain_target'] <= 8:
+        raise ValueError('harvest chain count must be bounded')
+    starter = spatial['starter_dash']
+    finite(starter['distance'], 'starter dash distance', .1, 3)
+    finite(starter['invulnerability'], 'starter dash invulnerability', .01, .2)
+    finite(starter['cooldown'], 'starter dash cooldown', 1, 30)
+    if starter['invulnerability'] >= starter['cooldown']:
+        raise ValueError('starter dash cannot chain invulnerability')
 
 def generate(root, output):
     balance = root / 'design/balance'
@@ -186,6 +253,22 @@ def generate(root, output):
         if not 0 < spatial[key] <= 512:
             raise ValueError(f'unbounded spatial rule {key}')
         integer(key, spatial[key])
+    for key, value in spatial['encounter_rhythm'].items():
+        if key.endswith('_cap') or key == 'cohort_size':
+            integer('encounter_' + key, value)
+        else:
+            scalar('encounter_' + key, value)
+    for key, value in spatial['harvest'].items():
+        if key == 'chain_target':
+            integer('harvest_' + key, value)
+        else:
+            scalar('harvest_' + key, value)
+    for key, value in spatial['starter_dash'].items():
+        scalar('starter_dash_' + key, value)
+    for key, value in spatial['scroll_progression'].items():
+        scalar('scroll_' + key, value)
+    for key, value in spatial['enemy_tactics'].items():
+        scalar('tactics_' + key, value)
     radii = spatial['biological_body_radius']
     if len(radii) != 5 or any(not 0 < radius < 1 for radius in radii):
         raise ValueError('invalid biological body radii')
@@ -254,13 +337,13 @@ def generate(root, output):
             scalar(key, value)
     for key, value in arch['director'].items():
         if isinstance(value, (int, float)):
-            scalar('director_' + key, value)
+            scalar('director_' + key, spatial['native_director'].get(key, value))
     enemy_rows = [encounter['enemies'][name] for name in ('soldier', 'jeep', 'tank')] + [encounter['boss']]
     for field in ('hp', 'damage', 'attack_period', 'start_second', 'active_cap', 'lifetime', 'score'):
         vals = [row.get(field, arch['director']['boss_base_hp'] if field == 'hp' else 0) for row in enemy_rows]
         if field == 'start_second':
             # The current endless candidate overrides the historical encounter gates.
-            vals[1:3] = [arch['director']['jeep_start_second'], arch['director']['tank_start_second']]
+            vals[1:3] = [spatial['native_director']['jeep_start_second'], spatial['native_director']['tank_start_second']]
         if field == 'damage':
             vals[-1] = arch['director']['boss_damage']
         if field == 'active_cap':
@@ -338,7 +421,7 @@ def generate(root, output):
         ('dash_invulnerability', 'phase_drive', r'with ([\d.]+)s invulnerability', 1),
         ('dash_invulnerability_step', 'phase_drive', r'Add ([\d.]+)s invulnerability', 1),
         ('dash_cooldown', 'phase_drive', r'a (\d+)s cooldown', 1),
-        ('dash_cooldown_step', 'phase_drive', r'cooldown by (\d+)s', 1),
+        ('dash_cooldown_step', 'phase_drive', r'cooldown by ([\d.]+)s', 1),
         ('bounty_step', 'bounty_scanner', r'Add \+(\d+)% specimen', 100),
         ('bounty_streak_base', 'bounty_scanner', r'bonus of \+(\d+)%', 100),
         ('bounty_streak_interval', 'bounty_scanner', r'per (\d+) uninterrupted', 1),

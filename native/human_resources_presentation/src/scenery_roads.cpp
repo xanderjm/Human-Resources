@@ -17,7 +17,10 @@ void roads(Builder& b) {
   const double first = std::floor((b.query.distance - 52) * 2) / 2;
   const double last = first + 105;
   const auto ground = theme == SceneryTheme::desert ? "ground-sand" : "ground-grass";
-  ribbon(b, ground, first, last, -36, 36, -36, 36, -.04F, {1, 1, 1, 1}, .16F);
+  // The wide playable meadow needs the painted ground's fine scale/scroll
+  // cues. Keep its average colour and the quieter sand/street treatment.
+  const float ground_detail = theme == SceneryTheme::farmland ? .36F : .16F;
+  ribbon(b, ground, first, last, -36, 36, -36, 36, -.04F, {1, 1, 1, 1}, ground_detail);
   for (double s = first; s < last; s += .5) {
     const auto a = scenery_road(theme, b.query.seed, s), c = scenery_road(theme, b.query.seed, s + .5);
     const float l0 = a.center - a.half_width, r0 = a.center + a.half_width, l1 = c.center - c.half_width, r1 = c.center + c.half_width;

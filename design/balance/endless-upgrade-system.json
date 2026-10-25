@@ -205,9 +205,9 @@
       "name": "Phase Drive",
       "rarity": "Rare",
       "ranks": [
-        "Pick 1: Unlock a player-activated 3m dash with 0.2s invulnerability and a 16s cooldown.",
-        "Pick 2: Add 0.05s invulnerability (0.2 -> 0.25s) and reduce cooldown by 3s (16 -> 13s). Dash distance stays 3m.",
-        "Pick 3: Add 0.05s invulnerability (0.25 -> 0.3s) and reduce cooldown by 3s (13 -> 10s). Dash distance stays 3m."
+        "Pick 1: Upgrade the starter dodge to a player-activated 3m dash with 0.2s invulnerability and a 3s cooldown.",
+        "Pick 2: Add 0.05s invulnerability (0.2 -> 0.25s) and reduce cooldown by 0.5s (3 -> 2.5s). Dash distance stays 3m.",
+        "Pick 3: Add 0.05s invulnerability (0.25 -> 0.3s) and reduce cooldown by 0.5s (2.5 -> 2s). Dash distance stays 3m."
       ],
       "rules": "No damage, no cooldown reduction from research and no chain invulnerability."
     },

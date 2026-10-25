@@ -1,17 +1,17 @@
 {
   "schema_version": 1,
-  "status": "Native spatial first-playable candidate. Existing balance catalogues remain the upgrade and account authorities; this file owns previously unspecified geometry and bounded scheduling only.",
+  "status": "Native portrait spatial, locomotion and encounter candidate. This file owns runtime geometry, pacing and movement; abstract balance studies remain separate.",
   "fixed_hz": 60,
   "maximum_catchup_seconds": 0.25,
-  "field_half_width": 5.65,
+  "field_half_width": 7.5,
   "forward_scroll_metres_per_second": 2.2,
   "player_radius": 0.85,
   "laser_range": 15,
   "laser_flash_seconds": 0.12,
   "pierce_alignment_metres": 1.5,
-  "enemy_spawn_ahead": 12.6,
-  "enemy_retire_behind": 11,
-  "biological_active_cap": 28,
+  "enemy_spawn_ahead": 26,
+  "enemy_retire_behind": 23,
+  "biological_active_cap": 42,
   "projectile_active_cap": 96,
   "warning_active_cap": 8,
   "biological_spawn_per_second": 1.4,
@@ -22,10 +22,10 @@
     3
   ],
   "biological_movement_speed": [
-    0.7,
-    0.55,
-    0.65,
-    0.6
+    1.5,
+    1.35,
+    1.45,
+    1.4
   ],
   "biological_body_radius": [
     0.237,
@@ -38,10 +38,10 @@
   "biological_separation_speed": 0.6,
   "biological_spawn_candidates": 4,
   "military_movement_speed": [
-    1.6,
-    2.6,
-    1.1,
-    1.4
+    3.2,
+    5.8,
+    3.8,
+    3.5
   ],
   "projectile_speed": [
     6,
@@ -73,11 +73,11 @@
   "vehicle_score": 5,
   "boss_active_cap": 1,
   "steering_acceleration": 28,
-  "initial_biological_count": 8,
+  "initial_biological_count": 24,
   "emergency_disable_radius": 4,
   "attack_prediction_fraction": 0.85,
-  "player_forward_allowance": 6,
-  "player_backward_allowance": 6,
+  "player_forward_allowance": 16.5,
+  "player_backward_allowance": 17,
   "infantry": {
     "roles": [
       "rifleman",
@@ -153,5 +153,76 @@
     "spawn_forward_offset": 0.01,
     "visible_tracer_radius": 0.008,
     "visible_flash_radius": 0.012
+  },
+  "encounter_rhythm": {
+    "period_seconds": 28,
+    "build_seconds": 10,
+    "assault_seconds": 12,
+    "build_soldier_multiplier": 0.6,
+    "assault_soldier_multiplier": 1.5833333333333333,
+    "assault_heavy_multiplier": 2.3333333333333335,
+    "build_warning_cap": 2,
+    "assault_warning_cap": 4,
+    "boss_warning_cap": 2,
+    "boss_ingress_quiet_seconds": 4,
+    "open_route_half_width": 1.2,
+    "boss_entry_half_width": 1,
+    "cohort_size": 4,
+    "herd_lane_metres": 3.4,
+    "herd_lateral_step": 1.1,
+    "herd_forward_step": 1.25,
+    "opening_near": 1.5,
+    "opening_group_step": 3.5,
+    "opening_lane_metres": 1.2,
+    "intro_escort_second": 1.2,
+    "warning_entry_ahead": 15,
+    "recovery_warning_cap": 1,
+    "recovery_soldier_multiplier": 0.5,
+    "military_pressure_multiplier": 2.5,
+    "warning_retire_behind": 12,
+    "herd_lane_jitter_metres": 0.4,
+    "cattle_lateral_step": 1.25,
+    "cattle_lane_offset_metres": 0.7
+  },
+  "harvest": {
+    "core_radius_fraction": 0.45,
+    "minimum_pilot_speed": 1.5,
+    "sweep_fraction": 0.4,
+    "sweep_multiplier": 4,
+    "chain_target": 3,
+    "chain_window_seconds": 5,
+    "overdrive_seconds": 6,
+    "overdrive_multiplier": 1.5
+  },
+  "starter_dash": {
+    "distance": 2,
+    "invulnerability": 0.15,
+    "cooldown": 4
+  },
+  "scroll_progression": {
+    "maximum_metres_per_second": 4.6,
+    "per_capture_metres_per_second": 0.008,
+    "per_level_metres_per_second": 0.1
+  },
+  "native_director": {
+    "jeep_start_second": 12,
+    "tank_start_second": 40,
+    "boss_first_second": 90
+  },
+  "enemy_tactics": {
+    "rifle_range": 6.5,
+    "shotgun_range": 3.5,
+    "rocket_range": 9,
+    "jeep_range": 8,
+    "tank_range": 10,
+    "boss_range": 10,
+    "flank_offset": 3.5,
+    "capture_standoff_buffer": 1.25,
+    "arrival_radius": 0.65,
+    "vehicle_fire_recovery": 0.55,
+    "civilian_lateral_bias": 0.55,
+    "civilian_turn_acceleration": 4,
+    "civilian_fear_radius": 7,
+    "civilian_travel_lateral_bias": 0.22
   }
 }

@@ -41,8 +41,9 @@ struct Actor final {
   EntityView view;
   float age{}, attack_timer{}, slow_timer{}, focused_hits{}, focus_timer{}, grace{};
   Vec2 aim;
-  Vec2 wander_velocity; // Intended passive heading; view.velocity publishes actual displacement.
+  Vec2 locomotion_velocity; // Passive preferred movement, or last nonzero vehicle velocity retaining its stopped heading.
   bool lifted{}, removed{};
+  float sweep_progress{}; // Capture progress earned by moving inside the core, capped at qualification.
 };
 struct Projectile final {
   ProjectileView view;
@@ -89,7 +90,8 @@ struct Game::State final {
   void move(float dt, Control control);
   void advance_timers(float dt);
   void director(float dt);
-  void spawn(EntityKind kind, bool initial = false);
+  void spawn_cohort(bool initial = false, unsigned opening_group = 0);
+  void spawn(EntityKind kind, bool initial = false, std::optional<Vec2> pocket_position = std::nullopt);
   [[nodiscard]] bool place_biological(detail::Actor& target, float lateral_sample, float forward_sample, bool initial);
   void move_biological(float dt);
   void enemies(float dt);

@@ -81,6 +81,43 @@ class NativeTuningTests(unittest.TestCase):
         self.mutate('native/human_resources_gameplay/runtime-spatial.json', lambda v: v.update(capture_return_seconds=1.3))
         self.reject()
 
+    def test_harvest_contract_changes_invalidate_resume(self):
+        original = self.fingerprint()
+        self.mutate('native/human_resources_gameplay/runtime-spatial.json',
+                    lambda v: v['harvest'].update(overdrive_seconds=7))
+        self.assertNotEqual(original, self.fingerprint())
+
+    def test_invalid_harvest_chain_rejected(self):
+        self.mutate('native/human_resources_gameplay/runtime-spatial.json',
+                    lambda v: v['harvest'].update(chain_target=0))
+        self.reject()
+
+    def test_scroll_curve_and_native_gate_changes_invalidate_resume(self):
+        original = self.fingerprint()
+        self.mutate('native/human_resources_gameplay/runtime-spatial.json',
+                    lambda v: v['scroll_progression'].update(per_capture_metres_per_second=.009))
+        self.assertNotEqual(original, self.fingerprint())
+
+    def test_civilian_speed_cannot_overtake_scroll(self):
+        self.mutate('native/human_resources_gameplay/runtime-spatial.json',
+                    lambda v: v['biological_movement_speed'].__setitem__(0, 3))
+        self.reject()
+
+    def test_native_ramp_must_be_ordered(self):
+        self.mutate('native/human_resources_gameplay/runtime-spatial.json',
+                    lambda v: v['native_director'].update(tank_start_second=1))
+        self.reject()
+
+    def test_invalid_starter_dash_rejected(self):
+        self.mutate('native/human_resources_gameplay/runtime-spatial.json',
+                    lambda v: v['starter_dash'].update(cooldown=.1))
+        self.reject()
+
+    def test_rhythm_cannot_delete_recovery_or_overfill_field(self):
+        self.mutate('native/human_resources_gameplay/runtime-spatial.json',
+                    lambda v: v['encounter_rhythm'].update(open_route_half_width=20))
+        self.reject()
+
     def test_changed_catalogue_phrase_rejected(self):
         def edit(value):
             value['hardware'][0]['ranks'][0] = 'Replacement that has no numeric damage rule.'

@@ -25,25 +25,69 @@ CapturePose blend(const CapturePose& from, const CapturePose& to, float weight) 
 void SceneEffects::begin_capture_frame(const gameplay::Snapshot& run) {
   const double now = run.stats.active_seconds;
   if (capture_initialized_ && now < capture_seconds_) captures_ = {};
+  const float elapsed = capture_initialized_ ? std::clamp(static_cast<float>(now - capture_seconds_), 0.F, .25F) : 0;
+  constexpr float intake_seconds = .34F;
+  completed_count_ = 0;
   for (auto& history : captures_) {
     if (!history.id) continue;
     const auto found = std::find_if(run.entities.begin(), run.entities.end(), [&](const auto& actor) {
       return actor.id == history.id && actor.kind == history.kind && actor.infantry_role == history.role;
     });
-    if (found == run.entities.end()) history = {};
+    if (found != run.entities.end()) {
+      if (history.completed) {
+        history = {}; // Even a malformed reused ID cannot inherit a finisher.
+        continue;
+      }
+      history.actor = *found;
+      history.display_progress = found->kind <= gameplay::EntityKind::soldier ? capture_lift_progress(found->capture_progress) : found->capture_progress;
+      continue;
+    }
+    const bool confirmed = std::any_of(beats().begin(), beats().end(), [&](const auto& beat) {
+      return beat.kind == SceneBeatKind::capture && beat.actor_id == history.id;
+    });
+    const bool reused = std::any_of(run.entities.begin(), run.entities.end(), [&](const auto& actor) {
+      return actor.id == history.id;
+    });
+    if (reused || history.actor.kind > gameplay::EntityKind::soldier || (!history.completed && !confirmed)) {
+      history = {};
+      continue;
+    }
+    if (!history.completed) {
+      history.start = history.last;
+      history.finish_progress = history.display_progress;
+      history.releasing = history.reacquiring = false;
+    }
+    history.completed = true;
+    history.display_progress = std::min(1.F, history.display_progress + (1 - history.finish_progress) * elapsed / intake_seconds);
+    if (history.display_progress >= 1) {
+      history = {};
+      continue;
+    }
+    auto actor = history.actor;
+    actor.capture_progress = history.display_progress;
+    actor.warning_seconds = actor.fire_recovery_seconds = 0;
+    actor.velocity = {};
+    completed_captures_[completed_count_++] = actor;
   }
   capture_seconds_ = now;
   capture_initialized_ = true;
 }
+float SceneEffects::capture_progress(const gameplay::EntityView& actor) const {
+  if (actor.capture_progress <= 0)
+    return 0;
+  const auto found = std::find_if(captures_.begin(), captures_.end(), [&](const auto& history) {
+    return history.id == actor.id && history.kind == actor.kind && history.role == actor.infantry_role;
+  });
+  return found == captures_.end() ? capture_lift_progress(actor.capture_progress) : found->display_progress;
+}
 
 CapturePose SceneEffects::capture_pose(const gameplay::EntityView& actor, CapturePose captured,
-    CapturePose ground, double seconds, float station) {
+    CapturePose ground, double seconds, float station, CaptureMotion motion) {
   auto found = std::find_if(captures_.begin(), captures_.end(), [&](const auto& history) { return history.id == actor.id; });
   if (found == captures_.end()) {
     found = std::find_if(captures_.begin(), captures_.end(), [](const auto& history) { return history.id == 0; });
     if (found == captures_.end()) return captured; // Legal Game snapshots never exceed actor_capacity.
-    *found = {.id = actor.id, .kind = actor.kind, .role = actor.infantry_role, .last = captured,
-        .seconds = seconds, .station = station, .capture_yaw = captured.rotation.y, .capturing = actor.capture_progress > 0};
+    *found = {.id = actor.id, .kind = actor.kind, .role = actor.infantry_role, .last = captured, .seconds = seconds, .station = station, .capture_yaw = captured.rotation.y, .capturing = actor.capture_progress > 0, .actor = actor, .display_progress = actor.kind <= gameplay::EntityKind::soldier ? capture_lift_progress(actor.capture_progress) : actor.capture_progress};
     return captured;
   }
   auto& history = *found;
@@ -54,6 +98,34 @@ CapturePose SceneEffects::capture_pose(const gameplay::EntityView& actor, Captur
   history.ground.position.z += station - history.station;
   history.station = station;
   if (seconds == history.seconds) return history.last;
+  if (history.completed) {
+    const float u = std::clamp((history.display_progress - history.finish_progress) /
+                                   std::max(.001F, 1 - history.finish_progress),
+        0.F, 1.F);
+    const float v = 1 - u;
+    // Keep the full source specimen readable beside the hull before the final
+    // intake zip. The first point is exactly its last visible canonical pose.
+    // Reduced motion retains a straight finish without orbit or body tumble.
+    const bool reduced = motion == CaptureMotion::reduced;
+    auto resolved = blend(history.start, captured, smooth(0, 1, u));
+    if (!reduced) {
+      const float side = history.id & 1U ? 1.F : -1.F;
+      const presentation::Vec3 control{history.start.position.x + side * 2.2F,
+          std::min(captured.position.y, history.start.position.y + .8F),
+          std::max(history.start.position.z, captured.position.z) + 2.5F};
+      resolved.position = {v * v * history.start.position.x + 2 * v * u * control.x + u * u * captured.position.x,
+          v * v * history.start.position.y + 2 * v * u * control.y + u * u * captured.position.y,
+          v * v * history.start.position.z + 2 * v * u * control.z + u * u * captured.position.z};
+      resolved.rotation = {history.start.rotation.x + u * 1.25F,
+          history.start.rotation.y + side * u * 1.4F, history.start.rotation.z + side * u * .65F};
+    } else
+      resolved.rotation = history.start.rotation;
+    resolved.scale = history.start.scale + (captured.scale - history.start.scale) * smooth(.5F, 1, u);
+    history.last = resolved;
+    history.seconds = seconds;
+    history.capturing = true;
+    return resolved;
+  }
   const bool capturing = actor.capture_progress > 0;
   if (capturing && actor.kind >= gameplay::EntityKind::jeep) {
     if (!history.capturing) history.capture_yaw=history.last.rotation.y;

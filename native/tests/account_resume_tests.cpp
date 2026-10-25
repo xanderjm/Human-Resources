@@ -21,9 +21,10 @@ pr::RunReceipt receipt(const pr::AccountSession& session, const gp::Game& game) 
       .jeep_kills = stats.jeep_kills, .tank_kills = stats.tank_kills,
       .vehicle_captures = stats.vehicle_captures, .boss_kills = stats.boss_kills};
 }
-void start(pr::AccountSession& session, gp::Game& game, const std::uint8_t location = 2) {
+void start(pr::AccountSession& session, gp::Game& game, const std::uint8_t location = 2,
+           const unsigned seed = 9317) {
   require(session.load().playable(), "load native account");
-  game.start({.seed = 9317, .permanent_ranks = session.account().ranks,
+  game.start({.seed = seed, .permanent_ranks = session.account().ranks,
       .unlocked_blueprints = session.account().unlocked_blueprints});
   require(session.begin_run(pr::continuation_for(game, location)).succeeded(), "begin atomically stores initial actual Game and location");
 }
@@ -142,7 +143,8 @@ void dead_checkpoint_cannot_resume_or_revive() {
       "dead run preserves exact earned reward and cannot revive through restart");
 }
 void completed_revive_commits_the_actual_live_continuation() {
-  MemoryBackend backend; pr::AccountSession session(backend); gp::Game game; start(session, game);
+  // This ordinary idle run naturally survives past the 90-second revive gate.
+  MemoryBackend backend; pr::AccountSession session(backend); gp::Game game; start(session, game, 2, 514);
   for (unsigned frame = 0; frame < 20000 && game.snapshot().phase != gp::Phase::dead; ++frame) tick(game);
   require(game.snapshot().phase == gp::Phase::dead && game.revive_available(), "eligible real death fixture");
   const auto dead = receipt(session, game);

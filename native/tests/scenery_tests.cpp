@@ -16,7 +16,7 @@ struct Metrics {
   float min_root_edge{100}, min_crown_edge{100};
   float road_min{100}, road_max{-100};
 } metrics;
-void farmland_opaque_clearance(const StyleInstance& i) {
+void farmland_opaque_clearance(const StyleInstance& i, float clearance = 6.49F) {
   // Independent conservative XZ bounds from the cooked source meshes. Flat
   // decals and tall rotor overhangs are not opaque ground footprints.
   struct Bounds final {
@@ -31,7 +31,7 @@ void farmland_opaque_clearance(const StyleInstance& i) {
     if (i.mesh == shape.mesh) {
       const auto m = model_matrix(i);
       const float extent = std::abs(m[0]) * shape.x + std::abs(m[2]) * shape.z;
-      require(std::abs(i.position.x) - extent >= 6.49F,
+      require(std::abs(i.position.x) - extent >= clearance,
           "rotated opaque farmland props preserve the full thirteen-metre ground clearing");
     }
 }
@@ -116,6 +116,35 @@ void verify_window(const SceneryQuery& q, const SceneryGeneration& g) {
     metrics.max_farmland_crowns = std::max(metrics.max_farmland_crowns, crowns);
   metrics.sites += g.sites.size();
 }
+void widened_playfield_preserves_authored_assets() {
+  for (auto theme : {SceneryTheme::farmland, SceneryTheme::suburbia, SceneryTheme::desert})
+    for (double station : {0., 33.6, 64., 128.}) {
+      const auto original = generate_scenery({theme, 514, station});
+      const auto wide = generate_scenery({theme, 514, station, 390.F / 844.F, 9.7F});
+      require(original.scene.instances.size() == wide.scene.instances.size() && original.scene.surfaces.size() == wide.scene.surfaces.size(), "widened field reuses the same bounded authored population");
+      for (std::size_t k = 0; k < wide.scene.instances.size(); ++k) {
+        const auto& a = original.scene.instances[k];
+        const auto& b = wide.scene.instances[k];
+        require(a.mesh == b.mesh && a.stable_id == b.stable_id && a.scale.x == b.scale.x && a.scale.y == b.scale.y && a.scale.z == b.scale.z && a.position.z == b.position.z, "corridor widening preserves asset identity, dimensions, and station continuity");
+        if (theme == SceneryTheme::farmland)
+          farmland_opaque_clearance(b, 9.64F);
+      }
+      for (std::size_t k = 0; k < wide.scene.surfaces.size(); ++k) {
+        const auto& a = original.scene.surfaces[k];
+        const auto& b = wide.scene.surfaces[k];
+        require(a.material == b.material && a.vertices.size() == b.vertices.size(), "ground patches retain their existing material and topology");
+        for (std::size_t v = 0; v < a.vertices.size(); ++v) {
+          require(a.vertices[v].position.z == b.vertices[v].position.z, "widening preserves every ground surface's longitudinal placement");
+          // Existing roads/ground retain exact authored UVs. New tonal meadow
+          // overlays instead match the widened base's interpolated UV at each
+          // vertex, checked directly by meadow_features_match_base_ground().
+          const bool meadow = a.material == "ground-grass" && a.tint != std::array<float, 4>{1, 1, 1, 1};
+          if (!meadow)
+            require(a.vertices[v].uv == b.vertices[v].uv, "widening preserves every existing ground texture's UVs");
+        }
+      }
+    }
+}
 void farmland_grouping_and_openings() {
   for (unsigned sample = 0; sample < 49; ++sample) {
     const std::uint64_t seed = sample == 48 ? 514 : sample;
@@ -165,6 +194,27 @@ void farmland_grouping_and_openings() {
     require(count >= 6, "canonical 17m windows contain low dressing inside the visible fringe");
   }
 }
+void meadow_features_match_base_ground() {
+  for (const float clearance : {6.55F, 9.7F, 12.F})
+    for (const double station : {0., 31.99, 32.01, 543.99, 544.01, 100000032.}) {
+      const auto g = generate_scenery({SceneryTheme::farmland, 514, station, 390.F / 844.F, clearance});
+      const auto& base = g.scene.surfaces.front();
+      const auto a = base.vertices[0], b = base.vertices[1], c = base.vertices[2];
+      std::size_t compared = 0;
+      for (const auto& surface : g.scene.surfaces) {
+        if (surface.material != "ground-grass" || surface.tint == base.tint)
+          continue;
+        for (const auto& vertex : surface.vertices) {
+          const float u = std::lerp(a.uv[0], b.uv[0], (vertex.position.x - a.position.x) / (b.position.x - a.position.x));
+          const float v = std::lerp(a.uv[1], c.uv[1], (vertex.position.z - a.position.z) / (c.position.z - a.position.z));
+          test_support::require_near(vertex.uv[0], u, .00002F, "tonal meadow samples the same source feature as the base after lateral widening");
+          test_support::require_near(vertex.uv[1], v, .00002F, "tonal meadow samples the same source feature through station/UV rebases");
+          ++compared;
+        }
+      }
+      require(compared > 0, "shared ground-feature checks exercise actual tonal meadow geometry");
+    }
+}
 void moving_window_continuity() {
   for (auto theme : {SceneryTheme::farmland, SceneryTheme::suburbia, SceneryTheme::desert})
     for (double s : {-32.01, 0., 31.99, 63.99, 95.99, 127.99, 159.99, 543.99, 100000031.99}) {
@@ -193,6 +243,33 @@ void moving_window_continuity() {
           const float expected = static_cast<float>((abs_b - abs_a) / 6);
           const float diff = w.uv[1] - v.uv[1] - expected;
           require(std::abs(diff - std::round(diff)) < .0001F, "ground UVs remain world anchored through origin rebasing");
+        }
+      // Tonal meadow margins must remain part of the same world floor. Test
+      // their actual shared vertices through moving windows and UV rebases,
+      // independently of the main large base quad's changing window edges.
+      if (theme == SceneryTheme::farmland)
+        for (const auto& surface : a.scene.surfaces) {
+          if (surface.material != "ground-grass" || surface.tint == std::array<float, 4>{1, 1, 1, 1})
+            continue;
+          const auto target = std::find_if(b.scene.surfaces.begin(), b.scene.surfaces.end(), [&](const auto& value) {
+            return value.material == surface.material && value.tint == surface.tint;
+          });
+          require(target != b.scene.surfaces.end(), "visible meadow tones persist across generation windows");
+          unsigned matched = 0;
+          for (const auto& vertex : surface.vertices) {
+            require(vertex.position.y < 0, "meadow variation remains below roads, actors and warnings");
+            if (std::abs(vertex.position.z) > 26)
+              continue;
+            const auto next_vertex = std::find_if(target->vertices.begin(), target->vertices.end(), [&](const auto& value) {
+              return value.position.x == vertex.position.x && std::abs(value.position.z - vertex.position.z - .04F) < .00002F;
+            });
+            require(next_vertex != target->vertices.end(), "visible meadow shape does not pop or slide at sector boundaries");
+            const float u_delta = next_vertex->uv[0] - vertex.uv[0], v_delta = next_vertex->uv[1] - vertex.uv[1];
+            require(std::abs(u_delta) < .00001F && std::abs(v_delta - std::round(v_delta)) < .0001F,
+                "identical meadow features retain their source UV through floating-origin changes");
+            ++matched;
+          }
+          require(matched > 0, "meadow continuity exercises real visible ground vertices");
         }
     }
 }
@@ -256,6 +333,8 @@ void neighbouring_compositions_differ() {
 }
 } // namespace
 int main(int argc, char** argv) {
+  widened_playfield_preserves_authored_assets();
+  meadow_features_match_base_ground();
   for (std::uint64_t seed = 0; seed < 48; ++seed)
     for (auto theme : {SceneryTheme::farmland, SceneryTheme::suburbia, SceneryTheme::desert})
       for (double s : {0., 16., 31.99, 32.01, 64., 128., 257., 543.99, 544.01, 1024., 65536., 100000032.}) {

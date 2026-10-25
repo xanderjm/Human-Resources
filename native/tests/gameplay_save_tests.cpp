@@ -13,7 +13,7 @@ namespace {
 using Bytes = std::vector<std::byte>;
 // HRS1 revision-three fieldwise offsets are intentional corruption-test fixtures.
 constexpr std::size_t phase_offset = 36, player_offset = 37, hull_offset = 57;
-constexpr std::size_t actor_count_offset = 365, actor_stride = 97;
+constexpr std::size_t actor_count_offset = 374, actor_stride = 101;
 void put32(Bytes& bytes, std::size_t offset, std::uint32_t value) {
   require(offset + 4 <= bytes.size(), "mutation offset exists");
   for (std::size_t i = 0; i < 4; ++i) bytes[offset + i] = static_cast<std::byte>((value >> (8 * i)) & 255U);

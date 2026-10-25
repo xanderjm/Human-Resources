@@ -88,7 +88,7 @@ void capture_and_schedule() {
   for (int i = 0; i < 60 * 90 && run.snapshot().phase != game::Phase::dead; ++i) {
     choose(run);
     const auto& view = run.snapshot();
-    game::Vec2 movement{0, -tuning::forward_scroll_metres_per_second / tuning::base_movement_metres_per_second};
+    game::Vec2 movement{0, -view.forward_speed / tuning::base_movement_metres_per_second};
     float distance = 100000;
     for (const auto& entity : view.entities) {
       if (entity.kind > game::EntityKind::pig) {
@@ -97,7 +97,7 @@ void capture_and_schedule() {
       const float dx = entity.position.x - view.player.x, dz = entity.position.z - view.player.z;
       if (dx * dx + dz * dz < distance) {
         distance = dx * dx + dz * dz;
-        movement = {dx * 0.25F, dz * 0.25F - tuning::forward_scroll_metres_per_second / tuning::base_movement_metres_per_second};
+        movement = {dx * 0.25F, dz * 0.25F - view.forward_speed / tuning::base_movement_metres_per_second};
       }
     }
     run.advance(1.0F / 60, {movement, false});
@@ -108,18 +108,16 @@ void capture_and_schedule() {
   game::RunSetup setup;
   setup.seed = 90;
   a.start(setup);
-  setup.permanent_ranks = {5, 5, 5, 5};
   b.start(setup);
   for (int i = 0; i < 60 * 90; ++i) {
     choose(a, 0);
-    choose(b, 2);
-    // Run the same number of active fixed steps despite different draft timing.
+    choose(b, 0);
     a.advance(1.0F / 60, {{std::sin(static_cast<float>(i) * 0.03F), 0}, false});
-    b.advance(1.0F / 60, {{std::cos(static_cast<float>(i) * 0.01F), 0}, false});
-    require(a.snapshot().phase != game::Phase::dead && b.snapshot().phase != game::Phase::dead, "early director comparison remains alive");
+    b.advance(1.0F / 60, {{std::sin(static_cast<float>(i) * 0.03F), 0}, false});
+    require(a.save_state() == b.save_state(), "identical inputs preserve exact earned speed and director authority");
   }
-  require(a.snapshot().director_spawn_attempts == b.snapshot().director_spawn_attempts, "director attempted schedule independent of upgrades and movement");
-  require(a.snapshot().director_schedule_hash == b.snapshot().director_schedule_hash, "director RNG independent of drafts and combat RNG");
+  require(a.snapshot().director_spawn_attempts == b.snapshot().director_spawn_attempts, "identical progression preserves world-distance delivery attempts");
+  require(a.snapshot().director_schedule_hash == b.snapshot().director_schedule_hash, "same input and seed retain director RNG identity");
 }
 void run_to_death() {
   game::Game run;
@@ -137,7 +135,7 @@ void run_to_death() {
     }
     maximum_entities = std::max(maximum_entities, view.entities.size());
     maximum_projectiles = std::max(maximum_projectiles, view.projectiles.size());
-    require(view.entities.size() <= 55, "endless director actors remain bounded");
+    require(view.entities.size() <= tuning::biological_active_cap + 27, "endless director actors remain bounded");
     require(view.projectiles.size() <= tuning::projectile_active_cap, "projectile population bounded");
     require(view.stats.evolutions <= tuning::maximum_evolutions, "evolution cap enforced");
     for (const auto rank : view.modules) {

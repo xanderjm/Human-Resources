@@ -20,6 +20,7 @@ struct SceneryQuery final {
   std::uint64_t seed{514};
   double distance{}; // metres travelled; absolute world coordinates stay double
   float aspect{9.F / 16};
+  float play_clear_half_width{6.55F}; // Placement/ground spacing; never rescales source models.
 };
 struct RoadSection final {
   float center{}, half_width{}, slope{};

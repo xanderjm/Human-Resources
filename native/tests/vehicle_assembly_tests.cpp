@@ -77,13 +77,27 @@ void true_muzzle_and_static_source_death() {
         "typed static projectile remains visible without live source or invented flash");
     run.projectiles.front().age_seconds=.2F;
     const auto readable=hr::product::scene(run,390.F/844.F,true);
-    bool optical=false,core=false,footprint=false;
+    bool optical=false,core=false,footprint=false,underlay=false;
+    unsigned optical_count=0,core_count=0,underlay_count=0;
     for(const auto& part:readable.instances) if(part.effect && part.mesh=="cube") {
-      if(part.tint[1]==.24F && part.position.y>.1F) optical=part.scale.x==.07F && part.scale.y==.07F;
-      if(part.tint[1]==.94F) core=part.scale.x==.025F && part.scale.y==.025F;
+      const float pixels=part.scale.x*std::abs(readable.camera[0])*390.F;
+      if(part.tint[1]==.24F && part.position.y>.1F) {
+        ++optical_count;
+        optical=part.scale.x>=.07F && part.scale.y==part.scale.x && pixels>=1.99F && pixels<=3.F;
+      }
+      if(part.tint[1]==.94F) {
+        ++core_count;
+        core=part.scale.x>=.025F && part.scale.y==part.scale.x && pixels>=.99F && pixels<=1.5F;
+      }
+      if(part.tint[0]==.025F && part.tint[1]==.07F) {
+        ++underlay_count;
+        underlay=part.scale.y==part.scale.x && pixels>=3.29F && pixels<=4.5F;
+      }
       if(part.tint[3]==.52F) footprint=std::hypot(part.scale.x,part.scale.z)<run.projectiles.front().radius;
     }
-    require(optical && core && footprint,"fine physical minigun retains readable optical trail/core and inscribed hit cue");
+    require(optical && core && underlay && optical_count==1 && core_count==1 && underlay_count==1,
+        "fine physical minigun has one bounded phone-readable optical trail/core and contrast underlay");
+    require(footprint,"minigun hit cue stays inscribed inside the unchanged collision radius");
   }
   require(std::sqrt(3.F)*hr::gameplay::tuning::minigun_visible_flash_radius<.024565F &&
       std::sqrt(2.F)*hr::gameplay::tuning::minigun_visible_tracer_radius<.024565F,

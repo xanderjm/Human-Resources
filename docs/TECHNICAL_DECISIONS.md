@@ -137,6 +137,15 @@ fixtures. See `SCENERY_GENERATION.md` for current evidence and remaining gaps.
 
 ## Generated Baseline
 
+The current gameplay engagement candidate is documented in
+[ADR 003](adr/003-active-harvest-and-starter-dash.md): Game authority 6 carries
+close-sweep chains, temporary Overdrive and starter Dash/counter-volley forward
+with expanded flight, varied harvest groups, local fleeing and power-linked
+scrolling. The ship retains its original apparent size in the wider world view.
+Unsupported earlier
+continuations retain protected recovery. This does not change the outer account
+schema, renderer authority or abstract simulator boundary.
+
 - Foundation version: 2.1.0-dev.
 - Selected platforms: macos, windows, linux, ios, android.
 - Selected optional features: none.

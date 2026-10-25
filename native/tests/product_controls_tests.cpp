@@ -62,6 +62,84 @@ void keyboard_sources_and_opposites() {
   controls.apply(key(ControlAction::left, 4, ActionPhase::completed), true, false);
   require_near(controls.sample().movement.x, -1, 0, "releasing A leaves held Left active");
 }
+void floating_anchor_reversals_and_precision() {
+  hr::product::Controls controls;
+  controls.apply(touch(1, ActionPhase::started, 100, 300), true, false);
+  controls.apply(touch(1, ActionPhase::changed, 300, 300), true, false);
+  require_near(controls.sample().movement.x, 1, .001F, "long sweep retains full speed");
+  require_near(controls.origin().x, 256, .001F, "floating anchor follows beyond full throw");
+  controls.apply(touch(1, ActionPhase::changed, 256, 300), true, false);
+  require_near(controls.sample().movement.x, 0, .001F, "reversal reaches neutral after one throw, not entire sweep");
+  controls.apply(touch(1, ActionPhase::changed, 212, 300), true, false);
+  require_near(controls.sample().movement.x, -1, .001F, "reversal reaches opposite full speed after two throws");
+  controls.apply(touch(1, ActionPhase::changed, 212, 100), true, false);
+  require_near(std::hypot(controls.position().x - controls.origin().x,
+                         controls.position().y - controls.origin().y), 44, .001F,
+               "cornering keeps radial throw bounded");
+  require_near(std::hypot(controls.sample().movement.x, controls.sample().movement.z), 1, .001F,
+               "cornering retains normalized full-speed direction");
+  controls.clear();
+  controls.apply(touch(2, ActionPhase::started, 40, 40), true, false);
+  controls.apply(touch(2, ActionPhase::changed, 44.4F, 40), true, false);
+  require_near(controls.sample().movement.x, 0, .00001F, "deadzone edge has no speed jump");
+  controls.apply(touch(2, ActionPhase::changed, 44.44F, 40), true, false);
+  require(controls.sample().movement.x > 0 && controls.sample().movement.x < .002F,
+          "fine movement starts continuously above the deadzone");
+  controls.apply(touch(2, ActionPhase::changed, 64.2F, 40), true, false);
+  require_near(controls.sample().movement.x, .5F, .001F, "remaining throw covers full analog speed range");
+  controls.apply(touch(2, ActionPhase::cancelled, 64.2F, 40), true, false);
+  controls.apply(touch(3, ActionPhase::started, 300, 700), true, false);
+  require_near(controls.origin().x, 300, 0, "new contact starts at its own touchdown");
+  require_near(controls.sample().movement.x, 0, 0, "new contact cannot inherit previous movement");
+}
+void floating_anchor_direction_changes_and_ownership() {
+  // Semantic positions are logical points, independent of a high-DPI render
+  // scale. Exercise phone/tablet touchdown positions with the same 44pt throw.
+  for (const float width : {320.F, 390.F, 768.F}) {
+    for (const hr::ui::Point direction : {hr::ui::Point{1, 0}, {-1, 0}, {0, 1}, {0, -1},
+                                         {.6F, .8F}, {-.6F, .8F}, {.6F, -.8F}, {-.6F, -.8F}}) {
+      hr::product::Controls controls;
+      const hr::ui::Point start{width * .5F, width * .8F};
+      const hr::ui::Point end{start.x + direction.x * 200, start.y + direction.y * 200};
+      controls.apply(touch(1, ActionPhase::started, start.x, start.y), true, false);
+      controls.apply(touch(1, ActionPhase::changed, end.x, end.y), true, false);
+      const auto forward = controls.sample();
+      require_near(forward.movement.x, direction.x, .001F, "long sweep preserves requested horizontal direction");
+      require_near(forward.movement.z, -direction.y, .001F, "long sweep preserves requested vertical direction");
+      const auto anchor = controls.origin();
+      controls.apply(touch(2, ActionPhase::started, width - 10, 20), true, true);
+      controls.apply(touch(2, ActionPhase::changed, 10, 20), true, true);
+      controls.apply(touch(2, ActionPhase::completed, 10, 20), true, true);
+      require_near(controls.origin().x, anchor.x, 0, "HUD contact cannot move the sliding anchor");
+      require_near(controls.origin().y, anchor.y, 0, "HUD contact cannot move the sliding anchor vertically");
+      controls.apply(touch(1, ActionPhase::changed, end.x - direction.x * 88,
+                           end.y - direction.y * 88), true, true);
+      const auto reversed = controls.sample();
+      require_near(reversed.movement.x, -direction.x, .001F, "full horizontal reversal is bounded over HUD");
+      require_near(reversed.movement.z, direction.y, .001F, "full vertical reversal is bounded over HUD");
+      controls.apply(touch(1, ActionPhase::changed, end.x, end.y), false, false);
+      require(!controls.dragging(), "menu transition clears the sliding stick");
+      controls.apply(touch(1, ActionPhase::changed, end.x, end.y), true, false);
+      require_near(std::hypot(controls.sample().movement.x, controls.sample().movement.z), 0, 0,
+                   "held contact after menu cannot silently reclaim flight");
+    }
+  }
+}
+void thumb_reversal_changes_actual_flight() {
+  hr::product::Controls controls;
+  hr::gameplay::Game game;
+  game.start({});
+  controls.apply(touch(1, ActionPhase::started, 100, 300), true, false);
+  controls.apply(touch(1, ActionPhase::changed, 300, 300), true, false);
+  for (unsigned frame = 0; frame < 24; ++frame) game.advance(1.F / 60.F, controls.sample());
+  require(game.snapshot().velocity.x > 0, "long sweep moves the real saucer right");
+  controls.apply(touch(1, ActionPhase::changed, 212, 300), true, false);
+  for (unsigned frame = 0; frame < 30; ++frame) game.advance(1.F / 60.F, controls.sample());
+  require(game.snapshot().velocity.x < 0, "bounded thumb reversal changes real saucer flight direction");
+  controls.apply(touch(1, ActionPhase::completed, 212, 300), true, false);
+  for (unsigned frame = 0; frame < 24; ++frame) game.advance(1.F / 60.F, controls.sample());
+  require_near(game.snapshot().velocity.x, 0, .001F, "release brakes actual lateral flight");
+}
 void dash_axes_lifecycle_and_unplug() {
   hr::product::Controls controls;
   controls.apply(key(ControlAction::dash, 44, ActionPhase::started), true, false);
@@ -92,6 +170,9 @@ void dash_axes_lifecycle_and_unplug() {
 } // namespace
 int main() {
   contact_capture_and_cancellation();
+  floating_anchor_reversals_and_precision();
+  floating_anchor_direction_changes_and_ownership();
+  thumb_reversal_changes_actual_flight();
   keyboard_sources_and_opposites();
   dash_axes_lifecycle_and_unplug();
 }

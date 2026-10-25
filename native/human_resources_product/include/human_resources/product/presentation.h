@@ -1,5 +1,7 @@
 #pragma once
 #include <human_resources/gameplay/gameplay.h>
+#include <human_resources/product/promotion.h>
+#include <human_resources/product/damage_feedback.h>
 #include <human_resources/presentation/scenery.h>
 #include <human_resources/presentation/style_scene.h>
 #include <human_resources/progression/progression.h>
@@ -99,6 +101,8 @@ struct View final {
   bool show_build{};
   unsigned upgrade_preview{};
   bool show_privacy{};
+  PromotionFrame promotion{};
+  DamageFeedback damage_feedback{};
 };
 [[nodiscard]] constexpr std::string_view location_name(presentation::SceneryTheme theme) {
   switch (theme) {

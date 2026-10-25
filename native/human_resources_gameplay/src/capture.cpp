@@ -36,7 +36,8 @@ float Game::State::capture_seconds(const Actor& target) const {
   const float bonus = permanent(3) + research(Research::capture_speed) / 100 +
                       (capture_burst > 0 ? tuning::splitter_burst : 0) + (vehicle_burst > 0 ? tuning::vehicle_bio_burst : 0);
   const float soldier = target.view.kind == EntityKind::soldier ? tuning::soldier_capture_seconds_multiplier : 1;
-  return std::max(tuning::capture_minimum_seconds, tuning::base_capture_seconds * soldier / (1 + bonus));
+  const float seconds = std::max(tuning::capture_minimum_seconds, tuning::base_capture_seconds * soldier / (1 + bonus));
+  return seconds / (view.harvest_overdrive_seconds > 0 ? tuning::harvest_overdrive_multiplier : 1.F);
 }
 void Game::State::capture(float dt) {
   const float radius2 = view.capture_radius * view.capture_radius;
@@ -56,6 +57,7 @@ void Game::State::capture(float dt) {
     if (!target || !capture_eligible(*target)) {
       if (target && vehicle(target->view.kind) && target->view.capture_progress > 0) {
         target->view.capture_progress = 0;
+        target->sweep_progress = 0;
         target->view.fire_recovery_seconds = tuning::capture_return_seconds;
       }
       beam.target_id = 0;
@@ -67,6 +69,7 @@ void Game::State::capture(float dt) {
         if (vehicle(target->view.kind) && target->view.capture_progress > 0)
           target->view.fire_recovery_seconds = tuning::capture_return_seconds;
         target->view.capture_progress = 0;
+        target->sweep_progress = 0;
         beam.target_id = 0;
       }
       continue;
@@ -120,7 +123,16 @@ void Game::State::capture(float dt) {
     if (!target->lifted) {
       continue;
     }
-    target->view.capture_progress += dt / capture_seconds(*target);
+    const Vec2 pilot_velocity{view.velocity.x, view.velocity.z - view.forward_speed};
+    const float core = view.capture_radius * tuning::harvest_core_radius_fraction;
+    const bool sweep = biological(target->view.kind) &&
+        length_squared(pilot_velocity) >= tuning::harvest_minimum_pilot_speed * tuning::harvest_minimum_pilot_speed &&
+        distance_squared(view.player, target->view.position) <= core * core;
+    const float progress = dt / capture_seconds(*target) * (sweep ? tuning::harvest_sweep_multiplier : 1.F);
+    // Qualification follows actual participation, so faster earned builds
+    // cannot complete before an arbitrary minimum exposure time elapses.
+    if (sweep) target->sweep_progress = std::min(tuning::harvest_sweep_fraction, target->sweep_progress + progress);
+    target->view.capture_progress += progress;
     beam.progress = std::min(1.0F, target->view.capture_progress);
     if (target->view.capture_progress >= 1) {
       captured(*target);
@@ -140,6 +152,21 @@ void Game::State::captured(Actor& target) {
     return;
   }
   ++view.stats.captures;
+  if (target.sweep_progress >= tuning::harvest_sweep_fraction) {
+    present(PresentationEventKind::sweep_capture, target.view.position, target.view.id);
+    // Overdrive is an earned burst, not a permanently refreshable mode.
+    // Its fast captures still pay normally; a new chain starts after it ends.
+    if (view.harvest_overdrive_seconds <= 0) {
+      ++view.harvest_chain;
+      view.harvest_chain_seconds = tuning::harvest_chain_window_seconds;
+      if (view.harvest_chain >= tuning::harvest_chain_target) {
+        view.harvest_chain = 0;
+        view.harvest_chain_seconds = 0;
+        view.harvest_overdrive_seconds = tuning::harvest_overdrive_seconds;
+        present(PresentationEventKind::harvest_overdrive, view.player);
+      }
+    }
+  }
   ++streak;
   view.xp += tuning::biological_capture_xp;
   const auto bounty = rank(Module::bounty_scanner);

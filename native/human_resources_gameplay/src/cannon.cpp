@@ -3,7 +3,7 @@
 #include <cmath>
 namespace human_resources::gameplay {
 CannonGeometry cannon_geometry() {
-  return {tuning::cannon_socket,tuning::cannon_muzzle,tuning::cannon_visible_missile_scale,tuning::cannon_launch_forward_offset};
+  return {tuning::cannon_socket, tuning::cannon_muzzle, tuning::cannon_visible_missile_scale, tuning::cannon_launch_forward_offset, 3U, .22F};
 }
 CannonShot vehicle_cannon_shot(const EntityView& actor,Vec2 aim) {
   if((actor.kind!=EntityKind::tank && actor.kind!=EntityKind::boss) ||

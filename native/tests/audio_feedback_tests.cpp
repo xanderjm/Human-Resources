@@ -94,6 +94,43 @@ void panning_and_throttle() {
   mixer.render(odd);
   require(peak(odd) == 0.0F, "odd destination remainder is cleared safely");
 }
+void real_outcome_coalescing() {
+  using human_resources::feedback::select_gameplay_cues;
+  const auto empty = select_gameplay_cues({});
+  require(std::count(empty.begin(), empty.end(), true) == 0, "no outcomes cannot invent sound");
+  const auto capture = select_gameplay_cues({.capture = true});
+  require(capture[static_cast<unsigned>(Cue::capture)], "ordinary capture keeps its soft resolution");
+  const auto sweep = select_gameplay_cues({.capture = true, .sweep_capture = true});
+  require(sweep[static_cast<unsigned>(Cue::sweep_capture)] && std::count(sweep.begin(), sweep.end(), true) == 1,
+      "skill capture replaces the ordinary chime with one intake zip");
+  const auto dense = select_gameplay_cues({.capture = true, .laser = true, .warning = true, .hit = true, .sweep_capture = true, .harvest_overdrive = true, .phase_dash = true});
+  require(dense[static_cast<unsigned>(Cue::harvest_overdrive)] && dense[static_cast<unsigned>(Cue::phase_dash)] &&
+              dense[static_cast<unsigned>(Cue::warning)] && dense[static_cast<unsigned>(Cue::hull_hit)] &&
+              std::count(dense.begin(), dense.end(), true) == 4,
+      "boost owns the capture payoff and dash owns its counter-volley while actual warning/damage remain audible");
+}
+void priority_reserve_under_pressure() {
+  Mixer mixer;
+  std::array<float, 128> samples{};
+  bool filled = false;
+  for (unsigned block = 0; block < 1500 && !filled; ++block) {
+    for (const Cue cue : {Cue::capture, Cue::laser, Cue::warning, Cue::purchase, Cue::ui, Cue::sweep_capture})
+      static_cast<void>(mixer.play(cue));
+    filled = mixer.active_voices() == 12;
+    if (!filled)
+      mixer.render(samples);
+  }
+  require(filled, "dense ordinary capture/fire workload fills its twelve-voice allowance");
+  require(mixer.play(Cue::harvest_overdrive) && mixer.play(Cue::phase_dash) &&
+              mixer.play(Cue::hull_hit) && mixer.play(Cue::death),
+      "four reserved voices preserve real urgent outcomes");
+  require(mixer.active_voices() == Mixer::voice_limit && !mixer.play(Cue::upgrade),
+      "even priority feedback cannot exceed sixteen voices");
+  for (unsigned block = 0; block < 1000; ++block) {
+    mixer.render(samples);
+    require(peak(samples) < 1.F, "full sixteen-voice tail remains finite and below clipping");
+  }
+}
 void write_u32(std::ofstream& file, const std::uint32_t value, const unsigned bytes = 4) {
   for (unsigned byte = 0; byte < bytes; ++byte)
     file.put(static_cast<char>((value >> (8U * byte)) & 255U));
@@ -109,6 +146,8 @@ void diagnostic_wav(const std::string& path) {
       mixer.set_tractor_active(true);
     if (moment == 90 || moment == 160 || moment == 220)
       static_cast<void>(mixer.play(Cue::capture));
+    if (moment == 250 || moment == 285)
+      static_cast<void>(mixer.play(Cue::sweep_capture));
     if (moment == 310 || moment == 340 || moment == 370)
       static_cast<void>(mixer.play(Cue::laser));
     if (moment == 440)
@@ -121,6 +160,10 @@ void diagnostic_wav(const std::string& path) {
     }
     if (moment == 850)
       static_cast<void>(mixer.play(Cue::purchase));
+    if (moment == 800)
+      static_cast<void>(mixer.play(Cue::harvest_overdrive));
+    if (moment == 960)
+      static_cast<void>(mixer.play(Cue::phase_dash));
     if (moment == 1000)
       static_cast<void>(mixer.play(Cue::ui));
     if (moment == 1100)
@@ -150,6 +193,8 @@ int main(const int argc, char** argv) {
   cue_envelopes();
   mixing_policy();
   panning_and_throttle();
+  real_outcome_coalescing();
+  priority_reserve_under_pressure();
   if (argc > 1)
     diagnostic_wav(argv[1]);
   std::cout << "Audio feedback contracts passed\n";

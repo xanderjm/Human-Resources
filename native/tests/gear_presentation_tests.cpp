@@ -43,6 +43,32 @@ void equipment_matches_installed_state() {
   hr::product::append_ship_gear(f, run, pose, false);
   require(count(f, "shield-shell") == 0, "depleted shield has no false active field");
 }
+void pitched_hull_has_one_rigid_socket_transform() {
+  hr::gameplay::Snapshot run;
+  run.laser_count = 1;
+  for (float pitch : {-.13F, .13F})
+    for (float bank : {-.23F, .23F}) {
+      const hr::product::ShipPose pose{{2, 2.5F, 3}, 1.12F, bank, pitch};
+      const auto parent = hr::presentation::model_matrix({.position = pose.position,
+          .scale = {pose.scale, pose.scale, pose.scale},
+          .rotation = {pitch, 0, bank}});
+      hr::presentation::StyleFrame frame;
+      hr::product::append_ship_gear(frame, run, pose, false);
+      for (const auto& part : frame.instances)
+        if (part.mesh == "ufo-antenna" || part.mesh == "ufo-beam") {
+          const auto local = hr::presentation::model_matrix({.position = {0, part.mesh == "ufo-antenna" ? 1.012F : .04F, 0}});
+          const auto expected = hr::presentation::multiply(parent, local);
+          const auto actual = hr::presentation::model_matrix(part);
+          for (std::size_t i = 0; i < actual.size(); ++i)
+            require_near(actual[i], expected[i], 1e-5F, "pitched and banked module stays rigidly attached on every axis");
+          require(part.polished_hull, "actual hull hardware shares its restrained material response");
+        }
+      const auto intake = hr::product::ship_socket(pose, {0, .04F, 0});
+      require_near(intake.x, parent[1] * .04F + parent[3], 1e-5F, "beam socket X matches rigid hull");
+      require_near(intake.y, parent[5] * .04F + parent[7], 1e-5F, "beam socket height matches rigid hull");
+      require_near(intake.z, parent[9] * .04F + parent[11], 1e-5F, "forward lean keeps intake on its actual hull socket");
+    }
+}
 void explicit_events_and_pause() {
   hr::gameplay::Snapshot run;
   run.stats.active_seconds = 1;
@@ -129,11 +155,54 @@ void real_game_exposes_committed_module_activity() {
   game.start();
   require(game.snapshot().drone_burst_seconds == 0 && game.snapshot().capture_burst_seconds == 0 && game.snapshot().movement_burst_seconds == 0, "new run clears active equipment durations");
 }
+void real_skill_payoff_state_has_bounded_world_motion() {
+  hr::gameplay::Snapshot run;
+  hr::product::SceneEffects effects;
+  run.stats.active_seconds = 1;
+  effects.update(run);
+  run.stats.active_seconds = 1.1;
+  run.player = {2, 1};
+  run.presentation_events[0] = {1, 1.1, hr::gameplay::PresentationEventKind::phase_dash, 0, {}};
+  effects.update(run);
+  const auto impulse = effects.dash_response();
+  require(impulse.x > .8F && impulse.z > .4F, "real dash direction drives the rigid flight impulse");
+  hr::presentation::StyleFrame frame;
+  const hr::product::ShipPose pose{{2, 2.5F, 1.3F}, 1.12F, -.2F, -.1F};
+  hr::product::append_gear_effects(frame, run, &effects, pose, 0, false);
+  require(count(frame, "ufo-modular") == 2 && frame.instances.size() == 4, "actual dash has two short hull afterimages and two finite wake rails");
+  run.stats.active_seconds = 1.13;
+  run.player = {5, 8};
+  effects.update(run);
+  require(effects.beats()[0].destination.x == 2 && effects.beats()[0].destination.z == 1,
+      "subsequent movement cannot stretch the completed dash into an imaginary path");
+  frame.instances.clear();
+  hr::product::append_gear_effects(frame, run, &effects, pose, 0, true);
+  require(count(frame, "ufo-modular") == 0 && frame.instances.size() == 2, "reduced motion preserves brief dash direction without moving afterimages");
+  run.presentation_events[1] = {2, 1.13, hr::gameplay::PresentationEventKind::sweep_capture, 7, {}};
+  run.presentation_events[2] = {3, 1.13, hr::gameplay::PresentationEventKind::harvest_overdrive, 0, run.player};
+  run.harvest_overdrive_seconds = 6;
+  run.stats.active_seconds = 1.14;
+  effects.update(run);
+  frame.instances.clear();
+  hr::product::append_gear_effects(frame, run, &effects, pose, 0, false);
+  require(frame.instances.size() == 16, "dash, sweep zip and live overdrive stay within16 simple world accents");
+  const auto overdrive_angle = effects.rotor_angle();
+  effects.update(run);
+  require(effects.rotor_angle() == overdrive_angle, "paused overdrive freezes rotor acceleration and all effect clocks");
+  run.stats.active_seconds = 2;
+  run.harvest_overdrive_seconds = 0;
+  effects.update(run);
+  frame.instances.clear();
+  hr::product::append_gear_effects(frame, run, &effects, pose, 0, false);
+  require(frame.instances.empty(), "expired real skill states leave no fake active power or dash wake");
+}
 
 } // namespace
 int main() {
   equipment_matches_installed_state();
+  pitched_hull_has_one_rigid_socket_transform();
   explicit_events_and_pause();
   typed_shots_and_reduced_motion();
   real_game_exposes_committed_module_activity();
+  real_skill_payoff_state_has_bounded_world_motion();
 }

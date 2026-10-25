@@ -10,13 +10,16 @@ MinigunGeometry minigun_geometry() {
       tuning::minigun_maximum_elevation, tuning::minigun_minimum_range};
 }
 float vehicle_body_yaw(const EntityView& actor) {
+  if (actor.body_heading)
+    return *actor.body_heading;
   return std::hypot(actor.velocity.x, actor.velocity.z) > .08F ? std::atan2(actor.velocity.x, -actor.velocity.z)
       : static_cast<float>(actor.id) * 1.7F;
 }
 MinigunShot jeep_minigun_shot(const EntityView& actor, Vec2 aim, std::uint8_t barrel) {
   if (actor.kind != EntityKind::jeep || barrel >= 6 || !std::isfinite(aim.x) || !std::isfinite(aim.z) ||
       !std::isfinite(actor.position.x) || !std::isfinite(actor.position.z) ||
-      !std::isfinite(actor.velocity.x) || !std::isfinite(actor.velocity.z)) return {};
+      !std::isfinite(actor.velocity.x) || !std::isfinite(actor.velocity.z) ||
+      (actor.body_heading && !std::isfinite(*actor.body_heading))) return {};
   const auto geometry = minigun_geometry();
   const auto& muzzle = geometry.muzzles[barrel];
   const float body_yaw = vehicle_body_yaw(actor), c = std::cos(body_yaw), s = std::sin(body_yaw);

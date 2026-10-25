@@ -24,7 +24,14 @@ constexpr std::array<Tone, static_cast<std::size_t>(Cue::count)> tones{{
     {0.58F, 440.0F, 440.0F, 0.15F, 0.10F},
     {1.2F, 200.0F, 49.0F, 0.22F, 0.8F},
     {0.11F, 540.0F, 470.0F, 0.07F, 0.04F},
+    {0.23F, 520.0F, 1320.0F, 0.19F, 0.09F}, // Close-pass intake: a quick rising zip.
+    {0.62F, 220.0F, 440.0F, 0.20F, 0.4F},   // Earned boost ignition, not a looping alarm.
+    {0.18F, 820.0F, 160.0F, 0.19F, 0.15F},  // Phase launch and counterattack.
 }};
+bool priority_cue(const Cue cue) noexcept {
+  return cue == Cue::death || cue == Cue::upgrade || cue == Cue::hull_hit ||
+         cue == Cue::harvest_overdrive || cue == Cue::phase_dash;
+}
 float bounded(const float value, const float fallback = 0.0F) noexcept {
   return std::isfinite(value) ? std::clamp(value, 0.0F, 1.0F) : fallback;
 }
@@ -38,6 +45,26 @@ float smooth(const float value) noexcept {
 }
 } // namespace
 
+CueSelection select_gameplay_cues(const GameplayFeedback feedback) noexcept {
+  CueSelection cues{};
+  const auto mark = [&](const Cue cue) { cues[static_cast<std::size_t>(cue)] = true; };
+  if (feedback.harvest_overdrive)
+    mark(Cue::harvest_overdrive);
+  else if (feedback.sweep_capture)
+    mark(Cue::sweep_capture);
+  else if (feedback.capture)
+    mark(Cue::capture);
+  if (feedback.phase_dash)
+    mark(Cue::phase_dash);
+  else if (feedback.laser)
+    mark(Cue::laser);
+  if (feedback.hit)
+    mark(Cue::hull_hit);
+  if (feedback.warning)
+    mark(Cue::warning);
+  return cues;
+}
+
 Mixer::Mixer() noexcept {
   for (std::size_t index = 0; index < sine_.size(); ++index) {
     sine_[index] = std::sin(tau * static_cast<float>(index) / static_cast<float>(sine_.size()));
@@ -48,7 +75,7 @@ bool Mixer::play(const Cue cue, const float pan) noexcept {
   const auto index = static_cast<std::size_t>(cue);
   if (index >= tones.size() || clock_ < next_cue_frame_[index])
     return false;
-  const bool priority = cue == Cue::death || cue == Cue::upgrade || cue == Cue::hull_hit;
+  const bool priority = priority_cue(cue);
   // Four reserved voices keep important feedback audible during dense capture/fire.
   const auto last = priority ? voices_.end() : voices_.begin() + 12;
   const auto free = std::find_if(voices_.begin(), last, [](const Voice& voice) { return !voice.active; });
@@ -96,6 +123,10 @@ float Mixer::synthesize(Voice& voice) noexcept {
     constexpr std::array<float, 3> intervals{1.0F, 1.25F, 1.5F};
     frequency *= intervals[std::min(std::size_t{2}, static_cast<std::size_t>(progress * 4.0F))];
   }
+  if (voice.cue == Cue::harvest_overdrive) {
+    constexpr std::array<float, 4> intervals{1.0F, 1.25F, 1.5F, 2.0F};
+    frequency *= intervals[std::min(std::size_t{3}, static_cast<std::size_t>(progress * 6.0F))];
+  }
   const float phase = advance(voice.phase, frequency);
   const float secondary = advance(voice.secondary_phase, frequency * 2.003F);
   random_ ^= random_ << 13U;
@@ -108,6 +139,10 @@ float Mixer::synthesize(Voice& voice) noexcept {
     sound = sound * 0.6F + voice.noise * 1.6F;
   if (voice.cue == Cue::laser)
     sound = sound * 0.7F + voice.noise * 0.4F;
+  if (voice.cue == Cue::phase_dash)
+    sound = sound * .65F + voice.noise * 1.1F;
+  if (voice.cue == Cue::harvest_overdrive)
+    sound = sound * .8F + .25F * wave(phase * .5F);
   const float attack = smooth(std::min(1.0F, voice.age / 0.009F));
   const float release = smooth(std::min(1.0F, (voice.duration - voice.age) / 0.085F));
   const float decay = 1.0F - 0.68F * progress;
@@ -134,7 +169,9 @@ void Mixer::render(const std::span<float> output) noexcept {
     for (auto& voice : voices_) {
       if (!voice.active)
         continue;
-      const float value = synthesize(voice);
+      // Real dash/boost/damage cues clear space in dense capture/fire feedback;
+      // their own attack is never ducked by the background voices they displace.
+      const float value = synthesize(voice) * (priority_cue(voice.cue) ? 1.F : duck_);
       left += value * voice.left;
       right += value * voice.right;
     }

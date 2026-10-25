@@ -143,12 +143,18 @@ void cancellation_and_warning_cap() {
           "captured or disabled infantry cannot continue pursuit");
     }
   }
-  game::Game::State full;
-  for (unsigned i = 0; i < 18; ++i) full.actors.push_back(soldier(roles[i % 3], i + 1));
-  full.enemies(dt);
-  const auto warnings = std::count_if(full.actors.begin(), full.actors.end(),
-      [](const auto& actor) { return actor.view.warning_seconds > 0; });
-  require(warnings == 8, "all infantry roles share the existing eight-warning budget");
+  for (const auto [second, cap] : std::array<std::pair<double, unsigned>, 3>{{
+      {0, tune::encounter_build_warning_cap}, {tune::encounter_build_seconds + 1, tune::encounter_assault_warning_cap},
+      {tune::encounter_build_seconds + tune::encounter_assault_seconds + 1, tune::encounter_recovery_warning_cap}}}) {
+    game::Game::State full;
+    full.view.stats.active_seconds = second;
+    for (unsigned i = 0; i < 18; ++i) full.actors.push_back(soldier(roles[i % 3], i + 1));
+    full.enemies(dt);
+    const auto warnings = static_cast<unsigned>(std::count_if(full.actors.begin(), full.actors.end(),
+        [](const auto& actor) { return actor.view.warning_seconds > 0; }));
+    require(warnings == cap, "all infantry roles share the actual encounter-phase warning budget");
+    require(warnings <= tune::warning_active_cap, "encounter warning budget retains the global eight-warning ceiling");
+  }
   pass("capture and disable preempt attacks and warning population stays bounded");
 }
 void volleys_and_capacity() {
@@ -321,9 +327,9 @@ void malformed_military_authority() {
   state.sync();
   const auto good = run.save_state();
   require(!good.empty(), "wire corruption fixture starts with valid actual military state");
-  // Revision-three fieldwise offsets are deliberately explicit corruption fixtures.
-  constexpr std::size_t actor = 369, role = actor + 49, recovery = actor + 50;
-  constexpr std::size_t projectile = actor + 97 + 4, projectile_role = projectile + 37;
+  // Revision-four fieldwise offsets are deliberately explicit corruption fixtures.
+  constexpr std::size_t actor = 378, role = actor + 49, recovery = actor + 50;
+  constexpr std::size_t projectile = actor + 101 + 4, projectile_role = projectile + 37;
   auto seal = [](auto& bytes) {
     std::uint64_t hash = 14695981039346656037ULL;
     for (std::size_t i = 0; i < bytes.size() - 8; ++i)

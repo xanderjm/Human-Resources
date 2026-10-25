@@ -7,7 +7,7 @@ namespace {
 constexpr std::uint32_t magic = 0x31535248U; // HRS1, explicit little-endian bytes.
 constexpr std::uint32_t schema = 1;
 // Increment when authority semantics/field meaning change independently of tuning.
-constexpr std::uint32_t authority_revision = 3;
+constexpr std::uint32_t authority_revision = 6;
 constexpr std::size_t maximum_bytes = 48 * 1024;
 constexpr std::uint32_t maximum_actors = 128, maximum_projectiles = 96;
 
@@ -65,7 +65,8 @@ template <class IO> void actor_fields(IO& io, detail::Actor& a) {
   io(v.hull); io(v.maximum_hull); io(v.capture_progress); io(v.warning_seconds); io(v.disabled_seconds);
   io(v.infantry_role); io(v.fire_recovery_seconds); io(v.minigun_barrel);
   io(a.age); io(a.attack_timer); io(a.slow_timer); io(a.focused_hits); io(a.focus_timer); io(a.grace);
-  vector2(io, a.aim); vector2(io, a.wander_velocity); io(a.lifted); io(a.removed);
+  vector2(io, a.aim); vector2(io, a.locomotion_velocity); io(a.lifted); io(a.removed);
+  io(a.sweep_progress);
 }
 template <class IO> void projectile_fields(IO& io, detail::Projectile& p) {
   io(p.view.id); vector2(io, p.view.position); vector2(io, p.view.velocity);
@@ -93,6 +94,7 @@ struct SaveStateCodec final {
     io(s.time_since_hit); io(s.capture_burst); io(s.vehicle_burst); io(s.movement_burst); io(s.drone_burst);
     io(s.vehicle_capture_cooldown); io(s.disable_cooldown); io(s.intercept_cooldown);
     io(s.capture_shield_budget); io(s.shield_budget_clock); vector2(io, s.last_direction);
+    io(v.harvest_chain); io(v.harvest_chain_seconds); io(v.harvest_overdrive_seconds);
   }
   template <class IO> static bool populations(IO& io, Game::State& s) {
     auto actors = static_cast<std::uint32_t>(s.actors.size()); io(actors);
@@ -130,7 +132,11 @@ struct SaveStateCodec final {
         s.biological_budget < 0 || s.soldier_budget < 0 || s.jeep_budget < 0 || s.tank_budget < 0 ||
         s.reflected_damage < 0 || s.time_since_hit < 0 || s.capture_burst < 0 || s.vehicle_burst < 0 ||
         s.movement_burst < 0 || s.drone_burst < 0 || s.vehicle_capture_cooldown < 0 || s.disable_cooldown < 0 ||
-        s.intercept_cooldown < 0 || s.capture_shield_budget < 0 || s.shield_budget_clock < 0 || s.shield_budget_clock > 1.001F)
+        s.intercept_cooldown < 0 || s.capture_shield_budget < 0 || s.shield_budget_clock < 0 || s.shield_budget_clock > 1.001F ||
+        v.harvest_chain >= tuning::harvest_chain_target || v.harvest_chain_seconds < 0 ||
+        v.harvest_chain_seconds > tuning::harvest_chain_window_seconds ||
+        (v.harvest_chain == 0) != (v.harvest_chain_seconds == 0) ||
+        v.harvest_overdrive_seconds < 0 || v.harvest_overdrive_seconds > tuning::harvest_overdrive_seconds)
       return false;
     for (std::size_t i = 0; i < s.setup.permanent_ranks.size(); ++i)
       if (s.setup.permanent_ranks[i] > tuning::permanent_maximum_ranks[i]) return false;
@@ -171,7 +177,9 @@ struct SaveStateCodec final {
           a.view.hull <= 0 || a.view.maximum_hull <= 0 || a.view.hull > a.view.maximum_hull ||
           a.view.capture_progress < 0 || a.view.capture_progress >= 1 || a.view.warning_seconds < 0 ||
           a.view.disabled_seconds < 0 || a.age < 0 || a.slow_timer < 0 || a.focused_hits < 0 ||
-          a.focused_hits > tuning::focus_hits || a.focus_timer < 0 || a.grace < 0) return false;
+          a.focused_hits > tuning::focus_hits || a.focus_timer < 0 || a.grace < 0 ||
+          a.sweep_progress < 0 || a.sweep_progress > tuning::harvest_sweep_fraction ||
+          a.sweep_progress > a.view.capture_progress + .0001F) return false;
       const auto role = a.view.infantry_role;
       if (role > InfantryRole::rocketeer ||
           (a.view.kind == EntityKind::soldier ? role == InfantryRole::none : role != InfantryRole::none) ||

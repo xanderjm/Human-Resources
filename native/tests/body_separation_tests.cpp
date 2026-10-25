@@ -14,7 +14,7 @@ void pass(const char* label) { ++checks; std::cout << "PASS " << label << '\n'; 
 game::detail::Actor actor(unsigned id, game::EntityKind kind, game::Vec2 p = {}, game::Vec2 velocity = {}) {
   game::detail::Actor a;
   a.view.id = id; a.view.kind = kind; a.view.position = p;
-  a.view.velocity = a.wander_velocity = velocity;
+  a.view.velocity = a.locomotion_velocity = velocity;
   a.view.hull = a.view.maximum_hull = 1;
   return a;
 }
@@ -30,14 +30,17 @@ void coincident() {
     for(unsigned j=0;j<2;++j) {
       const auto& a=s.actors[j];
       require(std::isfinite(a.view.position.x)&&std::isfinite(a.view.position.z),"coincident positions stay finite");
-      require(distance(a.view.position,before[j].view.position)<=.6001F*dt,"coincident correction obeys .6m/s budget");
+      const game::Vec2 preferred{before[j].view.position.x+a.locomotion_velocity.x*dt,
+          before[j].view.position.z+a.locomotion_velocity.z*dt};
+      require(distance(a.view.position,preferred)<=.6001F*dt,"coincident correction beyond actual fleeing intent obeys .6m/s budget");
       require_near(a.view.velocity.x,(a.view.position.x-before[j].view.position.x)/dt,.0001F,"reported velocity matches actual X displacement");
       require_near(a.view.velocity.z,(a.view.position.z-before[j].view.position.z)/dt,.0001F,"reported velocity matches actual Z displacement");
     }
   }
   require(distance(s.actors[0].view.position,s.actors[1].view.position)>.7F*radius*2,"exact coincidence resolves visibly without teleport");
-  require(equal(s.actors[0].wander_velocity,{}),"separation does not contaminate private wander velocity");
-  pass("exact coincidence finite, smoothly separated, truthful velocity, wander preserved");
+  require(std::hypot(s.actors[0].locomotion_velocity.x,s.actors[0].locomotion_velocity.z)<=tune::biological_movement_speed[1]+.0001F,
+      "separation cannot increase the species' actual fleeing intent speed");
+  pass("exact coincidence finite, smoothly separated, truthful velocity and bounded fleeing");
 }
 void boundaries() {
   for (float side : {-1.F,1.F}) {
@@ -50,7 +53,7 @@ void boundaries() {
       for(unsigned j=0;j<s.actors.size();++j) {
         const auto& a=s.actors[j];
         require(std::fabs(a.view.position.x)<=tune::field_half_width+.0001F,"moving roots respect accepted field edges");
-        const float budget=std::hypot(before[j].wander_velocity.x,before[j].wander_velocity.z)+.6F;
+        const float budget=std::hypot(a.locomotion_velocity.x,a.locomotion_velocity.z)+.6F;
         require(distance(a.view.position,before[j].view.position)<=budget*dt+.0001F,"legitimate edge roots never teleport to a new body inset");
         require(std::isfinite(a.view.position.z),"edge correction stays finite");
       }
@@ -66,9 +69,10 @@ void exclusions() {
     if(mode==1)excluded.view.capture_progress=.001F;
     if(mode==2)excluded.removed=true;
     s.actors={actor(1,game::EntityKind::cow,{},{.1F,.2F}),excluded};
+    game::Game::State solo;solo.actors={s.actors.front()};solo.move_biological(dt);
     s.move_biological(dt);
-    require_near(s.actors[0].view.position.x,.1F*dt,.00001F,"excluded neighbour never pushes free target X");
-    require_near(s.actors[0].view.position.z,.2F*dt,.00001F,"excluded neighbour never pushes free target Z");
+    require_near(s.actors[0].view.position.x,solo.actors.front().view.position.x,.00001F,"excluded neighbour never changes actual fleeing X");
+    require_near(s.actors[0].view.position.z,solo.actors.front().view.position.z,.00001F,"excluded neighbour never changes actual fleeing Z");
     require(equal(s.actors[1].view.position,excluded.view.position),"capturing/lifted/removed body never moves");
   }
   pass("lifted, partial capture and removed actors excluded as movers and neighbours");
@@ -129,14 +133,14 @@ void paused_and_schedules() {
   require(run.snapshot().stats.active_seconds==snapshot.stats.active_seconds&&run.snapshot().director_schedule_hash==snapshot.director_schedule_hash,"pause freezes encounter clock/hash");
   pass("public pause freezes separation with the rest of gameplay");
   for(unsigned seed=1;seed<=8;++seed) {
-    game::Game a,b;a.start({.seed=seed});b.start({.seed=seed,.permanent_ranks={5,5,5,5},.unlocked_blueprints=0xffff});
+    game::Game a,b;a.start({.seed=seed});b.start({.seed=seed});
     unsigned steps{};
     for(;steps<60*60;++steps) {
       if(a.snapshot().phase==game::Phase::choosing_upgrade)require(a.choose_upgrade(0),"first paired draft accepted");
-      if(b.snapshot().phase==game::Phase::choosing_upgrade)require(b.choose_upgrade(2),"second paired draft accepted");
+      if(b.snapshot().phase==game::Phase::choosing_upgrade)require(b.choose_upgrade(0),"second paired draft accepted");
       if(a.snapshot().phase!=game::Phase::active||b.snapshot().phase!=game::Phase::active)break;
-      a.advance(dt,{{-1,0},false});b.advance(dt,{{1,1},false});
-      require(a.snapshot().director_spawn_attempts==b.snapshot().director_spawn_attempts&&a.snapshot().director_schedule_hash==b.snapshot().director_schedule_hash,"public paired encounter schedules independent of account, movement, drafts and body contacts");
+      a.advance(dt,{{-1,0},false});b.advance(dt,{{-1,0},false});
+      require(a.save_state()==b.save_state(),"same public inputs preserve exact bodies, earned speed and world-distance delivery schedule");
     }
     require(steps>=60*20,"paired public trace reaches meaningful 20-second horizon");
   }

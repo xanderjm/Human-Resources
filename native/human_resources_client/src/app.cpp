@@ -79,6 +79,7 @@ struct App final {
   hr::gameplay::Game game;
   hr::product::SceneEffects scene_effects;
   hr::product::Controls controls;
+  hr::product::PromotionFlow promotion;
   hr::client::ResumeQa resume_qa;
   hr::input::ActionMap actions{bindings()};
   hr::platform::SdlInputDevices devices;
@@ -171,6 +172,8 @@ void change_screen(App& app, Screen screen) {
     app.controls.clear();
     app.pressed = Command::none;
     app.screen = screen;
+    if (screen == Screen::upgrade) app.promotion.enter();
+    else app.promotion.clear();
     app.ui_page = 0;
     app.upgrade_preview = 0;
     app.show_build = false;
@@ -185,6 +188,7 @@ void change_screen(App& app, Screen screen) {
   app.smoke_mask |= 1U << static_cast<unsigned>(screen);
 }
 void reset_run_feedback(App& app) {
+  app.promotion.clear();
   app.controls.clear();
   app.pressed = Command::none;
   app.pressed_contact = app.pressed_device = 0;
@@ -312,6 +316,7 @@ void finish(App& app) {
 }
 void dispatch(App& app, Command command) {
   haptics_policy(app);
+  if (command >= Command::pick0 && command <= Command::pick2 && app.screen != Screen::upgrade) return;
   const bool page_navigation = command == Command::page_next || command == Command::page_previous;
   if (app.save_error && !page_navigation && command != Command::retry_save && command != Command::back_up_reset && command != Command::back_up_bank)
     return;
@@ -432,15 +437,19 @@ void dispatch(App& app, Command command) {
     break;
   case Command::pick0:
   case Command::pick1:
-  case Command::pick2:
-    if (app.game.choose_upgrade(static_cast<std::size_t>(command) - static_cast<std::size_t>(Command::pick0))) {
+  case Command::pick2: {
+    const auto index = static_cast<std::size_t>(command) - static_cast<std::size_t>(Command::pick0);
+    const auto selected = app.game.snapshot().choices[index];
+    if (app.game.choose_upgrade(index)) {
       if (!checkpoint_game(app, true))
         break;
       app.audio.play(hr::feedback::Cue::upgrade);
       change_screen(app, Screen::run);
+      app.promotion.confirm(selected);
       app.haptics.play(hr::feedback::HapticCue::upgrade, SDL_GetTicks());
     }
     break;
+  }
   case Command::reroll:
     if (app.game.reroll())
       (void)checkpoint_game(app, true);
@@ -546,7 +555,9 @@ void rebuild(App& app) {
     app.focus_x = app.focus_y = 0;
     app.keyboard_focus = false;
   }
-  const hr::product::View view{app.screen, &app.game.snapshot(), &app.store.store(), app.metrics.viewport, app.metrics.safe_area, app.save_error, app.guest, app.game.revive_available(), app.store.store().credit_bonus_available(), app.controls.origin(), app.controls.position(), app.controls.dragging(), save_message, can_reset, app.pending_settlement ? &app.pending_receipt : nullptr, app.show_recipes, app.recipe_page, app.selected_theme, app.haptics.available(), app.restored_run, can_bank, text_scale, app.ui_page, app.show_build, app.upgrade_preview, app.show_privacy};
+  hr::product::View view{app.screen, &app.game.snapshot(), &app.store.store(), app.metrics.viewport, app.metrics.safe_area, app.save_error, app.guest, app.game.revive_available(), app.store.store().credit_bonus_available(), app.controls.origin(), app.controls.position(), app.controls.dragging(), save_message, can_reset, app.pending_settlement ? &app.pending_receipt : nullptr, app.show_recipes, app.recipe_page, app.selected_theme, app.haptics.available(), app.restored_run, can_bank, text_scale, app.ui_page, app.show_build, app.upgrade_preview, app.show_privacy};
+  view.promotion = app.promotion.frame(app.store.account().settings.reduced_motion || app.frame_preferences.reduced_motion);
+  view.damage_feedback = app.scene_effects.damage_feedback();
   app.ui = hr::product::interface(view);
   app.ui_page = app.ui.page;
   Command focused = Command::none;
@@ -930,6 +941,7 @@ SDL_AppResult SDL_AppEvent(void* state, SDL_Event* event) {
     app.audio.set_paused(app.save_error);
   }
   if (event->type == SDL_EVENT_WINDOW_FOCUS_LOST || event->type == SDL_EVENT_WILL_ENTER_BACKGROUND || event->type == SDL_EVENT_DID_ENTER_BACKGROUND || event->type == SDL_EVENT_TERMINATING) {
+    app.promotion.clear();
     app.audio_focused = false;
     app.audio.set_paused(true);
     if (app.screen == Screen::run) {
@@ -967,6 +979,8 @@ SDL_AppResult SDL_AppIterate(void* state) {
     SDL_Delay(20);
     return SDL_APP_CONTINUE;
   }
+  if (app.save_error) app.promotion.clear();
+  else app.promotion.advance(elapsed);
   for (const auto action : app.accessibility->drain_actions()) {
     const auto command = hr::product::accessibility_command(action, app.ui);
     if (command != Command::none) {
@@ -1010,9 +1024,10 @@ SDL_AppResult SDL_AppIterate(void* state) {
     semantic(app, movement);
   }
   const auto game_begin = SDL_GetTicksNS();
+  const double active_before = app.game.snapshot().stats.active_seconds;
   if (app.playthrough)
     smoke_input(app);
-  if (app.screen == Screen::run && !app.save_error) {
+  if (app.screen == Screen::run && !app.save_error && !app.promotion.holds_combat()) {
     const auto control = app.controls.sample();
     for (unsigned i = 0; i < (app.playthrough ? 12U : 1U); ++i)
       app.game.advance(app.qa ? app.qa_step : (app.playthrough ? 1.F / 60 : elapsed), control);
@@ -1040,14 +1055,13 @@ SDL_AppResult SDL_AppIterate(void* state) {
   const auto presentation_begin = SDL_GetTicksNS();
   app.scene_effects.update(app.game.snapshot());
   const auto feedback = app.scene_effects.feedback();
-  if (feedback.capture)
-    app.audio.play(hr::feedback::Cue::capture);
-  if (feedback.hit)
-    app.audio.play(hr::feedback::Cue::hull_hit);
-  if (feedback.laser)
-    app.audio.play(hr::feedback::Cue::laser);
-  if (feedback.warning)
-    app.audio.play(hr::feedback::Cue::warning);
+  const auto cues = hr::feedback::select_gameplay_cues({
+      .capture = feedback.capture, .laser = feedback.laser, .warning = feedback.warning,
+      .hit = feedback.hit, .sweep_capture = feedback.sweep_capture,
+      .harvest_overdrive = feedback.harvest_overdrive, .phase_dash = feedback.phase_dash});
+  for (std::size_t cue = 0; cue < cues.size(); ++cue)
+    if (cues[cue])
+      app.audio.play(static_cast<hr::feedback::Cue>(cue));
   haptics_policy(app);
   if (feedback.hull_hit)
     app.haptics.play(hr::feedback::HapticCue::hull_hit, SDL_GetTicks());
@@ -1076,7 +1090,7 @@ SDL_AppResult SDL_AppIterate(void* state) {
     app.render_h = h;
   }
   auto scene = hr::product::scene(app.game.snapshot(), static_cast<float>(app.render_w) / static_cast<float>(app.render_h), (app.store.account().settings.reduced_motion || app.frame_preferences.reduced_motion), app.screen == Screen::title || app.screen == Screen::hangar || app.screen == Screen::settings, &app.scene_effects, app.selected_theme);
-  scene.active_delta_seconds = app.screen == Screen::run && !app.save_error ? (app.qa ? app.qa_step : (app.playthrough ? .2F : elapsed)) : 0;
+  scene.active_delta_seconds = static_cast<float>(std::max(0., app.game.snapshot().stats.active_seconds - active_before));
   scene.screen_quads = app.ui.quads;
   const auto render_begin = SDL_GetTicksNS();
   const bool recording = app.capture && app.frames >= app.qa_capture_skip;

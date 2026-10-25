@@ -2,6 +2,10 @@
 #include <algorithm>
 #include <cmath>
 namespace human_resources::product {
+namespace {
+constexpr float stick_throw_points = 44.F;
+constexpr float stick_deadzone = .1F;
+}
 void Controls::clear() { *this = Controls{}; }
 void Controls::remove_device(const input::DeviceId device) {
   for (auto& source : held_) if (source.occupied && source.device == device) source = {};
@@ -18,7 +22,19 @@ void Controls::apply(const input::Action& a, bool movement_allowed, bool ui_clai
       if (a.phase == input::ActionPhase::started && !ui_claimed && !contact_) {
         contact_ = a.contact; device_ = a.device;
         origin_ = {a.position.x, a.position.y}; position_ = origin_;
-      } else if (contact_ == a.contact && device_ == a.device) position_ = {a.position.x, a.position.y};
+      } else if (contact_ == a.contact && device_ == a.device) {
+        position_ = {a.position.x, a.position.y};
+        const double x = static_cast<double>(position_.x) - origin_.x;
+        const double y = static_cast<double>(position_.y) - origin_.y;
+        const double distance = std::hypot(x, y);
+        if (distance > stick_throw_points) {
+          // Follow the thumb beyond full throw. Reversing a long sweep then
+          // takes the same travel as reversing a short one, without lifting.
+          const double scale = stick_throw_points / distance;
+          origin_ = {position_.x - static_cast<float>(x * scale),
+                     position_.y - static_cast<float>(y * scale)};
+        }
+      }
     }
     return;
   }
@@ -50,10 +66,14 @@ gameplay::Control Controls::sample() {
   gameplay::Control result{{values[1] - values[0] + values[4], values[2] - values[3] - values[5]}, dash_};
   dash_ = false;
   if (contact_) {
-    float x = (position_.x - origin_.x) / 44.F, y = (position_.y - origin_.y) / 44.F;
+    const float x = (position_.x - origin_.x) / stick_throw_points;
+    const float y = (position_.y - origin_.y) / stick_throw_points;
     const float magnitude = std::hypot(x,y);
-    if (magnitude > 1) { x /= magnitude; y /= magnitude; }
-    if (magnitude > .1F) { result.movement.x += x; result.movement.z -= y; }
+    if (magnitude > stick_deadzone) {
+      const float speed = std::min(1.F, (magnitude - stick_deadzone) / (1.F - stick_deadzone));
+      result.movement.x += x / magnitude * speed;
+      result.movement.z -= y / magnitude * speed;
+    }
   }
   return result;
 }

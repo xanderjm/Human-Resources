@@ -10,6 +10,61 @@ change together. Prior landscape captures are historical integration evidence.
 
 ## Current truth
 
+The latest working-source presentation pass additionally improves Farmland
+terrain/scroll cues and small-phone hostile trails/warning separation. Root and
+an independent critic accept native 320/390 comparisons and a bounded actual
+strafe sequence; the combined aggregate passes 41/41/static/diff. Game rules and
+ship size remain unchanged. These graphics follow the launched Current Preview
+and mobile package epoch below, which remain preserved separately. Narrow tall
+landmark framing and human pacing remain open quality concerns; three matched
+bot runs demonstrate useful evasive play but do not establish human fun.
+
+The current source is authority 6, fingerprint `6476198946152464138`, with outer
+account schema 2. It retains expanded flight, faster escalation, role-based enemy
+positioning, power-linked scrolling, starter Dash/counter-volley, close-sweep
+bursts and explicit damage feedback. Varied two-dimensional harvest groups and
+local civilian fleeing replace repeated mixed-species columns. The ship keeps
+its original apparent size while world objects remain at 0.75. Corrected compact
+upgrade UI has accepted native 320/390 pixels, full effect copy, separate hardware
+ranks/keyboard cues, and a 0.8-second nonblocking selection receipt. Root and the
+independent critic accepted these measured layouts after rejecting clipped small
+phone titles in the first render.
+
+Current aggregate passes 41/41 tests, static and diff checks. The first current
+aggregate exposed a revive fixture dying before the unchanged 90-second
+eligibility threshold; a naturally eligible seed replaces only that fixture,
+retaining quota/retry/cold-state assertions. Current native proof includes an
+eight-second fresh-run composition film and real un-beamed ground displacement.
+Genuine prior Game4/5 continuations retain exact-once protected account recovery
+under current portable AccountSession tests; their enclosing legacy accounts are
+explicitly synthetic fixtures. Current native account integration also passes
+interrupted-draft recovery, actual selection/reroll, natural death/banking,
+earned purchase, exact cold retention and protected-copy backup/reset through
+the real App/SDL storage path. Evidence-only accelerated callbacks and semantic
+contacts do not qualify human timing or OS/physical touch. Current iPhoneOS and
+Simulator Release builds plus Android both-ABI debug/release, lint, APK and
+unsigned AAB/package audits pass; current mobile execution remains unqualified.
+
+The latest normal user launch is the separately staged authority-6 Current
+Preview, which retains the original ship size and adds the accepted UI/groups.
+It uses fresh `current-preview-save`; all four prior app bundles/accounts remain
+preserved. Its strict ad-hoc signature and 101 runtime/104 bundle files pass,
+and host PID 82887 confirms normal LaunchServices delivery. The longer Game5
+boss/extents films and immutable Flight Preview host
+profile remain separate historical epochs. That profile completes 10,800 frames,
+with active interval p95/p99 16.706/16.957ms and CPU p95/max 4.488/5.449ms; four
+delivery hitches up to 327.50ms remain unclassified. Missing phone/store evidence
+does not block ongoing quality work. Exact bindings and limits are in
+`build/evidence/quality-native-integration/engagement-quality-epochs.json`,
+`current-account-stage-binding.json`, `current-preview-launch.json` and
+`build/evidence/game6-mobile/REPORT.json`. The later accepted scenery/threat
+epoch is under `build/evidence/quality-native-integration/threat-readability-native/`;
+it does not modify this user build or qualify current mobile execution.
+
+The qualification below describes the earlier authority-3 checkpoint; its
+packages, performance observations and 39-suite result do not qualify the new
+gameplay candidate. See the newest development-log entry for current owners.
+
 The installed application now contains the native portrait playable: movement,
 capture/combat, earned upgrades, death/results/retry, Hangar, protected saves,
 skeletal animation and procedural audio. The vehicle/runtime checkpoint passes

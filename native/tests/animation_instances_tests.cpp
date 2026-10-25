@@ -78,6 +78,16 @@ int main(int argc, char** argv) {
   const auto bytes = fixture();
   require(cache.load("fixture", bytes, std::span(&vertex, 1)), "valid companion accepted");
   require(!cache.load("fixture", bytes, std::span(&vertex, 1)), "duplicate asset rejected");
+  renderer::AnimationIntent escape{.speed = 1.4F, .enabled = true, .fleeing = true};
+  cache.begin_frame();
+  const auto* fleeing = cache.update(918, "fixture", escape, .1F);
+  require(fleeing && fleeing->clip == "run", "civilian escape intent uses the authored run without a military warning");
+  cache.end_frame();
+  const float escape_time = fleeing->clip_time;
+  cache.begin_frame();
+  fleeing = cache.update(918, "fixture", escape, .1F);
+  test_support::require_near(fleeing->clip_time - escape_time, .14F, 1e-5F, "escape run phase matches actual travel speed and authored stride");
+  cache.end_frame();
   renderer::AnimationIntent intent{.speed = 1, .enabled = true};
   cache.begin_frame();
   const auto* a = cache.update(17, "fixture", intent, .01F);
@@ -172,6 +182,38 @@ int main(int argc, char** argv) {
   cache.begin_frame();
   a = cache.update(17, "fixture", intent, 0);
   require(a && a->clip == "idle", "same ID and model after restart cannot inherit old capture/startle clip");
+  cache.end_frame();
+  intent = {.capturing = true, .enabled = true, .product_capture_transport = true, .capture_progress = .05F};
+  cache.begin_frame();
+  a = cache.update(901, "fixture", intent, 0);
+  require(a && a->clip == "beam_lift" && a->clip_time > .07F, "cold capture starts at its actual authored lift progress");
+  cache.end_frame();
+  for (float progress : {.25F, .45F, .60F, .70F, .9F}) {
+    intent.capture_progress = progress;
+    cache.begin_frame();
+    a = cache.update(901, "fixture", intent, 1.F / 60);
+    require(a, "fast actual capture progress advances the complete authored pose");
+    if (progress == .60F)
+      require(a->clip == "beam_lift" && a->clip_time > .9F, "fast sweep shows the full lift before intake despite under50ms elapsed");
+    if (progress == .9F)
+      require(a->clip == "beam_struggle" && a->clip_time > .7F, "remaining actual intake progress shows authored struggle");
+    cache.end_frame();
+  }
+  const auto capture_time = a->clip_time;
+  intent.capture_progress = .99F;
+  cache.begin_frame();
+  a = cache.update(901, "fixture", intent, 0);
+  require(a && a->clip_time == capture_time, "paused progress update cannot advance or seek an existing capture pose");
+  cache.end_frame();
+  intent.capturing = false;
+  intent.capture_progress = 0;
+  cache.begin_frame();
+  a = cache.update(901, "fixture", intent, .1F);
+  require(a && a->clip == "beam_release" && a->clip_time < .11F, "capture cancel retains normal active-time release clock");
+  cache.end_frame();
+  intent.capture_progress = std::numeric_limits<float>::quiet_NaN();
+  cache.begin_frame();
+  require(!cache.update(901, "fixture", intent, .1F), "invalid normalized capture timing rejects before posing");
   cache.end_frame();
   if (argc > 1) {
     renderer::AnimationInstances real;

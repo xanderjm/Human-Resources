@@ -4,6 +4,7 @@
 #include <cmath>
 #include <human_resources/product/controls.h>
 #include <human_resources/product/presentation.h>
+#include <human_resources/product/visibility.h>
 #include <numbers>
 namespace {
 namespace hr = human_resources;
@@ -23,6 +24,27 @@ float screen_y(const hr::presentation::StyleFrame& frame, hr::presentation::Vec3
   }
   require(std::isfinite(clip_y) && clip_w > 0, "finite front-facing projection");
   return (1 - clip_y / clip_w) * .5F;
+}
+void player_keeps_prior_apparent_size_while_world_shrinks() {
+  for (float aspect : {320.F / 568.F, 390.F / 844.F}) {
+    hr::gameplay::Snapshot run;
+    run.entities.push_back({.id = 45, .kind = hr::gameplay::EntityKind::cow, .position = {2, 4}});
+    const auto frame = hr::product::scene(run, aspect, true);
+    auto previous = frame;
+    hr::presentation::set_overhead_camera(previous, aspect, 17, {}, 27);
+    const auto width = [&](const auto& f, const auto& i) {
+      const auto bounds = hr::product::visibility_mesh_bounds(i.mesh);
+      require(bounds.has_value(), "actual source bounds exist for size comparison");
+      const auto region = hr::product::project_region(hr::presentation::multiply(f.camera, hr::presentation::model_matrix(i)), *bounds);
+      return region.right - region.left;
+    };
+    auto old_ship = instance(frame, "ufo-modular");
+    old_ship.scale = {1.12F, 1.12F, 1.12F};
+    require_near(width(frame, instance(frame, "ufo-modular")), width(previous, old_ship), 1e-5F, "player retains exact previous apparent source width");
+    require_near(width(frame, instance(frame, "cow")) / width(previous, instance(frame, "cow")), .75F, 1e-5F, "world characters retain requested three-quarter apparent width");
+    const auto title = hr::product::scene(run, aspect, true, true);
+    require_near(instance(title, "ufo-modular").scale.x, 1.7F / .75F, 1e-5F, "title ship preserves its independent prior visual role");
+  }
 }
 void semantic_up_projects_up(float aspect) {
   hr::gameplay::Game game;
@@ -142,8 +164,8 @@ void infantry_source_and_launch_contract(float aspect) {
       }
       if(part.attachment_parent_id==8001 && part.effect) ++flashes;
     }
-    require(parts==3 && flashes==(roles[k]==Role::shotgunner ? 2U : 1U),
-        "projectile and two trail pieces share one launch; flash uses actual muzzle count");
+    require(parts==4 && flashes==(roles[k]==Role::shotgunner ? 2U : 1U),
+        "projectile and three optical trail layers share one launch; flash uses actual muzzle count");
     run.presentation_events={};
     run.projectiles.front().age_seconds=.5F;
     const auto restored=hr::product::scene(run,aspect,true);
@@ -155,8 +177,83 @@ void infantry_source_and_launch_contract(float aspect) {
     }
   }
 }
+void small_phone_threat_cues_keep_weight_without_widening_projectiles() {
+  for(const auto phone:std::array<hr::ui::Rect,2>{{{0,0,320,568},{0,0,390,844}}}) {
+    hr::gameplay::Snapshot run;run.phase=hr::gameplay::Phase::active;run.stats.active_seconds=10;
+    run.entities.push_back({.id=91,.kind=hr::gameplay::EntityKind::soldier,.position={1,6},.warning_aim={0,0},.warning_seconds=.5F,.infantry_role=hr::gameplay::InfantryRole::rifleman});
+    const auto before=run;
+    const auto warning=hr::product::scene(run,phone.width/phone.height,true);
+    unsigned rails=0,underlays=0;
+    for(const auto& p:warning.instances)if(p.mesh=="cube") {
+      if(p.tint[0]==1 && p.tint[1]==.33F) {
+        ++rails;
+        require(p.scale.x*std::abs(warning.camera[0])*phone.width>=1.99F,"committed coral warning remains at least two logical pixels at320phone width");
+      }
+      if(p.tint[0]==.025F && p.tint[1]==.07F)++underlays;
+    }
+    require(rails>0 && rails==underlays,"each committed warning dash has one bounded contrast underlay");
+    require(run.player.x==before.player.x && run.entities[0].warning_aim.x==before.entities[0].warning_aim.x && run.entities[0].warning_seconds==before.entities[0].warning_seconds,"cue readability never changes player/committedaim/warning timers");
+    run.entities[0].warning_seconds=0;
+    const auto shot=hr::gameplay::infantry_shot(hr::gameplay::InfantryRole::rifleman,{1,6},{0,0});
+    run.projectiles.push_back({.id=92,.position=shot.origin,.velocity=shot.direction,.radius=.12F,.source_id=91,.infantry_role=hr::gameplay::InfantryRole::rifleman,.launch_position=shot.origin,.launch_height=shot.height,.rise_per_second=.5F,.kind=hr::gameplay::EnemyProjectileKind::infantry_round,.launch_direction=shot.direction});
+    const auto firing=hr::product::scene(run,phone.width/phone.height,true);
+    unsigned bodies=0,cores=0,halos=0;
+    for(const auto& p:firing.instances)if(p.launch_id==92) {
+      if(p.tint[1]==.50F) {++bodies;require(p.scale.x==.045F && p.scale.y==.045F,"physical rifle projectile width remains exact; only optical trail carries additional legibility");}
+      if(p.tint[1]==.94F) {++cores;require(p.scale.x*std::abs(firing.camera[0])*phone.width>=.99F,"optical tracer core remains at least one logical pixel on smallest phone");}
+      if(p.tint[0]==.025F && p.tint[1]==.07F)++halos;
+    }
+    require(bodies==1 && cores==1 && halos==1,"one unchanged projectile has one compact layered optical trail");
+  }
+}
+
+void boss_warning_exposes_every_committed_fan_lane() {
+  const auto pattern = hr::gameplay::cannon_geometry();
+  require(pattern.boss_projectiles == 3 && pattern.boss_spread_radians == .22F,
+      "shared cannon contract preserves the original three-shot22hundredths-radian fan");
+  for (bool reduced : {false, true})
+    for (unsigned heading = 0; heading < 12; ++heading) {
+      hr::gameplay::Snapshot run;
+      run.stats.active_seconds = 154;
+      run.player = {-2, 0};
+      const float yaw = static_cast<float>(heading) * 2 * std::numbers::pi_v<float> / 12;
+      run.entities.push_back({.id = 72, .kind = hr::gameplay::EntityKind::boss, .position = {1, 12}, .velocity = {std::sin(yaw), -std::cos(yaw)}, .warning_aim = {-2, 0}, .warning_seconds = .5F});
+      const auto shot = hr::gameplay::vehicle_cannon_shot(run.entities.front(), run.entities.front().warning_aim);
+      require(shot.valid, "rotated boss retains a valid actual source opening");
+      const float range = std::hypot(-2 - shot.origin.x, -shot.origin.z);
+      for (bool dodged : {false, true}) {
+        if (dodged)
+          run.player = {4, -2};
+        const auto frame = hr::product::scene(run, 390.F / 844.F, reduced);
+        std::vector<hr::presentation::Vec3> markers;
+        unsigned origins = 0;
+        for (const auto& part : frame.instances) {
+          if (part.mesh == "ring" && part.tint[0] == 1 && part.tint[1] == .28F)
+            ++origins;
+          if (part.mesh == "cube" && part.tint[0] == 1 && part.tint[1] == .28F)
+            markers.push_back(part.position);
+        }
+        require(origins == 3 && markers.size() == 12, "all three actual boss lanes have visible origin and four-point locked markers");
+        for (unsigned lane = 0; lane < pattern.boss_projectiles; ++lane) {
+          const float angle = (static_cast<float>(lane) - 1) * pattern.boss_spread_radians;
+          const hr::gameplay::Vec2 direction{shot.direction.x * std::cos(angle) - shot.direction.z * std::sin(angle),
+              shot.direction.x * std::sin(angle) + shot.direction.z * std::cos(angle)};
+          hr::presentation::Vec3 center{};
+          for (unsigned j = 0; j < 4; ++j) {
+            center.x += markers[lane * 4 + j].x * .25F;
+            center.z += markers[lane * 4 + j].z * .25F;
+          }
+          require_near(center.x, shot.origin.x + direction.x * range, 1e-5F, "committed fan marker matches exact authoritative projectile direction X after dodge");
+          require_near(center.z, 2.3F - shot.origin.z - direction.z * range, 1e-5F, "committed fan marker matches exact authoritative projectile direction Z after dodge");
+        }
+      }
+    }
+}
 } // namespace
 int main() {
+  player_keeps_prior_apparent_size_while_world_shrinks();
+  small_phone_threat_cues_keep_weight_without_widening_projectiles();
+  boss_warning_exposes_every_committed_fan_lane();
   for (float aspect : {9.F / 16.F, 16.F / 9.F}) {
     semantic_up_projects_up(aspect);
     ahead_and_targeting_share_projection(aspect);

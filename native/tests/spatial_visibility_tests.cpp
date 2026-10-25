@@ -48,42 +48,70 @@ std::array<float, 2> vertex_screen(const StyleFrame& f, const StyleInstance& i, 
 bool player_mesh(std::string_view id) {
   return id == "ufo-modular" || id == "ufo-laser" || id == "ufo-beam" || id == "ufo-shield" || id == "ufo-rim-lens" || id == "shield-shell";
 }
+std::array<float, 2> hud_vertical_limits(std::array<float, 2> size) {
+  static std::map<unsigned, std::array<float, 2>> cache;
+  const auto key = static_cast<unsigned>(size[0]);
+  if (cache.contains(key))
+    return cache.at(key);
+  progression_tests::MemoryBackend backend;
+  hr::progression::AccountStore store(backend);
+  (void)store.load();
+  hr::gameplay::Snapshot run;
+  run.phase = hr::gameplay::Phase::active;
+  const auto ui = hr::product::interface({.screen = hr::product::Screen::run, .run = &run, .store = &store, .viewport = {0, 0, size[0], size[1]}, .safe_area = {0, size[0] == 320 ? 20.F : 59.F, 0, size[0] == 320 ? 0.F : 34.F}});
+  const auto pause = std::find_if(ui.buttons.begin(), ui.buttons.end(), [](const auto& b) { return b.command == hr::product::Command::pause; });
+  const auto dash = std::find_if(ui.buttons.begin(), ui.buttons.end(), [](const auto& b) { return b.command == hr::product::Command::dash; });
+  require(pause != ui.buttons.end() && dash != ui.buttons.end(), "actual HUD and control boundaries exist");
+  return cache[key] = {pause->bounds.bottom() + 12, dash->bounds.y - 10};
+}
 void full_gear_has_real_phone_margins() {
-  require_near(hr::gameplay::tuning::field_half_width, 5.65F, .0001F, "approved player core boundary matches thirteen-metre band");
-  require_near(hr::gameplay::tuning::enemy_spawn_ahead, 12.6F, .0001F, "approved corrected-source readable ingress bound");
-  require_near(hr::gameplay::tuning::enemy_retire_behind, 11.F, .0001F, "approved readable retirement bound");
+  float worst_clearance = 10000, top_clearance = 10000, bottom_clearance = 10000;
+  require_near(hr::gameplay::tuning::field_half_width, 7.5F, .0001F, "expanded player boundary matches the widened playable corridor");
+  require_near(hr::gameplay::tuning::enemy_spawn_ahead, 26.F, .0001F, "authored horizon delivery starts at the portrait approach edge");
+  require_near(hr::gameplay::tuning::encounter_warning_entry_ahead, 15.F, .0001F, "first attack commitment waits for the fully readable field");
+  require_near(hr::gameplay::tuning::enemy_retire_behind, 23.F, .0001F, "retirement is distinct from the readable attack band");
   for (auto size : {std::array<float, 2>{320, 568}, {390, 844}})
     for (auto theme : {hr::presentation::SceneryTheme::farmland, hr::presentation::SceneryTheme::suburbia, hr::presentation::SceneryTheme::desert})
       for (float side : {-1.F, 1.F})
-        for (float along : {-6.F, 6.F})
-          for (float bank : {-7.2F, 7.2F})
-            for (unsigned phase = 0; phase < 32; ++phase) {
-              hr::gameplay::Snapshot run;
-              run.runner_distance = 100;
-              run.player = {side * 5.65F, 100 + along};
-              run.velocity = {bank, 2.2F};
-              run.stats.active_seconds = static_cast<double>(phase) * 7.3919827 / 32;
-              run.shield = run.maximum_shield = 100;
-              run.laser_count = 4;
-              run.beam_capacity = 6;
-              for (auto module : {hr::gameplay::Module::laser_array, hr::gameplay::Module::orbit_drones, hr::gameplay::Module::shield_generator, hr::gameplay::Module::beam_splitter, hr::gameplay::Module::tractor_lens, hr::gameplay::Module::emp_ring})
-                run.modules[static_cast<unsigned>(module)] = 3;
-              run.evolution_bits = (1U << static_cast<unsigned>(hr::gameplay::Evolution::great_vacuum)) | (1U << static_cast<unsigned>(hr::gameplay::Evolution::storm_drain));
-              for (unsigned i = 0; i < 4; ++i)
-                run.shots.push_back({run.player, {(i & 1) ? -5.65F : 5.65F, 100 + ((i & 2) ? -6.F : 6.F)}, .1F, false, hr::gameplay::ShotKind::laser, static_cast<std::uint8_t>(i)});
-              for (unsigned i = 0; i < 3; ++i)
-                run.shots.push_back({run.player, {(i & 1) ? -5.65F : 5.65F, 100 + ((i & 2) ? -6.F : 6.F)}, .1F, true, hr::gameplay::ShotKind::drone, static_cast<std::uint8_t>(i)});
-              const auto frame = hr::product::scene(run, size[0] / size[1], false, false, nullptr, theme);
-              for (const auto& instance : frame.instances)
-                if (player_mesh(instance.mesh))
-                  for (auto vertex : mesh(instance.mesh).vertices) {
-                    const auto p = vertex_screen(frame, instance, vertex, size[0], size[1]);
-                    require(p[0] >= 6 && p[0] <= size[0] - 6, "actual banked/aimed maximum gear retains six real phone pixels at both sides");
-                    require(p[1] >= 150 && p[1] < size[1] - 160, "maximum gear avoids top HUD and bottom controls at every dodge extreme");
-                  }
-            }
+        for (float along : {-17.F, 16.5F})
+          for (float bank : {-12.F, 12.F})
+            for (float vertical : {-12.F, 12.F})
+              for (unsigned phase = 0; phase < 32; ++phase) {
+                hr::gameplay::Snapshot run;
+                run.runner_distance = 100;
+                run.player = {side * 7.5F, 100 + along};
+                run.velocity = {bank, vertical};
+                run.stats.active_seconds = static_cast<double>(phase) * 7.3919827 / 32;
+                run.shield = run.maximum_shield = 100;
+                run.laser_count = 4;
+                run.beam_capacity = 6;
+                for (auto module : {hr::gameplay::Module::laser_array, hr::gameplay::Module::orbit_drones, hr::gameplay::Module::shield_generator, hr::gameplay::Module::beam_splitter, hr::gameplay::Module::tractor_lens, hr::gameplay::Module::emp_ring})
+                  run.modules[static_cast<unsigned>(module)] = 3;
+                run.evolution_bits = (1U << static_cast<unsigned>(hr::gameplay::Evolution::great_vacuum)) | (1U << static_cast<unsigned>(hr::gameplay::Evolution::storm_drain));
+                for (unsigned i = 0; i < 4; ++i)
+                  run.shots.push_back({run.player, {(i & 1) ? -5.65F : 5.65F, 100 + ((i & 2) ? -6.F : 6.F)}, .1F, false, hr::gameplay::ShotKind::laser, static_cast<std::uint8_t>(i)});
+                for (unsigned i = 0; i < 3; ++i)
+                  run.shots.push_back({run.player, {(i & 1) ? -5.65F : 5.65F, 100 + ((i & 2) ? -6.F : 6.F)}, .1F, true, hr::gameplay::ShotKind::drone, static_cast<std::uint8_t>(i)});
+                const auto frame = hr::product::scene(run, size[0] / size[1], false, false, nullptr, theme);
+                for (const auto& instance : frame.instances)
+                  if (player_mesh(instance.mesh))
+                    for (auto vertex : mesh(instance.mesh).vertices) {
+                      const auto p = vertex_screen(frame, instance, vertex, size[0], size[1]);
+                      require(p[0] >= 6 && p[0] <= size[0] - 6, "actual banked/aimed maximum gear retains six real phone pixels at both sides");
+                      const auto limits = hud_vertical_limits(size);
+                      const float clearance = std::min(p[1] - limits[0], limits[1] - p[1]);
+                      top_clearance = std::min(top_clearance, p[1] - limits[0]);
+                      bottom_clearance = std::min(bottom_clearance, limits[1] - p[1]);
+                      if (clearance < worst_clearance) {
+                        worst_clearance = clearance;
+                        std::cout << "PLAYER_MARGIN phone=" << size[0] << " along=" << along << " mesh=" << instance.mesh << " y=" << p[1] << " required=" << limits[0] << ".." << limits[1] << " clearance=" << clearance << '\n';
+                      }
+                    }
+              }
+  std::cout << "PLAYER_EXTREMES top_clearance=" << top_clearance << " bottom_clearance=" << bottom_clearance << "\n";
+  require(worst_clearance >= 0, "complete maximum gear clears the real HUD by twelve pixels and control by ten");
 }
-void threat_ingress_and_retirement_clear_real_controls() {
+void threat_attack_entry_and_retirement_clear_real_controls() {
   progression_tests::MemoryBackend backend;
   hr::progression::AccountStore store(backend);
   (void)store.load();
@@ -98,15 +126,15 @@ void threat_ingress_and_retirement_clear_real_controls() {
     const auto phase = std::find_if(ui.buttons.begin(), ui.buttons.end(), [](const auto& b) { return b.command == hr::product::Command::dash; });
     require(pause != ui.buttons.end() && phase != ui.buttons.end(), "real run controls define protected HUD boundaries");
     for (auto theme : {hr::presentation::SceneryTheme::farmland, hr::presentation::SceneryTheme::suburbia, hr::presentation::SceneryTheme::desert})
-      for (float station : {hr::gameplay::tuning::enemy_spawn_ahead, -hr::gameplay::tuning::enemy_retire_behind})
+      for (float station : {hr::gameplay::tuning::encounter_warning_entry_ahead, -hr::gameplay::tuning::encounter_warning_retire_behind})
         for (float side : {-1.F, 1.F})
-          for (float player_z : {-6.F, 6.F})
+          for (float player_z : {-17.F, 16.5F})
             for (unsigned heading = 0; heading < 16; ++heading) {
               const float angle = static_cast<float>(heading) * 6.2831853F / 16;
-              run.player = {-side * 5.65F, 100 + player_z};
-              run.entities = {{.id = 1, .kind = hr::gameplay::EntityKind::boss, .position = {side * 5.65F, 100 + station}, .velocity = {std::sin(angle), -std::cos(angle)}, .warning_aim = run.player, .warning_seconds = 1}};
+              run.player = {-side * 7.5F, 100 + player_z};
+              run.entities = {{.id = 1, .kind = hr::gameplay::EntityKind::boss, .position = {side * 7.5F, 100 + station}, .velocity = {std::sin(angle), -std::cos(angle)}, .warning_aim = run.player, .warning_seconds = 1}};
               const auto muzzle=hr::gameplay::vehicle_cannon_shot(run.entities.front(),run.player);
-              require(muzzle.valid,"actual source cannon reaches legal player band at ingress/retirement");
+              require(muzzle.valid, "actual source cannon reaches legal player band at first attack/retirement");
               run.projectiles = {{.id = 2, .position = muzzle.origin, .velocity = muzzle.direction, .radius = .4F,
                   .source_id=1,.launch_position=muzzle.origin,.launch_height=muzzle.height,
                   .kind=hr::gameplay::EnemyProjectileKind::boss_missile,.launch_direction=muzzle.direction}};
@@ -119,10 +147,52 @@ void threat_ingress_and_retirement_clear_real_controls() {
                       std::cerr<<"threat-phone-clearance mesh="<<instance.mesh<<" phone="<<size[0]<<'x'<<size[1]
                           <<" station="<<station<<" side="<<side<<" heading="<<heading<<" vertexY="<<p[1]
                           <<" required="<<pause->bounds.bottom()+12<<".."<<phase->bounds.y-10<<'\n';
-                    require(p[1] >= pause->bounds.bottom() + 12, "actual boss and missile ingress clears the top HUD by twelve phone pixels");
+                    require(p[1] >= pause->bounds.bottom() + 12, "actual boss and missile first attack clears the top HUD by twelve phone pixels");
                     require(p[1] <= phase->bounds.y - 10, "actual boss and missile retirement clears the bottom control by ten phone pixels");
                   }
             }
+  }
+}
+void horizon_approach_is_continuous_before_attacks() {
+  progression_tests::MemoryBackend backend;
+  hr::progression::AccountStore store(backend);
+  (void)store.load();
+  for (auto size : {std::array<float, 2>{320, 568}, {390, 844}}) {
+    hr::gameplay::Snapshot run;
+    run.phase = hr::gameplay::Phase::active;
+    run.runner_distance = 100;
+    run.stats.active_seconds = 30;
+    const auto ui = hr::product::interface({.screen = hr::product::Screen::run, .run = &run, .store = &store, .viewport = {0, 0, size[0], size[1]}, .safe_area = {0, size[0] == 320 ? 20.F : 59.F, 0, size[0] == 320 ? 0.F : 34.F}});
+    const auto pause = std::find_if(ui.buttons.begin(), ui.buttons.end(), [](const auto& b) { return b.command == hr::product::Command::pause; });
+    require(pause != ui.buttons.end(), "actual run HUD defines the approach reference");
+    float previous_center = -10000;
+    for (float station : {hr::gameplay::tuning::enemy_spawn_ahead, 21.F, 17.F, hr::gameplay::tuning::encounter_warning_entry_ahead}) {
+      run.entities = {{.id = 1, .kind = hr::gameplay::EntityKind::boss, .position = {0, 100 + station}, .velocity = {0, -1}}};
+      const auto frame = hr::product::scene(run, size[0] / size[1], false, false);
+      float top = 10000, bottom = -10000;
+      for (const auto& instance : frame.instances)
+        if (instance.mesh == "tank-hull" || instance.mesh == "tank-turret")
+          for (auto vertex : mesh(instance.mesh).vertices) {
+            const auto point = vertex_screen(frame, instance, vertex, size[0], size[1]);
+            top = std::min(top, point[1]);
+            bottom = std::max(bottom, point[1]);
+          }
+      require(top < bottom, "actual source boss geometry exists throughout the approach");
+      const float center = (top + bottom) * .5F;
+      require(center > previous_center + 1, "source geometry approaches monotonically through the portrait horizon");
+      previous_center = center;
+      const StyleInstance ground{.position = {0, 0, 2.3F - station}};
+      const auto root = vertex_screen(frame, ground, {}, size[0], size[1]);
+      if (station == hr::gameplay::tuning::enemy_spawn_ahead) {
+        require(top < pause->bounds.bottom(), "approach begins above the playable HUD boundary instead of popping into midfield");
+        require(root[1] < size[1] * .15F, "the real ground projection places horizon delivery in the upper fifteen percent");
+      } else if (station == hr::gameplay::tuning::encounter_warning_entry_ahead) {
+        require(top >= pause->bounds.bottom() + 12, "entire source boss becomes readable before any attack may commit");
+        require(root[1] > pause->bounds.bottom() + 12, "actual first-commit ground projection is inside the readable field");
+      }
+      std::cout << "APPROACH phone=" << size[0] << 'x' << size[1] << " ahead=" << station
+                << " bodyY=" << top << ".." << bottom << " groundY=" << root[1] << '\n';
+    }
   }
 }
 void critical_geometry_controls_every_landmark() {
@@ -195,7 +265,8 @@ int main(int argc, char** argv) {
   require(argc == 2, "cooked fixture root is explicit");
   content = argv[1];
   full_gear_has_real_phone_margins();
-  threat_ingress_and_retirement_clear_real_controls();
+  threat_attack_entry_and_retirement_clear_real_controls();
+  horizon_approach_is_continuous_before_attacks();
   critical_geometry_controls_every_landmark();
   fading_is_continuous_and_requires_real_geometry();
   shotgun_outer_lane_has_independent_protection();

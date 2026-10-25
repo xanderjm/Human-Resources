@@ -45,7 +45,16 @@ animation::Matrix rest_matrix(const animation::Transform& t) {
       t.translation[0], t.translation[1], t.translation[2], 1};
 }
 std::string_view locomotion(const AnimationIntent& i) {
-  return i.speed > .04F ? (i.warning ? "run" : "walk") : "idle";
+  return i.speed > .04F ? (i.warning || i.fleeing ? "run" : "walk") : "idle";
+}
+std::string_view capture_clip(float progress) {
+  return progress < presentation::capture_lift_fraction ? "beam_lift" : "beam_struggle";
+}
+float capture_clip_time(const animation::Asset& asset, float progress) {
+  const auto name = capture_clip(progress);
+  const float lift = presentation::capture_lift_fraction;
+  const float fraction = progress < lift ? progress / lift : (progress - lift) / (1 - lift);
+  return fraction * asset.clips()[asset.find_clip(name)].seconds;
 }
 } // namespace
 struct AnimationInstances::State final {
@@ -147,7 +156,8 @@ void AnimationInstances::begin_frame() {
   }
 }
 const AnimatedActor* AnimationInstances::update(std::uint64_t id, std::string_view name, const AnimationIntent& intent, float dt) {
-  if (id == 0 || !std::isfinite(dt) || dt < 0 || dt > .25F || !std::isfinite(intent.speed) || intent.speed < 0 || intent.speed > 20)
+  if (id == 0 || !std::isfinite(dt) || dt < 0 || dt > .25F || !std::isfinite(intent.speed) || intent.speed < 0 || intent.speed > 20 ||
+      !std::isfinite(intent.capture_progress) || intent.capture_progress < 0 || intent.capture_progress > 1)
     return nullptr;
   const auto source = state_->assets.find(name);
   if (source == state_->assets.end())
@@ -169,8 +179,9 @@ const AnimatedActor* AnimationInstances::update(std::uint64_t id, std::string_vi
     auto& a = found->second;
     a.source = &source->second;
     const bool firing = a.source->has_weapon && (intent.fire_sequence > 0 || intent.recovering) && intent.fire_age_seconds >= 0 && intent.fire_age_seconds < .6F;
-    const auto initial = intent.capturing ? "beam_lift" : firing ? "fire" : intent.warning ? (a.source->has_weapon ? "aim_enter" : "startle")
-                                                                         : locomotion(intent);
+    const auto initial = intent.capturing ? (intent.product_capture_transport ? capture_clip(intent.capture_progress) : "beam_lift") : firing       ? "fire"
+                                                                                                                                   : intent.warning ? (a.source->has_weapon ? "aim_enter" : "startle")
+                                                                                                                                                    : locomotion(intent);
     if (!a.player.bind(a.source->asset, initial)) {
       state_->actors.erase(found);
       return nullptr;
@@ -190,6 +201,8 @@ const AnimatedActor* AnimationInstances::update(std::uint64_t id, std::string_vi
     a.output.weapon_delta = identity;
     a.output.launch_weapon_delta = identity;
     if (firing && !intent.capturing && !a.player.seek(intent.fire_age_seconds)) return nullptr;
+    if (intent.capturing && intent.product_capture_transport && !a.player.seek(capture_clip_time(a.source->asset, intent.capture_progress)))
+      return nullptr;
   }
   auto& a = found->second;
   if (a.seen)
@@ -202,7 +215,13 @@ const AnimatedActor* AnimationInstances::update(std::uint64_t id, std::string_vi
     float fade = .18F;
     bool new_fire = false;
     if (intent.capturing) {
-      if (!a.previous.capturing) {
+      if (intent.product_capture_transport) {
+        // Run captures can finish in a fraction of the authored clip's normal
+        // duration. Fit its full lift/struggle to real progress, while the pose
+        // crossfade and canonical product root remain on active time.
+        next = capture_clip(intent.capture_progress);
+        fade = .06F;
+      } else if (!a.previous.capturing) {
         next = "beam_lift";
         fade = .08F;
       } else if (current == "beam_lift" && a.player.finished()) {
@@ -238,7 +257,10 @@ const AnimatedActor* AnimationInstances::update(std::uint64_t id, std::string_vi
       return nullptr;
     if (new_fire && !a.player.seek(intent.fire_age_seconds)) return nullptr;
     float rate = 1;
-    if (next == "walk" || next == "run") {
+    if (intent.capturing && intent.product_capture_transport) {
+      const float target = capture_clip_time(a.source->asset, intent.capture_progress);
+      rate = std::clamp((target - a.player.time()) / dt, 0.F, 256.F);
+    } else if (next == "walk" || next == "run") {
       const auto& clip = a.source->asset.clips()[a.source->asset.find_clip(next)];
       if (clip.stride_m <= 0 || clip.seconds <= 0)
         return nullptr;

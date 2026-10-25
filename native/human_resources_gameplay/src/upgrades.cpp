@@ -144,7 +144,7 @@ UpgradeChoice Game::State::make_choice(bool hardware, std::size_t index, std::si
       break;
     case Research::fire_rate:
       label = "Fire rate bonus";
-      unit = "% of base rate; overall cap " + number(tuning::firing_rate_maximum_base_multiplier * 100) + "% of base";
+      unit = "% of base rate; upgrade cap " + number(tuning::firing_rate_maximum_base_multiplier * 100) + "% of base, before temporary Overdrive";
       break;
     case Research::emergency_repairs:
       choice.before = view.hull;
@@ -292,7 +292,7 @@ UpgradeChoice Game::State::make_choice(bool hardware, std::size_t index, std::si
     }
     break;
   case Module::phase_drive:
-    choice.before = before == 0 ? 0 : tuning::dash_invulnerability + (before - 1) * tuning::dash_invulnerability_step;
+    choice.before = before == 0 ? tuning::starter_dash_invulnerability : tuning::dash_invulnerability + (before - 1) * tuning::dash_invulnerability_step;
     choice.after = tuning::dash_invulnerability + (after - 1) * tuning::dash_invulnerability_step;
     label = "Dash invulnerability";
     unit = "s";

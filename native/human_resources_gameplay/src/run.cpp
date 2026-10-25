@@ -2,6 +2,14 @@
 
 namespace human_resources::gameplay {
 using namespace detail;
+namespace {
+float forward_speed(const Snapshot& view) {
+  return tuning::forward_scroll_metres_per_second + std::min(
+      tuning::scroll_maximum_metres_per_second - tuning::forward_scroll_metres_per_second,
+      static_cast<float>(view.stats.captures) * tuning::scroll_per_capture_metres_per_second +
+          static_cast<float>(view.stats.level - 1) * tuning::scroll_per_level_metres_per_second);
+}
+} // namespace
 
 std::string_view module_id(Module module) {
   const auto index = static_cast<std::size_t>(module);
@@ -46,8 +54,8 @@ void Game::start(const RunSetup& setup) {
   s.view.shield = tuning::base_shield + s.permanent(2);
   s.next_boss = tuning::director_boss_first_second;
   s.time_since_hit = tuning::base_shield_recharge_delay_seconds;
-  for (unsigned i = 0; i < tuning::initial_biological_count; ++i) {
-    s.spawn(static_cast<EntityKind>(i % 4), true);
+  for (unsigned i = 0; i < tuning::initial_biological_count / tuning::encounter_cohort_size; ++i) {
+    s.spawn_cohort(true, i);
   }
   s.sync();
 }
@@ -172,6 +180,7 @@ Actor* Game::State::actor(std::uint32_t id) {
   return found == actors.end() ? nullptr : &*found;
 }
 void Game::State::sync() {
+  view.forward_speed = forward_speed(view);
   view.drone_burst_seconds = drone_burst;
   view.capture_burst_seconds = capture_burst;
   view.movement_burst_seconds = movement_burst;
@@ -188,7 +197,10 @@ void Game::State::sync() {
   view.entities.clear();
   for (const auto& a : actors) {
     if (!a.removed) {
-      view.entities.push_back(a.view);
+      auto entity = a.view;
+      if (military(entity.kind) && entity.kind != EntityKind::soldier && length_squared(a.locomotion_velocity) > .0001F)
+        entity.body_heading = std::atan2(a.locomotion_velocity.x, -a.locomotion_velocity.z);
+      view.entities.push_back(entity);
     }
   }
   view.projectiles.clear();
@@ -203,7 +215,8 @@ void Game::State::sync() {
 }
 void Game::State::step(float dt, Control control) {
   view.stats.active_seconds += dt;
-  view.runner_distance += tuning::forward_scroll_metres_per_second * dt;
+  view.forward_speed = forward_speed(view);
+  view.runner_distance += view.forward_speed * dt;
   view.xp += dt * tuning::survival_xp_per_second;
   advance_timers(dt);
   move(dt, control);
@@ -226,6 +239,9 @@ void Game::State::step(float dt, Control control) {
   check_level();
 }
 void Game::State::advance_timers(float dt) {
+  view.harvest_chain_seconds = std::max(0.F, view.harvest_chain_seconds - dt);
+  view.harvest_overdrive_seconds = std::max(0.F, view.harvest_overdrive_seconds - dt);
+  if (view.harvest_chain_seconds == 0) view.harvest_chain = 0;
   for (float* timer : {&view.dash_cooldown_seconds, &view.invulnerability_seconds, &capture_burst, &vehicle_burst,
            &movement_burst, &drone_burst, &vehicle_capture_cooldown, &disable_cooldown, &intercept_cooldown}) {
     *timer = std::max(0.0F, *timer - dt);
@@ -258,22 +274,27 @@ void Game::State::move(float dt, Control control) {
   const float penalty = view.beams.empty() ? 0 : std::max(0.0F, tuning::base_capture_movement_penalty_percent / 100 - thrusters * tuning::capture_penalty_step);
   view.movement_speed = tuning::base_movement_metres_per_second * movement * (1 - penalty);
   desired = scaled(desired, view.movement_speed);
-  desired.z += tuning::forward_scroll_metres_per_second;
+  desired.z += view.forward_speed;
   const float max_change = tuning::steering_acceleration * dt;
   view.velocity.x += std::clamp(desired.x - view.velocity.x, -max_change, max_change);
   view.velocity.z += std::clamp(desired.z - view.velocity.z, -max_change, max_change);
   const Vec2 previous = view.player;
   view.player = add(view.player, scaled(view.velocity, dt));
-  if (control.dash && rank(Module::phase_drive) > 0 && view.dash_cooldown_seconds <= 0) {
-    const float rank_offset = static_cast<float>(rank(Module::phase_drive) - 1);
-    view.player = add(view.player, scaled(last_direction, tuning::dash_distance));
+  const auto phase_rank = rank(Module::phase_drive);
+  const bool dashed = control.dash && view.dash_cooldown_seconds <= 0;
+  if (dashed) {
+    const float rank_offset = phase_rank > 0 ? static_cast<float>(phase_rank - 1) : 0;
+    const float distance = phase_rank > 0 ? tuning::dash_distance : tuning::starter_dash_distance;
+    view.player = add(view.player, scaled(last_direction, distance));
     present(PresentationEventKind::phase_dash, previous);
-    view.dash_cooldown_seconds = tuning::dash_cooldown - rank_offset * tuning::dash_cooldown_step;
-    view.invulnerability_seconds = tuning::dash_invulnerability + rank_offset * tuning::dash_invulnerability_step;
+    view.dash_cooldown_seconds = phase_rank > 0 ? tuning::dash_cooldown - rank_offset * tuning::dash_cooldown_step : tuning::starter_dash_cooldown;
+    const float dash_protection = phase_rank > 0 ? tuning::dash_invulnerability + rank_offset * tuning::dash_invulnerability_step : tuning::starter_dash_invulnerability;
+    view.invulnerability_seconds = std::max(view.invulnerability_seconds, dash_protection);
+    laser_clock = 0; // Counter-volley uses the existing automatic target/weapon rules.
   }
   view.player.x = std::clamp(view.player.x, -tuning::field_half_width, tuning::field_half_width);
   view.player.z = std::clamp(view.player.z, view.runner_distance - tuning::player_backward_allowance, view.runner_distance + tuning::player_forward_allowance);
-  if (!control.dash) {
+  if (!dashed) {
     view.velocity = {(view.player.x - previous.x) / dt, (view.player.z - previous.z) / dt};
   }
 }

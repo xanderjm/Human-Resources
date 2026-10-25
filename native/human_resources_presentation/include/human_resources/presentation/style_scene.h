@@ -20,6 +20,8 @@ struct StyleInstance final {
   float texture_repeat{1};
   bool effect{};
   bool shield_rim{}; // Unit sphere: view-dependent alpha, front surface only.
+  bool polished_hull{};   // Restrained enamel response; authored mint emission survives.
+  bool damage_reactive{}; // Actual player hull/modules only; not drones or afterimages.
   bool casts_shadow{true};
   float texture_detail{1};
   std::uint64_t stable_id{};
@@ -57,6 +59,7 @@ struct StyleFrame final {
   Matrix camera;
   Matrix light;
   float ring_angle{};
+  float damage_flash{}; // Signed committed feedback: positive hull, negative shield.
   float active_delta_seconds{};
   unsigned location{};
   bool show_overlay{true};

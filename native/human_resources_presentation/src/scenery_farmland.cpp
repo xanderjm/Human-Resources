@@ -103,6 +103,42 @@ void farmland_understory(Builder& b, float side, double station, float center) {
     b.prop(part.mesh, x, s, part.scale, yaw);
   }
 }
+void meadow_verge(Builder& b, float side, double station) {
+  // Tonal ground, never a solid obstacle: broad, unequal meadow margins bring
+  // depth into the wide clearing without moving roots or blocking a dodge.
+  // Every layer samples the same world UV as the base meadow, so no painted
+  // feature swims or resets when a sector or the floating origin changes.
+  constexpr std::array<std::array<float, 2>, 8> outline{{
+      {{-3.1F, -6.5F}}, {{-.7F, -9.F}}, {{3.4F, -6.4F}}, {{4.8F, -1.3F}},
+      {{3.6F, 5.2F}}, {{.5F, 8.7F}}, {{-3.8F, 5.4F}}, {{-4.6F, .7F}}}};
+  constexpr std::array<Color, 3> colors{{{{.97F, .99F, .96F, 1}},
+      {{.93F, .98F, .91F, 1}}, {{.89F, .97F, .86F, 1}}}};
+  const auto left = b.generation.scene.surfaces.front().vertices[0];
+  const auto right = b.generation.scene.surfaces.front().vertices[1];
+  const float extra = b.query.play_clear_half_width - 6.55F;
+  const auto widened_x = [extra](float x) { return x + extra * std::clamp(x / 6.55F, -1.F, 1.F); };
+  const float ground_left = widened_x(left.position.x), ground_right = widened_x(right.position.x);
+  for (unsigned layer = 0; layer < colors.size(); ++layer) {
+    const float scale = 1.F - static_cast<float>(layer) * .13F;
+    const float height = -.033F + static_cast<float>(layer) * .002F;
+    auto& surface = b.surface("ground-grass", colors[layer], .36F);
+    const auto vertex = [&](float x, double along) {
+      // The base is one wide quad. Its UV interpolates linearly after the
+      // clearing map, unlike the map's nonlinear interior vertex placement.
+      const float u = std::lerp(left.uv[0], right.uv[0], (widened_x(x) - ground_left) / (ground_right - ground_left));
+      return SurfaceVertex{{x, height, b.local(along)}, {0, 1, 0},
+          {u, static_cast<float>((along - b.uv_origin) / 6)}};
+    };
+    const float center_x = side * 9.2F;
+    const auto center = vertex(center_x, station);
+    for (unsigned i = 0; i < outline.size(); ++i) {
+      const auto a = outline[i], c = outline[(i + 1) % outline.size()];
+      surface.vertices.push_back(center);
+      surface.vertices.push_back(vertex(center_x + a[0] * scale, station + a[1] * scale));
+      surface.vertices.push_back(vertex(center_x + c[0] * scale, station + c[1] * scale));
+    }
+  }
+}
 void grove(Builder& b, const TreeMass& mass, double s, std::uint64_t id) {
   const auto& profile = profiles[static_cast<unsigned>(mass.bank)];
   const float side = mass.side;
@@ -142,6 +178,8 @@ void grove(Builder& b, const TreeMass& mass, double s, std::uint64_t id) {
 void farmland_sector(Builder& b) {
   const double center = static_cast<double>(b.sector) * 64;
   const unsigned variant = composition(b.query.seed, b.sector);
+  meadow_verge(b, -1, center + (variant == 0 ? 1 : variant == 1 ? -15 : 14));
+  meadow_verge(b, 1, center + (variant == 0 ? -15 : variant == 1 ? 12 : -5));
   const float barn_station = variant == 0 ? 19.F : -11.F;
   const float silo_station = variant == 0 ? -16.F : variant == 1 ? 18.F
                                                                  : -18.F;

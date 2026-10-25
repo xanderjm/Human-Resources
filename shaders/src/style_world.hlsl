@@ -11,7 +11,7 @@ struct Output {
   float2 uv : TEXCOORD1;
   float4 color : TEXCOORD2;
   float4 light : TEXCOORD3;
-  float2 flags : TEXCOORD4;
+  float4 flags : TEXCOORD4;
   float4 texture_style : TEXCOORD5;
   float3 to_camera : TEXCOORD6;
 };
@@ -63,7 +63,9 @@ Output vertex_main(Input i, uint instance_id : SV_InstanceID) {
   o.to_camera=normalize(-camera[2].xyz);
   o.texture_style=data.texture_style;
   // Keep imported material emission separate from the procedural palette.
-  o.flags=float2(i.flags.x,data.params.y);
+  // Response0=painted world,1=enamel,2=actual player enamel. Only response2
+  // consumes the committed player damage pulse; orbit drones never fake a hit.
+  o.flags=float4(i.flags.x,data.params.y,data.params.x,data.params.x>1.5 ? animation.y : 0);
   return o;
 }
 Texture2D<float4> albedo : register(t0, space2);
@@ -87,6 +89,15 @@ float4 fragment_main(Output i) : SV_Target0 {
   }
   float3 normal=normalize(i.normal);
   float3 sun=normalize(float3(27,43,-25));
+  // The hero's authored cobalt enamel needs broad readable planes at phone
+  // size. Compress only blue-paint values; retain its UV seams, colour and the
+  // separate mint lamps. All other world materials keep their existing response.
+  float enamel=0;
+  if(i.flags.z>.5) {
+    enamel=smoothstep(.015,.07,surface.b-max(surface.r,surface.g))*(1-saturate(i.flags.x));
+    float value=max(.001,dot(surface.rgb,float3(.2126,.7152,.0722)));
+    surface.rgb=lerp(surface.rgb,surface.rgb*(clamp(value,.055,.21)/value),enamel*.4);
+  }
   float diffuse=max(0,dot(normal,sun));
   float3 projected=i.light.xyz/i.light.w;
   float2 uv=projected.xy*float2(.5,-.5)+.5;
@@ -100,6 +111,16 @@ float4 fragment_main(Output i) : SV_Target0 {
   // Broad warm key, cool ambient and retained painted values.
   float3 illumination=float3(.39,.43,.52)+float3(.67,.61,.49)*diffuse*(1-shadow*.78);
   float3 rgb=surface.rgb*lerp(illumination,float3(1.55,1.55,1.55),saturate(i.flags.x));
+  if(i.flags.z>.5) {
+    float3 eye=normalize(i.to_camera);
+    float specular=pow(saturate(dot(normal,normalize(sun+eye))),24)*(1-shadow*.78);
+    float edge=pow(1-saturate(abs(dot(normal,eye))),3);
+    rgb+=enamel*(float3(.14,.19,.23)*specular+float3(.015,.035,.055)*edge);
+  }
+  if(abs(i.flags.w)>0) {
+    float3 hit=i.flags.w>0 ? float3(.95,.18,.055) : float3(.30,.85,1);
+    rgb=lerp(rgb,hit,saturate(abs(i.flags.w))*.8);
+  }
   rgb=pow(max(rgb,0),1./2.2);
   return float4(saturate(rgb),surface.a);
 }

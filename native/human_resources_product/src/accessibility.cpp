@@ -2,8 +2,10 @@
 
 #include <algorithm>
 #include <array>
+#include <cmath>
 #include <human_resources/gameplay/tuning.h>
 #include <product_glyphs.generated.h>
+#include "upgrade_presentation.h"
 
 namespace human_resources::product {
 namespace {
@@ -89,6 +91,10 @@ void describe_control(ui::AccessibilityNode& node, const View& view, const Butto
   case Command::pause:
     node.label = "Pause run";
     break;
+  case Command::dash:
+    node.label = "Dash";
+    node.value = view.run->dash_cooldown_seconds <= 0 ? "Ready. Press Space, controller east button or tap Dash for a protected burst. Counterfire at targets in range." : "Recharging. " + std::to_string(static_cast<unsigned>(std::ceil(view.run->dash_cooldown_seconds))) + " seconds remaining.";
+    break;
   case Command::audio:
     node.role = ui::SemanticRole::toggle;
     node.label = "Sound effects";
@@ -112,7 +118,7 @@ void describe_control(ui::AccessibilityNode& node, const View& view, const Butto
   case Command::pick2: {
     const auto& choice = view.run->choices[static_cast<unsigned>(button.command) - static_cast<unsigned>(Command::pick0)];
     node.label = "Choose " + choice.title;
-    node.value = choice.hardware ? "Rank " + std::to_string(choice.next_rank) + ". " + choice.description : choice.description;
+    node.value = (choice.hardware ? "Rank " + std::to_string(choice.next_rank) + ". " : "") + choice_status(choice) + ". " + choice.description + (choice.hardware && choice.next_rank == 1 ? " Uses one of six hardware slots." : "");
     if (!choice.evolution_preview.empty())
       node.value += ". " + choice.evolution_preview;
     break;
@@ -140,12 +146,12 @@ std::string screen_summary(const View& view) {
   const auto& account = view.store->account();
   switch (view.screen) {
   case Screen::run:
-    return "Hull " + std::to_string(static_cast<unsigned>(std::max(0.F, run.hull))) + " of " +
+    return std::string(view.damage_feedback.age >= 0 ? view.damage_feedback.hull ? "Hull hit. " : "Shield hit. " : "") + "Hull " + std::to_string(static_cast<unsigned>(std::max(0.F, run.hull))) + " of " +
            std::to_string(static_cast<unsigned>(run.maximum_hull)) + ". Shield " +
            std::to_string(static_cast<unsigned>(std::max(0.F, run.shield))) + ". Level " + std::to_string(run.stats.level) +
-           ". Score " + std::to_string(run.stats.score) + ". Captures " + std::to_string(run.stats.captures) + ". Drag to fly. Capture and fire are automatic.";
+           ". Score " + std::to_string(run.stats.score) + ". Captures " + std::to_string(run.stats.captures) + ". " + (run.harvest_overdrive_seconds > 0 ? "Overdrive active, " + std::to_string(static_cast<unsigned>(std::ceil(run.harvest_overdrive_seconds))) + " seconds remaining. Capture and firing are boosted. " : run.harvest_chain ? "Sweep chain " + std::to_string(run.harvest_chain) + " of " + std::to_string(gameplay::tuning::harvest_chain_target) + ". " + std::to_string(static_cast<unsigned>(std::ceil(run.harvest_chain_seconds))) + " seconds to keep the chain. " : "") + "Drag to fly. Pass close to specimens for faster captures. Chain three quick sweeps for Overdrive. Capture and fire are automatic.";
   case Screen::upgrade:
-    return "Level " + std::to_string(run.stats.level) + ". Choose one upgrade. Your run is paused.";
+    return "Level " + std::to_string(run.stats.level) + ". Choose one upgrade. Your run is paused. " + std::to_string(hardware_count(run)) + " of six hardware slots installed. New hardware uses a slot; ranking up improves installed hardware.";
   case Screen::pause:
     if (view.restored_run)
       return std::string(location_name(view.theme)) + ". Saved run at level " + std::to_string(run.stats.level) + ". " + (run.phase == gameplay::Phase::choosing_upgrade ? "An earned upgrade is waiting. " : "") + "Choose Resume or End run and bank credits. The run clock is paused.";
@@ -205,7 +211,10 @@ std::vector<ui::AccessibilityNode> accessibility_snapshot(const View& view,
   if (view.save_error)
     heading = "Progress protected";
   const std::string page_context = view.screen == Screen::upgrade && !view.save_error ? "Level " + std::to_string(view.run->stats.level) + ". Your run is paused. Choice " + std::to_string(std::min(view.upgrade_preview, 2U) + 1) + " of 3. " : "";
-  nodes.push_back({.id = 2, .stable_id = "human-resources/" + key + "/heading", .parent_id = 1, .role = ui::SemanticRole::label, .label = std::move(heading), .value = interface.page_text.empty() ? screen_summary(view) : page_context + "Page " + std::to_string(interface.page + 1) + " of " + std::to_string(interface.page_count) + ". " + interface.page_text, .frame = {safe.x, safe.y, safe.width, std::min(80.F, safe.height)}});
+  const auto spoken_context = view.screen == Screen::run && view.promotion.installed && !view.save_error
+      ? screen_summary(view) + " Installed: " + view.promotion.installed->title + "."
+      : interface.page_text.empty() ? screen_summary(view) : page_context + "Page " + std::to_string(interface.page + 1) + " of " + std::to_string(interface.page_count) + ". " + interface.page_text;
+  nodes.push_back({.id = 2, .stable_id = "human-resources/" + key + "/heading", .parent_id = 1, .role = ui::SemanticRole::label, .label = std::move(heading), .value = spoken_context, .frame = {safe.x, safe.y, safe.width, std::min(80.F, safe.height)}});
   for (const auto& button : interface.buttons) {
     ui::AccessibilityNode node{.id = control_base + static_cast<ui::NodeId>(button.command),
         .stable_id = context(view, button),

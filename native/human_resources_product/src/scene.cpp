@@ -81,13 +81,26 @@ void capture_guides(StyleFrame& frame, Vec3 ground, Vec3 intake, float radius, f
         line(frame, point(u, sign), point(v, sign), .032F, {.46F, 1, .75F, .90F});
     }
 }
-void warning(StyleFrame& frame, Vec3 origin, Vec3 aim, float active_seconds, bool reduced_motion) {
+// A cue is information, so the wider portrait camera must not reduce it to a
+// subpixel thread. Use the smallest supported logical viewport as the floor;
+// wider phones preserve that weight without changing any collision geometry.
+float threat_pixel(float camera_width, float aspect) {
+  return camera_width / (aspect < 1 ? 320.F : 844.F);
+}
+void hostile_trail(StyleFrame& frame, Vec3 tip, Vec3 rear, float pixel, float opacity = 1) {
+  line(frame, tip, rear, std::max(.07F, pixel * 1.65F), {.025F, .07F, .11F, .84F * opacity});
+  line(frame, tip, rear, std::max(.07F, pixel), {1, .24F, .13F, .88F * opacity});
+  line(frame, tip, lerp(tip, rear, .55F), std::max(.025F, pixel * .5F), {1, .94F, .65F, opacity});
+}
+void warning(StyleFrame& frame, Vec3 origin, Vec3 aim, float active_seconds, bool reduced_motion, float pixel) {
   const float length = std::hypot(aim.x - origin.x, aim.z - origin.z);
   const unsigned count = std::min(40U, static_cast<unsigned>(length / .65F) + 1);
   for (unsigned i = 0; i < count; ++i) {
     const float u = static_cast<float>(i) / static_cast<float>(count);
     const float v = std::min(1.F, (static_cast<float>(i) + .54F) / static_cast<float>(count));
-    line(frame, lerp(origin, aim, u), lerp(origin, aim, v), .047F, {1, .33F, .19F, .92F});
+    const auto a = lerp(origin, aim, u), b = lerp(origin, aim, v);
+    line(frame, a, b, std::max(.047F, pixel * 1.65F), {.025F, .07F, .11F, .84F});
+    line(frame, a, b, std::max(.047F, pixel), {1, .33F, .19F, .96F});
   }
   const float pulse = reduced_motion ? .9F : .76F + .18F * std::sin(active_seconds * 9);
   add(frame, "ring", origin, {1.05F, 1, 1.05F}, {}, {1, .28F, .23F, pulse}, true);
@@ -102,6 +115,8 @@ void beats(StyleFrame& frame, const SceneEffects* effects, float distance, Vec3 
   if (!effects)
     return;
   for (const auto& beat : effects->beats()) {
+    if (beat.kind == SceneBeatKind::capture)
+      continue; // One shared intake response below, even with six simultaneous beams.
     if (beat.kind != SceneBeatKind::capture && beat.kind != SceneBeatKind::impact && beat.kind != SceneBeatKind::defeat && beat.kind != SceneBeatKind::hull_hit)
       continue;
     const float u = std::clamp(beat.age / .55F, 0.F, 1.F), fade = (1 - u) * (1 - u);
@@ -135,37 +150,57 @@ std::vector<std::string_view> content_ids() {
 presentation::StyleFrame scene(const gameplay::Snapshot& run, float aspect, bool reduced_motion, bool attract, SceneEffects* effects, presentation::SceneryTheme theme) {
   const float t = static_cast<float>(run.stats.active_seconds);
   const double distance = attract ? 0 : run.runner_distance;
-  auto frame = presentation::generate_scenery({theme, 514, distance, aspect}).scene;
+  auto frame = presentation::generate_scenery({theme, 514, distance, aspect, 9.7F}).scene;
   const auto scenery_count = frame.instances.size();
   frame.show_overlay = false;
-  frame.ring_angle = reduced_motion ? 0 : t * 1.8F;
+  frame.ring_angle = reduced_motion ? 0 : effects && !attract ? effects->rotor_angle()
+                                                              : t * 1.8F;
+  const auto damage = effects && !attract ? effects->damage_feedback() : DamageFeedback{};
+  const float hit = damage.age >= 0 && damage.age < .24F ? 1 - damage.age / .24F : 0;
+  frame.damage_flash = reduced_motion ? 0 : (damage.hull ? 1.F : -1.F) * hit * hit;
+  const float recoil = reduced_motion || damage.age < 0 ? 0 : (1 - std::exp(-damage.age * 90)) * std::exp(-damage.age * 14) * (damage.hull ? 1.F : .4F);
   // A world-space camera follows forward travel; lateral movement remains visible
   // across the entire lane, so the player can judge the danger around the saucer.
-  presentation::set_overhead_camera(frame, aspect, aspect < 1 ? 17.F : 31.F, {}, 27.F);
-  const Vec3 ship{attract ? 0.F : run.player.x, 2.5F + (reduced_motion ? 0 : .07F * std::sin(t * 2.5F)), attract ? 2.3F : run.runner_distance - run.player.z + 2.3F};
-  const float bank = reduced_motion ? 0 : std::clamp(-run.velocity.x * .025F, -.18F, .18F);
-  const float ship_scale = attract ? 1.7F : 1.12F;
-  add(frame, "ufo-modular", ship, {ship_scale, ship_scale, ship_scale}, {0, 0, bank});
-  const ShipPose ship_pose{ship, ship_scale, bank};
+  const float camera_width = (aspect < 1 ? 17.F : 31.F) / .75F;
+  presentation::set_overhead_camera(frame, aspect, camera_width, {0, 0, -.15F}, 27.F);
+  const float threat_unit = threat_pixel(camera_width, aspect);
+  const auto velocity = effects && !attract ? effects->flight_velocity() : run.velocity;
+  const float response = effects && !attract ? effects->capture_response() : 0;
+  const auto dash = effects && !attract ? effects->dash_response() : gameplay::Vec2{};
+  const Vec3 ship{attract ? 0.F : run.player.x,
+      2.5F + (reduced_motion ? 0 : .055F * std::sin(t * 2.5F) - .12F * response - .13F * recoil),
+      attract ? 2.3F : run.runner_distance - run.player.z + 2.3F};
+  const float bank = reduced_motion ? 0 : std::clamp(-velocity.x * .035F - dash.x * .15F + .12F * recoil, -.38F, .38F);
+  const float pitch = reduced_motion ? 0 : std::clamp(-velocity.z * .022F - dash.z * .13F + .07F * recoil, -.26F, .26F);
+  const float ship_scale = (attract ? 1.7F : 1.12F) / .75F;
+  add(frame, "ufo-modular", ship, {ship_scale, ship_scale, ship_scale}, {pitch, 0, bank});
+  frame.instances.back().polished_hull = true;
+  frame.instances.back().damage_reactive = true;
+  const ShipPose ship_pose{ship, ship_scale, bank, pitch};
   append_ship_gear(frame, run, ship_pose, reduced_motion);
-  const Vec3 intake{ship.x - .04F * ship_scale * std::sin(bank), ship.y + .04F * ship_scale * std::cos(bank), ship.z};
+  const Vec3 intake = ship_socket(ship_pose, {0, .04F, 0});
   if (run.invulnerability_seconds > 0)
     add(frame, "ring", {ship.x, .06F, ship.z}, {1.6F, 1, 1.6F}, {}, {.5F, .95F, 1, .7F}, true);
   // Gameplay +Z is semantic forward. This camera sees render -Z as screen up,
   // matching scenery's distance-along mapping; all targeting shares this seam.
   auto point = [&](gameplay::Vec2 p, float y = 0) { return Vec3{p.x, y, static_cast<float>(distance) - p.z + 2.3F}; };
   if (effects && !attract) effects->begin_capture_frame(run);
-  for (const auto& e : run.entities) {
+  const auto completed = effects && !attract ? effects->completed_captures() : std::span<const gameplay::EntityView>{};
+  for (std::size_t actor_index = 0; actor_index < run.entities.size() + completed.size(); ++actor_index) {
+    const bool finishing = actor_index >= run.entities.size();
+    const auto& e = finishing ? completed[actor_index - run.entities.size()] : run.entities[actor_index];
     auto p = point(e.position);
     if (std::abs(p.z) > 32)
       continue;
-    const float progress = std::clamp(e.capture_progress, 0.F, 1.F);
+    const float progress = std::clamp(e.kind <= gameplay::EntityKind::soldier ? (effects && !attract ? effects->capture_progress(e) : SceneEffects::capture_lift_progress(e.capture_progress)) : e.capture_progress, 0.F, 1.F);
     const float lift = smooth(.08F, 1.F, progress);
     const bool organic = e.kind <= gameplay::EntityKind::soldier;
     // Keep the first lift readable, then sweep into the real fixed-hull intake.
     // Authored lift/struggle clips and head attachments remain on the same root.
     const float travel = smooth(.16F, 1.F, progress);
     float size = 1 - .98F * smooth(.60F, 1.F, progress);
+    if (organic && !reduced_motion)
+      size *= 1 + .055F * std::sin(std::min(1.F, progress / .3F) * std::numbers::pi_v<float>);
     p = lerp(p, intake, travel);
     p.y += .28F * std::sin(progress * std::numbers::pi_v<float>);
     if (!reduced_motion) {
@@ -179,14 +214,26 @@ presentation::StyleFrame scene(const gameplay::Snapshot& run, float aspect, bool
     const bool planted = gear && (e.warning_seconds > 0 || e.fire_recovery_seconds > 0);
     float yaw = speed > .08F ? std::atan2(e.velocity.x, -e.velocity.z) : static_cast<float>(e.id) * 1.7F;
     if (planted && shot.valid) yaw = std::atan2(shot.direction.x, -shot.direction.z) - attack.weapon_yaw_radians;
-    Vec3 rotation{reduced_motion ? 0 : lift * .32F, yaw, reduced_motion ? 0 : std::sin(t * 5 + static_cast<float>(e.id)) * lift * .16F};
+    Vec3 rotation{reduced_motion ? 0 : lift * (organic ? .92F : .32F),
+        yaw + (reduced_motion || !organic ? 0 : lift * .65F),
+        reduced_motion ? 0 : std::sin(t * 6 + static_cast<float>(e.id)) * lift * (organic ? .44F : .16F)};
+    if (finishing) {
+      p = intake;
+      size = .02F;
+    }
     if (effects && !attract) {
       const auto pose = effects->capture_pose(e, {p, rotation, size}, {point(e.position), {0, yaw, 0}, 1},
-          run.stats.active_seconds, static_cast<float>(distance));
+          run.stats.active_seconds, static_cast<float>(distance),
+          reduced_motion ? CaptureMotion::reduced : CaptureMotion::animated);
       p = pose.position;
       rotation = pose.rotation;
       size = pose.scale;
       yaw = rotation.y;
+    }
+    if (finishing) {
+      const Vec3 specimen{p.x, p.y + size * .3F, p.z};
+      cone(frame, specimen, intake, size * .6F, .12F);
+      capture_guides(frame, specimen, intake, size * .6F, t, reduced_motion);
     }
     const auto body_index = frame.instances.size();
     if (e.kind == gameplay::EntityKind::cow || e.kind == gameplay::EntityKind::sheep || e.kind == gameplay::EntityKind::pig) {
@@ -229,6 +276,8 @@ presentation::StyleFrame scene(const gameplay::Snapshot& run, float aspect, bool
       body.stable_id = e.id;
       body.animation = {.speed = speed, .warning = e.warning_seconds > 0, .capturing = e.capture_progress > 0, .enabled = true};
       body.animation.product_capture_transport = true;
+      body.animation.capture_progress = progress;
+      body.animation.fleeing = e.kind < gameplay::EntityKind::soldier && !finishing && progress == 0 && speed > .04F;
       if (gear) {
         const auto aim = point(e.warning_aim, 2.5F);
         const float dx = aim.x - p.x, dz = aim.z - p.z;
@@ -258,22 +307,33 @@ presentation::StyleFrame scene(const gameplay::Snapshot& run, float aspect, bool
         for (unsigned i=0;i<attack.pellets;++i) {
           const float angle=(static_cast<float>(i)-static_cast<float>(attack.pellets-1)*.5F)*attack.spread_radians;
           const gameplay::Vec2 ray{shot.direction.x*std::cos(angle)-shot.direction.z*std::sin(angle),shot.direction.x*std::sin(angle)+shot.direction.z*std::cos(angle)};
-          warning(frame,point(shot.origin,.08F),point({shot.origin.x+ray.x*range,shot.origin.z+ray.z*range},.08F),t,reduced_motion);
+          warning(frame,point(shot.origin,.08F),point({shot.origin.x+ray.x*range,shot.origin.z+ray.z*range},.08F),t,reduced_motion,threat_unit);
         }
       } else if (e.kind == gameplay::EntityKind::jeep) {
         const auto muzzle=gameplay::jeep_minigun_shot(e,e.warning_aim,e.minigun_barrel);
-        if(muzzle.valid) warning(frame,point(muzzle.origin,.08F),point(e.warning_aim,.08F),t,reduced_motion);
+        if(muzzle.valid) warning(frame,point(muzzle.origin,.08F),point(e.warning_aim,.08F),t,reduced_motion,threat_unit);
       } else if(e.kind==gameplay::EntityKind::tank || e.kind==gameplay::EntityKind::boss) {
         const auto muzzle=gameplay::vehicle_cannon_shot(e,e.warning_aim);
-        if(muzzle.valid) warning(frame,point(muzzle.origin,.08F),point(e.warning_aim,.08F),t,reduced_motion);
+        if (muzzle.valid) {
+          const auto pattern = gameplay::cannon_geometry();
+          const unsigned count = e.kind == gameplay::EntityKind::boss ? pattern.boss_projectiles : 1U;
+          const float range = std::hypot(e.warning_aim.x - muzzle.origin.x, e.warning_aim.z - muzzle.origin.z);
+          for (unsigned i = 0; i < count; ++i) {
+            const float angle = (static_cast<float>(i) - static_cast<float>(count - 1) * .5F) * pattern.boss_spread_radians;
+            const gameplay::Vec2 direction{muzzle.direction.x * std::cos(angle) - muzzle.direction.z * std::sin(angle),
+                muzzle.direction.x * std::sin(angle) + muzzle.direction.z * std::cos(angle)};
+            warning(frame, point(muzzle.origin, .08F), point({muzzle.origin.x + direction.x * range, muzzle.origin.z + direction.z * range}, .08F), t, reduced_motion, threat_unit);
+          }
+        }
       } else if (!gear)
-        warning(frame, point(e.position, .08F), point(e.warning_aim, .08F), t, reduced_motion);
+        warning(frame, point(e.position, .08F), point(e.warning_aim, .08F), t, reduced_motion, threat_unit);
     }
   }
   for (const auto& beam : run.beams) {
     const auto target = point(beam.target, .025F);
-    cone(frame, target, intake, beam.vehicle ? 1.15F : .72F, .12F + .07F * beam.progress);
-    capture_guides(frame, target, intake, beam.vehicle ? 1.15F : .72F, t, reduced_motion);
+    const bool overdrive = run.harvest_overdrive_seconds > 0;
+    cone(frame, target, intake, beam.vehicle ? 1.15F : .72F, (overdrive ? .19F : .12F) + .07F * beam.progress);
+    capture_guides(frame, target, intake, beam.vehicle ? 1.15F : .72F, t * (overdrive ? 1.7F : 1.F), reduced_motion);
     add(frame, "ring", target, {.85F, 1, .85F}, {}, {.5F, 1, .76F, .82F}, true);
     const float acquisition = .40F + .30F * (1 - beam.progress);
     add(frame, "ring", intake, {acquisition, 1, acquisition}, {}, {.48F, 1, .76F, .7F}, true);
@@ -328,8 +388,7 @@ presentation::StyleFrame scene(const gameplay::Snapshot& run, float aspect, bool
         const Vec3 rear{tip.x-projectile.velocity.x/spatial_speed*trail,tip.y-projectile.rise_per_second/spatial_speed*trail,
             tip.z+projectile.velocity.z/spatial_speed*trail};
         const float glow=smooth(.04F,.12F,projectile.age_seconds);
-        line(frame,tip,rear,.07F,{1,.24F,.13F,.88F*glow});
-        line(frame,tip,lerp(tip,rear,.55F),.025F,{1,.94F,.65F,glow});
+        hostile_trail(frame, tip, rear, threat_unit, glow);
       }
       shot_footprint(frame,point(projectile.position,.05F),projectile.radius);
       continue;
@@ -342,8 +401,7 @@ presentation::StyleFrame scene(const gameplay::Snapshot& run, float aspect, bool
     else
       add(frame, "missile", p, {radius / .285F, radius / .265F, std::max(.75F, radius * 3)}, {0, yaw, 0});
     const Vec3 rear{p.x - std::sin(yaw) * .65F, p.y, p.z - std::cos(yaw) * .65F};
-    line(frame, p, rear, .07F, {1, .24F, .13F, .8F});
-    line(frame, p, lerp(p, rear, .55F), .025F, {1, .88F, .5F, .96F});
+    hostile_trail(frame, p, rear, threat_unit);
     if (gear) {
       const Vec3 raw{(gear->muzzle[0]+gear->secondary_muzzle[0])*.5F,(gear->muzzle[1]+gear->secondary_muzzle[1])*.5F,(gear->muzzle[2]+gear->secondary_muzzle[2])*.5F};
       for (std::size_t i=first;i<frame.instances.size();++i) {

@@ -117,8 +117,12 @@ Drag an open part of the scene to fly; another finger may press HUD controls
 without stealing the movement contact. Keyboard WASD/arrows and controller left
 stick map to the same semantic movement. Enter/controller south activates a
 focused menu action; directional actions move focus. Escape/controller start
-pauses. Space/controller east triggers Phase Drive after its hardware is
-installed. Level-up pauses the run for exactly three choices. Focus loss and
+pauses. Space/controller east or the Dash button triggers the starter Dash;
+Phase Drive hardware improves it. The base cooldown is four active seconds.
+Dash also triggers an ordinary counter-volley when a valid target is available.
+Flying close while moving accelerates capture; three qualified close sweeps
+within five active seconds grant six seconds of Overdrive capture/fire cadence.
+Level-up pauses the run for exactly three choices. Focus loss and
 background cancel input, freeze simulation and discard elapsed catch-up.
 
 ## Remaining qualification

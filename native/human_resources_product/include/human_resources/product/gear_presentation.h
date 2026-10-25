@@ -5,8 +5,10 @@ namespace human_resources::product {
 class SceneEffects;
 struct ShipPose final {
   presentation::Vec3 position;
-  float scale{1}, bank{};
+  float scale{1}, bank{}, pitch{};
 };
+// One rigid hull transform owns every real module and capture intake socket.
+[[nodiscard]] presentation::Vec3 ship_socket(ShipPose, presentation::Vec3 local);
 // Existing source modules assembled at fixed hull sockets. Render-only; never
 // modifies modules, targeting, damage, capture or encounter clocks.
 void append_ship_gear(presentation::StyleFrame&, const gameplay::Snapshot&, ShipPose, bool reduced_motion);

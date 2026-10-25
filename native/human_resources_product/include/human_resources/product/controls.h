@@ -8,6 +8,8 @@ namespace human_resources::product {
 enum class ControlAction : input::ActionId { contact = 1, left, right, up, down, axis_x, axis_y, accept, pause, dash, pick0, pick1, pick2 };
 // Product drag policy: a floating stick claims one contact outside UI. Additional
 // fingers may press HUD controls without stealing or ending the movement drag.
+// Its anchor follows beyond 44 logical points of radial throw, keeping reversal
+// travel bounded; a continuous radial deadzone preserves fine analog steering.
 class Controls final {
 public:
   void apply(const input::Action& action, bool movement_allowed, bool ui_claimed);

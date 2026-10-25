@@ -219,7 +219,7 @@ void malformed_vehicle_authority() {
   gp::Game run;run.start({.seed=775});auto& s=*run.state_;
   s.actors={jeep()};s.actors.front().view.minigun_barrel=3;s.next_id=2;s.shoot(s.actors.front());s.sync();
   const auto good=run.save_state();require(!good.empty(),"actual minigun wire fixture is valid");
-  constexpr std::size_t actor=369,projectile=actor+97+4;
+  constexpr std::size_t actor=378,projectile=actor+101+4;
   auto seal=[](auto& bytes) {
     std::uint64_t hash=14695981039346656037ULL;
     for(std::size_t i=0;i<bytes.size()-8;++i) hash=(hash^std::to_integer<std::uint8_t>(bytes[i]))*1099511628211ULL;

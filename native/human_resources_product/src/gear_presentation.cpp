@@ -4,6 +4,14 @@
 #include <human_resources/product/scene_effects.h>
 #include <numbers>
 namespace human_resources::product {
+presentation::Vec3 ship_socket(ShipPose pose, presentation::Vec3 local) {
+  const float cb = std::cos(pose.bank), sb = std::sin(pose.bank);
+  const float cp = std::cos(pose.pitch), sp = std::sin(pose.pitch);
+  const float y = sb * local.x + cb * local.y;
+  return {pose.position.x + pose.scale * (cb * local.x - sb * local.y),
+      pose.position.y + pose.scale * (cp * y - sp * local.z),
+      pose.position.z + pose.scale * (sp * y + cp * local.z)};
+}
 namespace {
 using gameplay::Evolution;
 using gameplay::Module;
@@ -18,20 +26,24 @@ bool evolved(const gameplay::Snapshot& run, Evolution e) {
   return (run.evolution_bits & (1U << static_cast<unsigned>(e))) != 0;
 }
 Vec3 world(ShipPose pose, Vec3 local) {
-  const float c = std::cos(pose.bank), s = std::sin(pose.bank);
-  return {pose.position.x + pose.scale * (c * local.x - s * local.y), pose.position.y + pose.scale * (s * local.x + c * local.y), pose.position.z + pose.scale * local.z};
+  return ship_socket(pose, local);
 }
 void add(StyleFrame& frame, std::string_view mesh, Vec3 p, Vec3 scale = {1, 1, 1}, Vec3 rotation = {}, std::array<float, 4> tint = {1, 1, 1, 1}, bool effect = false) {
   frame.instances.push_back({.mesh = mesh, .position = p, .scale = scale, .rotation = rotation, .tint = tint, .effect = effect, .casts_shadow = !effect});
 }
 void module(StyleFrame& frame, std::string_view mesh, ShipPose pose, Vec3 socket, float size = 1, float yaw = 0) {
-  // Compose parent Rz bank with local Ry aim, then decompose the scene's RyRxRz
-  // convention. Both pivot position and module orientation follow the hull.
-  const float x = std::asin(std::clamp(-std::sin(pose.bank) * std::sin(yaw), -1.F, 1.F));
-  const float y = std::atan2(std::cos(pose.bank) * std::sin(yaw), std::cos(yaw));
-  const float z = std::atan2(std::sin(pose.bank) * std::cos(yaw), std::cos(pose.bank));
+  // Compose the real rigid parent with local aim, then decompose Ry*Rx*Rz.
+  // Banking and forward lean never leave antenna/emitter parts floating behind.
+  const auto parent = presentation::model_matrix({.rotation = {pose.pitch, 0, pose.bank}});
+  const auto local = presentation::model_matrix({.rotation = {0, yaw, 0}});
+  const auto rotation = presentation::multiply(parent, local);
+  const float x = std::asin(std::clamp(-rotation[6], -1.F, 1.F));
+  const float y = std::atan2(rotation[2], rotation[10]);
+  const float z = std::atan2(rotation[4], rotation[5]);
   const float s = pose.scale * size;
   add(frame, mesh, world(pose, socket), {s, s, s}, {x, y, z});
+  frame.instances.back().polished_hull = true;
+  frame.instances.back().damage_reactive = true;
 }
 Vec3 laser_socket(unsigned index, unsigned count) {
   const bool right = (index & 1U) != 0;
@@ -61,6 +73,83 @@ void rim(StyleFrame& frame, ShipPose pose, float opacity, std::array<float, 4> c
   add(frame, "shield-shell", {pose.position.x, pose.position.y + .22F, pose.position.z}, {1.7F * pose.scale, 1.7F * pose.scale, 1.7F * pose.scale}, {}, color, true);
   frame.instances.back().shield_rim = true;
 }
+void dash_wake(StyleFrame& frame, const SceneBeat& beat, ShipPose pose, float distance, bool reduced) {
+  if (beat.age >= .22F)
+    return;
+  const auto start = point(beat.position, distance, pose.position.y);
+  const auto end = point(beat.destination, distance, pose.position.y);
+  const float length = std::hypot(end.x - start.x, end.z - start.z);
+  if (length < .08F)
+    return; // A blocked dash never claims displacement.
+  const float remaining = 1 - beat.age / .22F;
+  const float fade = remaining * remaining;
+  const Vec3 side{(end.z - start.z) / length, 0, -(end.x - start.x) / length};
+  for (float sign : {-1.F, 1.F}) {
+    const Vec3 a{start.x + side.x * sign * .62F, start.y, start.z + side.z * sign * .62F};
+    const Vec3 b{end.x + side.x * sign * .24F, end.y, end.z + side.z * sign * .24F};
+    ray(frame, a, b, reduced ? .035F : .055F, {.53F, .91F, 1, .78F * fade});
+  }
+  if (reduced)
+    return;
+  for (unsigned i = 0; i < 2; ++i) {
+    const float u = .18F + static_cast<float>(i) * .36F;
+    const Vec3 p{start.x + (end.x - start.x) * u, start.y, start.z + (end.z - start.z) * u};
+    add(frame, "ufo-modular", p, {pose.scale, pose.scale, pose.scale},
+        {pose.pitch, 0, pose.bank}, {.58F, .87F, 1, fade * (.12F + .06F * static_cast<float>(i))});
+    frame.instances.back().casts_shadow = false;
+    frame.instances.back().polished_hull = true;
+  }
+}
+void overdrive_engine(StyleFrame& frame, const gameplay::Snapshot& run, ShipPose pose, bool reduced) {
+  if (run.harvest_overdrive_seconds <= 0)
+    return;
+  const float fade = std::min(1.F, run.harvest_overdrive_seconds / .35F);
+  const float phase = reduced ? 0 : static_cast<float>(run.stats.active_seconds) * 5;
+  // Three moving segments frame the actual rotating annulus. They are energy
+  // accents, never invented permanent hardware or a larger damage/shield area.
+  for (unsigned i = 0; i < 3; ++i)
+    for (unsigned j = 0; j < 2; ++j) {
+      const float a = phase + static_cast<float>(i) * tau / 3 + static_cast<float>(j) * .20F;
+      const auto from = world(pose, {std::cos(a) * 1.53F, .40F, std::sin(a) * 1.53F});
+      const auto to = world(pose, {std::cos(a + .18F) * 1.53F, .40F, std::sin(a + .18F) * 1.53F});
+      ray(frame, from, to, .055F, {.92F, 1, .52F, .92F * fade});
+    }
+  const float pulse = reduced ? 1.F : .90F + .10F * std::sin(phase * 2);
+  add(frame, "ring", world(pose, {0, -.15F, 0}), {.63F, 1, .63F},
+      {pose.pitch, 0, pose.bank}, {.55F, 1, .77F, .85F * pulse * fade}, true);
+}
+void sweep_finish(StyleFrame& frame, float age, ShipPose pose, bool reduced) {
+  if (age >= .34F)
+    return;
+  const float u = age / .34F, fade = (1 - u) * (1 - u);
+  if (reduced)
+    return; // The ordinary success collar retains the same outcome.
+  for (unsigned i = 0; i < 3; ++i) {
+    const float a = static_cast<float>(i) * tau / 3 + u * 2.2F;
+    const float radius = 1.85F * (1 - u) + .24F;
+    const auto from = world(pose, {std::cos(a) * radius, .16F + u * .45F, std::sin(a) * radius});
+    const auto to = world(pose, {std::cos(a + .38F) * radius * .78F, .25F + u * .45F, std::sin(a + .38F) * radius * .78F});
+    ray(frame, from, to, .065F, {.66F, 1, .80F, .95F * fade});
+  }
+}
+void damage_fracture(StyleFrame& frame, const SceneBeat& beat, ShipPose pose, bool reduced) {
+  const bool hull = beat.kind == SceneBeatKind::hull_hit;
+  const float fade = std::max(0.F, 1 - beat.age / .55F);
+  const auto color = hull ? std::array<float, 4>{1, .40F, .24F, fade} : std::array<float, 4>{.52F, .95F, 1, fade};
+  if (reduced) {
+    add(frame, "ring", world(pose, {0, .32F, 0}), {1.62F, 1, 1.62F}, {pose.pitch, 0, pose.bank}, color, true);
+    return;
+  }
+  for (unsigned i = 0; i < 4; ++i) {
+    const float angle = static_cast<float>(i) * tau / 4 + .25F;
+    const float radius = 1.5F + beat.age * (hull ? 1.1F : .65F);
+    const auto a = world(pose, {std::cos(angle) * radius, .30F, std::sin(angle) * radius});
+    const auto b = world(pose, {std::cos(angle + .12F) * (radius + .17F), .38F, std::sin(angle + .12F) * (radius + .17F)});
+    const auto c = world(pose, {std::cos(angle) * (radius + .30F), .28F, std::sin(angle) * (radius + .30F)});
+    ray(frame, a, b, hull ? .06F : .035F, color);
+    ray(frame, b, c, hull ? .06F : .035F, color);
+  }
+}
 } // namespace
 void append_ship_gear(StyleFrame& frame, const gameplay::Snapshot& run, ShipPose pose, bool reduced_motion) {
   const bool shield = rank(run, Module::shield_generator) > 0;
@@ -79,10 +168,13 @@ void append_ship_gear(StyleFrame& frame, const gameplay::Snapshot& run, ShipPose
     const float dx = aim.x - mount.x, dy = aim.y - mount.y, dz = aim.z - mount.z;
     const float size = pose.scale * (count > 2 ? .67F : 1.F);
     add(frame, "ufo-laser", mount, {size, size, size}, {-std::atan2(dy, std::hypot(dx, dz)), std::atan2(dx, dz), pose.bank});
+    frame.instances.back().polished_hull = true;
+    frame.instances.back().damage_reactive = true;
   }
   for (unsigned i = 0; i < rank(run, Module::orbit_drones); ++i) {
     const auto p = drone_position(run, pose, i, reduced_motion);
     add(frame, "ufo-modular", p, {.27F, .27F, .27F});
+    frame.instances.back().polished_hull = true;
     const Vec3 mount{p.x, p.y - .04F, p.z};
     Vec3 aim{p.x, p.y, p.z - 1};
     for (const auto& shot : run.shots)
@@ -91,6 +183,7 @@ void append_ship_gear(StyleFrame& frame, const gameplay::Snapshot& run, ShipPose
         break;
       }
     add(frame, "ufo-laser", mount, {.35F, .35F, .35F}, {-std::atan2(aim.y - mount.y, std::hypot(aim.x - mount.x, aim.z - mount.z)), std::atan2(aim.x - mount.x, aim.z - mount.z), 0});
+    frame.instances.back().polished_hull = true;
   }
   if ((shield || rank(run, Module::mirror_plating) > 0) && run.shield > 0) {
     const float fraction = run.maximum_shield > 0 ? std::clamp(run.shield / run.maximum_shield, 0.F, 1.F) : 0;
@@ -100,7 +193,7 @@ void append_ship_gear(StyleFrame& frame, const gameplay::Snapshot& run, ShipPose
   // visible fixed-hull collars, never fictitious rotor-mounted beam sources.
   if (rank(run, Module::tractor_lens) > 0 || rank(run, Module::heavy_winch) > 0) {
     const float r = .53F + .045F * static_cast<float>(rank(run, Module::tractor_lens));
-    add(frame, "ring", world(pose, {0, -.07F, 0}), {r, 1, r}, {0, 0, pose.bank}, {.35F, .97F, .73F, .82F}, true);
+    add(frame, "ring", world(pose, {0, -.07F, 0}), {r, 1, r}, {pose.pitch, 0, pose.bank}, {.35F, .97F, .73F, .82F}, true);
     if (rank(run, Module::heavy_winch) > 0)
       for (float side : {-1.F, 1.F})
         module(frame, "ufo-rim-lens", pose, {side * .42F, -.09F, 0}, .5F);
@@ -152,6 +245,7 @@ void append_gear_shots(StyleFrame& frame, const gameplay::Snapshot& run, ShipPos
   }
 }
 void append_gear_effects(StyleFrame& frame, const gameplay::Snapshot& run, const SceneEffects* effects, ShipPose pose, float distance, bool reduced_motion) {
+  overdrive_engine(frame, run, pose, reduced_motion);
   if (run.drone_burst_seconds > 0 && evolved(run, Evolution::employee_benefits))
     for (unsigned i = 0; i < rank(run, Module::orbit_drones); ++i) {
       const auto p = drone_position(run, pose, i, reduced_motion);
@@ -162,7 +256,7 @@ void append_gear_effects(StyleFrame& frame, const gameplay::Snapshot& run, const
   for (const auto& beam : run.beams)
     occupied += beam.vehicle ? 2U : 1U;
   if ((reactor && !run.beams.empty()) || (reserve && occupied < run.beam_capacity) || run.capture_burst_seconds > 0)
-    add(frame, "ring", world(pose, {0, -.2F, 0}), {.4F, 1, .4F}, {0, 0, pose.bank}, {.8F, 1, .45F, .8F}, true);
+    add(frame, "ring", world(pose, {0, -.2F, 0}), {.4F, 1, .4F}, {pose.pitch, 0, pose.bank}, {.8F, 1, .45F, .8F}, true);
   if (rank(run, Module::vector_thrusters) > 0 && std::hypot(run.velocity.x, run.velocity.z) > .5F) {
     const float length = run.movement_burst_seconds > 0 ? .85F : .45F;
     for (float side : {-1.F, 1.F}) {
@@ -185,6 +279,23 @@ void append_gear_effects(StyleFrame& frame, const gameplay::Snapshot& run, const
   }
   if (!effects)
     return;
+  // Successful intake is the game's signature payoff. Keep its brief collar
+  // outside the hull silhouette, rather than hiding a small ring inside it.
+  // Coalesce concurrent captures; six beams never become six opaque flashes.
+  float capture_age = 1, sweep_age = 1;
+  for (const auto& beat : effects->beats())
+    if (beat.kind == SceneBeatKind::capture)
+      capture_age = std::min(capture_age, beat.age);
+    else if (beat.kind == SceneBeatKind::sweep_capture)
+      sweep_age = std::min(sweep_age, beat.age);
+  sweep_finish(frame, sweep_age, pose, reduced_motion);
+  if (capture_age <= .4F) {
+    const float u = std::clamp(capture_age / .4F, 0.F, 1.F);
+    const float radius = reduced_motion ? 1.64F : 1.58F + .54F * (1 - (1 - u) * (1 - u));
+    const float fade = (1 - u) * (1 - u);
+    add(frame, "ring", world(pose, {0, .36F, 0}), {radius, 1, radius},
+        {pose.pitch, 0, pose.bank}, {.48F, 1, .79F, .84F * fade}, true);
+  }
   for (const auto& beat : effects->beats()) {
     const float u = std::clamp(beat.age / .55F, 0.F, 1.F), fade = (1 - u) * (1 - u);
     if (beat.kind == SceneBeatKind::emp_pulse) {
@@ -195,13 +306,18 @@ void append_gear_effects(StyleFrame& frame, const gameplay::Snapshot& run, const
         add(frame, "ring", {p.x, p.y + .12F, p.z}, {radius * .86F, 1, radius * .86F}, {}, {.8F, .9F, 1, .55F * fade}, true);
     } else if (beat.kind == SceneBeatKind::shield_hit || beat.kind == SceneBeatKind::intercept || beat.kind == SceneBeatKind::reflect || beat.kind == SceneBeatKind::mirrorball) {
       rim(frame, pose, .95F * fade, beat.kind == SceneBeatKind::reflect || beat.kind == SceneBeatKind::mirrorball ? std::array<float, 4>{.86F, .75F, 1, 1} : std::array<float, 4>{.5F, .95F, 1, 1});
+      if (beat.kind == SceneBeatKind::shield_hit)
+        damage_fracture(frame, beat, pose, reduced_motion);
+    } else if (beat.kind == SceneBeatKind::hull_hit) {
+      damage_fracture(frame, beat, pose, reduced_motion);
     } else if (beat.kind == SceneBeatKind::phase_dash) {
-      const auto p = point(beat.position, distance, pose.position.y);
-      if (!reduced_motion)
-        for (unsigned i = 0; i < 3; ++i) {
-          const float a = static_cast<float>(i) / 3;
-          add(frame, "ring", {p.x + (pose.position.x - p.x) * a, p.y, p.z + (pose.position.z - p.z) * a}, {1.3F, 1, 1.3F}, {}, {.52F, .76F, 1, fade * (1 - a) * .6F}, true);
-        }
+      dash_wake(frame, beat, pose, distance, reduced_motion);
+    } else if (beat.kind == SceneBeatKind::harvest_overdrive && beat.age < .4F) {
+      for (float side : {-1.F, 1.F}) {
+        const auto a = world(pose, {side * .64F, .10F, .50F});
+        const auto b = world(pose, {side * .90F, .10F, reduced_motion ? .95F : 1.65F - beat.age * 2});
+        ray(frame, a, b, reduced_motion ? .04F : .08F, {.86F, 1, .61F, fade * .9F});
+      }
     } else if (beat.kind == SceneBeatKind::repair) {
       // Capture cue is authoritative; repair rank controls its supporting glyph.
       const auto p = world(pose, {0, .65F, 0});

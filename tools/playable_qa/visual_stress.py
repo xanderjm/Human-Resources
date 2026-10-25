@@ -28,16 +28,16 @@ SOURCE = Path(__file__).resolve().with_suffix(".cpp")
 FRAMES = 1440
 
 
-def state(executable: Path) -> dict:
+def state(executable: Path, source: Path = SOURCE) -> dict:
     result = snapshot(executable)
-    extra = [SOURCE, Path(__file__).resolve(), BUILD / "generated/gameplay/include/human_resources/gameplay/tuning.h"]
+    extra = [source, Path(__file__).resolve(), BUILD / "generated/gameplay/include/human_resources/gameplay/tuning.h"]
     extra += list(SOURCE.parent.glob("*.h"))
     extra += list((BUILD / "assets/shaders").rglob("*"))
     result["files"].update({str(path.relative_to(ROOT)): digest(path) for path in extra if path.is_file()})
     return result
 
 
-def build(output: Path) -> tuple[Path, dict]:
+def build(output: Path, source: Path = SOURCE) -> tuple[Path, dict]:
     commands = json.loads((BUILD / "compile_commands.json").read_text())
     app = next(entry for entry in commands if entry["file"].endswith("/human_resources_client/src/app.cpp"))
     compile_command = shlex.split(app["command"])
@@ -48,7 +48,7 @@ def build(output: Path) -> tuple[Path, dict]:
     obj = output / "visual_stress.cpp.o"
     executable = output / "visual_stress"
     compile_command[compile_command.index("-o") + 1] = str(obj)
-    compile_command[compile_command.index(app["file"])] = str(SOURCE)
+    compile_command[compile_command.index(app["file"])] = str(source)
     compile_command += [f"-DHR_QA_SHOT_CAP={shot_cap}", "-I" + str(BUILD / "generated/gameplay/include"), "-I" + str(ROOT / "native/human_resources_gameplay/src"), "-fno-access-control"]
     # Ninja's commands tool reads the existing graph; it performs no build or
     # regeneration. Reuse exact current library/framework linkage in isolation.
@@ -69,7 +69,7 @@ def build(output: Path) -> tuple[Path, dict]:
     link[link.index("-o") + 1] = str(executable)
     libraries = [BUILD / token for token in link if token.endswith(".a")]
     library_hashes = {str(path.relative_to(ROOT)): digest(path) for path in libraries}
-    source_before = state(ROOT / "build/dev/human_resources_player")
+    source_before = state(ROOT / "build/dev/human_resources_player", source)
     with (output / "build.log").open("w") as stream:
         subprocess.run(compile_command, cwd=app["directory"], stdout=stream, stderr=subprocess.STDOUT, check=True)
         subprocess.run(link, cwd=BUILD, stdout=stream, stderr=subprocess.STDOUT, check=True)
@@ -79,7 +79,7 @@ def build(output: Path) -> tuple[Path, dict]:
     validation = subprocess.check_output([str(executable), "--validate-only"], text=True)
     (output / "fixture-validation.log").write_text(validation)
     after_libraries = {str(path.relative_to(ROOT)): digest(path) for path in libraries}
-    metadata = {"compile": compile_command, "link": link, "source_sha256": digest(SOURCE), "shot_cap_from_production": shot_cap, "library_sha256": library_hashes, "libraries_stable": library_hashes == after_libraries, "source_stable": source_before == state(ROOT / "build/dev/human_resources_player"), "fixture_validation": validation, "compiler": subprocess.check_output([compile_command[0], "--version"], text=True).splitlines()[0]}
+    metadata = {"compile": compile_command, "link": link, "source_sha256": digest(source), "shot_cap_from_production": shot_cap, "library_sha256": library_hashes, "libraries_stable": library_hashes == after_libraries, "source_stable": source_before == state(ROOT / "build/dev/human_resources_player", source), "fixture_validation": validation, "compiler": subprocess.check_output([compile_command[0], "--version"], text=True).splitlines()[0]}
     (output / "build.json").write_text(json.dumps(metadata, indent=2) + "\n")
     if not metadata["libraries_stable"] or not metadata["source_stable"]:
         raise RuntimeError("Source/libraries changed during standalone build; wait for the coordinated freeze")

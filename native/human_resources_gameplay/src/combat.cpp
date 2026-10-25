@@ -14,7 +14,8 @@ float Game::State::fire_multiplier() const {
   const auto overtime = rank(Module::overtime_reactor);
   const float per = overtime > 0 ? tuning::overtime_base + static_cast<float>(overtime - 1) * tuning::overtime_step : 0;
   const float bonus = std::min(static_cast<float>(view.beams.size()) * per, 3 * per);
-  return std::min(tuning::firing_rate_maximum_base_multiplier, 1 + research(Research::fire_rate) / 100 + bonus);
+  const float upgrades = std::min(tuning::firing_rate_maximum_base_multiplier, 1 + research(Research::fire_rate) / 100 + bonus);
+  return upgrades * (view.harvest_overdrive_seconds > 0 ? tuning::harvest_overdrive_multiplier : 1.F);
 }
 void Game::State::combat(float dt) {
   laser_clock -= dt;

@@ -165,6 +165,9 @@ SceneryGeneration generate_scenery(const SceneryQuery& input) {
     q.aspect = 9.F / 16;
   if (static_cast<unsigned>(q.theme) > 2)
     q.theme = SceneryTheme::farmland;
+  if (!std::isfinite(q.play_clear_half_width))
+    q.play_clear_half_width = 6.55F;
+  q.play_clear_half_width = std::clamp(q.play_clear_half_width, 6.55F, 12.F);
   Builder b(q);
   set_overhead_camera(b.generation.scene, q.aspect, std::clamp(20.5F * q.aspect, 20.5F, 32.F));
   roads(b);
@@ -178,6 +181,20 @@ SceneryGeneration generate_scenery(const SceneryQuery& input) {
       suburb_sector(b);
     else
       desert_sector(b);
+  }
+  // Widen the same authored groups and their ground patches together. The
+  // continuous map stretches placement through the clearing, then translates
+  // outer groups rigidly; source mesh scale, UVs and identity stay unchanged.
+  const float extra = q.play_clear_half_width - 6.55F;
+  const auto x = [extra](float value) { return value + extra * std::clamp(value / 6.55F, -1.F, 1.F); };
+  if (extra > 0) {
+    for (auto& instance : b.generation.scene.instances)
+      instance.position.x = x(instance.position.x);
+    for (auto& surface : b.generation.scene.surfaces)
+      for (auto& vertex : surface.vertices)
+        vertex.position.x = x(vertex.position.x);
+    for (auto& site : b.generation.sites)
+      site.x = x(site.x);
   }
   return std::move(b.generation);
 }

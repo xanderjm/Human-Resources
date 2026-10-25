@@ -15,7 +15,19 @@ enum class Cue : std::uint8_t { capture,
   purchase,
   death,
   ui,
+  sweep_capture,
+  harvest_overdrive,
+  phase_dash,
   count };
+
+struct GameplayFeedback final {
+  bool capture{}, laser{}, warning{}, hit{};
+  bool sweep_capture{}, harvest_overdrive{}, phase_dash{};
+};
+using CueSelection = std::array<bool, static_cast<std::size_t>(Cue::count)>;
+// One observed outcome batch yields one capture payoff and one weapon attack.
+// Sequence/lifecycle consumption stays with the product's SceneEffects owner.
+[[nodiscard]] CueSelection select_gameplay_cues(GameplayFeedback feedback) noexcept;
 
 // Single-threaded, allocation-free PCM synthesis. Frames are stereo float at 48 kHz.
 // The platform owns device buffering; the game only requests semantic cues.

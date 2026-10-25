@@ -276,7 +276,9 @@ struct StyleRenderer::State final {
       stats.visible_instances += visible ? 1U : 0U;
       stats.culled_instances += visible ? 0U : 1U;
       stats.shadow_instances += caster ? 1U : 0U;
-      prepared.push_back({&i, mesh, {model, i.tint, {0, i.shield_rim ? 2.F : i.effect ? 1.F
+      prepared.push_back({&i, mesh, {model, i.tint, {i.damage_reactive ? 2.F : i.polished_hull ? 1.F
+                                                                                               : 0.F,
+                                                        i.shield_rim ? 2.F : i.effect ? 1.F
                                                                                       : 0.F,
                                                         i.texture_repeat, i.texture_repeat * i.scale.z / i.scale.x},
                                         {mesh->average[0], mesh->average[1], mesh->average[2], i.texture_detail}},
@@ -292,7 +294,7 @@ struct StyleRenderer::State final {
     // Opaque depth-tested geometry may be reordered; alpha effects keep order.
     if (!effects_pass)
       std::stable_sort(selection.begin(), selection.end(), [](auto* a, auto* b) { return a->instance->mesh < b->instance->mesh; });
-    const SceneUniforms scene{shadow_pass ? frame.light : frame.camera, frame.light, {frame.ring_angle, 0, 0, 0}};
+    const SceneUniforms scene{shadow_pass ? frame.light : frame.camera, frame.light, {frame.ring_angle, frame.damage_flash, 0, 0}};
     SDL_PushGPUVertexUniformData(command, 0, &scene, sizeof(scene));
     std::array<InstanceUniforms, batch_capacity> batch{};
     for (std::size_t first = 0; first < selection.size();) {
@@ -521,7 +523,7 @@ bool StyleRenderer::render(const presentation::StyleFrame& frame, SDL_IOStream* 
     return false;
   }
   SDL_BindGPUGraphicsPipeline(pass, s.world);
-  const SceneUniforms scene{frame.camera, frame.light, {frame.ring_angle, 0, 0, 0}};
+  const SceneUniforms scene{frame.camera, frame.light, {frame.ring_angle, frame.damage_flash, 0, 0}};
   SDL_PushGPUVertexUniformData(command, 0, &scene, sizeof(scene));
   std::array<InstanceUniforms, batch_capacity> surface_batch{};
   for (const auto& range : s.surface_stream.ranges) {

@@ -34,13 +34,15 @@ void displace(Motion& motion, Vec2 offset, float maximum) {
 
 bool Game::State::place_biological(detail::Actor& target, float lateral_sample, float forward_sample, bool initial) {
   const float edge = tuning::field_half_width - radius(target);
-  const float near = initial ? 1.F : tuning::enemy_spawn_ahead * .55F;
+  const Vec2 formation = target.view.position;
+  const float jitter = initial ? .08F : .14F;
   for (unsigned attempt = 0; attempt < tuning::biological_spawn_candidates; ++attempt) {
-    // Fixed candidates reuse existing samples; blocked attempts never alter the RNG schedule.
-    const float x_sample = lateral_sample + static_cast<float>(attempt) * .381966011F;
-    const float z_sample = forward_sample + static_cast<float>(attempt) * .618033989F;
-    target.view.position = {-edge + 2 * edge * (x_sample - std::floor(x_sample)),
-        static_cast<float>(view.runner_distance) + near + (tuning::enemy_spawn_ahead - near) * (z_sample - std::floor(z_sample))};
+    // Preserve the director's authored herd. Candidate offsets resolve only
+    // local collisions; a blocked entry must not scatter across the whole field.
+    const float sign = (attempt & 1U) ? 1.F : -1.F;
+    target.view.position = {std::clamp(formation.x + jitter * (lateral_sample - .5F) +
+        (attempt ? sign * radius(target) * static_cast<float>(attempt) : 0.F), -edge, edge),
+        formation.z + jitter * (forward_sample - .5F) + static_cast<float>(attempt) * radius(target)};
     bool clear = true;
     for (const auto& other : actors) {
       if (!grounded(other)) {
@@ -63,7 +65,7 @@ void Game::State::move_biological(float dt) {
   if (!(dt > 0)) {
     return;
   }
-  // Production passive population is capped at 28; no allocation or spatial framework.
+  // Fixed passive capacity; no allocation or spatial framework.
   std::array<Motion, tuning::biological_active_cap> motions{};
   std::size_t count = 0;
   for (auto& actor : actors) {
@@ -73,11 +75,26 @@ void Game::State::move_biological(float dt) {
     if (count == motions.size()) {
       break;
     }
-    auto preferred = add(actor.view.position, scaled(actor.wander_velocity, dt));
-    if (std::fabs(preferred.x) > tuning::field_half_width) {
-      preferred.x = std::clamp(preferred.x, -tuning::field_half_width, tuning::field_half_width);
-      actor.wander_velocity.x = -actor.wander_velocity.x;
-    }
+    const float offset = actor.view.position.x - view.player.x;
+    const float side = std::abs(offset) > .1F ? (offset > 0 ? 1.F : -1.F) : (actor.view.id & 1U ? 1.F : -1.F);
+    // Everyone keeps jogging forward. Only the local UFO threat redirects that
+    // individual heading into escape; distant herds do not form global rails.
+    const float fear = std::clamp(1 - std::sqrt(distance_squared(actor.view.position, view.player)) /
+        tuning::tactics_civilian_fear_radius, 0.F, 1.F);
+    const auto heading_key = actor.view.id * 2654435761U;
+    const float travel = (2 * static_cast<float>(heading_key >> 8) / 16777215.F - 1) *
+        tuning::tactics_civilian_travel_lateral_bias;
+    const float lateral = travel * (1 - fear) + side * tuning::tactics_civilian_lateral_bias * fear;
+    const float travel_side = lateral >= 0 ? 1.F : -1.F;
+    // Near an edge, turn forward instead of bouncing back toward the threat.
+    const float lateral_space = std::clamp((tuning::field_half_width - radius(actor) - travel_side * actor.view.position.x) / 1.5F, 0.F, 1.F);
+    const float speed = tuning::biological_movement_speed[static_cast<std::size_t>(actor.view.kind)];
+    const auto desired = scaled(direction({lateral * lateral_space, 1}), speed);
+    const float turn = tuning::tactics_civilian_turn_acceleration * dt;
+    actor.locomotion_velocity.x += std::clamp(desired.x - actor.locomotion_velocity.x, -turn, turn);
+    actor.locomotion_velocity.z += std::clamp(desired.z - actor.locomotion_velocity.z, -turn, turn);
+    auto preferred = add(actor.view.position, scaled(actor.locomotion_velocity, dt));
+    preferred.x = std::clamp(preferred.x, -tuning::field_half_width, tuning::field_half_width);
     motions[count++] = {&actor, actor.view.position, preferred, preferred};
   }
   std::sort(motions.begin(), motions.begin() + static_cast<std::ptrdiff_t>(count), [](const Motion& a, const Motion& b) {

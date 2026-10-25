@@ -14,7 +14,7 @@ inline void infantry_transition_proof(hr::renderer::StyleRenderer& renderer, hr:
   const auto& first = trace.samples.front();
   const auto& before = trace.samples[trace.cancelled_at - 1];
   const auto& cancelled = trace.samples[trace.cancelled_at];
-  std::cout << "SCRIPTED NATIVE TRANSITIONS: three role bodies replay one real pig capture-loss trace; this is not an earned encounter\n"
+  std::cout << "SCRIPTED NATIVE TRANSITIONS: three role bodies replay one real capture-loss trace; this is not an earned encounter\n"
             << "actual-trace seed=514 actor=" << first.actor.id << " source_kind=" << static_cast<unsigned>(first.actor.kind)
             << " samples=" << trace.samples.size() << " cancel_index=" << trace.cancelled_at
             << " before_seconds=" << before.seconds << " before_progress=" << before.actor.capture_progress

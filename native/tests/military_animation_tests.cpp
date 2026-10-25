@@ -205,12 +205,18 @@ void product_capture_transport(const std::filesystem::path& assets) {
     require(mesh::decode_preview_mesh(read(assets/(std::string(id)+".hrm")),companion),"capture companion decodes");
     renderer::AnimationInstances raw,transport;
     require(raw.load(id,bytes,companion.vertices) && transport.load(id,bytes,companion.vertices),"same exact source loads in both presentation modes");
-    renderer::AnimationIntent intent{.capturing=true,.enabled=true,.product_capture_transport=true};
+    const float lift_seconds = asset.clips()[asset.find_clip("beam_lift")].seconds;
+    const float struggle_seconds = asset.clips()[asset.find_clip("beam_struggle")].seconds;
+    const auto progress_at = [=](float seconds) {
+      return seconds < lift_seconds ? .65F * seconds / lift_seconds : .65F + .35F * std::min(.99F, (seconds - lift_seconds) / struggle_seconds);
+    };
+    renderer::AnimationIntent intent{.capturing = true, .enabled = true, .product_capture_transport = true, .capture_progress = progress_at(.25F)};
     raw.begin_frame();transport.begin_frame();
     auto raw_intent=intent;raw_intent.product_capture_transport=false;
     const auto* raw_actor=raw.update(1,id,raw_intent,.25F);
     const auto* actor=transport.update(1,id,intent,.25F);
-    require(raw_actor && actor,"product capture evaluates with default source playback unchanged");
+    require(raw_actor && actor && std::abs(raw_actor->clip_time - .25F) < 1e-6F && std::abs(actor->clip_time - .25F) < 1e-6F,
+        "source and progress-driven capture sample the identical authored quarter-second pose");
     for(std::size_t v=0;v<actor->vertices.size();++v) for(std::size_t k=0;k<3;++k)
       require(std::abs(raw_actor->vertices[v].position[k]-delta[k]-actor->vertices[v].position[k])<.00001F,
           "all body vertices share exactly the root translation correction");
@@ -226,8 +232,13 @@ void product_capture_transport(const std::filesystem::path& assets) {
     for(unsigned held_frames:{3U,54U,119U}) {
       transport.clear_actors();intent.capturing=true;
       for(unsigned frame=0;frame<=held_frames;++frame) {
+        intent.capture_progress = progress_at(static_cast<float>(frame + 1) / 60);
         transport.begin_frame();actor=transport.update(1,id,intent,1.F/60);require(actor,"capture progresses");transport.end_frame();
       }
+      const float held_seconds = static_cast<float>(held_frames + 1) / 60;
+      require(actor->clip == (held_seconds < lift_seconds ? "beam_lift" : "beam_struggle") &&
+                  std::abs(actor->clip_time - (held_seconds < lift_seconds ? held_seconds : held_seconds - lift_seconds)) < .00001F,
+          "early and mature cancellation exercise their intended authored lift or struggle phase");
       const std::vector<mesh::PreviewVertex> before(actor->vertices.begin(),actor->vertices.end());
       intent.capturing=false;
       transport.begin_frame();actor=transport.update(1,id,intent,1.F/60);

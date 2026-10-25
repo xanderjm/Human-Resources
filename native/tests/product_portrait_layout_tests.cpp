@@ -2,6 +2,7 @@
 #include "test_support.h"
 #include <human_resources/product/presentation.h>
 #include <human_resources/product/accessibility.h>
+#include <human_resources/product/controls.h>
 #include <human_resources/gameplay/tuning.h>
 #include <cctype>
 #include <limits>
@@ -52,14 +53,14 @@ void compact_phone_cards_preserve_effects_and_scene_stage() {
       }
     }
     const auto& first = ui.buttons[0].bounds;
-    unsigned letters = 0;
+    std::string body_copy;
     for (const auto& q : ui.quads) {
       if (!glyph(q) || q.color[0] != .035F || q.color[1] != .105F) continue;
       const float x = q.rect[0] * phone.width, y = q.rect[1] * phone.height;
       if (y >= first.y && y < first.bottom()) {
         const unsigned column = static_cast<unsigned>(std::lround(q.uv[0] * 1024.F / 64.F));
         const unsigned row = static_cast<unsigned>(std::lround(q.uv[1] * 2048.F / 80.F));
-        if (row * 16 + column != 0) ++letters;
+        if (row * 16 + column != 0) body_copy += static_cast<char>(32 + row * 16 + column);
         require(x >= first.x && x < first.right(), "effect glyph starts inside visible card frame");
         const float size = q.rect[2] * phone.width * 48.F / 64.F;
         require(size >= 13.99F, "effect text remains at least fourteen points");
@@ -68,8 +69,9 @@ void compact_phone_cards_preserve_effects_and_scene_stage() {
         require(y + size * (1.F + 8.F / 48.F) <= first.bottom() - 2.F, "last effect line stays within card");
       }
     }
-    const auto expected = static_cast<unsigned>(std::count_if(effect.begin(), effect.end(), [](char ch) { return ch != ' '; }));
-    require(letters == expected, "long complete effect copy is rendered without truncation");
+    std::string expected_copy;
+    for (const char ch : effect) if (ch != ' ') expected_copy += ch;
+    require(body_copy.find(expected_copy) != std::string::npos, "long complete effect copy is rendered without truncation beside optional benefit/evolution context");
     view.screen = Screen::title;
     const auto title = interface(view);
     // Central stage is reserved for the actual saucer/capture scene.
@@ -119,7 +121,7 @@ void readable_page_is_real_safe_and_scaled(const View& view, const Interface& pa
     glyph_lines.push_back({x,y,size,size});
   }
   require(compact(rendered).find(compact(page.page_text)) != std::string::npos, "complete spoken page is also rendered through actual atlas quads");
-  if (!page.page_text.empty() && !page.buttons.empty()) {
+  if (view.screen != Screen::run && !page.page_text.empty() && !page.buttons.empty()) {
     auto body = page.page_text;
     body.erase(std::remove(body.begin(),body.end(),'\n'),body.end());
     const auto begin = rendered.find(body);
@@ -346,6 +348,9 @@ void compact_hud_maximum_values_preserve_spacing_and_ingress_bound() {
       float occupied_bottom = 0;
       for (const auto& q : ui.quads) {
         const float top = q.rect[1] * phone.height, bottom = (q.rect[1] + q.rect[3]) * phone.height;
+        // Starter Dash has its own lower control. This assertion owns only the
+        // tactical top HUD that constrains hostile ingress.
+        if (top > pause->bounds.bottom()) continue;
         occupied_bottom = std::max(occupied_bottom,bottom);
         require(bottom <= pause->bounds.bottom() + .01F, "actual HUD panels and full glyph quads do not extend below existing Pause ingress boundary");
         if (!glyph(q)) continue;
@@ -404,9 +409,290 @@ void current_build_separates_temporary_and_permanent_identity() {
   }
 }
 
+void upgrade_board_exposes_actual_build_and_projected_benefits() {
+  progression_tests::MemoryBackend backend;
+  hr::progression::AccountStore store{backend};
+  require(store.load().playable(), "decision board account loads");
+  hr::gameplay::Game game;
+  game.start();
+  auto run = game.snapshot();
+  run.modules[0] = 3;
+  run.modules[1] = 1;
+  run.choices[0] = {.hardware = true, .module = hr::gameplay::Module::phase_drive, .next_rank = 1, .before = .35F, .after = .5F, .title = "Phase Drive", .description = "Dash protection: 0.35 -> 0.5s."};
+  run.choices[1] = {.hardware = true, .module = hr::gameplay::Module::beam_splitter, .next_rank = 2, .before = 2, .after = 3, .title = "Beam Splitter", .description = "Biological targets: 2 -> 3."};
+  run.choices[2] = {.hardware = false, .research = hr::gameplay::Research::weapon_damage, .before = 20, .after = 25, .title = "Weapon Damage", .description = "Original laser damage: 20 -> 25 per shot."};
+  for (const auto phone : std::array<hr::ui::Rect, 2>{{{0, 0, 320, 568}, {0, 0, 390, 844}}}) {
+    View view{Screen::upgrade, &run, &store, phone, {0, 20, 0, 0}};
+    const auto ui = interface(view);
+    const auto copy = compact(atlas_copy(ui));
+    require(copy.find("2/6HARDWARE") != std::string::npos, "decision board exposes real hardware occupancy before selection");
+    require(copy.find("NEWHARDWARE") != std::string::npos && copy.find("RANKUP/2OF3") != std::string::npos && copy.find("FLIGHTRESEARCH") != std::string::npos, "new slots, installed ranks and research are distinct decisions");
+    for (const auto& choice : run.choices)
+      require(copy.find(compact(choice.description)) != std::string::npos, "complete actual effects remain present beside benefit hierarchy");
+    require(copy.find("KEY1")!=std::string::npos && copy.find("KEY2")!=std::string::npos && copy.find("KEY3")!=std::string::npos,"choice shortcuts explicitly say Key and cannot masquerade as hardware ranks");
+    if(phone.width==390) {
+      float last_bottom=0;
+      for(const auto& button:ui.buttons)last_bottom=std::max(last_bottom,button.bounds.bottom());
+      require(last_bottom<700,"short real effects keep the decision board compact with paused world visible");
+    }
+    for(float scale:{2.F,3.2F}) {
+      auto readable=view;readable.text_scale=scale;
+      for(unsigned preview=0;preview<3;++preview) {
+        readable.upgrade_preview=preview;
+        const auto first=interface(readable);
+        require(first.page_text.find("HARDWARE")==std::string::npos || first.page_text.find('>')<first.page_text.find("HARDWARE"),"benefit precedes admission metadata in the enlarged first offer page");
+        require(first.page_text.find('>')!=std::string::npos,"actual before-after benefit is visible on the first enlarged preview page");
+      }
+    }
+    if (phone.width == 390)
+      require(copy.find("0.35>0.5s") != std::string::npos, "projected fractional benefit does not round away actual protection timing");
+    for (unsigned i = 0; i < 3; ++i) {
+      const auto command = static_cast<Command>(static_cast<unsigned>(Command::pick0) + i);
+      require(std::any_of(ui.buttons.begin(), ui.buttons.end(), [&](const auto& b) { return b.command == command && b.enabled; }), "all three cards are directly selectable at ordinary mobile size");
+    }
+    const auto semantic = accessibility_snapshot(view, ui);
+    require(std::any_of(semantic.begin(), semantic.end(), [](const auto& node) { return node.value.find("Uses one of six hardware slots") != std::string::npos; }), "new hardware slot consequence is available to assistive input");
+  }
 }
+void grouped_build_keeps_full_loadout_research_and_hangar_in_three_pages() {
+  progression_tests::MemoryBackend backend;
+  hr::progression::AccountStore store{backend};
+  require(store.load().playable(), "grouped build account loads");
+  hr::gameplay::Game game;
+  game.start();
+  auto run = game.snapshot();
+  for (const bool populated : {false, true}) {
+    run.modules.fill(0);
+    run.research.fill(0);
+    if (populated) {
+      for (unsigned i = 0; i < 6; ++i)
+        run.modules[i] = 3;
+      for (auto& amount : run.research)
+        amount = 15;
+    }
+    run.evolution_bits = populated ? 3 : 0;
+    for (const auto phone : std::array<hr::ui::Rect, 2>{{{0, 0, 320, 568}, {0, 0, 390, 844}}}) {
+      View view{Screen::pause, &run, &store, phone, {0, 20, 0, 0}};
+      view.show_build = true;
+      std::string all_copy;
+      for (unsigned page = 0; page < 3; ++page) {
+        view.ui_page = page;
+        const auto ui = interface(view);
+        require(ui.page == page && ui.page_count == 3, "ordinary build has three grouped pages even with a complete loadout");
+        readable_page_is_real_safe_and_scaled(view, ui);
+        all_copy += ui.page_text;
+      }
+      const auto text = compact(all_copy);
+      require(text.find(populated ? "6/6hardwareslots" : "0/6hardwareslots") != std::string::npos, "empty and occupied slots are explicit");
+      if (populated) {
+        for (unsigned i = 0; i < 6; ++i)
+          require(text.find(compact(hr::gameplay::tuning::module_names[i])) != std::string::npos, "all six installed hardware names survive grouped overview");
+        for (const auto name : hr::gameplay::tuning::research_names)
+          require(text.find(compact(name)) != std::string::npos, "all seven actual research entries survive grouped overview");
+      } else
+        require(text.find("Emptyhardwareslot") != std::string::npos && text.find("Noresearchearned") != std::string::npos, "an empty build explains what remains to earn");
+    }
+  }
+}
+
+void harvest_feedback_explains_sweeps_boost_and_dash_without_expanding_top_hud() {
+  progression_tests::MemoryBackend backend;
+  hr::progression::AccountStore store{backend};
+  require(store.load().playable(), "harvest feedback account loads");
+  hr::gameplay::Game game;
+  game.start();
+  auto run = game.snapshot();
+  run.stats.active_seconds = 30;
+  run.modules[static_cast<unsigned>(hr::gameplay::Module::phase_drive)] = 0;
+  for (const auto phone : std::array<hr::ui::Rect,2>{{{0,0,320,568},{0,0,390,844}}}) {
+    for (const float scale : {1.F, 1.3F, 2.F, 3.2F}) {
+      View view{Screen::run, &run, &store, phone, {0,20,0,0}};
+      view.text_scale = scale;
+      run.harvest_chain = 0;
+      run.harvest_overdrive_seconds = 0;
+      const auto idle = interface(view);
+      const auto original_pause = std::find_if(idle.buttons.begin(), idle.buttons.end(), [](const auto& b){return b.command == Command::pause;})->bounds;
+      for (const bool boosted : {false,true}) {
+        run.harvest_chain = boosted ? 0 : 2;
+        run.harvest_chain_seconds = 3.2F;
+        run.harvest_overdrive_seconds = boosted ? 4.2F : 0;
+        const auto ui = interface(view);
+        const auto copy = compact(atlas_copy(ui));
+        require(copy.find(boosted ? (scale == 1 ? "OVERDRIVE5s" : "BOOST5s") : "SWEEP2/3") != std::string::npos, "actual timed sweep/Overdrive state is visible without inferring reward from animation");
+        const auto pause = std::find_if(ui.buttons.begin(), ui.buttons.end(), [](const auto& b){return b.command == Command::pause;})->bounds;
+        require(pause.y == original_pause.y && pause.bottom() == original_pause.bottom(), "harvest payoff leaves tactical top ingress and Pause bounds unchanged");
+        if (scale > 1) readable_page_is_real_safe_and_scaled(view, ui);
+        auto dash = std::find_if(ui.buttons.begin(), ui.buttons.end(), [](const auto& b){return b.command == Command::dash;});
+        require(dash != ui.buttons.end() && dash->enabled && dash->label.find("DASH") != std::string::npos, "fresh run exposes immediately usable starter Dash action");
+        const auto semantics = accessibility_snapshot(view, ui);
+        require(std::any_of(semantics.begin(), semantics.end(), [&](const auto& n){return n.value.find(boosted ? "Overdrive active" : "Sweep chain 2 of 3") != std::string::npos;}), "native spoken tactical summary describes the actual reward and time");
+      }
+      run.dash_cooldown_seconds = 1.2F;
+      const auto charging = interface(view);
+      const auto dash = std::find_if(charging.buttons.begin(), charging.buttons.end(), [](const auto& b){return b.command == Command::dash;});
+      require(dash != charging.buttons.end() && !dash->enabled && dash->label == "DASH 2s", "Dash cooldown is named, rounded up and genuinely disabled until ready");
+      run.dash_cooldown_seconds = 0;
+    }
+  }
+}
+
+void compact_choice_titles_stay_on_the_dark_frame() {
+  progression_tests::MemoryBackend backend;
+  hr::progression::AccountStore store{backend};
+  require(store.load().playable(), "compact header account loads");
+  hr::gameplay::Game game; game.start();
+  auto run=game.snapshot();
+  const std::array<std::string,3> names{"Tractor Lens","Repair Swarm","Shield Generator"};
+  for(unsigned i=0;i<3;++i) run.choices[i]={.hardware=true,.module=hr::gameplay::Module::tractor_lens,.next_rank=1,.title=names[i],.description="Capture radius: 4 -> 4.4m. Beams hold0.3s out of range."};
+  for(const auto phone:std::array<hr::ui::Rect,2>{{{0,0,320,568},{0,0,390,844}}}) {
+    View view{Screen::upgrade,&run,&store,phone,{0,20,0,0}};
+    const auto ui=interface(view);
+    std::string copy;
+    std::vector<hr::ui::Rect> lines;
+    std::vector<float> body_tops;
+    for(const auto& q:ui.quads) {
+      if(std::abs(q.uv[1]-1612.F/2048.F)<.00001F && std::abs(q.uv[2]-464.F/1024.F)<.00001F)
+        body_tops.push_back(q.rect[1]*phone.height);
+      if(!glyph(q)) continue;
+      const float size=q.rect[2]*phone.width*48.F/64.F;
+      const unsigned col=static_cast<unsigned>(std::lround(q.uv[0]*16));
+      const float bank=q.uv[1]*2048>=512?512.F:0.F;
+      const unsigned row=static_cast<unsigned>(std::lround((q.uv[1]*2048-bank)/80));
+      copy+=static_cast<char>(32+row*16+col);
+      lines.push_back({q.rect[0]*phone.width+size*4.F/48.F,q.rect[1]*phone.height+size*8.F/48.F,size,size});
+    }
+    require(body_tops.size()==3,"each choice has a complete independent dark header and cream effect body");
+    for(unsigned i=0;i<3;++i) {
+      const auto title=copy.find(names[i]);
+      require(title!=std::string::npos,"actual complete upgrade title remains rendered");
+      for(std::size_t j=title;j<title+names[i].size();++j)
+        require(lines[j].y+lines[j].height*1.25F<body_tops[i],"all title glyph lines and descender room remain on the dark header at the physical text floor");
+    }
+    const auto summary=copy.find("0/6 HARDWARE");
+    require(summary!=std::string::npos,"hardware admission summary remains visible");
+    const auto first=std::find_if(ui.buttons.begin(),ui.buttons.end(),[](const auto& b){return b.command==Command::pick0;})->bounds;
+    require(lines[summary].y+lines[summary].height*1.25F+3<first.y,"first choice starts below the full hardware summary with visible spacing");
+  }
+}
+
+void promotion_preserves_choice_safety_and_collected_return_controls() {
+  progression_tests::MemoryBackend backend;
+  hr::progression::AccountStore store{backend};
+  require(store.load().playable(), "promotion account loads");
+  hr::gameplay::Game game;
+  game.start({.seed=514});
+  for (unsigned step=0;step<20000 && game.snapshot().phase==hr::gameplay::Phase::active;++step) game.advance(1.F/60,{});
+  require(game.snapshot().phase==hr::gameplay::Phase::choosing_upgrade,"public Game reaches a real earned promotion");
+  const auto before=game.snapshot().stats.active_seconds;
+  const auto chosen=game.snapshot().choices[0];
+  PromotionFlow flow;
+  flow.enter();
+  View view{Screen::upgrade,&game.snapshot(),&store,{0,0,320,568},{0,20,0,0}};
+  const auto settled=interface(view);
+  for (float age : {0.F,.04F,.12F,.24F}) {
+    view.promotion={age,nullptr,false};
+    const auto entry=interface(view);
+    require(entry.buttons.size()==settled.buttons.size(),"entry never hides or replaces any choice action");
+    for (unsigned i=0;i<entry.buttons.size();++i) {
+      const auto& a=entry.buttons[i]; const auto& b=settled.buttons[i];
+      require(a.command==b.command && a.enabled==b.enabled && a.bounds.x==b.bounds.x && a.bounds.y==b.bounds.y && a.bounds.width==b.bounds.width && a.bounds.height==b.bounds.height,"all promotion touch targets remain stationary through card entry");
+    }
+    require(atlas_copy(entry)==atlas_copy(settled),"every complete mechanic remains present from first entry frame");
+  }
+  view.promotion={0,nullptr,true};
+  const auto reduced=interface(view);
+  require(reduced.quads.size()==settled.quads.size(),"reduced motion uses the settled board without moving progress accents");
+  for (unsigned i=0;i<reduced.quads.size();++i) require(reduced.quads[i].rect==settled.quads[i].rect && reduced.quads[i].color==settled.quads[i].color,"reduced motion retains a completely stationary full-opacity draft");
+  require(game.choose_upgrade(0),"earned selection applies immediately");
+  require(hr::gameplay::inspect_saved_state(game.save_state()).valid(),"selection can be saved before cosmetic confirmation");
+  flow.confirm(chosen);
+  hr::product::Controls controls;
+  hr::input::Action choice_contact{.id=static_cast<hr::input::ActionId>(ControlAction::contact),.device=1,.phase=hr::input::ActionPhase::started,.value=1,.position={150,200},.has_position=true,.contact=17,.source_kind=hr::input::DeviceKind::touch};
+  controls.apply(choice_contact,false,true);
+  choice_contact.phase=hr::input::ActionPhase::changed;
+  choice_contact.position.x=194;
+  controls.apply(choice_contact,true,false);
+  require(!controls.dragging(),"the menu selection contact cannot become a flight drag without a new press");
+  hr::input::Action right{.id=static_cast<hr::input::ActionId>(ControlAction::right),.device=2,.phase=hr::input::ActionPhase::started,.value=1,.source_control=7};
+  hr::input::Action dash=right;
+  dash.id=static_cast<hr::input::ActionId>(ControlAction::dash);
+  controls.apply(right,true,false);
+  controls.apply(dash,true,false);
+  flow.advance(.119F);
+  require(flow.holds_combat() && game.snapshot().stats.active_seconds==before,"confirmation cannot advance enemies, projectiles or the run clock");
+  view.screen=Screen::run;
+  view.promotion=flow.frame();
+  const auto confirming=interface(view);
+  require(accessibility_command({100+static_cast<hr::ui::NodeId>(Command::pick0),hr::accessibility::ActionKind::activate},confirming)==Command::none,"old choice action cannot leak into confirmation/next draft");
+  for (float scale : {1.F,1.3F,2.F,3.2F}) {
+    view.text_scale=scale;
+    view.promotion=flow.frame(true);
+    const auto receipt=interface(view);
+    require(receipt.page_text.find(chosen.title)!=std::string::npos,"confirmation names the actual installed choice");
+    require(!receipt.text_overflow,"confirmation preserves complete actual title at requested text size");
+    require(compact(atlas_copy(receipt)).find("Installed")!=std::string::npos,"compact receipt visibly acknowledges the saved choice at every text size");
+    const auto semantics=accessibility_snapshot(view,receipt);
+    require(semantics[1].value.find("Installed: "+chosen.title)!=std::string::npos,"compact receipt retains exact installed title in native spoken context");
+    const auto pause=std::find_if(receipt.buttons.begin(),receipt.buttons.end(),[](const auto& b){return b.command==Command::pause;})->bounds;
+    auto ordinary_view=view; ordinary_view.promotion={};
+    for(std::size_t i=interface(ordinary_view).quads.size();i<receipt.quads.size();++i) {
+      const auto& q=receipt.quads[i];
+      if(q.uv[2]>=0)continue;
+      require(q.rect[1]*view.viewport.height>=pause.bottom(),"nonblocking receipt sits below HUD rather than over the ship at screen centre");
+      require(q.rect[3]*view.viewport.height<=14*scale+16+.01F || q.rect[3]*view.viewport.height<=36.01F,"receipt is one measured line at every text preference");
+    }
+  }
+  flow.advance(.002F);
+  require(!flow.holds_combat(),"confirmation releases after120ms without countdown");
+  require(flow.frame().installed,"exact installed choice remains available after combat resumes");
+  flow.advance(.68F);
+  require(!flow.frame().installed,"nonblocking installed receipt expires at0.8seconds");
+  const auto returned=controls.sample();
+  require(returned.movement.x>0 && returned.dash,"movement and Dash pressed during confirmation reach first resumed sample");
+  require(!controls.sample().dash,"queued Dash is consumed exactly once");
+  game.advance(1.F/60,returned);
+  require(game.snapshot().stats.active_seconds>before,"first returned control advances actual Game");
+  flow.enter();
+  require(!flow.holds_combat() && !flow.frame().installed,"a queued earned draft clears old selected receipt");
+  flow.confirm(chosen);
+  flow.clear(); controls.clear();
+  require(!flow.holds_combat() && !flow.frame().installed && controls.sample().movement.x==0,"pause, focus loss or protected-save interruption cancels cosmetics and controls");
+}
+
+void actual_damage_feedback_stays_inside_the_tactical_hud() {
+  progression_tests::MemoryBackend backend;
+  hr::progression::AccountStore store{backend};
+  require(store.load().playable(),"damage account loads");
+  hr::gameplay::Game game;game.start();
+  auto run=game.snapshot();run.stats.active_seconds=30;
+  for (float scale : {1.F,1.3F,2.F,3.2F}) for (bool hull : {false,true}) {
+    View view{Screen::run,&run,&store,{0,0,320,568},{0,20,0,0}};
+    view.text_scale=scale;
+    const auto ordinary=interface(view);
+    const auto pause=std::find_if(ordinary.buttons.begin(),ordinary.buttons.end(),[](const auto& b){return b.command==Command::pause;})->bounds;
+    view.damage_feedback={.1F,hull};
+    const auto hit=interface(view);
+    const auto copy=compact(atlas_copy(hit));
+    require(copy.find(hull ? "HULL" : "SHIELD")!=std::string::npos,"committed hit identifies the affected defence at every text size");
+    const auto after=std::find_if(hit.buttons.begin(),hit.buttons.end(),[](const auto& b){return b.command==Command::pause;})->bounds;
+    require(after.x==pause.x && after.y==pause.y && after.height==pause.height,"hit feedback preserves Pause and tactical field height");
+    if(scale>1) readable_page_is_real_safe_and_scaled(view,hit);
+    const auto spoken=accessibility_snapshot(view,hit);
+    require(std::any_of(spoken.begin(),spoken.end(),[&](const auto& n){return n.value.find(hull?"Hull hit.":"Shield hit.")!=std::string::npos;}),"native context describes committed damage without repeating an age countdown");
+    view.damage_feedback.age=.4F;
+    require(accessibility_snapshot(view,interface(view))[1].value==spoken[1].value,"damage age does not create per-frame spoken announcements");
+  }
+}
+
+} // namespace
 int main() {
+  compact_choice_titles_stay_on_the_dark_frame();
+  promotion_preserves_choice_safety_and_collected_return_controls();
+  actual_damage_feedback_stays_inside_the_tactical_hud();
+  harvest_feedback_explains_sweeps_boost_and_dash_without_expanding_top_hud();
   compact_phone_cards_preserve_effects_and_scene_stage();
+  upgrade_board_exposes_actual_build_and_projected_benefits();
+  grouped_build_keeps_full_loadout_research_and_hangar_in_three_pages();
   larger_text_preserves_whole_offers_and_all_menu_actions();
   current_build_separates_temporary_and_permanent_identity();
   small_preferences_preserve_type_growth_and_useful_menus();
