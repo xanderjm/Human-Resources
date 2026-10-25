@@ -1,0 +1,62 @@
+{
+  "schema": 1,
+  "method": {
+    "name": "exact-position-weld-collapse",
+    "ratio": 0.25,
+    "triangulate": true,
+    "blender": "4.5.15",
+    "corner_normal_tolerance": 0.001,
+    "bounds": "original-axis-affine"
+  },
+  "tools": {
+    "tools/static_mesh_optimizations.py": "902f30a0bdb3d675348ee906b0314d5e14a2e4dcad8718685d5feb460f238ff7",
+    "tools/build_static_mesh_optimizations.py": "35c397df95b8a84bf433fac68801b2d8bf3149066589e97293bf5c6b7c6e10e0",
+    "tools/normalize_glb.py": "2833e62ec1195f8fe63925d937b476c04cae0d08a0d219277d9f4ce1b615ca52",
+    "tools/art-toolchain.json": "cc51a41ca6bc258364fc3f52a4a14f86547a52a59d99c472a820baca9b8059ee"
+  },
+  "models": [
+    {
+      "id": "crop-seedling",
+      "source": "assets/models/crop-seedling/crop-seedling.glb",
+      "source_sha256": "2bb9c607e3d84c50ba9bad9a2d4a7c4ae1b524dce92f3f4f6760184b4c1205b3",
+      "runtime_source": "assets/models/crop-seedling/crop-seedling-runtime.glb",
+      "runtime_source_sha256": "82ecb728b97afae34d943e6e5420eb7520cb3ad114ac08867776f7fdfee1d626",
+      "triangles_before": 1700,
+      "triangles_after": 425,
+      "cooked_sha256": "4542e2734626e3753d64377462ac5634f344b8167fdb87fab84c84168efb1432",
+      "texture_payload_sha256": "0a662a65e52a771fb7b2bbc00e0435ae3234e0bab31f641113dc306a27a8266e",
+      "topology": {
+        "components": 1,
+        "boundary_loops": 3,
+        "boundary_degree_two": true,
+        "nonmanifold_incidence": [
+          4
+        ],
+        "degenerate_triangles": 0
+      },
+      "review": "Root and independent critic accept exact-weld-first fixed25percent crop/grass export, 2026-10-25; original bush retained. Closeup textured/shadow/silhouette and native320/390/768 initial/400s reviewed. Submitted geometry only; physical-device performance not inferred."
+    },
+    {
+      "id": "grass-tuft",
+      "source": "assets/models/grass-tuft/grass-tuft.glb",
+      "source_sha256": "274955486ba3e3cc9e6d4b4a4f5779b4b3e89e7b432a2dde1c2b2222edb9be4a",
+      "runtime_source": "assets/models/grass-tuft/grass-tuft-runtime.glb",
+      "runtime_source_sha256": "c8cbf206c13c17b03d962e5a7000d428de0871472cef7f4bb68802498567b420",
+      "triangles_before": 1814,
+      "triangles_after": 453,
+      "cooked_sha256": "9c6c8068af55c32c5e061323bbe220bdbd2993b4434945119874598e1d6a2083",
+      "texture_payload_sha256": "bdeb5a11ed9c217ff72fbf2df3bc9a05531f7aeb5f25c8f9bafd8ee3c303f299",
+      "topology": {
+        "components": 1,
+        "boundary_loops": 1,
+        "boundary_degree_two": true,
+        "nonmanifold_incidence": [
+          4,
+          4
+        ],
+        "degenerate_triangles": 0
+      },
+      "review": "Root and independent critic accept exact-weld-first fixed25percent crop/grass export, 2026-10-25; original bush retained. Closeup textured/shadow/silhouette and native320/390/768 initial/400s reviewed. Submitted geometry only; physical-device performance not inferred."
+    }
+  ]
+}

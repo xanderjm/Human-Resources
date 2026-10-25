@@ -314,6 +314,9 @@ if(HUMAN_RESOURCES_BUILD_CLIENT)
             --project "${CMAKE_CURRENT_SOURCE_DIR}/project.json"
     DEPENDS ${game_runtime_source_files} ${game_product_authoring_sources}
             "${CMAKE_CURRENT_SOURCE_DIR}/tools/cook_product_content.py"
+            "${CMAKE_CURRENT_SOURCE_DIR}/tools/static_mesh_optimizations.py"
+            "${CMAKE_CURRENT_SOURCE_DIR}/tools/build_static_mesh_optimizations.py"
+            "${CMAKE_CURRENT_SOURCE_DIR}/assets/production/static-mesh-optimizations.json"
             "${CMAKE_CURRENT_SOURCE_DIR}/tools/cook_vehicle_content.py"
             "${CMAKE_CURRENT_SOURCE_DIR}/tools/glb_geometry_repair.py"
             "${CMAKE_CURRENT_SOURCE_DIR}/tools/audit_glb.py"

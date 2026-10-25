@@ -7,6 +7,7 @@ import argparse, json, hashlib, shutil, subprocess, sys, struct
 from PIL import Image, ImageDraw, ImageFont
 from cook_style_preview import cook_glb, primitives, write_mesh
 from cook_vehicle_content import split_mount, write_vehicle_header
+from static_mesh_optimizations import checked_recipe, provenance as mesh_provenance, validate_cooked
 ROOT=Path(__file__).resolve().parents[1]
 MODELS=['ufo-modular', 'ufo-antenna', 'ufo-beam', 'ufo-laser', 'ufo-shield', 'ufo-rim-lens', 'shield-shell', 'cow', 'sheep', 'pig', 'farmer-body', 'straw-hat', 'infantry-rifleman-body', 'infantry-shotgunner-body', 'infantry-rocketeer-body', 'weapon-carbine', 'weapon-shotgun', 'weapon-rocket-launcher', 'jeep-chassis', 'jeep-wheel', 'jeep-minigun-head', 'jeep-minigun-fixed-post', 'jeep-minigun-yaw-cap', 'tank-hull', 'tank-turret', 'missile', 'tree-round-large', 'tree-round-small', 'bush-low', 'field-rock-a', 'field-rock-b', 'grass-tuft', 'crop-seedling', 'barn', 'silo', 'hay-bale', 'windmill-mast', 'windmill-rotor', 'resident-body', 'nightcap', 'house-coral', 'house-teal', 'streetlamp', 'mailbox-red', 'mailbox-teal', 'wheelie-bin', 'hedge-module', 'cactus-tall', 'cactus-short', 'cliff-module-a', 'cliff-module-b', 'desert-boulder-a', 'desert-boulder-b', 'desert-scrub', 'service-canopy', 'fuel-pump-red', 'fuel-pump-blue', 'road-bollard']
 MATERIALS=['grass', 'dirt', 'soil', 'asphalt', 'pavement', 'sand']
@@ -34,6 +35,8 @@ def validate_recipe(recipe):
         raise ValueError("Product recipe must explicitly match the reviewed consumed three-location content set")
 
 def model_options(asset):
+    if asset in ('crop-seedling', 'grass-tuft'):
+        return {'source_path':f'assets/models/{asset}/{asset}-runtime.glb'}
     if asset == 'ufo-modular':
         return {'source_path':'assets/models/ufo-modular/ufo-modular.glb',
                 'exclude_nodes':('Antenna_Module',)}
@@ -85,6 +88,8 @@ def cook_animation_content(output, header):
     (header.parent/'infantry_equipment.generated.h').write_text('#pragma once\n#include <array>\n#include <string_view>\nnamespace human_resources::product {\nstruct InfantryEquipment { std::string_view body,weapon; std::array<float,3> muzzle,secondary_muzzle; bool double_muzzle; };\ninline constexpr std::array<InfantryEquipment,3> infantry_equipment{{'+','.join(equipment)+'}};\n}\n')
 
 def cook(output, header):
+    # Validate reviewed exports before the preview cooker can fall back to raw art.
+    static_mesh_recipe=checked_recipe(ROOT)
     recipe=json.loads((ROOT/"assets/runtime/game-content.json").read_text())
     validate_recipe(recipe)
     output.mkdir(parents=True,exist_ok=True);header.parent.mkdir(parents=True,exist_ok=True)
@@ -96,6 +101,9 @@ def cook(output, header):
         options=model_options(asset)
         if asset in vehicle_sources: options['source_path']=str(vehicle_sources[asset])
         record=cook_glb(asset,output,inventory,**options)
+        if asset in ('crop-seedling', 'grass-tuft'):
+            validate_cooked(static_mesh_recipe,asset,output)
+            record['static_mesh_optimization']=mesh_provenance(static_mesh_recipe,asset,ROOT)
         if asset in vehicle_sources:
             # Provenance names the durable original and reproducible subset;
             # a checkout-specific generated path is never an art authority.

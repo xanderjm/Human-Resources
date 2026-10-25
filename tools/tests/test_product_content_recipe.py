@@ -43,6 +43,10 @@ class ProductContentRecipeTests(unittest.TestCase):
             'source_path':'assets/graphics/fx-shield-shell/unit-sphere.glb',
             'opaque_material':True})
         self.assertEqual(self.options('cow'), {})
+        self.assertEqual(self.options('bush-low'), {})
+        for asset in ('crop-seedling', 'grass-tuft'):
+            self.assertEqual(self.options(asset), {
+                'source_path':f'assets/models/{asset}/{asset}-runtime.glb'})
 
     def test_graphic_regions_cannot_pollute_transparent_card_margins(self):
         self.validate_regions(self.regions)

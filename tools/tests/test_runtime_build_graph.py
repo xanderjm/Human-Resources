@@ -21,6 +21,7 @@ class RuntimeBuildGraphTests(unittest.TestCase):
             for name in ("cmake", "native", "tools/generators", "tools/style-preview/shaders", "shaders"):
                 shutil.copytree(ROOT / name, source / name)
             for name in ("tools/cook_product_content.py", "tools/cook_style_preview.py", "tools/normalize_glb.py",
+                         "tools/static_mesh_optimizations.py", "tools/build_static_mesh_optimizations.py",
                          "tools/cook_infantry_animation.py", "tools/build_infantry_animation.py",
                          "tools/validate_infantry_animation.py", "tools/cook_vehicle_content.py",
                          "tools/glb_geometry_repair.py", "tools/audit_glb.py", "tools/art_tools.py",
@@ -28,7 +29,7 @@ class RuntimeBuildGraphTests(unittest.TestCase):
                 shutil.copyfile(ROOT / name, source / name)
             (source / "assets/production").mkdir(parents=True, exist_ok=True)
             shutil.copyfile(ROOT / "assets/production/inventory.json", source / "assets/production/inventory.json")
-            for name in ("vehicle-weapons.json", "assemblies.json"):
+            for name in ("vehicle-weapons.json", "assemblies.json", "static-mesh-optimizations.json"):
                 shutil.copyfile(ROOT / "assets/production" / name, source / "assets/production" / name)
             shutil.copytree(ROOT / "design/balance", source / "design/balance")
             # This consumed geometry lives under graphics, outside models/*.glb.
@@ -74,6 +75,12 @@ add_custom_target(runtime_file_consumer DEPENDS "${GAME_GENERATED_RUNTIME_DIR}/i
             run("cmake", "--build", str(build), "--target", "runtime_file_consumer")
             self.assertGreater(manifest.stat().st_mtime_ns, previous_mtime,
                                "a changed consumed graphics GLB must recook on the first rebuild")
+            previous_mtime = manifest.stat().st_mtime_ns
+            mesh_recipe = source / "assets/production/static-mesh-optimizations.json"
+            mesh_recipe.write_bytes(mesh_recipe.read_bytes() + b"\n")
+            run("cmake", "--build", str(build), "--target", "runtime_file_consumer")
+            self.assertGreater(manifest.stat().st_mtime_ns, previous_mtime,
+                               "a changed reviewed mesh recipe must recook on the first rebuild")
             cooked.unlink()
             run("cmake", "--build", str(build), "--target", "runtime_file_consumer")
             self.assertEqual(cooked.read_bytes(), b"second", "missing cooked output must be regenerated on the first rebuild")

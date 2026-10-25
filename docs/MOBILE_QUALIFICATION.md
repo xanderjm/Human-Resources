@@ -2,8 +2,9 @@
 
 Current source epoch **aa5975e04065af9ac98b330e996ebcb1cf00a2b8** includes the
 accepted reward-card hierarchy and Farmland frontage/active-time rotor changes.
-The production geometry still uses the original crop/grass meshes. A later private
-optimization cannot inherit this exact package qualification.
+These qualified artifacts use the original crop/grass meshes. The subsequent
+accepted two-export production optimization cannot inherit this exact package
+qualification; its next mobile snapshot includes550focused inputs.
 
 Current iPhoneOS/Simulator arm64 optimized Release and Android both-ABI debug/
 release, strict lint, APK ZIP/ELF16KiB and unsigned AAB/bundletool/package audits

@@ -38,6 +38,14 @@ def snapshot(executable: Path) -> dict:
     paths.update(ROOT.glob("native/**/*.json"))
     paths.update(ROOT.glob("native/**/tools/*.py"))
     paths.update(ROOT.glob("assets/runtime/**/*.json"))
+    # Bind the reviewed static geometry exports to native source evidence.
+    paths.update(ROOT / name for name in (
+        "assets/production/static-mesh-optimizations.json", "assets/production/inventory.json",
+        "tools/static_mesh_optimizations.py", "tools/build_static_mesh_optimizations.py",
+        "tools/cook_product_content.py", "tools/normalize_glb.py", "tools/art-toolchain.json"))
+    for asset in ("crop-seedling", "grass-tuft"):
+        paths.update(ROOT / "assets/models" / asset / (asset + suffix)
+                     for suffix in (".glb", "-runtime.glb"))
     paths.update(ROOT.glob("design/balance/*.json"))
     paths.update(ROOT.glob("shaders/src/*.hlsl"))
     paths.update(ROOT.glob("tools/playable_qa/*.py"))

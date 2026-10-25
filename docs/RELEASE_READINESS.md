@@ -71,9 +71,14 @@ corrected bush reduction for damaged foliage. Corrected welded crop/grass retain
 material/texture/topology and native phone/tablet/closeup quality; the accepted
 private two-mesh mix saves12.12–25.60%combined world/shadow triangle submissions in
 four matched scenes. The original bush remains. Evidence is
-`build/evidence/private-three-mesh-welded/two-mesh-mix/`. Root has authorized a
-checked, reproducible two-export promotion; it is not in the qualified artifacts
-above until production cooking and requalification pass. There is no FPS promise.
+`build/evidence/private-three-mesh-welded/two-mesh-mix/`. The checked two-export promotion is now independently host/native accepted under
+`build/evidence/static-mesh-promotion/`: standard build/44suites and six meaningful
+tool contracts pass, optional pinned replay and two clean cooks reproduce exact
+reviewed bytes, and four production images match the accepted mix byte-for-byte.
+Only two HRMs and content provenance change; original bush/raws and23bundles stay
+exact. Source/hash validation fails before fallback. The current mobile/Windows
+artifacts above remain the aa5975e original-geometry epoch until the next refresh.
+There is no FPS promise.
 
 Linux execution, physical mobile budgets/input/lifecycle/audio/haptics, human
 pacing/fun, public privacy/contact and store/distribution evidence remain open.

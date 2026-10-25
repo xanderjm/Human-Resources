@@ -1362,7 +1362,12 @@
         "status": "accepted",
         "audit": "assets/production/records/grass-tuft/model-audit.json",
         "notes": "Four broad connected sage blades, no soil slab or disconnected extras; matches restrained painterly ground dressing. 0.3m high grounded pivot.",
-        "runtime_qualified": false
+        "runtime_qualified": false,
+        "runtime_mesh_optimization": {
+          "source": "assets/models/grass-tuft/grass-tuft-runtime.glb",
+          "recipe": "assets/production/static-mesh-optimizations.json",
+          "review": "Reviewed exact-weld-first25percent static export; original production model_file and raw Tripo source remain unchanged. Native textured/shadow/silhouette closeup and portrait phone/tablet comparisons accepted 2026-10-25. Geometry submission reduction only; physical-device performance remains separate."
+        }
       },
       "actual_dimensions_m": [
         0.25247523989610604,
@@ -1448,7 +1453,12 @@
         "status": "accepted",
         "audit": "assets/production/records/crop-seedling/model-audit.json",
         "notes": "One connected six-leaf seedling with stem; readable silhouette, no soil or planter. Thin leaves deliberately double sided; 0.3m high.",
-        "runtime_qualified": false
+        "runtime_qualified": false,
+        "runtime_mesh_optimization": {
+          "source": "assets/models/crop-seedling/crop-seedling-runtime.glb",
+          "recipe": "assets/production/static-mesh-optimizations.json",
+          "review": "Reviewed exact-weld-first25percent static export; original production model_file and raw Tripo source remain unchanged. Native textured/shadow/silhouette closeup and portrait phone/tablet comparisons accepted 2026-10-25. Geometry submission reduction only; physical-device performance remains separate."
+        }
       },
       "actual_dimensions_m": [
         0.31655172413793103,

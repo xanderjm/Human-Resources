@@ -1,5 +1,25 @@
 # Technical Decisions
 
+## 25 October 2026 — Reviewed two-mesh runtime source exports
+
+Use explicit reviewed crop/grass GLB derivatives through existing model_options
+source_path overrides. Preserve normalized originals/raw Tripo downloads, material
+and embedded image bytes, transforms, IDs and scale. Reject the reduced bush for
+visible loss of rounded foliage. Do not add a runtime LOD framework or dependency.
+Exact-position welding preserves per-corner UV/custom normals before the sole
+25percent collapse; topology and native closeups decide acceptance, not triangle
+count or exact AABB alone. The optional pinned authoring replay writes fresh
+ignored output and must reproduce approved hashes; cross-host replay identity is
+not assumed. Ordinary cooks consume checked exports without running Blender.
+
+The two-row source/tool/method manifest validates canonical and edited hashes
+before output creation or legacy fallback, then verifies exact HRM/texture bytes
+and adds provenance. CMake depends on the manifest/tools; native QA source evidence
+includes their source GLBs. Rebuild-graph fixtures own these dependencies too.
+Old mutable dev paths retain explicit106-file historical rebindings. Changed
+cooked content requires fresh platform packaging even when gameplay/ABI is stable.
+See STATIC_MESH_EXPORTS.md for replay and measured submission scope.
+
 ## 25 October 2026 — Farmland frontage within existing clearance
 
 Recover unused full-mesh margin rather than adding random dressing or changing
