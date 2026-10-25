@@ -119,11 +119,12 @@ void full_gear_has_real_phone_margins() {
   require(worst_clearance >= 0, "complete maximum gear clears the real HUD by twelve pixels and control by ten");
 }
 void supported_stages_keep_real_flight_and_readable_controls() {
-  struct Display { unsigned width, height; hr::ui::Insets insets; };
+  struct Display { unsigned width, height; hr::ui::Insets insets; float x{}, y{}; };
   constexpr std::array displays{
       Display{768,1024,{0,24,0,20}}, Display{1024,1366,{0,24,0,20}}, Display{1366,1024,{0,24,0,20}},
       Display{844,390,{59,0,59,21}}, Display{320,320,{}}, Display{320,500,{}},
-      Display{390,568,{0,20,0,0}}, Display{844,390,{31,12,17,8}}};
+      Display{390,568,{0,20,0,0}}, Display{844,390,{31,12,17,8}},
+      Display{320,320,{8,0,10,0}}, Display{320,320,{12,20,12,16}}, Display{320,500,{12,20,12,16},17,29}};
   progression_tests::MemoryBackend backend;
   hr::progression::AccountStore store(backend);
   (void)store.load();
@@ -137,15 +138,16 @@ void supported_stages_keep_real_flight_and_readable_controls() {
   for (auto module : {hr::gameplay::Module::laser_array, hr::gameplay::Module::orbit_drones, hr::gameplay::Module::shield_generator, hr::gameplay::Module::beam_splitter, hr::gameplay::Module::tractor_lens, hr::gameplay::Module::emp_ring})
     run.modules[static_cast<unsigned>(module)] = 3;
   run.evolution_bits = (1U << static_cast<unsigned>(hr::gameplay::Evolution::great_vacuum)) | (1U << static_cast<unsigned>(hr::gameplay::Evolution::storm_drain));
-  for (const auto display : displays) for (float text_scale : {1.F,2.F,3.2F}) {
-    const hr::ui::Rect viewport{0,0,static_cast<float>(display.width),static_cast<float>(display.height)};
+  for (const auto display : displays) for (float text_scale : {1.F,2.F,3.2F,3.4F}) {
+    const hr::ui::Rect viewport{display.x,display.y,static_cast<float>(display.width),static_cast<float>(display.height)};
     const auto framing = hr::product::gameplay_framing(viewport, display.insets, text_scale, {display.width*2,display.height*2});
     // The inherited short-canvas matrix covers 1x/2x; this slice extends
     // noncompact phone/tablet strips to the full 3.2x preference.
-    if(text_scale>2 && framing.compact)continue;
-    require(framing.stage.width > 100 && framing.stage.height > 180, "largest supported text leaves a real portrait combat stage");
+    if(text_scale>2 && framing.compact && !framing.banded)continue;
+    require(framing.banded ? framing.stage.width>=80 && framing.stage.height>=150 : framing.stage.width > 100 && framing.stage.height > 180,
+        "banded layout spends available vertical space on the full portrait field; existing rail stages retain their usability floor");
     const auto actual = hr::presentation::fit_world_destination(framing.render_extent.width, framing.render_extent.height, display.width*2,display.height*2,framing.destination);
-    require_near(framing.stage.x, static_cast<float>(actual.x)*.5F, .001F, "attachment stage matches exact renderer destination x");
+    require_near(framing.stage.x, viewport.x+static_cast<float>(actual.x)*.5F, .001F, "attachment stage matches exact renderer destination x");
     require_near(framing.stage.height, static_cast<float>(actual.height)*.5F, .001F, "attachment stage matches exact renderer destination height");
     hr::product::View view{hr::product::Screen::run,&run,&store,viewport,display.insets};
     view.text_scale=text_scale; view.framing=&framing;
@@ -156,7 +158,7 @@ void supported_stages_keep_real_flight_and_readable_controls() {
     for(const auto& button:ui.buttons) {
       require(button.bounds.width>=44 && button.bounds.height>=44,"complete Pause/Dash target retains forty-four points");
       require(button.bounds.x>=framing.safe.x && button.bounds.y>=framing.safe.y && button.bounds.right()<=framing.safe.right()+.01F && button.bounds.bottom()<=framing.safe.bottom()+.01F,"all targets lie within actual safe area");
-      if(framing.compact) {
+      if(framing.compact && !framing.banded) {
         const auto overlap=hr::ui::intersect(button.bounds,framing.stage);
         require(overlap.width<.01F || overlap.height<.01F,"entire compact control target stays outside world stage");
       } else {

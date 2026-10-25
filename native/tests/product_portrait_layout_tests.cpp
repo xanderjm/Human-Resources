@@ -775,14 +775,17 @@ void enlarged_run_preserves_two_bands_and_complete_semantics() {
   hr::gameplay::Game game; game.start();
   const auto original=game.snapshot();
   hr::gameplay::UpgradeChoice installed; installed.title="Shield Generator";
-  unsigned percentage_cases=0;
-  for (const auto viewport : {hr::ui::Rect{0,0,320,568},hr::ui::Rect{0,0,390,844},hr::ui::Rect{0,0,768,1024},hr::ui::Rect{0,0,1366,1024}})
-    for (float scale : {1.3F,2.F,3.2F}) for (unsigned state=0; state<16; ++state) {
+  unsigned percentage_cases=0, fraction_cases=0, icon_cases=0;
+  for (const auto viewport : {hr::ui::Rect{0,0,320,568},hr::ui::Rect{0,0,390,844},hr::ui::Rect{0,0,768,1024},hr::ui::Rect{0,0,1366,1024},hr::ui::Rect{0,0,320,320},hr::ui::Rect{0,0,320,500},hr::ui::Rect{17,29,320,500}})
+    for (float scale : {1.3F,2.F,3.2F,3.4F}) for (unsigned inset_case=0;inset_case<3;++inset_case) for (unsigned state=0; state<18; ++state) {
+      const bool small=viewport.width==320 && viewport.height<=500;
+      if(inset_case && !small)continue;
       auto run=original; run.stats.active_seconds=30; run.stats.level=24;
       run.hull=112; run.maximum_hull=130; run.shield=80; run.maximum_shield=100;
       run.xp=50; run.next_level_xp=100;
-      const hr::ui::Insets insets{0,viewport.width==390?59.F:20.F,0,viewport.width==390?34.F:0.F};
+      const hr::ui::Insets insets{inset_case==1?8.F:inset_case==2?12.F:0.F,viewport.width==390?59.F:20.F,inset_case==1?10.F:inset_case==2?12.F:0.F,viewport.width==390?34.F:inset_case==2?16.F:0.F};
       const auto framing=gameplay_framing(viewport,insets,scale,{static_cast<unsigned>(viewport.width*2),static_cast<unsigned>(viewport.height*2)});
+      if((framing.compact && !framing.banded) || (scale>3.2F && !framing.banded))continue;
       const auto safe=framing.constrained?framing.run_layout:framing.safe;
       View view{Screen::run,&run,&store,viewport,insets}; view.text_scale=scale; view.framing=&framing;
       if(state==1){run.hull=run.maximum_hull=130;run.shield=run.maximum_shield=40;}
@@ -795,6 +798,8 @@ void enlarged_run_preserves_two_bands_and_complete_semantics() {
       if(state==13)run.stats.active_seconds=8;
       if(state==14)run.dash_cooldown_seconds=4;
       if(state==15)run.stats.level=1000000;
+      if(state==16){run.hull=99000000;run.maximum_hull=100000000;run.harvest_overdrive_seconds=5.5F;}
+      if(state==17){run.dash_cooldown_seconds=4;view.promotion={.1F,&installed,false};}
       const auto ui=interface(view);
       require(!ui.text_overflow,"every bounded tactical state fits at actual requested font size");
       const auto pause=std::find_if(ui.buttons.begin(),ui.buttons.end(),[](const auto& b){return b.command==Command::pause;})->bounds;
@@ -815,9 +820,32 @@ void enlarged_run_preserves_two_bands_and_complete_semantics() {
       }
       const auto copy=compact(atlas_copy(ui));
       if(state==2){
-        const bool percentage=copy.find("HP100%")!=std::string::npos;
+        const bool percentage=copy.find("HP100%")!=std::string::npos || (framing.banded && copy.find("HPMAX")!=std::string::npos);
         percentage_cases+=percentage?1U:0U;
-        require((percentage || copy.find("HP100000000")!=std::string::npos) && copy.find("SH")!=std::string::npos,"uncapped health retains full numeric value or honest labelled percentage with shield fraction");
+        const bool dual_fraction=framing.banded && copy.find("HP")!=std::string::npos && copy.find("SH")!=std::string::npos;
+        require((percentage || dual_fraction || copy.find("HP100000000")!=std::string::npos) && copy.find("SH")!=std::string::npos,"uncapped health retains full numeric value, honest labelled percentage/full state, or explicit HP/SH fractions");
+      }
+      if(framing.banded) {
+        if(copy.find(">>")!=std::string::npos)++icon_cases;
+        const auto overlap=hr::ui::intersect(dash,framing.stage);
+        require(overlap.width==0 || overlap.height==0,"banded Dash target remains outside the exact world destination");
+        auto changed=run;changed.dash_cooldown_seconds=run.dash_cooldown_seconds>0?0:4;
+        auto other=view;other.run=&changed;
+        const auto other_ui=interface(other);
+        const auto other_dash=std::find_if(other_ui.buttons.begin(),other_ui.buttons.end(),[](const auto& b){return b.command==Command::dash;})->bounds;
+        require(other_dash.x==dash.x && other_dash.y==dash.y && other_dash.width==dash.width && other_dash.height==dash.height,"measured Dash icon/cooldown target is stationary across ready state changes");
+        if(state==10 || state==11 || state==16 || state==17)
+          require(copy.find(state==11 || state==17?"ADDED":"BOOST")!=std::string::npos,"narrow-safe banded layout retains complete primary status words");
+        if(state==2 || state==16) {
+          const auto hp_background=std::find_if(ui.quads.begin(),ui.quads.end(),[&](const auto& q){return q.uv[2]<0 && q.color==std::array<float,4>{.06F,.16F,.23F,.97F} && std::abs(viewport.x+q.rect[0]*viewport.width-(safe.x+4))<.01F && std::abs(viewport.y+q.rect[1]*viewport.height-(safe.y+42))<.01F;});
+          if(copy.starts_with("HPSH"))require(hp_background!=ui.quads.end(),"qualitative HP/SH labels cannot silently lose the actual HP fraction bar");
+          if(hp_background!=ui.quads.end()) {
+            ++fraction_cases;
+            const auto hp_fill=std::next(hp_background);
+            require(hp_fill!=ui.quads.end() && hp_fill->color==std::array<float,4>{.39F,.96F,.75F,1},"qualitative HP fallback has an actual labelled fraction fill");
+            test_support::require_near(hp_fill->rect[2]/hp_background->rect[2],run.hull/run.maximum_hull,.0001F,"HP fraction retains authoritative full or partial health");
+          }
+        }
       }
       if(state==11)require(copy.find("ADDED")!=std::string::npos && copy.find("HP:SHOT")!=std::string::npos && copy.find("BOOST")==std::string::npos,"saved installation and actual hit retain priority without an extra strip");
       const auto spoken=accessibility_snapshot(view,ui);
@@ -825,6 +853,45 @@ void enlarged_run_preserves_two_bands_and_complete_semantics() {
       if(state==11)require(spoken[1].value.find("Installed: Shield Generator")!=std::string::npos && spoken[1].value.find(damage_announcement(view.damage_feedback))!=std::string::npos,"full installed title and exact damage cause/layer remain spoken");
     }
   require(percentage_cases>0,"extreme size/value matrix genuinely exercises bounded percentage fallback");
+  require(fraction_cases>0 && icon_cases>0,"narrow-safe matrix exercises real labelled HP fractions and the measured ready Dash icon");
+}
+void banded_framing_keeps_pixel_fit_and_global_contacts() {
+  progression_tests::MemoryBackend backend;
+  hr::progression::AccountStore store{backend};
+  (void)store.load();
+  hr::gameplay::Game game;game.start();
+  const auto run=game.snapshot();
+  {
+    const hr::ui::Rect viewport{0,0,320,500};
+    const hr::ui::Insets insets{60,20,60,16};
+    const auto framing=gameplay_framing(viewport,insets,1,{640,1000});
+    require(framing.banded,"safe-area budget alone may require the explicit strip mode at ordinary type");
+    View view{Screen::run,&run,&store,viewport,insets};view.framing=&framing;
+    const auto ui=interface(view);
+    require(!ui.text_overflow,"explicit strip mode retains the ordinary physical font floor");
+    const auto pause=std::find_if(ui.buttons.begin(),ui.buttons.end(),[](const auto& b){return b.command==Command::pause;})->bounds;
+    require(pause.height==44 && pause.y==framing.safe.y,"explicit band layout dispatch is authoritative even without enlarged text");
+  }
+  for(const auto viewport:{hr::ui::Rect{0,0,320,320},hr::ui::Rect{17,29,320,500}})
+    for(float scale:{3.2F,3.4F})for(unsigned dpi:{1U,2U,3U}) {
+      const hr::presentation::PixelExtent pixels{static_cast<unsigned>(viewport.width)*dpi+(dpi==3?1U:0U),static_cast<unsigned>(viewport.height)*dpi-(dpi==3?1U:0U)};
+      const auto framing=gameplay_framing(viewport,{8,12,10,8},scale,pixels);
+      require(framing.banded && framing.compact && framing.run_layout.x==framing.safe.x && framing.run_layout.width==framing.safe.width,"starved rails select one full-safe strip layout value");
+      const auto actual=hr::presentation::fit_world_destination(framing.render_extent.width,framing.render_extent.height,pixels.width,pixels.height,framing.destination);
+      test_support::require_near(framing.stage.x,viewport.x+static_cast<float>(actual.x)*viewport.width/static_cast<float>(pixels.width),.001F,"DPI and odd-pixel fit share actual absolute stage x");
+      test_support::require_near(framing.stage.y,viewport.y+static_cast<float>(actual.y)*viewport.height/static_cast<float>(pixels.height),.001F,"DPI and odd-pixel fit share actual absolute stage y");
+      View view{Screen::run,&run,&store,viewport,{8,12,10,8}};view.text_scale=scale;view.framing=&framing;
+      view.stick_active=true;view.stick_origin={viewport.x+24,viewport.y+100};view.stick_position={view.stick_origin.x+44,view.stick_origin.y};
+      const auto ui=interface(view);
+      require(!ui.text_overflow,"odd-DPI translated strip layout retains complete readable text");
+      const auto& knob=ui.quads.back();
+      test_support::require_near(viewport.x+knob.rect[0]*viewport.width,view.stick_origin.x+38-8,.001F,"floating stick remains in full-window points in clear flanks");
+      test_support::require_near(viewport.y+knob.rect[1]*viewport.height,view.stick_origin.y-8,.001F,"floating stick receives no stage-local offset");
+      hr::product::Controls controls;
+      hr::input::Action contact{.id=static_cast<hr::input::ActionId>(ControlAction::contact),.device=1,.phase=hr::input::ActionPhase::started,.value=1,.position={view.stick_origin.x,view.stick_origin.y},.has_position=true,.contact=7,.source_kind=hr::input::DeviceKind::touch};
+      controls.apply(contact,true,false);contact.phase=hr::input::ActionPhase::changed;contact.position={view.stick_position.x,view.stick_position.y};controls.apply(contact,true,false);
+      test_support::require_near(controls.sample().movement.x,1,.0001F,"banded presentation retains ordinary forty-four-point semantic stick throw");
+    }
 }
 
 void late_value_hud_keeps_level_at_small_portrait() {
@@ -862,6 +929,7 @@ int main(int argc, char** argv) {
   require(hr::assets::decode_preview_mesh(bytes, atlas), "actual production atlas decodes");
   bounded_damage_hud_keeps_ingress_vitality_clear();
   enlarged_run_preserves_two_bands_and_complete_semantics();
+  banded_framing_keeps_pixel_fit_and_global_contacts();
   late_value_hud_keeps_level_at_small_portrait();
   compact_choice_titles_stay_on_the_dark_frame();
   promotion_preserves_choice_safety_and_collected_return_controls();

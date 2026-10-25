@@ -50,7 +50,14 @@ transparent nominal bearings. It applies to noncompact enlarged phones and
 tablets; ordinary phone pixels and camera remain exact. Full defence values stay
 spoken/available in Pause when largest type needs a labelled fraction display.
 
-A separate compact short-window budget defect remains: at 320 points and 3.2x
-text, measured rails leave only a 14x24-point world stage. Physical reachability
-on current devices is unverified. This value-contract defect needs a coherent
-layout fallback; a positive-sized but unusable stage is not release acceptance.
+Compact short windows switch to an explicit banded layout when measured rails
+leave less than 100 logical points of world width. This conservative product
+floor avoids the measured 14x24-point stage at 320 points/3.2x text. The same
+portrait camera fits between the 44-point rows plus existing flight clearances;
+HUD rows retain full safe width. Measured labelled defence fractions and a
+stable Dash icon/cooldown target preserve whole status words at narrow safe
+areas. Actual requested glyph size and complete spoken values remain intact.
+The explicit layout flag applies even at ordinary text if safe insets trigger
+it. Existing accepted phone and 1x/2x rail frames remain exact. Physical-device
+reachability and playability are still unqualified; a positive stage alone is
+not release acceptance.

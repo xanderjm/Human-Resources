@@ -26,10 +26,23 @@ GameplayFraming gameplay_framing(ui::Rect viewport, ui::Insets safe_area, float 
     // Measure button copy in points; status copy wraps vertically in the rail.
     const float left = std::max(52.F, std::max(word_width("BUMP",14*type),word_width("SHOT",14*type)) + 12);
     const float right = std::max(52.F, std::max({word_width("DASH",14*type),word_width("BOOST",14*type),word_width("SWEEP",14*type),word_width("ADDED",14*type)}) + 12);
-    const float room = result.compact ? std::max(1.F,result.safe.width-left-right) : result.safe.width;
-    const float width = std::min(result.safe.height * portrait, room);
-    const float height = width / portrait;
-    available = {result.safe.x + (result.compact ? left : 0) + (room - width) * .5F, result.safe.y + (result.safe.height - height) * .5F, width, height};
+    // A conservative product layout floor, not a physical-device guarantee.
+    // Enlarged rails must not consume the combat field into a few pixels.
+    constexpr float minimum_rail_stage_width = 100.F;
+    result.banded = result.compact && result.safe.width - left - right < minimum_rail_stage_width;
+    if (result.banded) {
+      const float top = result.safe.y + GameplayFraming::tactical_row_height + 12;
+      const float bottom = result.safe.bottom() - GameplayFraming::tactical_bottom_margin - GameplayFraming::tactical_row_height - 10;
+      const float room_height = std::max(1.F, bottom - top);
+      const float width = std::min(result.safe.width, room_height * portrait);
+      const float height = width / portrait;
+      available = {result.safe.x + (result.safe.width - width) * .5F, top + (room_height - height) * .5F, width, height};
+    } else {
+      const float room = result.compact ? result.safe.width-left-right : result.safe.width;
+      const float width = std::min(result.safe.height * portrait, room);
+      const float height = width / portrait;
+      available = {result.safe.x + (result.compact ? left : 0) + (room - width) * .5F, result.safe.y + (result.safe.height - height) * .5F, width, height};
+    }
     result.destination = {(available.x - viewport.x) / viewport.width, (available.y - viewport.y) / viewport.height, available.width / viewport.width, available.height / viewport.height};
   }
   result.stage = available;
@@ -47,8 +60,8 @@ GameplayFraming gameplay_framing(ui::Rect viewport, ui::Insets safe_area, float 
     result.stage = {viewport.x + static_cast<float>(actual.x) * sx, viewport.y + static_cast<float>(actual.y) * sy,
         static_cast<float>(actual.width) * sx, static_cast<float>(actual.height) * sy};
   }
-  result.run_layout = result.constrained ? result.stage : result.safe;
-  if (result.compact) {
+  result.run_layout = result.banded ? result.safe : result.constrained ? result.stage : result.safe;
+  if (result.compact && !result.banded) {
     result.left_rail = {result.safe.x, result.safe.y, result.stage.x - result.safe.x, result.safe.height};
     result.right_rail = {result.stage.right(), result.safe.y, result.safe.right() - result.stage.right(), result.safe.height};
   }

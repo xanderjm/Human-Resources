@@ -19,10 +19,11 @@ package qualification; their desktop/source evidence remains separate until a
 coherent mobile refresh. The framing slice now passes44host suites and
 source-bound native comparisons under `build/evidence/gameplay-framing/`. The enlarged
 RUN HUD correction also passes44host suites and independent source-bound native
-review under `build/evidence/enlarged-phone-hud/`. A compact short-window rail
-budget defect at3.2x remains local work; current-device reachability is unverified.
-Mobile rebuilds await the coherent presentation source rather than inheriting
-qualification from old packages.
+review under `build/evidence/enlarged-phone-hud/`. The compact short-window fallback also passes44host suites and source-bound
+native comparisons under `build/evidence/compact-rail-fallback/`. Current-device
+reachability remains unverified. The coherent presentation source now awaits
+reviewed cross-compiler portability fixes before the mobile refresh; old
+packages do not inherit these source qualifications.
 
 This 25 October 2026 checkpoint refreshes the qualified authority-3 vehicle/Privacy build with native-resolution UI composition. Game authority remains **3**, outer account schema remains **2**, and the rules fingerprint is unchanged: `13238298123916137634`. It is a source-bound platform checkpoint, not a release-ready declaration.
 

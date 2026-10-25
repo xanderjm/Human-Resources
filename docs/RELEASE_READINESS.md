@@ -34,10 +34,12 @@ under `build/evidence/gameplay-framing/`; rationale is
 `docs/adr/004-shared-flight-framing.md`. The enlarged RUN HUD follow-up now passes44host suites,192UI states, consumed
 glyph-alpha/fullrig tests and independent native review. Four changed files
 remove the pre-existing row overlap; ordinary1x phone UI and all tested phone
-world frames remain exact. See `build/evidence/enlarged-phone-hud/`. Separate
-compact-rail arithmetic at320point/3.2x leaves a14x24point stage; a coherent
-fallback remains local work, with current-device reachability unverified. No
-complete supported-layout or release-ready claim is made.
+world frames remain exact. See `build/evidence/enlarged-phone-hud/`. The five-file compact safe-area follow-up now replaces starved rails with
+bounded rows and a shared portrait stage. It passes44host suites and54native
+frames, with twelve accepted phone/rail views unchanged; see
+`build/evidence/compact-rail-fallback/`. Physical reachability/playability remain
+unqualified. A separate strict Windows cross-build candidate is under review
+before the coherent mobile/source refresh; no release-ready claim is made.
 
 Fresh physical-device audit: the paired iPhone has developer mode enabled, but
 its tunnel/DDI services are unavailable and lock state is unknown; no Android

@@ -662,13 +662,13 @@ Interface build_overview(const View& v) {
 // support), rather than the nominal
 // em. Cooked-alpha regressions verify
 // this envelope for every rendered character; ordinary typography is unchanged.
-Interface enlarged_run(const View& v) {
+Interface enlarged_run(const View& v, const GameplayFraming& framing) {
   Canvas c(v);
   const auto safe = c.safe;
   c.scale = c.type_scale = 1;
   c.ox = safe.x;
   c.oy = safe.y;
-  const float size = 14.F * v.text_scale, row = 44.F;
+  const float size = 14.F * std::max(1.F, v.text_scale), row = GameplayFraming::tactical_row_height;
   const float ink_height = size * 43.F / 48.F;
   const auto line = [&](float x, float y, float width, std::string_view copy, Color color, bool centered = false) {
     if (c.measure(copy, size) > width) c.output.text_overflow = true;
@@ -697,12 +697,22 @@ Interface enlarged_run(const View& v) {
       line(4, 0, stats_width, hull + "  " + shield, white);
     } else {
       std::string hp = hull;
+      bool hull_fraction = false;
       const float shield_width = c.measure("SH", size);
       if (c.measure(hp, size) + 8 + shield_width > stats_width) {
         const auto percent = static_cast<unsigned>(std::ceil(100.F * std::clamp(v.run->hull / std::max(1.F, v.run->maximum_hull), 0.F, 1.F)));
         hp = "HP" + number(percent) + "%";
       }
+      if (framing.banded && c.measure(hp, size) > stats_width - shield_width - 8) {
+        const float fraction = std::clamp(v.run->hull / std::max(1.F, v.run->maximum_hull), 0.F, 1.F);
+        hp = fraction >= 1 ? "HP MAX" : "HP" + number(static_cast<unsigned>(std::floor(100.F * fraction))) + "%";
+      }
+      if (framing.banded && c.measure(hp, size) > stats_width - shield_width - 8) {
+        hp = "HP";
+        hull_fraction = true;
+      }
       line(4, 0, stats_width - shield_width - 8, hp, white);
+      if (hull_fraction) bar(4, row - 2, stats_width - shield_width - 8, v.run->hull / std::max(1.F, v.run->maximum_hull), mint);
       const float sx = 4 + stats_width - shield_width;
       line(sx, 0, shield_width, "SH", {.57F, .83F, 1, 1});
       bar(sx, row - 2, shield_width, v.run->shield / std::max(1.F, v.run->maximum_shield), {.57F, .83F, 1, 1});
@@ -714,13 +724,18 @@ Interface enlarged_run(const View& v) {
   c.fill(pause_x + 25, 12, 6, 20, navy);
   c.output.buttons.push_back({c.rect(pause_x, 0, row, row), Command::pause, "PAUSE", true});
 
-  const float bottom = safe.height - row - 12, available = safe.width - 8;
+  const float bottom = safe.height - row - GameplayFraming::tactical_bottom_margin, available = safe.width - 8;
   const bool detailed = c.measure("DASH 4s", size) + c.measure("SWEEP 2/3", size) + 24 <= available;
-  const float dash_width = std::max(44.F, c.measure(detailed ? "DASH 4s" : "DASH", size) + 8);
-  const float status_width = available - dash_width - 8, dash_x = safe.width - 4 - dash_width;
+  // The new short-window fallback uses a narrow divider so both complete
+  // action/status words retain the requested 3.4x type in a 320pt window.
+  const float gutter = framing.banded ? 2.F : 8.F;
+  const bool dash_icon = framing.banded && c.measure("DASH", size) + std::max(c.measure("BOOST", size), c.measure("ADDED", size)) + 16 + gutter > available;
+  const float dash_width = dash_icon ? std::max({44.F, c.measure(">>", size) + 8, c.measure("4s", size) + 8}) :
+      std::max(44.F, c.measure(detailed ? "DASH 4s" : "DASH", size) + 8);
+  const float status_width = available - dash_width - gutter, dash_x = safe.width - 4 - dash_width;
   const bool ready = v.run->dash_cooldown_seconds <= 0;
   const auto seconds = number(static_cast<unsigned>(std::ceil(v.run->dash_cooldown_seconds))) + "s";
-  const std::string dash = ready ? "DASH" : detailed ? "DASH " + seconds : seconds;
+  const std::string dash = ready ? (dash_icon ? ">>" : "DASH") : detailed && !dash_icon ? "DASH " + seconds : seconds;
   c.fill(dash_x, bottom, dash_width, row, ready ? mint : panel);
   line(dash_x + 4, bottom, dash_width - 8, dash, ready ? navy : muted, true);
   c.output.buttons.push_back({c.rect(dash_x, bottom, dash_width, row), Command::dash, ready ? "DASH" : "DASH " + seconds, ready});
@@ -758,6 +773,13 @@ Interface enlarged_run(const View& v) {
       for (unsigned i = 1; i < gameplay::tuning::harvest_chain_target; ++i)
         c.fill(8 + static_cast<float>(i) * pip, bottom + row - 2, 2, 2, navy);
     }
+  }
+  if (framing.banded && v.stick_active) {
+    // Semantic contacts remain full-window points, including the clear flanks.
+    c.ox = c.oy = 0;
+    c.fill(v.stick_origin.x - 24, v.stick_origin.y - 24, 48, 48, {.06F, .2F, .25F, .35F});
+    const float dx = std::clamp(v.stick_position.x - v.stick_origin.x, -38.F, 38.F), dy = std::clamp(v.stick_position.y - v.stick_origin.y, -38.F, 38.F);
+    c.fill(v.stick_origin.x + dx - 8, v.stick_origin.y + dy - 8, 16, 16, {.5F, 1, .81F, .65F});
   }
   return std::move(c.output);
 }
@@ -1163,7 +1185,7 @@ Interface standard_interface(const View& v) {
 Interface interface(const View& v) {
   const auto framing = v.framing ? *v.framing : gameplay_framing(v.viewport, v.safe_area, v.text_scale);
   const bool large = std::isfinite(v.text_scale) && v.text_scale > 1.F;
-  const bool enlarged_tactical = large && !framing.compact;
+  const bool enlarged_tactical = framing.banded || (large && !framing.compact);
   if (v.screen == Screen::settings && v.show_privacy) return readable_interface(v);
   if (v.screen == Screen::pause && v.show_build && !v.save_error) return large ? readable_interface(v) : build_overview(v);
   const auto finish = [&](Interface result) {
@@ -1181,7 +1203,10 @@ Interface interface(const View& v) {
       }
       // Installation confirmation owns its existing strip under the HUD.
       if (v.promotion.installed && !enlarged_tactical) top += std::max(36.F, text_size + 16) + 12;
-      const ui::Rect field = framing.compact ? ui::Rect{framing.stage.x + 4, framing.stage.y + 4, framing.stage.width - 8, framing.stage.height - 8} :
+      // Banded layout has empty side flanks. Attached labels may use them at
+      // the unchanged actor projection while clearing both control strips.
+      const ui::Rect field = framing.banded ? ui::Rect{feedback.safe.x + 8, framing.stage.y + 4, feedback.safe.width - 16, framing.stage.height - 8} :
+          framing.compact ? ui::Rect{framing.stage.x + 4, framing.stage.y + 4, framing.stage.width - 8, framing.stage.height - 8} :
           ui::Rect{feedback.safe.x + 8, top, feedback.safe.width - 16, std::max(0.F, bottom - top)};
       for (const auto& vitality : enemy_vitality(*v.run, framing, field, text_size)) {
         const auto& r = vitality.bounds;
@@ -1226,8 +1251,8 @@ Interface interface(const View& v) {
     result.text_overflow |= c.output.text_overflow;
     return result;
   };
-  if (framing.compact && v.screen == Screen::run && !v.save_error) return finish(compact_run(v, framing));
-  if (enlarged_tactical && v.screen == Screen::run && !v.save_error) return finish(enlarged_run(v));
+  if (framing.compact && !framing.banded && v.screen == Screen::run && !v.save_error) return finish(compact_run(v, framing));
+  if (enlarged_tactical && v.screen == Screen::run && !v.save_error) return finish(enlarged_run(v, framing));
   if (large && v.screen == Screen::blueprints && v.show_recipes && !v.save_error) {
     // One recipe must not change the navigation model when the next recipe's
     // longer description overflows. Choose consistently for this preference.
@@ -1240,6 +1265,6 @@ Interface interface(const View& v) {
   auto standard = standard_interface(v);
   if ((v.screen == Screen::death || v.screen == Screen::results) && standard.text_overflow) return readable_interface(v);
   if (!large || !standard.text_overflow) return finish(std::move(standard));
-  return finish(v.screen == Screen::run && !v.save_error ? enlarged_run(v) : readable_interface(v));
+  return finish(v.screen == Screen::run && !v.save_error ? enlarged_run(v, framing) : readable_interface(v));
 }
 } // namespace human_resources::product
