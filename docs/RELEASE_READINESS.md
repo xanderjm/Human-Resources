@@ -10,15 +10,47 @@ change together. Prior landscape captures are historical integration evidence.
 
 ## Current truth
 
-The latest owner-requested normal launch remains **Human Resources Current
-Playtest**, PID61631, from the technical33edb97 epoch. Its original apparent ship
-size and validated separate account copy are preserved. The nine owner previews
-and their accounts are protected from automation, replacement and quit. Exact
-104-file staging/source/signature and normal launch are recorded under
-`build/evidence/current-playtest-20261025/`. Copied account values describe launch
-time; the owner can now change that save. No later source edit hot-updates it.
+The latest owner-requested normal launch is **Human Resources Latest Playtest**,
+PID93951, from accepted source **853169defd705a9570fb871373ae25964f7bbf5d**.
+It includes the reviewed reward UI, Farmland frontage/rotor and crop/grass exports,
+retaining the original apparent ship size. Root independently verifies all104
+staged files and strict signature before normal LaunchServices launch. It uses a
+fresh separate test save. All ten owner previews/accounts are now protected from
+automation, replacement and quit. Exact staging and actual launch are recorded in
+`build/evidence/latest-playtest-853169/`. No later source edit hot-updates it.
 
-Accepted production source **aa5975e** adds reward-choice hierarchy and Farmland
+The same734-file source checkpoint passes a fresh optimized archive build/cook,
+44native suites, six new mesh-tool tests and its112-file source-bound package
+allowlist using pinned existing dependency/tool caches. Fresh product/SDL objects,
+all selected animation exports and reviewed HRMs are bound in
+`build/evidence/current-clean-source/REPORT.json`. This replaces the older clean
+source proof for this epoch; it does not prove physical-device execution.
+
+Current **853169** iPhoneOS/Simulator arm64 Release and Android both-ABI debug/
+release, strict lint, APK ZIP/ELF16KiB and unsigned AAB/bundletool audits pass.
+Five artifacts bind550focused inputs; all five contain exactly the two reviewed
+HRM changes plus content/package provenance updates. Other models, every texture
+payload and all eight HRA animations are preserved. Six compiled visibility
+objects consume the current generated bounds. Evidence is
+`build/evidence/two-mesh-mobile/REPORT.json`.
+
+The current supplemental Windows full GUI/DXIL build also qualifies853169:
+734frozen source files,70strict compile commands,112package files and127internal
+notice-delivery entries. Exact current crop/grass/texture cook and generated-bound
+consumption are verified. See `build/evidence/two-mesh-windows/REPORT.json`.
+Root rehashes frozen source/artifacts/evidence in
+`build/evidence/two-mesh-root-review/root-rehash.json`; independent package review
+checks actual payload differences and object/header membership. Windows execution,
+selected Visual Studio/SDK, physical mobile behavior and public distribution
+remain unqualified. Two reproduced tooling defects—Windows CRLF checkout of raw
+hash-pinned tools and five missing generic derived-source authorities—are corrected in the separate host-qualified four-file tooling slice under
+`build/evidence/pinned-source-closure/`; frozen platform evidence independently
+binds those authorities for853169. Its prior mutable dev archive/raw executable
+were not retained before the tooling rebuild, so those old binary bindings are
+no longer independently rehashable. Immutable clean/platform/user artifacts and
+source/native captures remain preserved; new binaries have retained copies.
+
+Preceding accepted production source **aa5975e** adds reward-choice hierarchy and Farmland
 frontage/rotor motion to the preceding portable/framing checkpoint. Cards show
 one exact projected benefit plus complete conditions, existing icons/ranks and
 input-aware hints. Measured fit routes short windows to reachable paged choices.
@@ -35,7 +67,7 @@ Thirty other-biome geometry windows and five actual Game checkpoints stay exact.
 The new landmarks add0–1world draw and1,600–5,073combined submitted triangles in
 matched frames; no phone FPS claim follows.
 
-The coherent **aa5975e** mobile refresh passes iPhoneOS/Simulator arm64 Release,
+The preceding **aa5975e** mobile refresh passes iPhoneOS/Simulator arm64 Release,
 Android both-ABI debug/release, strict lint, APK ZIP/ELF16KiB and unsigned AAB
 validation/package audits. Root checks543focused inputs,227files across five
 current artifacts and29bound evidence files. An independent reviewer checks
@@ -46,7 +78,7 @@ The previous five33edb97 artifacts remain exact. Evidence is
 `independent-mobile-review.json`. Physical performance/input, signing and store
 acceptance remain separate.
 
-Current supplemental Android runtime testing uses a packaging-only isolated QA
+Supplemental **aa5975e original-geometry** Android runtime testing uses a packaging-only isolated QA
 identity with108exact qualified native/asset entries, unchanged Java/JNI and the
 owned read-only software-Vulkan emulator. Earned draft/force-stop/cold inspect/
 Resume/background/early banking and actual stock2x active/draft rendering pass.
@@ -57,7 +89,7 @@ backing userdata are preserved; owned emulator is closed. Exact closure belongs
 to `build/evidence/reward-world-android-runtime/`; earlier33ed runtime records
 remain historical. No physical-device qualification is inferred.
 
-Supplemental **aa5975e** Windows evidence strictly compiles/links the full GUI
+Preceding supplemental **aa5975e** Windows evidence strictly compiles/links the full GUI
 client with installed MinGW GCC16.2 and audits112package files/nine DXIL stages.
 Root rehashes727snapshot/shared inputs,17bound evidence files and127internal
 package/notice-delivery files. Eleven reviewed notice files accompany the package
@@ -76,9 +108,20 @@ four matched scenes. The original bush remains. Evidence is
 tool contracts pass, optional pinned replay and two clean cooks reproduce exact
 reviewed bytes, and four production images match the accepted mix byte-for-byte.
 Only two HRMs and content provenance change; original bush/raws and23bundles stay
-exact. Source/hash validation fails before fallback. The current mobile/Windows
-artifacts above remain the aa5975e original-geometry epoch until the next refresh.
-There is no FPS promise.
+exact. Source/hash validation fails before fallback. The current853169 compile/package refresh above includes these exports. Actual
+Android runtime evidence remains aa5975e original geometry. There is no FPS promise.
+
+One latest-geometry Android attempt ends during Activity destruction/recreation
+before asset loading or active rendering is confirmed; its original system trigger
+is unknown. A settled diagnostic with full logs passes on its first app launch:
+69assets, Vulkan and a readable active390frame. Root verifies both APKs/108exact
+native-asset entries/19bound records and views the actual image. See
+`build/evidence/two-mesh-android-runtime/diagnostic-settled/REPORT.json` and
+`root-review.json`; the failed first observation and private readiness-parser error
+remain retained. This is isolated-ID/software-Vulkan runtime asset evidence,
+without physical performance/input or new recovery claims.
+A private exposure/ground-smoothing art variant is rejected for weak actor benefit
+and lost terrain identity; no renderer change is promoted.
 
 Linux execution, physical mobile budgets/input/lifecycle/audio/haptics, human
 pacing/fun, public privacy/contact and store/distribution evidence remain open.

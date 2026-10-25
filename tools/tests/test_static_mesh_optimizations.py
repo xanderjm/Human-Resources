@@ -2,8 +2,10 @@
 import copy
 import importlib.util
 import json
+import os
 from pathlib import Path
 import shutil
+import subprocess
 import tempfile
 import unittest
 
@@ -38,6 +40,45 @@ class StaticMeshOptimizationTests(unittest.TestCase):
             self.assertEqual(provenance['canonical_source_sha256'], row['source_sha256'])
             self.assertEqual(provenance['reviewed_runtime_source_sha256'], row['runtime_source_sha256'])
             self.assertEqual(provenance['recipe_sha256'], mesh.digest(self.root / mesh.RECIPE))
+
+    @unittest.skipUnless(shutil.which('git'), 'requires Git checkout conversion')
+    def test_windows_checkout_retains_exact_pinned_bytes(self):
+        fixture_root = ROOT / 'build/test-fixtures'
+        fixture_root.mkdir(parents=True, exist_ok=True)
+        checkout_root = tempfile.TemporaryDirectory(prefix='static-mesh-checkout-', dir=fixture_root)
+        self.addCleanup(checkout_root.cleanup)
+        shutil.copytree(self.root, checkout_root.name, dirs_exist_ok=True)
+        self.root = Path(checkout_root.name)
+        environment = dict(os.environ, GIT_CONFIG_NOSYSTEM='1', GIT_CONFIG_GLOBAL=os.devnull)
+
+        def git(*args):
+            return subprocess.run(['git', *args], cwd=self.root, env=environment,
+                                  check=True, capture_output=True, text=True)
+
+        git('init', '--quiet')
+        git('-c', 'core.autocrlf=false', 'add', '--all')
+        git('config', 'core.autocrlf', 'true')
+        git('config', 'core.eol', 'crlf')
+        pinned = set(self.recipe['tools']) | {mesh.RECIPE}
+
+        def checkout():
+            for name in pinned:
+                (self.root / name).unlink()
+            git('checkout-index', '--all', '--force')
+
+        # The control uses actual Git conversion, rather than a synthetic edit.
+        checkout()
+        for name in pinned:
+            self.assertIn(b'\r\n', (self.root / name).read_bytes(), name)
+        with self.assertRaisesRegex(ValueError, 'authoring tool hash mismatch'):
+            mesh.checked_recipe(self.root)
+
+        shutil.copyfile(ROOT / '.gitattributes', self.root / '.gitattributes')
+        git('-c', 'core.autocrlf=false', 'add', '.gitattributes')
+        checkout()
+        for name in pinned:
+            self.assertEqual((self.root / name).read_bytes(), (ROOT / name).read_bytes(), name)
+        mesh.checked_recipe(self.root)
 
     def test_missing_export_fails_instead_of_falling_back_to_original(self):
         (self.root / self.recipe['models'][0]['runtime_source']).unlink()

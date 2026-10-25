@@ -1,0 +1,7 @@
+# These reviewed authorities use raw SHA-256 bytes, including on Windows.
+/.gitattributes text eol=lf
+/tools/static_mesh_optimizations.py text eol=lf
+/tools/build_static_mesh_optimizations.py text eol=lf
+/tools/normalize_glb.py text eol=lf
+/tools/art-toolchain.json text eol=lf
+/assets/production/static-mesh-optimizations.json text eol=lf

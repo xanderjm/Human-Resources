@@ -1,5 +1,23 @@
 # Technical Decisions
 
+## 25 October 2026 — Raw authoring bytes survive checkout and package audits
+
+Keep the reviewed authoring tools and mesh recipe at explicit LF endings through
+narrow Git attributes, including on core.autocrlf Windows checkouts. Their raw
+SHA-256 checks remain strict; do not normalize bytes during validation or weaken
+the accepted export recipe. A real Git checkout regression demonstrates the
+unfixed failure and exact restored bytes without changing global Git settings.
+
+The generic runtime package source ledger also consumes each reviewed model's
+embedded recipe, canonical source and authoring-tool paths. Reuse the existing
+sorted/deduplicated derived-source manifest and directory/ZIP auditors. A package
+must reject a same-size change to any of these authorities until recooked.
+This fixes audit closure without changing runtime models, textures or animation
+bytes. Existing platform artifacts retain their exact853169 epoch; tool-only
+source changes do not silently upgrade their provenance. Preserve accepted
+mutable build artifacts before rebuilding, or explicitly record lost old bindings;
+source hashes alone cannot preserve overwritten binaries.
+
 ## 25 October 2026 — Reviewed two-mesh runtime source exports
 
 Use explicit reviewed crop/grass GLB derivatives through existing model_options

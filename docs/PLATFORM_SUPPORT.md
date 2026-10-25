@@ -27,15 +27,22 @@ Rows not selected in `project.json` are informative extension capabilities, not 
 
 ## Current product qualification,25October2026
 
-Sourceaa5975e reward UI and Farmland motion passes current iOS device/Simulator
-Release and Android both-ABI compile/package audits. Root verifies543focused
-inputs/five artifacts; independent review verifies fresh objects and final links.
-An isolated QA application on software-Vulkan Android additionally exercises
-current earned draft/active recovery, actual stock2x rendering, early banking and
-one accelerated positive-settlement/retry flow. These scopes do not qualify
-physical production-app performance/input, iOS runtime or store delivery.
+Source853169 reviewed crop/grass exports, reward UI and Farmland motion pass
+current iOS device/Simulator Release and Android both-ABI compile/package audits.
+Root checks550focused inputs/five artifacts; independent review checks exact
+asset deltas and fresh visibility objects consuming current generated bounds.
+A734-file clean archive freshly cooks/builds and passes44native suites plus
+source-bound package checks. The owner's separate Latest Playtest runs this
+source on macOS; ten user previews/accounts are protected.
 
-Supplemental installed MinGW GCC16.2 strictly links the complete current Windows
+An isolated software-Vulkan Android QA application additionally exercises the
+precedingaa5975e original-geometry earned draft/active recovery, stock2x rendering,
+early banking and accelerated positive settlement/retry flow. A later853169
+isolated same-native-assets smoke renders current geometry after settled startup;
+the original earlier Activity-recreation trigger remains unknown. These scopes do
+not qualify physical production-app performance/input, iOS runtime or store delivery.
+
+Supplemental installed MinGW GCC16.2 strictly links the complete853169 Windows
 GUI client and audits its112-file/DXIL package plus separate notice companion.
 It does not replace the selected Visual Studio/SDK gate or prove Windows execution,
 D3D12, Unicode storage, input, accessibility or distribution readiness. Linux has

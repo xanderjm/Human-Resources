@@ -1,4 +1,32 @@
-# Mobile qualification — accepted reward/world checkpoint
+# Mobile qualification — reviewed two-mesh checkpoint
+
+
+Current source epoch **853169defd705a9570fb871373ae25964f7bbf5d** includes
+accepted reward/world changes and the reviewed crop425/grass453 exports.
+iPhoneOS/Simulator arm64 optimized Release, Android both-ABI debug/release,
+strict lint, APK ZIP/ELF16KiB and unsigned AAB/bundletool audits pass. All550focused
+inputs and227files across five artifacts match. Prior fiveaa5975e artifacts are
+preserved. Direct payload comparison finds only two HRMs and their content/package
+provenance changed; other models, all textures and eight HRA animations remain
+exact. Six actual compiled visibility objects consume the new generated bounds.
+
+Evidence: `build/evidence/two-mesh-mobile/REPORT.json`; root frozen-source/artifact
+rehash: `build/evidence/two-mesh-root-review/root-rehash.json`. Independent review
+checks actual package inventories, preserved content and compiled membership.
+No new physical/runtime/signing/store qualification follows. The isolated Android
+runtime record below remains its aa5975e original-geometry epoch. Generic cooker
+source-ledger and Windows raw-hash/CRLF findings now have a separately host-qualified
+four-file tooling fix;
+frozen550-input/platform evidence independently binds those source authorities.
+One isolated latest-geometry Android attempt ends during Activity recreation,
+with its original system trigger unknown. A settled same-byte diagnostic then
+passes on its first launch:69assets/Vulkan/active390frame. Root verifies bothAPKs,
+all108native-asset entries and19bound records, and views the image. See
+`build/evidence/two-mesh-android-runtime/diagnostic-settled/REPORT.json`; initial
+failure and readiness-parser error are retained. This adds current isolated-ID
+software-Vulkan asset/render evidence, not physical performance or new recovery.
+
+## Historical accepted reward/world checkpoint
 
 Current source epoch **aa5975e04065af9ac98b330e996ebcb1cf00a2b8** includes the
 accepted reward-card hierarchy and Farmland frontage/active-time rotor changes.

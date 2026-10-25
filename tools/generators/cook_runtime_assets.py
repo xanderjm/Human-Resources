@@ -68,6 +68,11 @@ def cook(source_root: Path, output_root: Path, project: dict[str, object]) -> in
             # by this derived package. Assets/runtime remains the small recipe authority.
             provenance = json.loads((candidate / "game/content-provenance.json").read_text())
             paths = {str(item["source"]) for item in provenance["models"]}
+            for model in provenance["models"]:
+                optimization = model.get("static_mesh_optimization")
+                if optimization:
+                    paths.update((optimization["recipe"], optimization["canonical_source"]))
+                    paths.update(optimization["authoring_tool_sha256"])
             paths.update({"tools/art_tools.py", "tools/art-toolchain.json", "tools/art-requirements.txt", "tools/cook_product_content.py", "tools/cook_style_preview.py", "tools/normalize_glb.py", "assets/production/inventory.json"})
             definition = json.loads(recipe.read_text())
             paths.update("assets/textures/texture-" + name + "/texture-" + name + ".png" for name in definition["materials"])
