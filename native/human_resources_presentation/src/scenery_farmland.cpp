@@ -162,7 +162,19 @@ void grove(Builder& b, const TreeMass& mass, double s, std::uint64_t id) {
     const float c = std::abs(std::cos(yaw)), sn = std::abs(std::sin(yaw));
     const float rx = ((large ? .64F : .87F) * c + (large ? .61F : .62F) * sn) * scale;
     const float rz = ((large ? .64F : .87F) * sn + (large ? .61F : .62F) * c) * scale;
-    const float px = ground_x(b, side, station, inner + depth[i], rx, rz, inner);
+    // The first two existing trees form the visible shoulder of each bank.
+    // Their older full-crown-derived placement wastes legal inner margin in
+    // the wider playable camera. Keep both original root and crown bounds;
+    // outer trees retain the authored depth/layering and every station stays.
+    const bool shoulder = i < 2;
+    const float minimum = shoulder ? 4.8F + crown_radius : inner;
+    const float desired = inner + depth[i] - (shoulder ? 2.1F : 0.F);
+    const float original = ground_x(b, side, station, inner + depth[i], rx, rz, inner);
+    const float candidate = ground_x(b, side, station, desired, rx, rz, minimum);
+    // Road avoidance can choose the other side of a bend. That is a different
+    // composition, not the bounded shoulder adjustment being made here.
+    const float inward = std::abs(original) - std::abs(candidate);
+    const float px = inward >= 0 && inward <= 2.1F + .0001F ? candidate : original;
     b.prop(mesh, px, station, scale, yaw, 0, {.87F, .94F, .82F, 1});
   }
   for (unsigned i = 0; i < profile.understory_count; ++i) {

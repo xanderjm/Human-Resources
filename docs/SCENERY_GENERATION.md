@@ -1,8 +1,30 @@
 # Scrolling scenery study
 
-This development-only study generates scenery for farmland, suburbia and desert
-in the native SDL_GPU viewer. It has no gameplay actors, HUD, progression or
-runtime packaging changes. Visual reference matching is still in progress.
+This document records the original development-only scenery study and the
+generator now consumed by the native portrait playable. The separate SDL_GPU
+study viewer has no gameplay actors, HUD or progression. Visual reference
+matching is still in progress; historical viewer results do not qualify the game.
+
+## Current playable follow-up, 25 October 2026
+
+The product uses a 22.67m portrait world view with original apparent ship size,
+smaller world actors and a protected 9.7m opaque ground corridor. Earlier terrain
+detail/tonal margins improve scroll cues. Selected existing Farmland inner trees
+now move inward by at most 2.10m within unchanged crown/trunk/road constraints;
+counts, scale, stations and identities remain exact. Equal actual Game7 native
+comparisons show fuller canopy shoulders, without adding ground clutter or
+claiming full reference parity. A bounded guard rejects road-side discontinuities.
+
+Projected visibility also protects all three actual committed boss fan lanes;
+the old centre-only region could leave an outer endpoint behind opaque foliage.
+The consumed-canopy regression, both phone sizes, 120 warning-lane and 20
+projectile-region checks retain their measured scope. The existing 1,728 scenery
+windows and final 43-suite ordinary client aggregate pass. Source/native records
+are under `build/evidence/world-canopy-quality/`; root's Latest Preview launch
+binds the combined accepted source. These static captures do not qualify input,
+animation, phone performance or remaining theme/reference composition gaps.
+
+The following study sections retain their original camera and evidence scope.
 
 ## Composition authority
 
@@ -60,8 +82,10 @@ python3 tools/project.py verify
 
 The viewer scrolls at 2.4 metres/second. Review accepts explicit seeds, stations
 and landscape framing. The film helper publishes a movie only after native
-success and decoded frame-count/dimension verification. Portrait is a reference
-comparison; it does not change the product's landscape orientation contract.
+success and decoded frame-count/dimension verification. Portrait was a reference
+comparison in this historical viewer pass. The product has since selected
+portrait as its primary orientation; current camera/mobile-shell qualification
+is separate from these original study results.
 
 The headless scenery suite exercises 1,728 windows over 48 seeds and all three
 themes, including section seams, UV rebasing and 100-million-metre positions.

@@ -260,6 +260,33 @@ void shotgun_outer_lane_has_independent_protection() {
   require(centre_only.instances[0].tint[3] > .8F, "outer lane fixture lies beyond the centre path's protected footprint");
   require(frame.instances[0].tint[3] < .3F, "committed outer shotgun lane protects its actual foreground cactus");
 }
+void boss_outer_lanes_protect_consumed_canopy() {
+  // Actual consumed Farmland tree pose from station33.6's opaque left fan
+  // intersection; mirror it to exercise both committed outer directions. The
+  // boss is inside the15m readable band and18m commit range. The player has
+  // dodged away from the locked aim, so its hull cannot mask a missing lane.
+  for (float aspect : {320.F / 568.F, 390.F / 844.F})
+    for (float side : {-1.F, 1.F}) {
+      hr::gameplay::Snapshot run;
+      run.player = {0, 0};
+      run.entities.push_back({.id = 1001, .kind = hr::gameplay::EntityKind::boss,
+          .position = {side * 4.5F, 14}, .warning_aim = {side * 7.5F, 0}, .warning_seconds = 1, .body_heading = 0});
+      const auto pattern = hr::gameplay::cannon_geometry();
+      const auto muzzle = hr::gameplay::vehicle_cannon_shot(run.entities[0], run.entities[0].warning_aim);
+      require(pattern.boss_projectiles == 3 && muzzle.valid, "actual boss geometry supplies three valid committed lanes");
+      StyleFrame frame;
+      hr::presentation::set_overhead_camera(frame, aspect, 17.F / .75F, {0, 0, -.15F}, 27);
+      frame.instances.push_back({.mesh = "tree-round-large", .position = {side * 12.1884174F, 0, 2.6F},
+          .scale = {1.665F, 1.665F, 1.665F}, .rotation = {0, side < 0 ? .3F : -.3F, 0}});
+      auto centre_only = frame;
+      auto tank = run;
+      tank.entities[0].kind = hr::gameplay::EntityKind::tank;
+      hr::product::preserve_play_visibility(centre_only, 1, &tank);
+      hr::product::preserve_play_visibility(frame, 1, &run);
+      require(centre_only.instances[0].tint[3] > .8F, "real canopy lies outside a single cannon lane's protected region");
+      require(frame.instances[0].tint[3] < .3F, "both actual boss outer lanes protect the consumed canopy independently");
+    }
+}
 } // namespace
 int main(int argc, char** argv) {
   require(argc == 2, "cooked fixture root is explicit");
@@ -270,4 +297,5 @@ int main(int argc, char** argv) {
   critical_geometry_controls_every_landmark();
   fading_is_continuous_and_requires_real_geometry();
   shotgun_outer_lane_has_independent_protection();
+  boss_outer_lanes_protect_consumed_canopy();
 }

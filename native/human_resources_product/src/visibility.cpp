@@ -110,7 +110,17 @@ void preserve_play_visibility(presentation::StyleFrame& frame, std::size_t scene
         }
         if(actor.kind==gameplay::EntityKind::tank || actor.kind==gameplay::EntityKind::boss) {
           const auto muzzle=gameplay::vehicle_cannon_shot(actor,actor.warning_aim);
-          if(muzzle.valid) critical.add(project_region(frame.camera,world_box(point(muzzle.origin,.08F),point(actor.warning_aim,.08F),.45F)));
+          if(muzzle.valid) {
+            const auto geometry=gameplay::cannon_geometry();
+            const unsigned count=actor.kind==gameplay::EntityKind::boss ? geometry.boss_projectiles : 1U;
+            const float distance=std::hypot(actor.warning_aim.x-muzzle.origin.x,actor.warning_aim.z-muzzle.origin.z);
+            for(unsigned lane=0;lane<count;++lane) {
+              const float angle=(static_cast<float>(lane)-static_cast<float>(count-1)*.5F)*geometry.boss_spread_radians;
+              const gameplay::Vec2 end{muzzle.origin.x+distance*(muzzle.direction.x*std::cos(angle)-muzzle.direction.z*std::sin(angle)),
+                  muzzle.origin.z+distance*(muzzle.direction.x*std::sin(angle)+muzzle.direction.z*std::cos(angle))};
+              critical.add(project_region(frame.camera,world_box(point(muzzle.origin,.08F),point(end,.08F),.45F)));
+            }
+          }
         }
         if (actor.kind != gameplay::EntityKind::soldier)
           continue;

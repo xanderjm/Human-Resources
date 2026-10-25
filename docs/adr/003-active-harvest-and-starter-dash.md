@@ -155,3 +155,22 @@ bounded native comparisons/motion; the final combined host aggregate passes all
 43 suites. Shorter scripted survival is not sufficient evidence for a pressure
 nerf: the dense policy repeatedly commands into the rear/left boundaries despite
 visible open space. Longer fresh-run progression remains under review.
+
+## Presentation follow-up: canopy shoulders and complete boss warnings
+
+The wider portrait camera left some existing Farmland groves farther outward
+than trunk or crown clearance required. Selected inner trees now use up to 2.10m
+of that legal margin; camera, scales, stations, counts and clearance rules stay
+fixed. A bounded guard rejects road-side selection discontinuities. Root accepts
+equal-snapshot native comparisons as an improvement, not complete reference
+matching. No low ground props move into warning paths.
+
+Review also reproduced a separate real defect: projected visibility protected
+the central cannon ray while the boss renders three committed lanes. Foliage
+could hide an outer endpoint after the player dodged away from locked aim.
+Visibility now enumerates the same CannonGeometry fan directions and full aim
+distance, retaining the fixed region budget and physical attack rules. A consumed
+canopy regression covers both outer lanes at 320/390 portrait sizes. The final
+ordinary client aggregate passes 43 suites. This stays presentation-only
+authority 7; prior combat/native evidence retains its exact source epoch.
+Latest Preview uses combined accepted source in a separate fresh-save app.

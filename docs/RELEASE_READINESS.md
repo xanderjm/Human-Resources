@@ -10,8 +10,9 @@ change together. Prior landscape captures are historical integration evidence.
 
 ## Current truth
 
-The accepted Game7 combat checkpoint is recorded in
-`build/evidence/game7-combat-source-checkpoint/checkpoint.json`. Its preceding
+The accepted Game7 combat checkpoint is `62c45fe`; its later accepted world/records
+checkpoint is recorded in `build/evidence/world-canopy-source-checkpoint/checkpoint.json`.
+The combat record remains `build/evidence/game7-combat-source-checkpoint/checkpoint.json`. Its preceding
 production checkpoint is `e71bf642` (711 source files); portable QA tooling/docs
 separately commit as `88688529`.
 An isolated clean archive of e71bf642 freshly cooks/builds the product and passes all
@@ -21,17 +22,22 @@ Refreshed iOS/Android compile and package evidence for its graphics is in
 separate. The later authority-7 military-spacing/enemy-vitality source is accepted
 as a bounded combat milestone, with 43-suite aggregate, actual native comparisons,
 fresh draft/death/account flow and protected older-account recovery. It is not
-yet a refreshed mobile package. Current
-Farmland canopy/outer-boss-warning work is a separate unaccepted candidate.
+yet a refreshed mobile package. The separate Farmland canopy/outer-boss-warning
+slice is now accepted with equal-snapshot native comparisons and a final combined
+43-suite ordinary-client aggregate. Latest Preview contains both accepted slices.
 
-The latest working-source presentation pass additionally improves Farmland
+The preceding presentation pass improves Farmland
 terrain/scroll cues and small-phone hostile trails/warning separation. Root and
 an independent critic accept native 320/390 comparisons and a bounded actual
 strafe sequence; the combined aggregate passes 41/41/static/diff. Game rules and
 ship size remain unchanged. These graphics follow the launched Current Preview
-and earlier mobile package epoch below, which remain preserved separately. Narrow tall
-landmark framing and human pacing remain open quality concerns; three matched
-bot runs demonstrate useful evasive play but do not establish human fun.
+and earlier mobile package epoch below, which remain preserved separately.
+Selected existing Farmland canopy shoulders now use up to 2.10m of legal inner
+margin, preserving scales/counts/stations and trunk/crown/road gates. Visibility
+protects all three actual boss fan directions, fixing a reproduced opaque-canopy
+occlusion at an outer endpoint. Source/native/measurement limits are in
+`build/evidence/world-canopy-quality/REPORT.json`. This improves framing without
+establishing full style-frame parity or other-theme composition acceptance.
 
 The current source is authority 7, fingerprint `3869579699016858964`, with outer
 account schema 2. It retains expanded flight, faster escalation, role-based enemy
@@ -50,8 +56,12 @@ restrained engaged-vehicle meters and actual actor-local impact feedback expose
 combat progress. Narrow captions fit the readable floor; lifted vehicles yield
 their ground vitality meters. Independent native review accepts this milestone;
 the dense evasive policy's repeated rear/left corner trap does not establish
-unavoidable pressure or justify a nerf. Longer fresh-run progression remains
-under review.
+unavoidable pressure or justify a nerf. A later nine-run public diagnostic finds
+eight fresh runs exceeding five minutes, three alive at the ten-minute observation
+cap, and seven earned evolutions. Predictive exact-state policies establish
+build/survival feasibility rather than human pacing/fun. A genuine evolved 400s
+checkpoint is preserved for native crowding review. See
+`build/evidence/long-run-public-review/REPORT.json`.
 
 Current aggregate passes 43/43 tests, static and diff checks. Its first run
 exposed the fixed-seed idle revive fixture dying at 56.9s before the unchanged
@@ -65,7 +75,7 @@ AccountSession/in-memory failure injection. A fresh hidden Game7 App/SDL-storage
 run also passes earned draft termination/cold exact recovery, choice, natural
 death/34CR settlement and cold exact ledger. See
 `build/evidence/quality-native-integration/game7-combat-native/combined-qualified.json`.
-All six protected app bundles remain exact. No current mobile, OS input, human
+The six prior protected app bundles remain exact. No current mobile, OS input, human
 pacing or physical storage-failure qualification follows. The portable fresh/maxed
 30-aggregate-minute probe reports zero active allocations and mean advance at
 most 5.769 microseconds, explicitly shared-host CPU-only evidence.
@@ -82,11 +92,16 @@ contacts do not qualify human timing or OS/physical touch. Game6 iPhoneOS and
 Simulator Release builds plus Android both-ABI debug/release, lint, APK and
 unsigned AAB/package audits pass; current mobile execution remains unqualified.
 
-The latest normal user launch is the separately staged authority-6 Current
-Preview, which retains the original ship size and adds the accepted UI/groups.
-It uses fresh `current-preview-save`; all four prior app bundles/accounts remain
-preserved. Its strict ad-hoc signature and 101 runtime/104 bundle files pass,
-and host PID 82887 confirms normal LaunchServices delivery. The longer Game5
+The latest normal user launch is authority-7 `Human Resources Latest Preview.app`,
+containing accepted combat/world changes with the original apparent ship size.
+It uses fresh `latest-preview-save`; all six prior apps/accounts remain preserved.
+Strict ad-hoc signature and 101 runtime/104 bundle files pass, and host PID 16229
+confirms exact normal LaunchServices app/arguments. Signed executable SHA-256 is
+`17fb879214010f5f508a790af1c9a3239ada4c7e921952f91f309ae91d91b4bd`.
+Immutable `build/evidence/quality-native-integration/latest-preview-staged.json`
+and separate `latest-preview-launch.json` bind this user delivery. It becomes
+the seventh protected app/account: do not operate, quit or overwrite it.
+The previous authority-6 Current Preview and the longer Game5
 boss/extents films and immutable Flight Preview host
 profile remain separate historical epochs. That profile completes 10,800 frames,
 with active interval p95/p99 16.706/16.957ms and CPU p95/max 4.488/5.449ms; four
@@ -102,7 +117,7 @@ A sixth isolated Input QA wrapper now remains potentially user-controlled after
 an external state change during a long CUA bind. No automated click, key or drag
 was sent, so the attempted ordinary desktop controls check remains unexecuted.
 Do not operate, quit or overwrite that wrapper/account or any of the five prior
-user apps. Its exact provenance and scope are recorded in
+user apps, plus the newly launched Latest Preview. Its exact provenance and scope are recorded in
 `build/evidence/quality-native-integration/os-input-game6-checkpoint/report.json`.
 
 The qualification below describes the earlier authority-3 checkpoint; its
