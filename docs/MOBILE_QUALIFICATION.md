@@ -1,5 +1,39 @@
 # Mobile qualification — current package and later host scopes
 
+## Qualified authority8 package checkpoint
+
+Source **fafd40be775bcf1f87aca2a5555ee32ba5ac13a8**, tree
+`d2c123844fc4200728de8b4fd473d7945cbbd038`, now passes the current mobile refresh.
+All741Git blobs/modes and accepted34source owners match. Device and Simulator
+arm64 Release, Android both ABIs/debug/release, strict lint, APK ZIP/ELF16KiB,
+unsigned AAB and pinned bundletool/source/package audits pass. Five artifacts
+retain227entries; all81runtime payloads, eight animations, textures and shaders
+remain exact againstb99c373. Actual sixteen changed production C++ owners compile
+in six configurations with checked archive membership; immutable boss/save
+objects/dependencies/tuning and actual Gradle Activity classes bind the changes.
+Game authority8/fingerprint12553144404692471430, codec1/account2 are current.
+
+Evidence under `build/evidence/boss-ui-mobile/`: REPORT SHA
+`9697a20464d14bc3f9b15164518fa8fa7ef6dd4d1d506943818f5e26e83ce889`,
+source-final `6fb6de4abd945eb885ad6c16873cc7632a05c6e0d9f216a30e3f2b1ee82965d3`,
+artifacts `45214997a4af115371eb80df31dcef18ef9d62e1562230c65c14fd8542181f5b`.
+Independent review under `boss-ui-mobile-independent/` SHA
+`4ac86bfe3db88eca69b57d05458e6ec3ae5377d3f3044e793582dff223553de0`
+verifies source, old preservation, current packages/compiled owners, DEX and
+alignment. Root separately rehashes49report records and227artifact entries.
+
+The original Xcode sandbox write denial is retained; normal authorized access
+passes unchanged source. A known default Python3.14 XML import problem is worked
+around with the existing3.13, with no environment/source repair. Exactly160
+reproducible dev objects/tests are reclaimed after stat/hash guards; all old
+packages, archives/classes, assets and30protected bundles remain exact. The disk
+guard stays above1GiB throughout, with minimum1,113,968,640bytes. These are
+compile/package results, not physical/Simulator runtime, TalkBack, storage,
+signing or store qualification. Isolated current Android runtime preparation is
+separate; latest completed Android runtime remains853169 until a new run passes.
+
+## Pre-refresh host scope, preserved history
+
 Later authority8 boss/Pause source passes46host suites, actual native temporal
 captures and cold SDL filesystem continuation/banking. Its fingerprint is
 `12553144404692471430`; Game codec1/account2 and size limits remain. It does not

@@ -31,10 +31,13 @@ Latest host authority8 boss/Pause source passes optimized dev/46suites and actua
 native portrait motion/UI review. Independent phase continuations and four-process
 SDL storage banking pass; a120-simulated-minute CPU audit remains host-only.
 The owner-requested separate938ea35playtest is open; twelve user previews and
-30discovered bundles are protected. None of these later results updates mobile
-or supplemental Windows package qualification, which remainsb99c373 below.
-Current mobile refresh preparation preserves the old packages; no completed new
-platform build, physical runtime, human-fun or store claim follows.
+30discovered bundles are protected. The exact741-filefafd40be mobile checkpoint
+now passes both iOS Release builds and Android both ABIs/variants/lint/16KiB/AAB
+and package/source audits, with independent review. Its five packages/227entries
+retain all81runtime payloads/eight animations. See `boss-ui-mobile/` and
+`boss-ui-mobile-independent/` evidence. Supplemental Windows remainsb99c373;
+isolated Android runtime remains853169 pending a new bounded run. No physical
+runtime, human-fun or store claim follows.
 
 ### Qualified b99c373 clean/platform epoch
 

@@ -39,9 +39,14 @@ bundle files/signature are verified; the retained executable's missing permissio
 was corrected in the new bundle before successful normal launch. Twelve user
 previews and30discovered bundles are protected. This app contains accepted direct
 flight/held-button/sweep feedback; later boss/Pause source does not hot-update it.
-Current mobile and supplemental Windows package qualification remainsb99c373.
-The new mobile refresh is being prepared; physical input, sustained budgets,
-human feel, distribution and store acceptance remain open. Goal stays active.
+Current mobile compile/package qualification is now the exact741-filefafd40be
+checkpoint: both iOS Release builds, Android both ABIs/variants/lint/16KiB/AAB
+and source/package audits pass, independently reviewed. Reports are under
+`boss-ui-mobile/` and `boss-ui-mobile-independent/`; all81payloads/eight animations
+remain exact and previous packages are preserved. Root rehashes49report records
+and227artifact entries. The supplemental Windows package remainsb99c373.
+An isolated current Android runtime is being prepared; physical input, sustained
+budgets, human feel, distribution and store acceptance remain open. Goal stays active.
 
 ## Historical b99c373 clean/platform checkpoint
 
