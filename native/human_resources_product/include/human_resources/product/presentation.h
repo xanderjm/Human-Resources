@@ -103,6 +103,8 @@ struct View final {
   bool show_privacy{};
   PromotionFrame promotion{};
   DamageFeedback damage_feedback{};
+  const progression::RunReceipt* current_receipt{}; // Actual client receipt; preview never changes rewards.
+  float report_entry_seconds{-1}; // Disposable, nonblocking presentation timing.
 };
 [[nodiscard]] constexpr std::string_view location_name(presentation::SceneryTheme theme) {
   switch (theme) {

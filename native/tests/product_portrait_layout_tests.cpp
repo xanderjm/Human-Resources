@@ -706,8 +706,32 @@ void actual_damage_feedback_stays_inside_the_tactical_hud() {
   }
 }
 
+void late_value_hud_keeps_level_at_small_portrait() {
+  progression_tests::MemoryBackend backend;
+  hr::progression::AccountStore store{backend};
+  require(store.load().playable(), "late HUD fixture account");
+  hr::gameplay::Game game;
+  game.start();
+  auto run = game.snapshot();
+  run.hull = 112; run.maximum_hull = 130;
+  run.shield = 80; run.maximum_shield = 100;
+  run.stats.level = 24; run.stats.score = 2126;
+  run.stats.active_seconds = 400;
+  for (const auto viewport : std::array<hr::ui::Rect,2>{{{0,0,320,568},{0,0,390,844}}}) {
+    View view{Screen::run,&run,&store,viewport,{0,20,0,0}};
+    const auto ui = interface(view);
+    const auto copy = compact(atlas_copy(ui));
+    for (const auto value : {"HP112","SH80","LV24","SCORE2126","XP"})
+      require(copy.find(value) != std::string::npos, "late normal HUD retains every actual value and experience label");
+    for (const auto& q : ui.quads) if (glyph(q)) {
+      const float size = q.rect[2] * viewport.width * 48.F / 64.F;
+      require(size >= 13.99F, "late HUD does not shrink below readable floor");
+    }
+  }
+}
 } // namespace
 int main() {
+  late_value_hud_keeps_level_at_small_portrait();
   compact_choice_titles_stay_on_the_dark_frame();
   promotion_preserves_choice_safety_and_collected_return_controls();
   actual_damage_feedback_stays_inside_the_tactical_hud();

@@ -6,6 +6,7 @@
 #include <human_resources/gameplay/tuning.h>
 #include <product_glyphs.generated.h>
 #include "upgrade_presentation.h"
+#include "flight_report.h"
 
 namespace human_resources::product {
 namespace {
@@ -164,11 +165,8 @@ std::string screen_summary(const View& view) {
       return std::string(location_name(view.theme)) + ". Saved run at level " + std::to_string(run.stats.level) + ". " + (run.phase == gameplay::Phase::choosing_upgrade ? "An earned upgrade is waiting. " : "") + "Choose Resume or End run and bank credits. The run clock is paused.";
     return std::string(location_name(view.theme)) + ". Your run clock is paused.";
   case Screen::death:
-    return "Score " + std::to_string(run.stats.score) + ". Captures " + std::to_string(run.stats.captures) + ". Bank credits to continue.";
   case Screen::results:
-    if (view.pending_results)
-      return "Saving " + std::to_string(progression::base_credits(*view.pending_results)) + " credits from score " + std::to_string(view.pending_results->score) + ". Keep the game open and retry saving.";
-    return view.guest ? "Guest run. Saving is unavailable." : "Earned " + std::to_string(account.results.base_credits) + " Research Credits. Bank " + std::to_string(account.credits) + ". Best score " + std::to_string(account.best_score) + ".";
+    return flight_report(view).summary;
   case Screen::hangar:
     return std::to_string(account.credits) + " credits. Permanent research applies to future runs.";
   case Screen::blueprints: {

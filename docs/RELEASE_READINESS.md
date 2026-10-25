@@ -10,6 +10,26 @@ change together. Prior landscape captures are historical integration evidence.
 
 ## Current truth
 
+Fresh physical-device audit: the paired iPhone has developer mode enabled, but
+its tunnel/DDI services are unavailable and lock state is unknown; no Android
+target is attached. The prior passcode-required result remains historical.
+`build/evidence/current-mobile-delivery/device-readiness.json` binds the current
+bounded read-only observation. No app/data/pairing operation was performed.
+
+The subsequent Flight Report/late-value HUD slice is now accepted with independent
+native review and all44host suites. It exposes actual earned/saved credit status,
+recorded unlocks/next blueprint progress and real Hangar budget, preserving
+guest/pending/recovered/capped/large-text states. LV24 no longer disappears at320
+when other values grow. Exact source/checkpoint records are under
+`build/evidence/flight-report-native/final/` and
+`build/evidence/flight-report-source-checkpoint/`. The running Latest Preview does
+not contain this later UI; it remains protected. Current Game7 combat/world/report
+now passes both iOS Release package audits and Android both-ABI debug/release,
+strict lint, 16KiB APK and unsigned AAB audits. Root independently verifies
+all525focused/307native inputs and227files across five artifacts unchanged in
+`build/evidence/game7-flight-report-mobile/root-verification.json`. No current
+physical execution, signing, human-fun or store qualification follows.
+
 The accepted Game7 combat checkpoint is `62c45fe`; its later accepted world/records
 checkpoint is recorded in `build/evidence/world-canopy-source-checkpoint/checkpoint.json`.
 The combat record remains `build/evidence/game7-combat-source-checkpoint/checkpoint.json`. Its preceding

@@ -8,6 +8,7 @@
 #include <sstream>
 #include "privacy_policy.h"
 #include "upgrade_presentation.h"
+#include "flight_report.h"
 namespace human_resources::product {
 namespace {
 using Color = std::array<float, 4>;
@@ -208,16 +209,21 @@ Interface wide_interface(const View& v) {
     c.button(568, 278, 244, "END & BANK", Command::finish, true, white, 64);
     break;
   case Screen::death:
-    title("SIGNAL LOST", "SCORE " + number(run.stats.score) + " / CAPTURES " + number(run.stats.captures));
-    c.button(32, 278, 780, "BANK CREDITS & RESULTS", Command::finish, true, mint, 64);
+  case Screen::results: {
+    const auto report = flight_report(v);
+    title(report.heading, report.status);
+    c.text(32, 120, report.reward_label + "  +" + number(report.credits), 26, mint);
+    c.text(32, 163, "SCORE " + number(report.score) + " / CAPTURES " + number(report.captures) + " / " + time_text(report.seconds), 19);
+    if (!report.preview && !report.guest && !report.pending) {
+      c.wrap(32, 208, 780, report.blueprint_heading + ": " + report.blueprint_name + " / " + report.blueprint_detail + ". " + report.hangar_name + ": " + report.hangar_detail, 17, muted, 2);
+    }
+    if (report.preview) c.button(32, 278, 780, "BANK CREDITS & RESULTS", Command::finish, true, mint, 64);
+    else {
+      c.button(32, 278, 378, "FLY AGAIN", Command::retry, true, mint, 64);
+      c.button(434, 278, 378, report.hangar_action, Command::hangar, true, white, 64);
+    }
     break;
-  case Screen::results:
-    title("RESEARCH COMPLETE", v.guest ? "Guest run / progress is not saved" : "BANK " + number(account.credits) + " RESEARCH CREDITS / SCORE " + number(account.results.receipt.score));
-    if (!account.results.recovered)
-      c.text(32, 186, "LOCATION: " + std::string(location_name(v.theme)), 19, muted);
-    c.button(32, 278, 378, "FLY AGAIN", Command::retry, true, mint, 64);
-    c.button(434, 278, 378, "HANGAR", Command::hangar, true, white, 64);
-    break;
+  }
   case Screen::hangar: {
     title("HANGAR", number(account.credits) + " Research Credits / permanent upgrades");
     const auto tracks = v.store->hangar();
@@ -354,16 +360,11 @@ std::vector<ReadableSection> readable_sections(const View& v) {
     add("END RUN\nBank this flight's earned Research Credits exactly once. Flights shorter than 30 seconds earn no credits.", Command::finish, "END & BANK");
     break;
   case Screen::death:
-    add("SIGNAL LOST\nScore " + number(run.stats.score) + ". Captures " + number(run.stats.captures) + ". Survived " + time_text(run.stats.active_seconds) + ". Flights shorter than 30 seconds earn no credits.", Command::finish, "BANK & RESULTS");
-    break;
   case Screen::results: {
-    const auto& results = account.results;
-    const auto& receipt = v.pending_results ? *v.pending_results : results.receipt;
-    const auto score = v.guest ? run.stats.score : receipt.score;
-    const auto credits = v.pending_results ? progression::base_credits(receipt) : v.guest ? 0 : results.base_credits;
-    const std::string text = "RESEARCH COMPLETE\nSCORE " + number(score) + "\n+ " + number(credits) + " RESEARCH CREDITS\n" + (v.pending_results ? "Saving credits. Keep the game open." : v.guest ? "Guest run / saving unavailable." : "Your Research Credits are saved.") + "\nCaptures " + number(v.guest ? run.stats.captures : receipt.captures) + ". Survived " + time_text(v.guest ? run.stats.active_seconds : static_cast<double>(receipt.active_milliseconds) / 1000.) + ".\nBank " + number(account.credits) + ". Best score " + number(account.best_score) + "." + (results.newly_unlocked ? " New blueprints unlocked." : "");
-    add(text, Command::retry, "FLY AGAIN");
-    add("HANGAR\nSpend banked Research Credits on permanent upgrades.", Command::hangar, "HANGAR");
+    const auto report = flight_report(v);
+    const auto body = report.heading + "\n" + report.summary.substr(report.heading.size() + 2);
+    add(body, report.preview ? Command::finish : Command::retry, report.preview ? "BANK CREDITS & RESULTS" : "FLY AGAIN");
+    if (!report.preview) add("HANGAR\nPermanent upgrades apply to future flights.", Command::hangar, report.hangar_action);
     break;
   }
   case Screen::hangar: {
@@ -700,6 +701,56 @@ Interface readable_run(const View& v) {
   return std::move(c.output);
 }
 } // namespace
+void flight_report_panel(Canvas& c, const View& v) {
+  const auto report = flight_report(v);
+  const auto first_quad = c.output.quads.size();
+  const auto line = [&](float x, float y, float width, std::string_view value, float size, Color color = white, bool title = false, bool center = false) {
+    c.fitted(x, y, width, value, size, color, title, center);
+    if (c.measure(value, 14.F / c.scale, title) > width) c.output.text_overflow = true;
+  };
+  c.fill(20, 24, 350, 108, navy);
+  line(34, 38, 322, report.heading, 29, white, true);
+  c.wrap(34, 82, 322, report.status, 16, muted, 2);
+  c.fill(20, 150, 350, 260, navy);
+  c.fill(20, 150, 4, 260, report.preview ? gold : mint);
+  line(38, 164, 314, report.reward_label, 17, muted);
+  line(38, 199, 314, "+ " + number(report.credits), 48, report.preview ? gold : mint, true);
+  c.fill(24, 272, 346, 138, white);
+  line(38, 283, 314, "SCORE " + number(report.score) + (!report.preview && !report.guest && !report.pending ? " / BEST " + number(report.best_score) : ""), 22, navy);
+  line(38, 329, 146, "CAPTURES", 14, navy);
+  line(206, 329, 146, "SURVIVED", 14, navy);
+  line(38, 359, 146, number(report.captures), 25, navy);
+  line(206, 359, 146, time_text(report.seconds), 25, navy);
+  c.fill(20, 430, 350, 214, navy);
+  if (report.preview) {
+    line(36, 444, 318, "FLIGHT BUILD", 20, white, true);
+    line(36, 483, 318, "REACHED LEVEL " + number(v.run->stats.level), 20, mint);
+    line(36, 518, 318, number(hardware_count(*v.run)) + " / 6 hardware slots filled", 16, muted);
+    c.wrap(36, 561, 318, "Dash gives brief protection. Close sweeps build Overdrive.", 17, white, 3);
+  } else if (report.guest || report.pending) {
+    line(36, 446, 318, report.guest ? "GUEST FLIGHT" : "SAVING RESEARCH", 21, white, true);
+    c.wrap(36, 491, 318, report.guest ? "Saving is unavailable. Permanent progress has not changed." : "Your reward is not banked yet. Retry saving before continuing.", 18, muted, 5);
+  } else {
+    line(36, 443, 318, report.blueprint_heading, 14, mint);
+    line(36, 475, 318, report.blueprint_name, 22);
+    line(36, 510, 318, report.blueprint_detail, 14, muted);
+    c.fill(36, 542, 318, 5, panel);
+    if (report.blueprint_fraction > 0) c.fill(36, 542, 318 * report.blueprint_fraction, 5, mint);
+    line(36, 558, 318, report.hangar_name, 18);
+    line(36, 588, 318, report.hangar_detail, 14, muted);
+    c.fill(36, 624, 318, 5, panel);
+    if (report.hangar_fraction > 0) c.fill(36, 624, 318 * report.hangar_fraction, 5, gold);
+  }
+  // One short report arrival, no count-up or delayed actions. Text, rewards,
+  // semantics and hit targets are final from the first frame.
+  if (!v.promotion.reduced_motion && v.report_entry_seconds >= 0 && v.report_entry_seconds < .22F) {
+    const float t = std::clamp(v.report_entry_seconds / .22F, 0.F, 1.F);
+    const float offset = 4 * (1-t) * (1-t) * c.scale / c.h;
+    for (auto i = first_quad; i < c.output.quads.size(); ++i) c.output.quads[i].rect[1] += offset;
+  }
+  c.button(26, 670, 338, report.preview ? "BANK CREDITS & RESULTS" : "FLY AGAIN", report.preview ? Command::finish : Command::retry, true, mint, 60);
+  if (!report.preview) c.button(26, 752, 338, report.hangar_action, Command::hangar, true, white, 56);
+}
 Interface standard_interface(const View& v) {
   if (v.viewport.width > v.viewport.height)
     return wide_interface(v);
@@ -740,7 +791,8 @@ Interface standard_interface(const View& v) {
     c.text(left, top + 2, hull, hull_size, damaged && v.damage_feedback.hull ? coral : white);
     c.text(left + hull_width + gap, top + 2, shield, other_size, damaged && !v.damage_feedback.hull ? mint : Color{.57F,.83F,1,1});
     const float score_x = right - score_width;
-    if (!damaged && hull_width + shield_width + level_width + score_width + 3 * gap <= right - left)
+    const bool level_in_top = hull_width + shield_width + level_width + score_width + 3 * gap <= right - left;
+    if (!damaged && level_in_top)
       c.text(left + hull_width + shield_width + 2 * gap, top + 2, level, hull_size);
     if (!damaged) c.text(score_x, top + 2, score, other_size);
     const float bar_top = top + hull_size + 7;
@@ -752,7 +804,11 @@ Interface standard_interface(const View& v) {
     const float shield_x = left + hull_width + gap;
     c.fill(shield_x, bar_top, shield_width, 4, {.16F, .29F, .33F, 1});
     c.fill(shield_x, bar_top, shield_width * shield_fraction, 4, shield_color);
-    const float progress_x = shield_x + shield_width + gap;
+    float progress_x = shield_x + shield_width + gap;
+    if (!damaged && !level_in_top) {
+      c.text(progress_x, bar_top - 3, level, other_size);
+      progress_x += c.measure(level, other_size) + gap;
+    }
     const float label_width = c.measure("XP", other_size);
     const float progress_width = right - progress_x - label_width - 4;
     if (progress_width >= 12 && !damaged) {
@@ -892,41 +948,9 @@ Interface standard_interface(const View& v) {
       c.button(26, 690, 338, "END RUN & BANK CREDITS", Command::finish, true, white, 56);
       break;
     case Screen::death:
-      heading("SIGNAL LOST", "The resistance caught up. Every specimen counts.");
-      c.text(26, 170, "SCORE  " + number(run.stats.score), 30);
-      c.text(26, 235, "CAPTURES  " + number(run.stats.captures), 23, mint);
-      c.text(26, 286, "SURVIVED  " + time_text(run.stats.active_seconds), 21, muted);
-      c.button(26, 690, 338, "BANK CREDITS & RESULTS", Command::finish, true, mint, 60);
+    case Screen::results:
+      flight_report_panel(c, v);
       break;
-    case Screen::results: {
-      const auto& results = account.results;
-      const auto* receipt = v.pending_results ? v.pending_results : &results.receipt;
-      const auto score = v.guest ? run.stats.score : receipt->score;
-      const auto captures = v.guest ? run.stats.captures : receipt->captures;
-      const auto seconds = v.guest ? run.stats.active_seconds : static_cast<double>(receipt->active_milliseconds) / 1000.;
-      c.fill(20, 66, 350, 114, navy);
-      c.fitted(34, 79, 322, results.recovered ? "RECOVERED RUN" : "RESEARCH COMPLETE", 29, white, true, true);
-      c.wrap(38, 129, 314, v.pending_results ? "Saving credits. Keep the game open." : v.guest ? "Guest run / saving is unavailable"
-                                                                                               : "Your Research Credits are saved.",
-          16, muted, 2);
-      c.card(24, 208, 342, 398);
-      c.centered(24, 224, 342, "SCORE", 16, muted);
-      c.fitted(42, 252, 306, number(score), 44, white, true, true);
-      c.centered(24, 344, 342, "+ " + number(v.pending_results ? progression::base_credits(*v.pending_results) : (v.guest ? 0 : results.base_credits)), 38, navy, true);
-      c.centered(24, 395, 342, "RESEARCH CREDITS", 17, navy);
-      c.centered(40, 445, 146, "CAPTURES", 14, navy);
-      c.centered(204, 445, 146, "SURVIVED", 14, navy);
-      c.centered(40, 472, 146, number(captures), 25, navy);
-      c.centered(204, 472, 146, time_text(seconds), 25, navy);
-      c.fitted(42, 552, 306, "BANK " + number(account.credits) + "  /  BEST " + number(account.best_score), 16, navy, false, true);
-      if (results.newly_unlocked)
-        c.centered(20, 620, 350, "NEW BLUEPRINTS UNLOCKED", 16, gold);
-      else if (!results.recovered)
-        c.centered(20, 620, 350, location_name(v.theme), 16, white);
-      c.button(26, 670, 338, "FLY AGAIN", Command::retry, true, mint, 60);
-      c.button(26, 752, 338, "HANGAR", Command::hangar, true, white, 56);
-      break;
-    }
     case Screen::hangar: {
       c.fill(8, 8, 374, 828, navy);
       c.text(24, 28, "HANGAR", 32, white, true);
@@ -1069,6 +1093,7 @@ Interface interface(const View& v) {
     }
   }
   auto standard = standard_interface(v);
+  if ((v.screen == Screen::death || v.screen == Screen::results) && standard.text_overflow) return readable_interface(v);
   if (!large || !standard.text_overflow) return finish(std::move(standard));
   return finish(v.screen == Screen::run && !v.save_error ? readable_run(v) : readable_interface(v));
 }

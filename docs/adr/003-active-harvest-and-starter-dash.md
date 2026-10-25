@@ -174,3 +174,21 @@ canopy regression covers both outer lanes at 320/390 portrait sizes. The final
 ordinary client aggregate passes 43 suites. This stays presentation-only
 authority 7; prior combat/native evidence retains its exact source epoch.
 Latest Preview uses combined accepted source in a separate fresh-save app.
+
+## Presentation follow-up: Flight Report and late-value HUD
+
+The report model derives display values from the actual client receipt, recorded
+Results reward and existing blueprint/track views. It owns no reward arithmetic,
+settlement, purchases or saved state. Earned versus saved credits and real next
+unlock/permanent-upgrade goals make death/results useful; guest, pending,
+recovered and capped states retain explicit truthful alternatives. Module identity
+mapping follows canonical IDs/bits. The title/hero and resume flow stay fixed.
+
+A short disposable entry timer moves only noninteractive report content. Actions
+are visible/enabled at their final positions immediately; reduced motion finishes
+instantly. Save success and gameplay do not wait for presentation. The real late
+320px HUD omitted level when health/shield/score grew; measured second-row level
+placement preserves the existing footprint and readable floor. Expanded text uses
+the established complete-content pagination. Root/independent native review and
+the final 44-suite aggregate qualify this bounded source, with no new authority
+or account schema. Running user previews retain their immutable earlier epochs.

@@ -80,6 +80,7 @@ struct App final {
   hr::product::SceneEffects scene_effects;
   hr::product::Controls controls;
   hr::product::PromotionFlow promotion;
+  float report_entry_seconds{-1};
   hr::client::ResumeQa resume_qa;
   hr::input::ActionMap actions{bindings()};
   hr::platform::SdlInputDevices devices;
@@ -172,6 +173,7 @@ void change_screen(App& app, Screen screen) {
     app.controls.clear();
     app.pressed = Command::none;
     app.screen = screen;
+    app.report_entry_seconds = screen == Screen::death || screen == Screen::results ? 0.F : -1.F;
     if (screen == Screen::upgrade) app.promotion.enter();
     else app.promotion.clear();
     app.ui_page = 0;
@@ -558,6 +560,9 @@ void rebuild(App& app) {
   hr::product::View view{app.screen, &app.game.snapshot(), &app.store.store(), app.metrics.viewport, app.metrics.safe_area, app.save_error, app.guest, app.game.revive_available(), app.store.store().credit_bonus_available(), app.controls.origin(), app.controls.position(), app.controls.dragging(), save_message, can_reset, app.pending_settlement ? &app.pending_receipt : nullptr, app.show_recipes, app.recipe_page, app.selected_theme, app.haptics.available(), app.restored_run, can_bank, text_scale, app.ui_page, app.show_build, app.upgrade_preview, app.show_privacy};
   view.promotion = app.promotion.frame(app.store.account().settings.reduced_motion || app.frame_preferences.reduced_motion);
   view.damage_feedback = app.scene_effects.damage_feedback();
+  const auto current_receipt = receipt(app);
+  view.current_receipt = &current_receipt;
+  view.report_entry_seconds = app.report_entry_seconds;
   app.ui = hr::product::interface(view);
   app.ui_page = app.ui.page;
   Command focused = Command::none;
@@ -981,6 +986,10 @@ SDL_AppResult SDL_AppIterate(void* state) {
   }
   if (app.save_error) app.promotion.clear();
   else app.promotion.advance(elapsed);
+  if (app.report_entry_seconds >= 0) {
+    app.report_entry_seconds += elapsed;
+    if (app.report_entry_seconds >= .22F) app.report_entry_seconds = -1;
+  }
   for (const auto action : app.accessibility->drain_actions()) {
     const auto command = hr::product::accessibility_command(action, app.ui);
     if (command != Command::none) {
