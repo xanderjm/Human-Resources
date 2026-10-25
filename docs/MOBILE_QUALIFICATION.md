@@ -37,6 +37,14 @@ the33edb97 mobile artifacts above. Those five exact artifacts are preserved unde
 `build/evidence/reward-world-mobile/`; the next combined reward/world source must
 freeze and pass its own mobile builds before acquiring package qualification.
 
+The subsequent four-file Farmland frontage/active-time windmill slice is also
+host/native accepted under `build/evidence/world-landmark-structure-review/`.
+It retains scales, counts, clearing, saved Game bytes and other biomes; new mobile
+packages must include both this slice and the reward UI. Current published
+qualification above remains the preserved33edb97 artifacts until the combined
+source passes its own builds. A private three-mesh cost experiment is separate
+from production source/assets and acquires no qualification by association.
+
 ## Historical authority3 native UI qualification
 
 This 25 October 2026 checkpoint refreshes the qualified authority-3 vehicle/Privacy build with native-resolution UI composition. Game authority remains **3**, outer account schema remains **2**, and the rules fingerprint is unchanged: `13238298123916137634`. It is a source-bound platform checkpoint, not a release-ready declaration.

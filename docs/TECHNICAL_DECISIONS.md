@@ -1,5 +1,22 @@
 # Technical Decisions
 
+## 25 October 2026 — Farmland frontage within existing clearance
+
+Recover unused full-mesh margin rather than adding random dressing or changing
+the camera. Move the existing barn/yard/hay group0.65m, silo1.90m and complete
+windmill pair1.00m inward in their authored X coordinates. Preserve station,
+identity, scale, counts, roads, trees and other themes. Consumed opaque geometry,
+including the rotor's complete turn, remains beyond the existing9.7m clearing.
+The ground-only apron may enter that clearing, retaining a quiet farmyard bay
+and crop-circle separation. The barn remains partly cropped by design.
+
+Only product presentation rotates the windmill's authored Z spindle, using
+fmod(saved active_seconds*0.45,2pi); reduced motion selects zero. No extra timer,
+state, RNG, save field or renderer-specific animation owner is needed. Model
+transforms reach the existing visibility system before rendering. Native matched
+states retain the same gameplay and scenery population; extra submitted work is
+reported honestly for newly visible existing assets, separately from phone FPS.
+
 ## 25 October 2026 — Structured reward presentation
 
 Keep exact projected benefit labels, units and secondary conditions beside the

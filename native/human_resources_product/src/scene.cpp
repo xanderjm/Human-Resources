@@ -154,6 +154,13 @@ presentation::StyleFrame scene(const gameplay::Snapshot& run, const GameplayFram
   const float t = static_cast<float>(run.stats.active_seconds);
   const double distance = attract ? 0 : run.runner_distance;
   auto frame = presentation::generate_scenery({theme, 514, distance, aspect, 9.7F}).scene;
+  // The authored rotor lies in XY with its spindle on Z. Derive scenery
+  // motion from saved active time so pause/background/cold restore stay exact.
+  const float windmill_phase = reduced_motion ? 0.F :
+      static_cast<float>(std::fmod(run.stats.active_seconds * .45, 2 * std::numbers::pi_v<double>));
+  for (auto& prop : frame.instances)
+    if (prop.mesh == "windmill-rotor")
+      prop.rotation.z = windmill_phase;
   const auto scenery_count = frame.instances.size();
   frame.show_overlay = false;
   frame.ring_angle = reduced_motion ? 0 : effects && !attract ? effects->rotor_angle()

@@ -40,6 +40,19 @@ reduced motion. Final44suites,30native stills and a45-frame semantic film pass;
 root reviews. This source follows the running owner build and qualified mobile
 packages below; those artifacts remain protected and do not inherit this slice.
 
+A separate four-file Farmland frontage/motion slice is now independently accepted.
+Measured unused opaque clearance brings the existing silo/windmill into view and
+widens the barn/yard beat without changing camera, ship, scales or population.
+The rotor follows saved active time, freezes during pause and uses its authored
+pose under reduced motion. Full-turn geometry stays outside9.7m. Final44suites,
+91native images and measured callback motion pass;30other-biome windows and five
+actual Game checkpoints remain exact. The newly visible geometry adds0–1world
+draw and1,600–5,073combined triangles in matched frames, with no shadow-draw
+increase. See `build/evidence/world-landmark-structure-review/`, independent/root
+reviews. This follows the owner playtest and qualified mobile epoch below.
+One coherent reward/world mobile and supplemental Windows refresh is next;
+previous artifact/source contents are independently preserved before rebuilding.
+
 A coherent current mobile refresh passes iPhoneOS/Simulator arm64 Release,
 Android both-ABI debug/release, strict lint, APK ZIP/ELF16KiB and unsigned AAB
 validation/package audits. All543focused inputs and227files across five current

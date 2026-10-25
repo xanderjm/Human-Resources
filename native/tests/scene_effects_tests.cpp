@@ -4,6 +4,7 @@
 #include <cmath>
 #include <human_resources/product/presentation.h>
 #include <human_resources/product/scene_effects.h>
+#include <human_resources/presentation/scenery.h>
 #include <iostream>
 namespace {
 namespace hr = human_resources;
@@ -17,6 +18,44 @@ const hr::presentation::StyleInstance& mesh(const hr::presentation::StyleFrame& 
 hr::presentation::Vec3 transformed(const hr::presentation::StyleInstance& instance, hr::presentation::Vec3 p) {
   const auto m = hr::presentation::model_matrix(instance);
   return {m[0] * p.x + m[1] * p.y + m[2] * p.z + m[3], m[4] * p.x + m[5] * p.y + m[6] * p.z + m[7], m[8] * p.x + m[9] * p.y + m[10] * p.z + m[11]};
+}
+void windmill_uses_saved_active_time_and_keeps_its_assembly() {
+  hr::gameplay::Snapshot run;
+  const auto first = hr::product::scene(run, 390.F / 844.F, false);
+  run.stats.active_seconds = 2;
+  const auto later = hr::product::scene(run, 390.F / 844.F, false);
+  require_near(mesh(first, "windmill-rotor").rotation.z, 0, .0001F,
+      "windmill begins at the authored rotor pose");
+  require_near(mesh(later, "windmill-rotor").rotation.z, .9F, .0001F,
+      "windmill follows gentle active-time spindle rotation");
+  run.phase = hr::gameplay::Phase::paused;
+  const auto paused = hr::product::scene(run, 390.F / 844.F, false);
+  const auto paused_again = hr::product::scene(run, 390.F / 844.F, false);
+  require(hr::presentation::model_matrix(mesh(paused, "windmill-rotor")) ==
+      hr::presentation::model_matrix(mesh(paused_again, "windmill-rotor")),
+      "unchanged paused active time never advances a scenery rotor");
+  const auto reduced = hr::product::scene(run, 390.F / 844.F, true);
+  require(hr::presentation::model_matrix(mesh(reduced, "windmill-rotor")) ==
+      hr::presentation::model_matrix(mesh(first, "windmill-rotor")),
+      "reduced motion retains the authored static spindle pose");
+  const auto scenery = hr::presentation::generate_scenery({hr::presentation::SceneryTheme::farmland,
+      514, run.runner_distance, 390.F / 844.F, 9.7F});
+  require(first.instances.size() == later.instances.size(), "rotor motion adds no instances");
+  for (std::size_t index = 0; index < scenery.scene.instances.size(); ++index) {
+    const auto& before = first.instances[index];
+    const auto& after = later.instances[index];
+    require(before.mesh == after.mesh && before.stable_id == after.stable_id,
+        "scenery motion keeps source identities and ordering");
+    if (before.mesh == "windmill-rotor") {
+      require(before.position.x == after.position.x && before.position.y == after.position.y &&
+          before.position.z == after.position.z && before.scale.x == after.scale.x &&
+          before.scale.y == after.scale.y && before.scale.z == after.scale.z,
+          "spinning blades stay attached at the same spindle with the same mesh scale");
+    } else {
+      require(hr::presentation::model_matrix(before) == hr::presentation::model_matrix(after),
+          "all other authored scenery transforms including the mast stay unchanged");
+    }
+  }
 }
 void actual_convergence_and_rays() {
   hr::gameplay::Snapshot run;
@@ -522,6 +561,7 @@ void only_confirmed_collection_can_retain_a_source_body() {
 }
 } // namespace
 int main() {
+  windmill_uses_saved_active_time_and_keeps_its_assembly();
   actual_damage_is_local_typed_and_pause_safe();
   actual_convergence_and_rays();
   history_requires_authority_and_freezes();

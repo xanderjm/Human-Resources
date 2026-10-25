@@ -209,22 +209,25 @@ void farmland_sector(Builder& b) {
   b.site(SiteKind::garden, 9, center, 0, 121);
   fence_run(b, 1, center + windmill_station - 8, center + windmill_station - 4);
   fence_run(b, 1, center + crop_station + 4, center + crop_station + 9);
+  // Reclaim measured unused frontage margin after the shared clearing map.
+  // Entire opaque meshes (including every rotor phase) remain outside the ground
+  // clearing; the existing yard groups regain visible landmark silhouettes.
   if (variant != 2) {
     const double s = center + barn_station;
-    b.site(SiteKind::farmyard, -9.4F, s, 3.15F, 130);
-    b.patch("ground-dirt", -9.4F, s, 3.1F, 4.3F, 0, .006F);
-    b.prop("barn", -9.4F, s, 1.05F, pi / 2);
-    b.prop("hay-bale", -7.8F, s - 3.2, .95F, .3F);
-    b.prop("hay-bale", -9.F, s - 3.5, .85F, 1.65F);
+    b.site(SiteKind::farmyard, -8.75F, s, 3.15F, 130);
+    b.patch("ground-dirt", -8.75F, s, 3.1F, 4.3F, 0, .006F);
+    b.prop("barn", -8.75F, s, 1.05F, pi / 2);
+    b.prop("hay-bale", -7.15F, s - 3.2, .95F, .3F);
+    b.prop("hay-bale", -8.35F, s - 3.5, .85F, 1.65F);
     farmland_understory(b, -1, s - 4.2, 7.95F);
   }
   const double silo = center + silo_station;
-  b.site(SiteKind::farmyard, -9.5F, silo, 1.2F, 131);
-  b.prop("silo", -9.5F, silo, .9F);
+  b.site(SiteKind::farmyard, -7.6F, silo, 1.2F, 131);
+  b.prop("silo", -7.6F, silo, .9F);
   const double windmill = center + windmill_station;
-  b.site(SiteKind::farmyard, 8.5F, windmill, 1, 132);
-  b.prop("windmill-mast", 8.5F, windmill, .95F);
-  b.prop("windmill-rotor", 8.5F, windmill - .2, .95F, 0, 2.98F);
+  b.site(SiteKind::farmyard, 7.5F, windmill, 1, 132);
+  b.prop("windmill-mast", 7.5F, windmill, .95F);
+  b.prop("windmill-rotor", 7.5F, windmill - .2, .95F, 0, 2.98F);
   // Crop block is an authored corner mass; the reference does not alternate
   // identical crop rectangles down both sides of a narrow corridor.
   const double cs = center + crop_station;

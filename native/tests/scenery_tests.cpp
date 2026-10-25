@@ -296,6 +296,47 @@ void road_continuity_and_variety() {
     }
   }
 }
+void widened_landmarks_have_visible_safe_frontages() {
+  // Independent outward-rounded bounds from the consumed HRM vertices. The
+  // rotor's XY circumradius covers a full turn, not only its current pose.
+  constexpr float rotor_radius = .953F;
+  constexpr float camera_half_width = (17.F / .75F) * .5F;
+  for (const float clearance : {6.55F, 9.7F})
+    for (const std::uint64_t seed : {1ULL, 514ULL, 7841ULL})
+      for (int sector = -2; sector <= 4; ++sector) {
+        const SceneryQuery q{SceneryTheme::farmland, seed, sector * 64., 390.F / 844.F, clearance};
+        const auto g = generate_scenery(q);
+        unsigned barns = 0, silos = 0, masts = 0, rotors = 0, bales = 0;
+        const StyleInstance* mast = nullptr;
+        const StyleInstance* rotor = nullptr;
+        for (const auto& i : g.scene.instances) {
+          farmland_opaque_clearance(i, clearance - .001F);
+          if (i.mesh == "windmill-rotor") {
+            require(i.rotation.x == 0 && i.rotation.y == 0 && i.scale.x == i.scale.y,
+                "rotor clearance uses its actual flat-spindle contract");
+            require(std::abs(i.position.x) - rotor_radius * i.scale.x >= clearance,
+                "full rotating rotor envelope preserves the same clearing without opacity or cropping");
+          }
+          // The complete central authored sector is present in this window.
+          if (std::abs(i.position.z) >= 32) continue;
+          float half = 0, visible_fraction = 0;
+          if (i.mesh == "barn") { ++barns; half = 2.051F * i.scale.z; visible_fraction = .35F; }
+          else if (i.mesh == "silo") { ++silos; half = 1.101F * i.scale.x; visible_fraction = .78F; }
+          else if (i.mesh == "windmill-mast") { ++masts; mast = &i; half = .826F * i.scale.x; visible_fraction = .92F; }
+          else if (i.mesh == "windmill-rotor") { ++rotors; rotor = &i; half = rotor_radius * i.scale.x; visible_fraction = .86F; }
+          else if (i.mesh == "hay-bale") ++bales;
+          if (half > 0 && clearance == 9.7F)
+            require((camera_half_width - std::abs(i.position.x) + half) / (2 * half) >= visible_fraction,
+                "real landmark extents occupy a readable horizontal frontage in the accepted gameplay camera");
+        }
+        require(barns <= 1 && silos == 1 && masts == 1 && rotors == 1 && bales == 5 + 2 * barns,
+            "authored farmland retains its existing landmark and yard population");
+        require(mast && rotor && std::abs(mast->position.x - rotor->position.x) < .0001F &&
+            std::abs(rotor->position.z - mast->position.z - .2F) < .0001F &&
+            std::abs(rotor->position.y - 2.98F) < .0001F && rotor->scale.x == mast->scale.x,
+            "windmill moves as an intact mast and spindle assembly");
+      }
+}
 void reference_landmarks_are_visible() {
   const auto portrait = generate_scenery({SceneryTheme::farmland, 514, 0, .9999F});
   const auto landscape = generate_scenery({SceneryTheme::farmland, 514, 0, 1.0001F});
@@ -345,6 +386,7 @@ int main(int argc, char** argv) {
   moving_window_continuity();
   road_continuity_and_variety();
   reference_landmarks_are_visible();
+  widened_landmarks_have_visible_safe_frontages();
   neighbouring_compositions_differ();
   farmland_grouping_and_openings();
   if (argc == 2) {
