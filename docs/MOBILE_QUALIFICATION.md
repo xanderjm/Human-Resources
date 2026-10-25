@@ -1,49 +1,42 @@
-# Mobile qualification — current Game7 framing checkpoint
+# Mobile qualification — accepted reward/world checkpoint
 
-Current coordination,25October2026: accepted2ad1024 plus the exact twelve reviewed
-portability fixes passes coherent iPhoneOS/Simulator arm64 Release and Android
-both-ABI debug/release, strict lint, APK ZIP/ELF16KiB and unsigned AAB/package
-audits. This includes actual damage causes, shared portrait framing, enlarged
-RUN HUD and compact fallback. All543focused inputs and227files across five
-current artifacts match; five preceding053d08aa artifacts remain exact. See
-`build/evidence/game7-framing-mobile/REPORT.json` and the fresh independent
-`root-independent-mobile-review.json`. Root verifies current source, artifacts,
-retention and bound evidence. No new physical execution or signing is claimed.
+Current source epoch **aa5975e04065af9ac98b330e996ebcb1cf00a2b8** includes the
+accepted reward-card hierarchy and Farmland frontage/active-time rotor changes.
+The production geometry still uses the original crop/grass meshes. A later private
+optimization cannot inherit this exact package qualification.
 
-Current supplemental Android runtime evidence is
-`build/evidence/game7-android-runtime/REPORT.json`: an isolated packaging-only QA
-application retains108exact qualified native/asset entries and unchanged Java/
-JNI classes. The project-owned read-only API36 emulator uses software Vulkan.
-An earned draft survives force-stop/cold inspect/Resume byte-exact; actual OS
-background pauses/flushes, cold recovery and resumed advancement pass. Early
-banking settles exactly once with0credits, as required below30active seconds.
-The current authority7 host proof separately banks34credits after natural death
-and retains the exact cold ledger. Actual stock font2.0 reaches native HUD/draft;
-1x/2x390×844 frames show intact composition. Original font1.0, backing userdata,
-qualified packages and all user apps/saves are preserved; owned emulator closed.
+Current iPhoneOS/Simulator arm64 optimized Release and Android both-ABI debug/
+release, strict lint, APK ZIP/ELF16KiB and unsigned AAB/bundletool/package audits
+pass. All543focused inputs and227files across five artifacts match. Previous
+five33edb97 artifacts are retained exact. Root verifies current artifacts,
+source/evidence and preservation; independent review checks fresh iOS objects/
+archive members/final link and Android current objects/NDK/ninja commands across
+four ABI/configurations. iOS __text grows4,076/4,072bytes inside unchanged16KiB
+segment allocation; only LINKEDIT adds104/112bytes. Small total growth does not
+mean the source changes were omitted. No new signing or physical run is claimed.
 
-This proves specific native runtime/recovery paths through an alternate app ID.
-It does not establish physical input, ordinary OS gesture delivery, current
-Android positive payout, physical performance/thermal/battery/haptics or human
-fun. The latest paired-iPhone audit still finds developer mode enabled but tunnel/
-DDI services unavailable, lock state unknown; no physical Android is attached.
-No new device/pairing/settings operation follows. The authority3 record below is
-historical; its uses of “current” belong only to that exact source epoch.
+Evidence: `build/evidence/reward-world-mobile/REPORT.json`,
+`root-verification.json` and `independent-mobile-review.json`. Source epoch,
+artifact trees, logs and predecessor content have separate bound records.
 
-The later accepted reward-choice presentation is host-qualified in
-`build/evidence/reward-choice-quality/`:44suites and native compact/phone/enlarged
-composition pass, with unchanged rule/save projection. It is not included in
-the33edb97 mobile artifacts above. Those five exact artifacts are preserved under
-`build/evidence/reward-world-mobile/`; the next combined reward/world source must
-freeze and pass its own mobile builds before acquiring package qualification.
+Current supplemental Android proof uses a private packaging-only application ID
+with108exact current native/asset entries and unchanged Java/JNI classes. Actual
+earned draft, force-stop/cold recovery, explicit Resume, real background checkpoint
+and exact-once early bank pass. Actual stock font2.0 renders current cards/HUD and
+restores to1.0. One unmodified accelerated280-callback App semantic smoke run
+saves19credits, visits Results/Hangar and retries. A fresh run clears the displayed
+receipt normally; the saved wallet/progress prove positive settlement. No purchase
+or natural-death claim follows, and the positive account was not cold-retention
+qualified. Core draft/early-bank cold recovery is separately observed. Owned
+read-only software-Vulkan emulator closes with original backing hashes preserved.
+Exact runtime closure is under `build/evidence/reward-world-android-runtime/`.
 
-The subsequent four-file Farmland frontage/active-time windmill slice is also
-host/native accepted under `build/evidence/world-landmark-structure-review/`.
-It retains scales, counts, clearing, saved Game bytes and other biomes; new mobile
-packages must include both this slice and the reward UI. Current published
-qualification above remains the preserved33edb97 artifacts until the combined
-source passes its own builds. A private three-mesh cost experiment is separate
-from production source/assets and acquires no qualification by association.
+This is specific alternate-ID native/semantic runtime evidence, not ordinary OS
+input, physical performance/thermal/battery/haptics, human fun or exact production
+application identity. Current iOS physical execution is still absent. The latest
+paired-iPhone audit finds developer mode enabled but unavailable tunnel/DDI
+services and unknown lock state; no repeated device/pairing operation follows.
+The authority3 record below remains historical and does not override these epochs.
 
 ## Historical authority3 native UI qualification
 

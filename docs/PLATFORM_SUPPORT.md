@@ -27,17 +27,19 @@ Rows not selected in `project.json` are informative extension capabilities, not 
 
 ## Current product qualification,25October2026
 
-Game7 framing/HUD/damage source plus the reviewed portability changes passes
-current iOS device/Simulator Release and Android both-ABI compile/package audits.
-An isolated QA application on software-Vulkan Android also verifies exact native/
-asset contents, earned draft/active recovery, early banking and actual stock
-font2.0 layout. This is narrower than physical production-app qualification.
+Sourceaa5975e reward UI and Farmland motion passes current iOS device/Simulator
+Release and Android both-ABI compile/package audits. Root verifies543focused
+inputs/five artifacts; independent review verifies fresh objects and final links.
+An isolated QA application on software-Vulkan Android additionally exercises
+current earned draft/active recovery, actual stock2x rendering, early banking and
+one accelerated positive-settlement/retry flow. These scopes do not qualify
+physical production-app performance/input, iOS runtime or store delivery.
 
-A supplemental installed MinGW GCC16.2 build strictly links the complete Windows
-GUI client and audits its112-file/DXIL package. It does not replace the selected
-Visual Studio/SDK gate or prove Windows execution, D3D12, Unicode storage, input,
-accessibility or distribution readiness. Linux remains without current target
-execution. See RELEASE_READINESS.md for exact source/evidence epochs and limits.
+Supplemental installed MinGW GCC16.2 strictly links the complete current Windows
+GUI client and audits its112-file/DXIL package plus separate notice companion.
+It does not replace the selected Visual Studio/SDK gate or prove Windows execution,
+D3D12, Unicode storage, input, accessibility or distribution readiness. Linux has
+no current target execution. RELEASE_READINESS.md binds exact epochs and limits.
 
 ## Console And Private Profiles
 

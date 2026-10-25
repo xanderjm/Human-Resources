@@ -10,82 +10,75 @@ change together. Prior landscape captures are historical integration evidence.
 
 ## Current truth
 
-The latest owner-requested normal launch is **Human Resources Current Playtest**,
-PID61631, from accepted2ad1024 plus the twelve reviewed portability fixes. It
-includes Game7 combat, Flight Report/damage causes, shared portrait framing,
-enlarged RUN HUD and compact fallback, preserving the original apparent ship
-size. Its fully decoded initial66-credit/ranks0/0/0/1 account copy lives in a
-separate namespace. The nine user previews and all their accounts are protected
-from automation, replacement and quit. Exact104-file staging/signature/source
-and normal-launch records are under `build/evidence/current-playtest-20261025/`.
-Initial copied values describe launch time; the owner may now change that save.
+The latest owner-requested normal launch remains **Human Resources Current
+Playtest**, PID61631, from the technical33edb97 epoch. Its original apparent ship
+size and validated separate account copy are preserved. The nine owner previews
+and their accounts are protected from automation, replacement and quit. Exact
+104-file staging/source/signature and normal launch are recorded under
+`build/evidence/current-playtest-20261025/`. Copied account values describe launch
+time; the owner can now change that save. No later source edit hot-updates it.
 
-The accepted portable checkpoint33edb97 passes44host suites/static/diff and five byte-exact
-native before/after comparisons. Portability adds explicit empty member defaults,
-bounded glyph index conversion, standard typed size diagnostics, equivalent
-Windows UTF-8 path construction and the Windows GUI entry setting. No gameplay,
-layout, save or dependency contract changes. Root rehashes twelve source files,
-334native inputs and all bound evidence. See
-`build/evidence/windows-portability-integration/REPORT.json` and
-`root-verification.json`.
+Accepted production source **aa5975e** adds reward-choice hierarchy and Farmland
+frontage/rotor motion to the preceding portable/framing checkpoint. Cards show
+one exact projected benefit plus complete conditions, existing icons/ranks and
+input-aware hints. Measured fit routes short windows to reachable paged choices.
+Cosmetic feedback preserves established timing and reduced-motion behavior.
+Farmland reveals the existing silo/windmill and a wider barn yard inside measured
+clearance; active-time rotor motion freezes with play. Game authority7, rules
+fingerprint3869579699016858964 and account schema2 remain unchanged.
 
-The later reward-choice slice is now independently accepted on host: ordinary
-cards show one projected benefit plus complete conditions, larger existing icons
-and rank marks; keyboard hints follow actual input modality. Measured board fit
-routes short windows to existing paged choices, preserving44point targets and all
-previews. Cosmetic entrance/receipt motion keeps established timing and settled
-reduced motion. Final44suites,30native stills and a45-frame semantic film pass;
-258,273complete projection bytes and rolling save digest match across698choices/
-96natural deaths. See `build/evidence/reward-choice-quality/` and its independent/
-root reviews. This source follows the running owner build and qualified mobile
-packages below; those artifacts remain protected and do not inherit this slice.
+Host44suite/static/diff gates and independent native review pass. Reward evidence
+is `build/evidence/reward-choice-quality/`; world evidence is
+`build/evidence/world-landmark-structure-review/`. Root verifies their exact
+source/inputs, legacy projection/save comparison, native images and renderer work.
+Thirty other-biome geometry windows and five actual Game checkpoints stay exact.
+The new landmarks add0–1world draw and1,600–5,073combined submitted triangles in
+matched frames; no phone FPS claim follows.
 
-A separate four-file Farmland frontage/motion slice is now independently accepted.
-Measured unused opaque clearance brings the existing silo/windmill into view and
-widens the barn/yard beat without changing camera, ship, scales or population.
-The rotor follows saved active time, freezes during pause and uses its authored
-pose under reduced motion. Full-turn geometry stays outside9.7m. Final44suites,
-91native images and measured callback motion pass;30other-biome windows and five
-actual Game checkpoints remain exact. The newly visible geometry adds0–1world
-draw and1,600–5,073combined triangles in matched frames, with no shadow-draw
-increase. See `build/evidence/world-landmark-structure-review/`, independent/root
-reviews. This follows the owner playtest and qualified mobile epoch below.
-One coherent reward/world mobile and supplemental Windows refresh is next;
-previous artifact/source contents are independently preserved before rebuilding.
-
-A coherent current mobile refresh passes iPhoneOS/Simulator arm64 Release,
+The coherent **aa5975e** mobile refresh passes iPhoneOS/Simulator arm64 Release,
 Android both-ABI debug/release, strict lint, APK ZIP/ELF16KiB and unsigned AAB
-validation/package audits. All543focused inputs and227files across five current
-artifacts match the independent acceptance rehash; five previous artifacts are
-retained byte-exact. See `build/evidence/game7-framing-mobile/REPORT.json` and
-`root-independent-mobile-review.json`. This supersedes the053d08aa package epoch
-for current compile/package evidence; no physical execution or signing follows.
+validation/package audits. Root checks543focused inputs,227files across five
+current artifacts and29bound evidence files. An independent reviewer checks
+actual fresh objects/archive membership/link commands: iOS text grows about4KiB
+inside unchanged16KiB segment padding, explaining its104/112-byte file growth.
+The previous five33edb97 artifacts remain exact. Evidence is
+`build/evidence/reward-world-mobile/REPORT.json`, `root-verification.json` and
+`independent-mobile-review.json`. Physical performance/input, signing and store
+acceptance remain separate.
 
-Supplemental current Android runtime proof runs the exact qualified108native/
-asset entries through a packaging-only isolated QA app ID on the existing
-read-only project emulator. Actual earned draft, force-stop/cold recovery,
-explicit Resume, real background checkpointing and exact-once banking pass.
-Actual stock font2.0 reaches native active/draft UI and is restored before the
-owned emulator stops. Four native1x/2x frames show intact hierarchy. The11.516s
-bank correctly earns0credits under the existing30s minimum; positive34-credit
-natural-death settlement remains proven by unchanged authority7 host owners.
-See `build/evidence/game7-android-runtime/REPORT.json`. This is software Vulkan,
-alternate-package semantic diagnostic evidence, not ordinary physical touch,
-performance, human feel or exact production application identity qualification.
+Current supplemental Android runtime testing uses a packaging-only isolated QA
+identity with108exact qualified native/asset entries, unchanged Java/JNI and the
+owned read-only software-Vulkan emulator. Earned draft/force-stop/cold inspect/
+Resume/background/early banking and actual stock2x active/draft rendering pass.
+One existing accelerated App semantic playthrough saves19credits, visits Results/
+Hangar and retries; it proves positive saved settlement, not ordinary touch,
+natural death, human pacing or positive-account cold retention. Font1.0 and
+backing userdata are preserved; owned emulator is closed. Exact closure belongs
+to `build/evidence/reward-world-android-runtime/`; earlier33ed runtime records
+remain historical. No physical-device qualification is inferred.
 
-Supplemental Windows qualification strictly cross-links the full current client
-with installed MinGW GCC16.2, Windows GUI subsystem2, static SDL/GCC/pthread and
-nine DXIL stages. Root verifies727snapshot sources and the112-file internal
-package. This does not qualify the selected Visual Studio/SDK profile or any
-Windows execution/GPU/input/storage behavior. Collected GCC/MinGW runtime notices
-now accompany an unchanged internal package in
-`build/evidence/windows-runtime-notices/internal-delivery/`. Root verifies all127
-files/index entries; upstream licensing/provenance caveats remain explicit. No
-public distribution is cleared.
+Supplemental **aa5975e** Windows evidence strictly compiles/links the full GUI
+client with installed MinGW GCC16.2 and audits112package files/nine DXIL stages.
+Root rehashes727snapshot/shared inputs,17bound evidence files and127internal
+package/notice-delivery files. Eleven reviewed notice files accompany the package
+separately; all historical source/packages remain exact. See
+`build/evidence/reward-world-windows/`. This does not replace selected Visual
+Studio/SDK or prove Windows execution, D3D12/input/storage behavior or distribution
+clearance; upstream Cephes/Wine provenance caveats remain explicit.
+
+The private performance experiment rejects disconnected-vertex collapse and the
+corrected bush reduction for damaged foliage. Corrected welded crop/grass retain
+material/texture/topology and native phone/tablet/closeup quality; the accepted
+private two-mesh mix saves12.12–25.60%combined world/shadow triangle submissions in
+four matched scenes. The original bush remains. Evidence is
+`build/evidence/private-three-mesh-welded/two-mesh-mix/`. Root has authorized a
+checked, reproducible two-export promotion; it is not in the qualified artifacts
+above until production cooking and requalification pass. There is no FPS promise.
+
 Linux execution, physical mobile budgets/input/lifecycle/audio/haptics, human
 pacing/fun, public privacy/contact and store/distribution evidence remain open.
-The paired iPhone's most recent bounded audit still reports unavailable tunnel/
-DDI services; no repeated device operation is justified by these host results.
+The paired iPhone's most recent bounded audit reports unavailable tunnel/DDI
+services. Missing external evidence does not stop concrete software quality work.
 
 ## Historical qualification narrative
 
