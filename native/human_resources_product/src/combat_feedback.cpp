@@ -40,8 +40,16 @@ ui::Rect silhouette(const gameplay::EntityView& actor, const gameplay::Snapshot&
       .scale = {scale, scale, scale}, .rotation = {0, gameplay::vehicle_body_yaw(actor), 0}};
   if (actor.kind == gameplay::EntityKind::jeep)
     detail::append_jeep(assembled, root, actor, actor.warning_seconds > 0 ? actor.warning_aim : run.player, 0, -1);
-  else
-    detail::append_tank(assembled, root, actor, actor.warning_seconds > 0 ? actor.warning_aim : run.player, -1);
+  else {
+    const auto* boss = run.boss_combat && run.boss_combat->actor_id == actor.id ? &*run.boss_combat : nullptr;
+    detail::append_tank(assembled, root, actor, actor.warning_seconds > 0 ? actor.warning_aim : run.player, -1,
+        boss);
+    // Vitality placement is shared by both motion preferences. Bound both
+    // current physical poses so its label never covers the snapped variant.
+    if (boss && boss->plan)
+      detail::append_tank(assembled, root, actor, actor.warning_seconds > 0 ? actor.warning_aim : run.player, -1,
+          boss, true);
+  }
   const float inf = std::numeric_limits<float>::infinity();
   ProjectedRegion total{inf, inf, -inf, -inf, inf, -inf};
   for (const auto& part : assembled.instances)

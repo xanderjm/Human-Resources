@@ -1,4 +1,17 @@
-# Mobile qualification — Hangar, onboarding and shadow checkpoint
+# Mobile qualification — current package and later host scopes
+
+Later authority8 boss/Pause source passes46host suites, actual native temporal
+captures and cold SDL filesystem continuation/banking. Its fingerprint is
+`12553144404692471430`; Game codec1/account2 and size limits remain. It does not
+inherit the b99c373 mobile packages below. The Android accessibility dispatcher
+fix also still needs the real Gradle/package refresh. A dedicated mobile owner is
+preserving five qualified artifacts/227entries and matching mutable outputs before
+an incremental current-source refresh. No new mobile build/runtime qualification
+is claimed until that refresh actually completes. Latest owner app is938ea35;
+twelve user previews/30discovered bundles remain protected. See the newest
+development log and `RELEASE_READINESS.md` for exact later host evidence.
+
+## Qualified b99c373 package checkpoint
 
 Current compiled/package source is
 **b99c373bc69e4250211b3b59b270e56b9c242be5**: all738tracked and554focused inputs

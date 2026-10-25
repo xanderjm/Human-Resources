@@ -13,7 +13,7 @@ add_custom_command(
     "${PROJECT_SOURCE_DIR}/design/balance/endless-encounter-assumptions.json"
   VERBATIM)
 add_library(human_resources_gameplay STATIC
-  src/run.cpp src/director.cpp src/military.cpp src/military_movement.cpp src/minigun.cpp src/cannon.cpp src/body_separation.cpp src/capture.cpp src/combat.cpp src/upgrades.cpp src/save_state.cpp
+  src/run.cpp src/director.cpp src/military.cpp src/military_movement.cpp src/minigun.cpp src/cannon.cpp src/boss_combat.cpp src/body_separation.cpp src/capture.cpp src/combat.cpp src/upgrades.cpp src/save_state.cpp
   "${HR_GAMEPLAY_TUNING}")
 target_include_directories(human_resources_gameplay PUBLIC include "${HR_GAMEPLAY_GENERATED_INCLUDE}")
 game_apply_cpp_defaults(human_resources_gameplay)
@@ -26,6 +26,12 @@ if(HUMAN_RESOURCES_BUILD_TESTS)
   # These isolated private-state QA fixtures use the established Clang/GNU
   # access-control switch. Public gameplay/save tests remain portable everywhere.
   if(NOT MSVC AND CMAKE_CXX_COMPILER_ID MATCHES "Clang|GNU")
+    add_executable(human_resources_boss_gameplay_tests "${PROJECT_SOURCE_DIR}/native/tests/boss_gameplay_tests.cpp")
+    target_include_directories(human_resources_boss_gameplay_tests PRIVATE src)
+    target_link_libraries(human_resources_boss_gameplay_tests PRIVATE human_resources_gameplay)
+    target_compile_options(human_resources_boss_gameplay_tests PRIVATE -fno-access-control)
+    game_apply_cpp_defaults(human_resources_boss_gameplay_tests)
+    add_test(NAME boss_gameplay_contracts COMMAND human_resources_boss_gameplay_tests)
     add_executable(human_resources_harvest_gameplay_tests "${PROJECT_SOURCE_DIR}/native/tests/harvest_gameplay_tests.cpp")
     target_include_directories(human_resources_harvest_gameplay_tests PRIVATE src)
     target_link_libraries(human_resources_harvest_gameplay_tests PRIVATE human_resources_gameplay)

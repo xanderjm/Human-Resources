@@ -210,22 +210,32 @@ void legacy_migration_and_future_protection() {
 class RecoveryFailureBackend final : public st::Backend {
 public:
   MemoryBackend memory;
-  bool fail_document{};
+  bool fail_document{}, fail_backup{};
   st::ReadResult read(st::Scope scope, const st::RelativePath& path, std::size_t limit) override { return memory.read(scope, path, limit); }
   st::WriteResult write_atomically(st::Scope scope, const st::RelativePath& path, std::span<const std::byte> bytes) override {
-    if (fail_document && path.value == "account.bin") return {.issue = st::WriteIssue::io_failure};
+    if ((fail_document && path.value == "account.bin") || (fail_backup && path.value != "account.bin"))
+      return {.issue = st::WriteIssue::io_failure};
     return memory.write_atomically(scope, path, bytes);
   }
 };
 void incompatible_run_backs_up_before_recorded_settlement(bool old_revision) {
-  RecoveryFailureBackend backend; pr::AccountSession original(backend); gp::Game game; start(original, game);
+  RecoveryFailureBackend backend; pr::AccountSession seed_account(backend); gp::Game game;
+  require(seed_account.load().playable(), "initial account exists for owned-power fixture");
+  auto owned = seed_account.account();
+  owned.credits = 137; owned.ranks = {1, 2, 3, 4}; owned.unlocked_blueprints = 0xffffU;
+  backend.memory.files["account.bin"] = st::encode_envelope(2, pr::encode_account(owned));
+  pr::AccountSession original(backend); // Cold session reads the seeded account; no trusted-cache bypass.
+  start(original, game);
   play_to(game, 31); require(original.checkpoint(receipt(original, game), pr::continuation_for(game, 2), true).succeeded(), "compatible fixture");
   auto account = original.account();
   if (old_revision) {
     // A former Game authority header remains protected even inside the current
     // account envelope. It cannot be reinterpreted with newly added actor fields.
-    account.continuation.game_state[8] = std::byte{1};
+    account.continuation.game_state[8] = std::byte{7};
     for (std::size_t i = 9; i < 12; ++i) account.continuation.game_state[i] = std::byte{};
+    // Deliberately absent actor body and invalid checksum: authority must reject
+    // the Game7 header before trying to interpret a Game8 field layout.
+    account.continuation.game_state.resize(28);
   } else
     account.continuation.game_state[12] ^= std::byte{1}; // Known Game header's numeric-rule fingerprint.
   const auto recorded = account.continuation.earned_base_credits;
@@ -234,8 +244,18 @@ void incompatible_run_backs_up_before_recorded_settlement(bool old_revision) {
   pr::AccountSession blocked(backend);
   require(blocked.load().issue == pr::LoadIssue::incompatible_continuation && !blocked.writable() &&
       !blocked.begin_run().succeeded(), "known account with incompatible Game remains protected");
-  backend.fail_document = true;
+  require(blocked.account().credits == owned.credits && blocked.account().ranks == owned.ranks &&
+      blocked.account().unlocked_blueprints == owned.unlocked_blueprints &&
+      backend.memory.files["account.bin"] == incompatible,
+      "incompatible Game never erases the protected wallet, permanent ranks or unlocks");
+  backend.fail_backup = true;
   require(!blocked.preserve_and_bank_checkpoint({"incompatible-backup.bin"}).succeeded() && blocked.pending() &&
+      !backend.memory.files.contains("incompatible-backup.bin") && backend.memory.files["account.bin"] == incompatible &&
+      blocked.account().credits == owned.credits,
+      "failed backup cannot replace the original or bank historical rewards");
+  backend.fail_backup = false;
+  backend.fail_document = true;
+  require(!blocked.retry_save().succeeded() && blocked.pending() &&
       backend.memory.files["incompatible-backup.bin"] == incompatible && backend.memory.files["account.bin"] == incompatible,
       "backup verifies before a failed replacement and preserves both exact originals");
   backend.fail_document = false;
@@ -243,10 +263,13 @@ void incompatible_run_backs_up_before_recorded_settlement(bool old_revision) {
   require(after_process_death.load().issue == pr::LoadIssue::incompatible_continuation &&
       after_process_death.preserve_and_bank_checkpoint({"incompatible-backup.bin"}).succeeded(),
       "existing identical verified backup permits retry after process death");
-  require(after_process_death.account().credits == recorded && after_process_death.account().results.recovered &&
+  require(after_process_death.account().credits == owned.credits + recorded && after_process_death.account().ranks == owned.ranks &&
+      after_process_death.account().unlocked_blueprints == owned.unlocked_blueprints && after_process_death.account().results.recovered &&
       after_process_death.account().continuation.game_state.empty(), "fallback banks stored historical reward without resuming incompatible rules");
   pr::AccountSession again(backend);
-  require(again.load().issue == pr::LoadIssue::loaded && again.account().credits == recorded,
+  require(again.load().issue == pr::LoadIssue::loaded && again.account().credits == owned.credits + recorded &&
+      again.account().ranks == owned.ranks && again.account().counters.completed_runs == 1 &&
+      backend.memory.files["incompatible-backup.bin"] == incompatible,
       "fallback cannot duplicate settlement on another launch");
 }
 void historical_results_do_not_recompute_current_reward() {
@@ -264,6 +287,26 @@ void historical_results_do_not_recompute_current_reward() {
       "historical reward and completed bonus remain exact after tuning changes");
   historical.results.bonus_credits = 59;
   require(pr::encode_account(historical).empty(), "contradictory policy1 bonus still rejected");
+}
+void maximum_continuation_fits_account_envelope() {
+  MemoryBackend backend; pr::AccountSession session(backend);
+  require(session.load().playable(), "fresh account supplies canonical starter unlocks");
+  auto account = session.account();
+  account.checkpoint.run_id = 1; account.next_run_id = 2;
+  // This is a capacity fixture, not a valid Game. The Game codec test separately
+  // fills every legal actor/projectile slot with a complete boss plan. Testing
+  // the entire allowed 48KiB continuation is a stronger envelope size bound.
+  account.continuation.game_state.resize(pr::maximum_continuation_bytes);
+  const auto encoded = pr::encode_account(account);
+  require(!encoded.empty() && encoded.size() <= 64 * 1024, "maximum continuation fits the unchanged account payload cap");
+  const auto envelope = st::encode_envelope(2, encoded);
+  require(envelope.size() <= 64 * 1024 && st::decode_envelope(envelope, 2, 64 * 1024).valid(),
+      "full capacity continuation also fits and validates the protected storage envelope");
+  pr::Account decoded;
+  require(pr::decode_account(encoded, decoded) && decoded.continuation.game_state == account.continuation.game_state,
+      "maximum bounded continuation survives account fieldwise encoding exactly");
+  account.continuation.game_state.push_back(std::byte{});
+  require(pr::encode_account(account).empty(), "account rejects a continuation one byte over the existing limit");
 }
 void malformed_current_payload_is_not_a_future_schema() {
   MemoryBackend source; pr::AccountSession original(source); (void)original.load();
@@ -286,5 +329,6 @@ int main() {
   incompatible_run_backs_up_before_recorded_settlement(false);
   incompatible_run_backs_up_before_recorded_settlement(true);
   historical_results_do_not_recompute_current_reward();
+  maximum_continuation_fits_account_envelope();
   malformed_current_payload_is_not_a_future_schema();
 }

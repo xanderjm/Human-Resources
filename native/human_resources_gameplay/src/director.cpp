@@ -260,13 +260,17 @@ void Game::State::enemies(float dt) {
       continue;
     }
     const auto index = military_index(a.view.kind);
-    if (a.view.kind != EntityKind::soldier && length_squared(a.locomotion_velocity) > .0001F)
+    if (a.view.kind != EntityKind::soldier && a.view.kind != EntityKind::boss && length_squared(a.locomotion_velocity) > .0001F)
       a.view.body_heading = std::atan2(a.locomotion_velocity.x, -a.locomotion_velocity.z);
     if (a.age > tuning::enemy_lifetime[index] && a.view.kind != EntityKind::boss) {
       a.removed = true;
       continue;
     }
     a.view.disabled_seconds = std::max(0.0F, a.view.disabled_seconds - dt);
+    if (a.view.kind == EntityKind::boss) {
+      boss_update(a, dt);
+      continue;
+    }
     const bool minigun = a.view.kind == EntityKind::jeep;
     const bool captured_vehicle = minigun || a.view.kind == EntityKind::tank;
     const bool cannon = a.view.kind == EntityKind::tank || a.view.kind == EntityKind::boss;
@@ -322,7 +326,7 @@ void Game::State::enemies(float dt) {
       a.attack_timer = std::max(0.F, a.attack_timer - dt);
       const bool boss = a.view.kind == EntityKind::boss;
       const unsigned own_cap = boss_alive && !boss ? warning_cap - 1 : warning_cap;
-      const bool may_commit = (boss || !window.boss_ingress) && warning_visible;
+      const bool may_commit = (boss || !window.boss_ingress) && warning_visible && !boss_preparing();
       // Keep one slot available for the boss even when older infantry appear
       // earlier in the actor list. Recovery reduces pressure, never freezes AI.
       if (may_commit && warnings < own_cap && a.attack_timer <= 0 && a.view.fire_recovery_seconds <= 0 && distance < tuning::laser_range * 1.2F && warnings < warning_cap) {
@@ -357,6 +361,7 @@ void Game::State::enemies(float dt) {
   move_biological(dt);
 }
 void Game::State::shoot(Actor& enemy) {
+  if (enemy.view.kind == EntityKind::boss || boss_leading()) return;
   const auto index = military_index(enemy.view.kind);
   const bool infantry = enemy.view.kind == EntityKind::soldier;
   const auto attack = infantry_attack(enemy.view.infantry_role);
@@ -371,10 +376,8 @@ void Game::State::shoot(Actor& enemy) {
     return;
   const auto origin = infantry ? muzzle.origin : minigun ? gun.origin : cannon ? shell.origin : enemy.view.position;
   const auto toward = infantry ? muzzle.direction : minigun ? gun.direction : cannon ? shell.direction : direction({enemy.aim.x - origin.x, enemy.aim.z - origin.z});
-  const auto cannon_pattern = cannon_geometry();
-  const unsigned count = infantry ? attack.pellets : enemy.view.kind == EntityKind::boss ? cannon_pattern.boss_projectiles
-                                                                                         : 1U;
-  const float spread = infantry ? attack.spread_radians : cannon_pattern.boss_spread_radians;
+  const unsigned count = infantry ? attack.pellets : 1U;
+  const float spread = infantry ? attack.spread_radians : 0;
   bool fired = false;
   for (unsigned i = 0; i < count && bullets.size() < tuning::projectile_active_cap; ++i) {
     const float angle = count == 1 ? 0 : (static_cast<float>(i) - static_cast<float>(count - 1) * .5F) * spread;

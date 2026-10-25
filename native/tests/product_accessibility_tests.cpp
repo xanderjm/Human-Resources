@@ -1,6 +1,7 @@
 #include "progression_test_backend.h"
 #include "test_support.h"
 #include <human_resources/product/accessibility.h>
+#include <human_resources/gameplay/tuning.h>
 
 #include <algorithm>
 #include <array>
@@ -64,6 +65,23 @@ void actual_controls_and_settings_semantics() {
   view.screen = Screen::run;
   nodes = accessibility_snapshot(view, hr::product::interface(view));
   require(named(nodes, "Pause run").role == hr::ui::SemanticRole::button, "icon-only pause gets meaningful spoken name");
+}
+void pause_end_action_speaks_actual_bank_outcome() {
+  Fixture f;
+  auto view = f.view(Screen::pause);
+  hr::progression::RunReceipt receipt{.run_id=1, .active_milliseconds=hr::gameplay::tuning::credit_minimum_seconds * 1000 - 1, .score=85, .jeep_kills=4};
+  view.current_receipt = &receipt;
+  auto nodes = accessibility_snapshot(view, hr::product::interface(view));
+  auto value = named(nodes, "End run and bank credits").value;
+  require(value.find("BANK NOW +0 CR") != std::string::npos && value.find("Resume to reach") != std::string::npos, "native End announces minimum and resume direction before ending");
+  receipt.active_milliseconds = 75000; receipt.boss_kills = 1;
+  nodes = accessibility_snapshot(view, hr::product::interface(view));
+  value = named(nodes, "End run and bank credits").value;
+  require(value.find("+" + std::to_string(hr::progression::base_credits(receipt)) + " CR") != std::string::npos, "spoken bank amount uses exact canonical receipt including boss reward");
+  view.guest = true;
+  nodes = accessibility_snapshot(view, hr::product::interface(view));
+  value = named(nodes, "End run and bank credits").value;
+  require(value.find("+0 CR") != std::string::npos && value.find("Saving unavailable") != std::string::npos, "guest native End cannot promise saved credits");
 }
 void replaced_offer_and_purchase_reject_stale_actions() {
   Fixture f;
@@ -264,6 +282,7 @@ void phone_layout_hit_regions() {
 } // namespace
 int main() {
   actual_controls_and_settings_semantics();
+  pause_end_action_speaks_actual_bank_outcome();
   replaced_offer_and_purchase_reject_stale_actions();
   blueprint_semantics_name_account_milestones_and_run_requirements();
   page_changes_invalidate_queued_actions_without_reindexing_offers();

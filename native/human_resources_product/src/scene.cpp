@@ -109,6 +109,37 @@ void warning(StyleFrame& frame, Vec3 origin, Vec3 aim, float active_seconds, boo
     line(frame, {aim.x, aim.y, aim.z + sign * .42F}, {aim.x, aim.y, aim.z + sign * .16F}, .045F, {1, .28F, .23F, .95F});
   }
 }
+void boss_warnings(StyleFrame& frame, const gameplay::BossCombatView& boss, float distance,
+    float active_seconds, bool reduced_motion, float pixel) {
+  if (!boss.plan || (boss.phase != gameplay::BossPhase::warning && boss.phase != gameplay::BossPhase::salvo))
+    return;
+  const auto point = [distance](gameplay::Vec2 p) { return Vec3{p.x, .08F, distance - p.z + 2.3F}; };
+  const auto& plan = *boss.plan;
+  for (std::size_t i = boss.next_release; i < plan.shells.size(); ++i) {
+    const auto& shell = plan.shells[i];
+    const float range = std::hypot(shell.aim.x - shell.shot.origin.x, shell.aim.z - shell.shot.origin.z);
+    const gameplay::Vec2 endpoint{shell.shot.origin.x + shell.trajectory.x * range,
+        shell.shot.origin.z + shell.trajectory.z * range};
+    warning(frame, point(shell.shot.origin), point(endpoint), active_seconds, reduced_motion, pixel);
+    if (i != boss.next_release || plan.kind != gameplay::BossAttackKind::rake)
+      continue;
+    // The first upcoming path has a broad open chevron. Its approach follows
+    // the saved release clock; remaining paths stay visible before they fire.
+    const float elapsed = std::max(0.F, boss.phase_duration - boss.phase_remaining);
+    const float interval = boss.phase == gameplay::BossPhase::warning ? boss.phase_duration :
+        shell.release_offset - (i ? plan.shells[i - 1].release_offset : 0.F);
+    const float remaining = boss.phase == gameplay::BossPhase::warning ? boss.phase_remaining : shell.release_offset - elapsed;
+    const float progress = reduced_motion ? .7F : .2F + .6F * (1 - std::clamp(remaining / std::max(.001F, interval), 0.F, 1.F));
+    const auto centre = lerp(point(shell.shot.origin), point(endpoint), progress);
+    const Vec3 forward{shell.trajectory.x, 0, -shell.trajectory.z};
+    for (float side : {-1.F, 1.F}) {
+      const Vec3 rear{centre.x - forward.x * .36F + forward.z * side * .28F, centre.y,
+          centre.z - forward.z * .36F - forward.x * side * .28F};
+      line(frame, centre, rear, std::max(.08F, pixel * 2), {.025F, .07F, .11F, .96F});
+      line(frame, centre, rear, std::max(.04F, pixel), {1, .94F, .65F, 1});
+    }
+  }
+}
 void beats(StyleFrame& frame, const SceneEffects* effects, float distance, Vec3 ship, bool reduced_motion) {
   if (!effects)
     return;
@@ -277,9 +308,11 @@ presentation::StyleFrame scene(const gameplay::Snapshot& run, const GameplayFram
       float fire_age=-1;
       if(const auto* event=last_fire(run,e.id)) fire_age=static_cast<float>(run.stats.active_seconds-event->active_seconds);
       const bool committed=e.warning_seconds>0 || (fire_age>=0 && fire_age<.12F);
+      const auto* combat = run.boss_combat && run.boss_combat->actor_id == e.id ? &*run.boss_combat : nullptr;
       detail::append_tank(frame,{.position=p,.scale={size*boss,size*boss,size*boss},.rotation=rotation},
           e,committed ? e.warning_aim : run.player,
-          e.capture_progress==0 && e.fire_recovery_seconds==0 ? fire_age : -1);
+          e.capture_progress==0 && (combat || e.fire_recovery_seconds==0) ? fire_age : -1,
+          combat,reduced_motion);
     }
     if (e.kind >= gameplay::EntityKind::soldier) {
       const float hit_strength = enemy_hit_strength(run, e.id, reduced_motion);
@@ -322,7 +355,10 @@ presentation::StyleFrame scene(const gameplay::Snapshot& run, const GameplayFram
         }
       }
     }
-    if (e.warning_seconds > 0) {
+    if (e.kind == gameplay::EntityKind::boss) {
+      if (run.boss_combat && run.boss_combat->actor_id == e.id)
+        boss_warnings(frame, *run.boss_combat, static_cast<float>(distance), t, reduced_motion, threat_unit);
+    } else if (e.warning_seconds > 0) {
       if (gear && shot.valid) {
         const float range=std::hypot(e.warning_aim.x-shot.origin.x,e.warning_aim.z-shot.origin.z);
         for (unsigned i=0;i<attack.pellets;++i) {
@@ -333,18 +369,10 @@ presentation::StyleFrame scene(const gameplay::Snapshot& run, const GameplayFram
       } else if (e.kind == gameplay::EntityKind::jeep) {
         const auto muzzle=gameplay::jeep_minigun_shot(e,e.warning_aim,e.minigun_barrel);
         if(muzzle.valid) warning(frame,point(muzzle.origin,.08F),point(e.warning_aim,.08F),t,reduced_motion,threat_unit);
-      } else if(e.kind==gameplay::EntityKind::tank || e.kind==gameplay::EntityKind::boss) {
+      } else if(e.kind==gameplay::EntityKind::tank) {
         const auto muzzle=gameplay::vehicle_cannon_shot(e,e.warning_aim);
         if (muzzle.valid) {
-          const auto pattern = gameplay::cannon_geometry();
-          const unsigned count = e.kind == gameplay::EntityKind::boss ? pattern.boss_projectiles : 1U;
-          const float range = std::hypot(e.warning_aim.x - muzzle.origin.x, e.warning_aim.z - muzzle.origin.z);
-          for (unsigned i = 0; i < count; ++i) {
-            const float angle = (static_cast<float>(i) - static_cast<float>(count - 1) * .5F) * pattern.boss_spread_radians;
-            const gameplay::Vec2 direction{muzzle.direction.x * std::cos(angle) - muzzle.direction.z * std::sin(angle),
-                muzzle.direction.x * std::sin(angle) + muzzle.direction.z * std::cos(angle)};
-            warning(frame, point(muzzle.origin, .08F), point({muzzle.origin.x + direction.x * range, muzzle.origin.z + direction.z * range}, .08F), t, reduced_motion, threat_unit);
-          }
+          warning(frame, point(muzzle.origin, .08F), point(e.warning_aim, .08F), t, reduced_motion, threat_unit);
         }
       } else if (!gear)
         warning(frame, point(e.position, .08F), point(e.warning_aim, .08F), t, reduced_motion, threat_unit);

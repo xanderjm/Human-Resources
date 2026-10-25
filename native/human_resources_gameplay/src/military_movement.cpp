@@ -56,8 +56,8 @@ void Game::State::place_military(Actor& target) {
   // if future tuning exhausts the bounded search, instead of dropping pressure.
 }
 
-Vec2 Game::State::military_velocity(const Actor& actor, Vec2 preferred, float dt) const {
-  if (!(dt > 0) || length_squared(preferred) < .00000001F)
+Vec2 Game::State::military_velocity(const Actor& actor, Vec2 preferred, float dt, Vec2 carry) const {
+  if (!(dt > 0) || (length_squared(preferred) < .00000001F && length_squared(carry) < .00000001F))
     return {};
   const float own_radius = radius(actor);
   const float edge = tuning::field_half_width - own_radius;
@@ -65,13 +65,15 @@ Vec2 Game::State::military_velocity(const Actor& actor, Vec2 preferred, float dt
   // order and ID tie-breaking consume neither encounter RNG nor saved state.
   constexpr std::array<float, 9> turns{0, .39269908F, -.39269908F, .78539816F, -.78539816F,
       1.17809725F, -1.17809725F, 1.57079633F, -1.57079633F};
-  const float speed = std::sqrt(length_squared(preferred));
+  const float speed = std::max(.0001F, std::sqrt(length_squared(preferred)));
   const auto desired = direction(preferred);
-  const auto previous = direction(actor.view.velocity);
+  const auto previous = direction({actor.view.velocity.x - carry.x, actor.view.velocity.z - carry.z});
   Vec2 best{};
   float best_score = -100000.F;
   for (std::size_t candidate = 0; candidate <= turns.size(); ++candidate) {
-    const auto velocity = candidate == turns.size() ? Vec2{} : rotated(preferred, turns[candidate]);
+    // Boss carry is not steerable speed. Test the actual world sweep after
+    // rotating only its relative steering; the final candidate stops in world.
+    const auto velocity = candidate == turns.size() ? Vec2{} : add(carry, rotated(preferred, turns[candidate]));
     const auto travel = scaled(velocity, dt);
     const auto position = add(actor.view.position, travel);
     // Capture pull can release a soldier beyond its whole-body edge. Permit
@@ -98,8 +100,11 @@ Vec2 Game::State::military_velocity(const Actor& actor, Vec2 preferred, float dt
     }
     if (!clear)
       continue;
-    const auto heading = direction(velocity);
-    float score = (velocity.x * desired.x + velocity.z * desired.z) / speed - 3 * proximity;
+    // Stopping in world is a fallback, not extra steerable upstream speed.
+    // Otherwise carry can make this candidate beat genuine acceleration.
+    const Vec2 relative = candidate == turns.size() ? Vec2{} : Vec2{velocity.x - carry.x, velocity.z - carry.z};
+    const auto heading = direction(relative);
+    float score = (relative.x * desired.x + relative.z * desired.z) / speed - 3 * proximity;
     // Prefer continuing a chosen side around a neighbor instead of alternating
     // left/right every tick. This is derived from already-persisted velocity.
     score += .25F * (heading.x * previous.x + heading.z * previous.z);

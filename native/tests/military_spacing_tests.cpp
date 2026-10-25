@@ -64,6 +64,14 @@ void locked_aim_and_recovery() {
     source.locomotion_velocity = {0, -1};
     state.actors.push_back(source);
     state.actors.push_back(actor(gp::EntityKind::jeep, 3, {3, 16}));
+    if(kind==gp::EntityKind::boss) {
+      state.boss.emplace();state.boss->actor_id=source.view.id;
+      state.boss->plan=gp::boss_attack_plan(source.view,source.aim,{},gp::BossAttackKind::fan);
+      require(state.boss->plan.has_value(),"spacing boss fixture has a source-exact committed plan");
+      state.boss->phase=gp::BossPhase::warning;state.boss->next_kind=gp::BossAttackKind::fan;
+      state.boss->total_ticks=75;state.boss->remaining_ticks=24;
+      state.boss->body_heading=state.boss->plan->locked_body_heading;
+    }
     const auto original = source.view.position;
     for (unsigned frame = 0; frame < 20; ++frame) {
       state.enemies(dt);

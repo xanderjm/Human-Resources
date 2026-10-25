@@ -207,53 +207,65 @@ void small_phone_threat_cues_keep_weight_without_widening_projectiles() {
   }
 }
 
-void boss_warning_exposes_every_committed_fan_lane() {
-  const auto pattern = hr::gameplay::cannon_geometry();
-  require(pattern.boss_projectiles == 3 && pattern.boss_spread_radians == .22F,
-      "shared cannon contract preserves the original three-shot22hundredths-radian fan");
-  for (bool reduced : {false, true})
-    for (unsigned heading = 0; heading < 12; ++heading) {
-      hr::gameplay::Snapshot run;
-      run.stats.active_seconds = 154;
-      run.player = {-2, 0};
-      const float yaw = static_cast<float>(heading) * 2 * std::numbers::pi_v<float> / 12;
-      run.entities.push_back({.id = 72, .kind = hr::gameplay::EntityKind::boss, .position = {1, 12}, .velocity = {std::sin(yaw), -std::cos(yaw)}, .warning_aim = {-2, 0}, .warning_seconds = .5F});
-      const auto shot = hr::gameplay::vehicle_cannon_shot(run.entities.front(), run.entities.front().warning_aim);
-      require(shot.valid, "rotated boss retains a valid actual source opening");
-      const float range = std::hypot(-2 - shot.origin.x, -shot.origin.z);
-      for (bool dodged : {false, true}) {
-        if (dodged)
-          run.player = {4, -2};
-        const auto frame = hr::product::scene(run, 390.F / 844.F, reduced);
-        std::vector<hr::presentation::Vec3> markers;
-        unsigned origins = 0;
-        for (const auto& part : frame.instances) {
-          if (part.mesh == "ring" && part.tint[0] == 1 && part.tint[1] == .28F)
-            ++origins;
-          if (part.mesh == "cube" && part.tint[0] == 1 && part.tint[1] == .28F)
-            markers.push_back(part.position);
-        }
-        require(origins == 3 && markers.size() == 12, "all three actual boss lanes have visible origin and four-point locked markers");
-        for (unsigned lane = 0; lane < pattern.boss_projectiles; ++lane) {
-          const float angle = (static_cast<float>(lane) - 1) * pattern.boss_spread_radians;
-          const hr::gameplay::Vec2 direction{shot.direction.x * std::cos(angle) - shot.direction.z * std::sin(angle),
-              shot.direction.x * std::sin(angle) + shot.direction.z * std::cos(angle)};
-          hr::presentation::Vec3 center{};
-          for (unsigned j = 0; j < 4; ++j) {
-            center.x += markers[lane * 4 + j].x * .25F;
-            center.z += markers[lane * 4 + j].z * .25F;
+void boss_warning_exposes_stored_upcoming_shots() {
+  using namespace hr::gameplay;
+  for (const auto kind : {BossAttackKind::fan, BossAttackKind::rake})
+    for (bool reduced : {false, true})
+      for (float yaw : {-2.8F, 0.F, 2.8F}) {
+        Snapshot run;
+        run.stats.active_seconds = 154;
+        run.player = {-2, 0};
+        run.entities.push_back({.id = 72, .kind = EntityKind::boss, .position = {1, 12},
+            .warning_aim = run.player, .warning_seconds = .5F, .body_heading = yaw});
+        const auto plan = boss_attack_plan(run.entities[0], run.player, {}, kind);
+        require(plan.has_value(), "real source plan exists for both boss intentions and body headings");
+        run.boss_combat = BossCombatView{.actor_id = 72, .phase = BossPhase::warning,
+            .phase_remaining = .5F, .phase_duration = plan->warning_seconds, .plan = plan};
+        // The committed paths must survive a live pilot dodge unchanged.
+        run.player = {4, -2};
+        const unsigned last = kind == BossAttackKind::rake ? 3U : 0U;
+        for (unsigned released = 0; released <= last; ++released) {
+          auto& boss = *run.boss_combat;
+          boss.phase = released ? BossPhase::salvo : BossPhase::warning;
+          boss.phase_duration = released ? plan->salvo_seconds : plan->warning_seconds;
+          boss.phase_remaining = released ? std::max(0.F, plan->salvo_seconds - .3F * static_cast<float>(released - 1)) : .5F;
+          boss.next_release = static_cast<std::uint8_t>(released);
+          const auto frame = hr::product::scene(run, 390.F / 844.F, reduced);
+          std::vector<hr::presentation::Vec3> markers;
+          unsigned origins = 0, ordering = 0;
+          for (const auto& part : frame.instances) {
+            if (part.mesh == "ring" && part.tint[0] == 1 && part.tint[1] == .28F) ++origins;
+            if (part.mesh == "cube" && part.tint[0] == 1 && part.tint[1] == .28F) markers.push_back(part.position);
+            if (part.mesh == "cube" && part.tint == std::array<float, 4>{1, .94F, .65F, 1}) ++ordering;
           }
-          require_near(center.x, shot.origin.x + direction.x * range, 1e-5F, "committed fan marker matches exact authoritative projectile direction X after dodge");
-          require_near(center.z, 2.3F - shot.origin.z - direction.z * range, 1e-5F, "committed fan marker matches exact authoritative projectile direction Z after dodge");
+          require(origins == 3 - released && markers.size() == (3 - released) * 4,
+              "only upcoming stored rays retain origin and locked endpoint markers");
+          require(ordering == (kind == BossAttackKind::rake && released < 3 ? 2U : 0U),
+              "rake's next release has one open timing chevron, including reduced motion");
+          for (unsigned lane = released; lane < 3; ++lane) {
+            const auto& shell = plan->shells[lane];
+            const float range = std::hypot(shell.aim.x - shell.shot.origin.x, shell.aim.z - shell.shot.origin.z);
+            hr::presentation::Vec3 centre{};
+            for (unsigned j = 0; j < 4; ++j) {
+              centre.x += markers[(lane - released) * 4 + j].x * .25F;
+              centre.z += markers[(lane - released) * 4 + j].z * .25F;
+            }
+            require_near(centre.x, shell.shot.origin.x + shell.trajectory.x * range, 1e-5F,
+                "warning X consumes exact stored trajectory rather than a new fan formula");
+            require_near(centre.z, 2.3F - shell.shot.origin.z - shell.trajectory.z * range, 1e-5F,
+                "warning station consumes exact stored trajectory after pilot dodge");
+          }
+          require(run.player.x == 4 && run.boss_combat->next_release == released,
+              "presentation cannot change pilot or release authority");
         }
       }
-    }
 }
+
 } // namespace
 int main() {
   player_keeps_prior_apparent_size_while_world_shrinks();
   small_phone_threat_cues_keep_weight_without_widening_projectiles();
-  boss_warning_exposes_every_committed_fan_lane();
+  boss_warning_exposes_stored_upcoming_shots();
   for (float aspect : {9.F / 16.F, 16.F / 9.F}) {
     semantic_up_projects_up(aspect);
     ahead_and_targeting_share_projection(aspect);

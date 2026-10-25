@@ -58,6 +58,7 @@ void Game::start(const RunSetup& setup) {
     s.spawn_cohort(true, i);
   }
   s.sync();
+  s.view.velocity.z = s.view.forward_speed;
 }
 void Game::advance(float elapsed, Control control) {
   auto& s = *state_;
@@ -198,10 +199,20 @@ void Game::State::sync() {
   for (const auto& a : actors) {
     if (!a.removed) {
       auto entity = a.view;
-      if (military(entity.kind) && entity.kind != EntityKind::soldier && length_squared(a.locomotion_velocity) > .0001F)
+      if (entity.kind == EntityKind::boss && boss && boss->actor_id == entity.id)
+        entity.body_heading = boss->body_heading;
+      else if (military(entity.kind) && entity.kind != EntityKind::soldier && length_squared(a.locomotion_velocity) > .0001F)
         entity.body_heading = std::atan2(a.locomotion_velocity.x, -a.locomotion_velocity.z);
       view.entities.push_back(entity);
     }
+  }
+  if (boss && actor(boss->actor_id)) {
+    view.boss_combat = BossCombatView{boss->actor_id, boss->phase,
+        static_cast<float>(boss->remaining_ticks) / tuning::fixed_hz,
+        static_cast<float>(boss->total_ticks) / tuning::fixed_hz, boss->next_release, boss->plan};
+  } else {
+    boss.reset();
+    view.boss_combat.reset();
   }
   for (auto& beam : view.beams) {
     const auto* target = actor(beam.target_id);

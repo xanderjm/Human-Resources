@@ -72,6 +72,27 @@ class NativeTuningTests(unittest.TestCase):
         self.mutate('design/balance/endless-upgrade-system.json', rename)
         self.assertEqual(original, self.fingerprint())
 
+    def test_boss_contract_changes_invalidate_resume(self):
+        original = self.fingerprint()
+        self.mutate('native/human_resources_gameplay/runtime-spatial.json',
+                    lambda v: v['boss_combat'].update(body_turn_radians_per_second=2.5))
+        self.assertNotEqual(original, self.fingerprint())
+
+    def test_boss_duration_requires_whole_fixed_ticks(self):
+        self.mutate('native/human_resources_gameplay/runtime-spatial.json',
+                    lambda v: v['boss_combat'].update(recovery_seconds=.901))
+        self.reject()
+
+    def test_boss_cycle_budget_cannot_silently_change(self):
+        self.mutate('native/human_resources_gameplay/runtime-spatial.json',
+                    lambda v: v['boss_combat'].update(rake_reposition_seconds=1.5))
+        self.reject()
+
+    def test_boss_station_hysteresis_cannot_invert(self):
+        self.mutate('native/human_resources_gameplay/runtime-spatial.json',
+                    lambda v: v['boss_combat'].update(station_switch_low=7))
+        self.reject()
+
     def test_vehicle_source_numeric_contract_invalidates_resume(self):
         original = self.fingerprint()
         self.mutate('assets/production/vehicle-weapons.json', lambda v: v['cannon']['muzzle'].__setitem__(0, -.007))

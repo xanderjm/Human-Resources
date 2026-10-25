@@ -236,5 +236,26 @@
     "lookahead_seconds": 0.4,
     "margin_metres": 0.08,
     "spawn_rows": 8
+  },
+  "boss_combat": {
+    "fan_warning_seconds": 1.25,
+    "rake_warning_seconds": 1.35,
+    "rake_interval_seconds": 0.3,
+    "fan_spread_radians": 0.22,
+    "rake_spread_radians": 0.38,
+    "recovery_seconds": 0.9,
+    "fan_reposition_seconds": 2.1,
+    "rake_reposition_seconds": 1.4,
+    "brake_seconds": 0.2,
+    "movement_acceleration": 28,
+    "body_turn_radians_per_second": 2.4,
+    "standoff_metres": 10,
+    "station_minimum": 0,
+    "station_maximum": 12,
+    "station_switch_low": 5.5,
+    "station_switch_high": 6.5,
+    "bypass_margin": 0.15,
+    "minimum_source_range": 5,
+    "aim_lead_fraction": 0.5
   }
 }

@@ -3,6 +3,7 @@
 #include <human_resources/product/presentation.h>
 #include <human_resources/product/accessibility.h>
 #include <human_resources/product/controls.h>
+#include "../human_resources_product/src/flight_report.h"
 #include <human_resources/gameplay/tuning.h>
 #include <cctype>
 #include <limits>
@@ -122,6 +123,33 @@ std::string atlas_copy(const Interface& ui) {
     text += static_cast<char>(32 + row * 16 + col);
   }
   return text;
+}
+void pause_bank_disclosure_keeps_existing_actions_and_complete_copy() {
+  progression_tests::MemoryBackend backend;
+  hr::progression::AccountStore store{backend};
+  require(store.load().playable(), "pause display fixture loads");
+  hr::gameplay::Game game; game.start();
+  hr::progression::RunReceipt receipt{.run_id=1, .active_milliseconds=75000, .score=85, .jeep_kills=4};
+  for (const auto viewport : {hr::ui::Rect{0,0,320,568}, hr::ui::Rect{0,0,390,844}, hr::ui::Rect{0,0,844,390}}) {
+    for (const float scale : {1.F,2.F}) {
+      View view{Screen::pause, &game.snapshot(), &store, viewport, {0,20,0,0}};
+      view.text_scale = scale; view.current_receipt = &receipt;
+      for (const bool guest : {false,true}) {
+        view.guest = guest;
+        const auto bank = pause_bank_preview(view);
+        auto ui = interface(view);
+        std::string copy;
+        for (unsigned page=0; page<ui.page_count; ++page) {
+          view.ui_page=page; ui=interface(view);
+          require(!ui.text_overflow, "pause reward uses complete measured pages at enlarged text");
+          copy += compact(atlas_copy(ui));
+          for (const auto& button : ui.buttons)
+            require(button.bounds.width>=44 && button.bounds.height>=44, "pause action touch sizes remain unchanged");
+        }
+        require(copy.find(compact(bank.heading)) != std::string::npos && copy.find(compact(bank.detail)) != std::string::npos, "pause renders actual bank amount and complete status on phone wide and enlarged layouts");
+      }
+    }
+  }
 }
 void hangar_shows_owned_and_next_power_with_visible_basis() {
   progression_tests::MemoryBackend backend;
@@ -1187,6 +1215,7 @@ int main(int argc, char** argv) {
   promotion_preserves_choice_safety_and_collected_return_controls();
   actual_damage_feedback_stays_inside_the_tactical_hud();
   harvest_feedback_explains_sweeps_boost_and_dash_without_expanding_top_hud();
+  pause_bank_disclosure_keeps_existing_actions_and_complete_copy();
   compact_phone_cards_preserve_effects_and_scene_stage();
   run_onboarding_names_the_actual_input_without_moving_controls();
   upgrade_board_exposes_actual_build_and_projected_benefits();

@@ -138,7 +138,9 @@ void visible_warnings_and_recovery() {
   boss.view.stats.active_seconds = 155;
   for (unsigned id = 1; id <= 3; ++id) boss.actors.push_back(threat(game::EntityKind::soldier, id, {static_cast<float>(id), 8}));
   boss.actors.push_back(threat(game::EntityKind::boss, 4, {0, 10}));
-  boss.enemies(dt);
+  // Game8 authoritatively brakes for .20s and drains existing warnings before
+  // commitment; test bounded admission rather than a fabricated instant flag.
+  for(unsigned frame=0;frame<180&&boss.actors.back().view.warning_seconds==0;++frame)boss.enemies(dt);
   require(boss.actors.back().view.warning_seconds > 0, "boss warning cannot be starved by older infantry");
   unsigned warnings{};
   for (const auto& a : boss.actors) warnings += a.view.warning_seconds > 0 ? 1U : 0U;

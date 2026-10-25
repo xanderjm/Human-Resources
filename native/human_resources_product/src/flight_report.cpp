@@ -3,6 +3,22 @@
 #include <human_resources/gameplay/tuning.h>
 
 namespace human_resources::product {
+PauseBankPreview pause_bank_preview(const View& view) {
+  PauseBankPreview preview;
+  if (!view.current_receipt && !view.guest) {
+    preview.heading = "BANK PREVIEW UNAVAILABLE";
+    preview.detail = "Resume to continue your flight.";
+    return preview;
+  }
+  preview.credits = view.guest ? 0 : progression::base_credits(*view.current_receipt);
+  preview.heading = "BANK NOW +" + std::to_string(preview.credits) + " CR";
+  if (view.guest) preview.detail = "Saving unavailable. No saved credits.";
+  else if (view.current_receipt->active_milliseconds < gameplay::tuning::credit_minimum_seconds * 1000) {
+    const auto seconds = gameplay::tuning::credit_minimum_seconds;
+    preview.detail = "Resume to reach " + std::to_string(seconds / 60) + ":" + (seconds % 60 < 10 ? "0" : "") + std::to_string(seconds % 60) + " and earn credits.";
+  } else preview.detail = "Ends this flight. Saves earned credits once.";
+  return preview;
+}
 namespace {
 bool newly_unlocked(const progression::BlueprintView& blueprint, std::uint32_t bits) {
   for (unsigned i = 0; i < static_cast<unsigned>(gameplay::Module::count); ++i)

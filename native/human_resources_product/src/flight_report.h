@@ -17,4 +17,10 @@ struct FlightReport final {
   std::string summary;
 };
 [[nodiscard]] FlightReport flight_report(const View& view);
+struct PauseBankPreview final {
+  std::uint64_t credits{};
+  std::string heading, detail;
+};
+// The current receipt is a read-only preview, never a settlement or wallet value.
+[[nodiscard]] PauseBankPreview pause_bank_preview(const View& view);
 } // namespace human_resources::product

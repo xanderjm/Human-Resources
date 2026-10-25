@@ -10,6 +10,41 @@ change together. Prior landscape captures are historical integration evidence.
 
 ## Current truth
 
+The latest accepted host source implements authority8 boss combat and Pause bank
+disclosure. Exact source/commit is recorded in
+`build/evidence/boss-source-checkpoint/checkpoint.json`. Bosses open with a
+three-shell rake, visibly turn between stored shots, recover while moving and
+alternate with a simultaneous fan. Physical braking, scroll carry and occupied
+approach lanes are covered by actual long-cycle tests; stationary pilots take
+damage while timed movement/Dash can avoid it. Startup velocity now matches scroll.
+The shared plan drives warnings, source poses, projectiles and continuation.
+Game authority is8, fingerprint `12553144404692471430`, codec1/account2; prior
+Game7 runs remain subject to existing protected incompatibility/banking behavior.
+
+Thirty-four source owners pass optimized dev and46/46 aggregate contracts.
+Root accepts four native boss clips, including natural-health early/late attacks,
+and four Pause UI captures. Pause shows canonical bankable credits and minimum/
+guest limits before ending. Eight saved boss phases,600-step exact futures and a
+13,685-byte full-population fixture pass. Four real SDL storage processes cold
+restore an actual inter-shell continuation, resume and bank120earned credits once.
+A separate120-simulated-minute ABBA CPU audit finds zero C++ allocations in215,740
+ordinary Game8 advances; its70.5microsecond worst sample is host CPU evidence,
+not phone/GPU performance. Detailed reports are under `boss-cycle-contract-938ea35/`,
+`boss-presentation-prep-938ea358/`, `pause-bank-disclosure/`,
+`boss-continuation-independent-qa/` and `boss-runtime-performance/` in evidence.
+
+The owner's latest requested app is the separate **Latest Playtest938ea35**,
+confirmed at PID33473, with original ship size and a fresh test save. All104
+bundle files/signature are verified; the retained executable's missing permission
+was corrected in the new bundle before successful normal launch. Twelve user
+previews and30discovered bundles are protected. This app contains accepted direct
+flight/held-button/sweep feedback; later boss/Pause source does not hot-update it.
+Current mobile and supplemental Windows package qualification remainsb99c373.
+The new mobile refresh is being prepared; physical input, sustained budgets,
+human feel, distribution and store acceptance remain open. Goal stays active.
+
+## Historical b99c373 clean/platform checkpoint
+
 The latest owner-requested normal launch is **Human Resources Latest Playtest
 b99c373**, confirmed at PID22511 from committed source
 **b99c373bc69e4250211b3b59b270e56b9c242be5**. It includes the cumulative Hangar
@@ -53,11 +88,10 @@ and nine native PNGs pass. Four same-state cue comparisons add one world draw an
 bytes/authority stay unchanged, while current C++ projection ABI requires matching
 headers/archives. `ui-flow-quality-b99c373/FINAL_REPORT.json`,
 `sweep-world-feedback/FINAL_REPORT.json` and `ui-sweep-independent-review-b99c373/`
-bind final source/native evidence. The later source does not hot-update the
-owner's open b99c373 app or inherit its platform qualification. Original cow art
-remains. Boss raking/recovery design is separate and still needs whole-cycle
-scroll drift resolved; the existing tiny startup velocity/sweep transient is a
-future gameplay follow-up, not silently changed in this presentation slice.
+bind final source/native evidence. The later source did not hot-update the
+owner's b99c373 app or inherit its platform qualification. Original cow art
+remains. Boss scroll/braking and the startup velocity transient were subsequent
+authority8 work, separately qualified above.
 
 A separate two-source Android fix bounds native accessibility publication at the
 Activity's outer UI dispatcher, deduplicates complete payloads and invalidates
@@ -65,8 +99,8 @@ closed/destroyed sessions. Six actual-Activity host-Java queue/lifecycle contrac
 pass; the original Activity fails five. A small actual API36/real SDL classpath
 javac compile also passes. Independent review is under
 `android-ax-independent-review/`; no current APK/runtime/TalkBack/FPS claim follows.
-The historical327.501ms host hitch remains unattributed. Boss authority8 work is
-separate in-progress source and cannot inherit the accepted checkpoints above.
+The historical327.501ms host hitch remains unattributed. Authority8 has its own
+later host evidence above and cannot inherit these platform packages.
 
 ## Historical853169 qualification and subsequent slice preparation
 

@@ -378,9 +378,11 @@ void boss_outer_lanes_protect_consumed_canopy() {
       run.player = {0, 0};
       run.entities.push_back({.id = 1001, .kind = hr::gameplay::EntityKind::boss,
           .position = {side * 4.5F, 14}, .warning_aim = {side * 7.5F, 0}, .warning_seconds = 1, .body_heading = 0});
-      const auto pattern = hr::gameplay::cannon_geometry();
+      const auto plan = hr::gameplay::boss_attack_plan(run.entities[0], run.entities[0].warning_aim, {}, hr::gameplay::BossAttackKind::fan);
       const auto muzzle = hr::gameplay::vehicle_cannon_shot(run.entities[0], run.entities[0].warning_aim);
-      require(pattern.boss_projectiles == 3 && muzzle.valid, "actual boss geometry supplies three valid committed lanes");
+      require(plan && muzzle.valid, "actual boss geometry supplies three valid committed lanes");
+      run.boss_combat = hr::gameplay::BossCombatView{.actor_id=1001, .phase=hr::gameplay::BossPhase::warning,
+          .phase_remaining=1, .phase_duration=plan->warning_seconds, .plan=plan};
       StyleFrame frame;
       hr::presentation::set_overhead_camera(frame, aspect, 17.F / .75F, {0, 0, -.15F}, 27);
       frame.instances.push_back({.mesh = "tree-round-large", .position = {side * 12.1884174F, 0, 2.6F},
@@ -394,6 +396,30 @@ void boss_outer_lanes_protect_consumed_canopy() {
       require(frame.instances[0].tint[3] < .3F, "both actual boss outer lanes protect the consumed canopy independently");
     }
 }
+void rake_visibility_removes_released_paths() {
+  using namespace hr::gameplay;
+  Snapshot run;
+  run.player = {0, 0};
+  run.entities.push_back({.id=1001, .kind=EntityKind::boss, .position={0,12}, .body_heading=0});
+  const auto plan = boss_attack_plan(run.entities[0], run.player, {}, BossAttackKind::rake);
+  require(plan.has_value(), "real rake plan provides chronological canopy paths");
+  run.boss_combat = BossCombatView{.actor_id=1001, .phase=BossPhase::salvo,
+      .phase_remaining=plan->salvo_seconds, .phase_duration=plan->salvo_seconds, .plan=plan};
+  const auto& first = plan->shells[0];
+  const float length = std::hypot(first.aim.x-first.shot.origin.x,first.aim.z-first.shot.origin.z) * .65F;
+  const Vec3 target{first.shot.origin.x + first.trajectory.x*length,0,
+      2.3F-first.shot.origin.z-first.trajectory.z*length};
+  StyleFrame frame;
+  hr::presentation::set_overhead_camera(frame,390.F/844.F,17.F/.75F,{0,0,-.15F},27);
+  frame.instances.push_back({.mesh="tree-round-large",.position=target,.scale={.3F,.3F,.3F}});
+  auto before=frame;
+  hr::product::preserve_play_visibility(before,1,&run);
+  require(before.instances[0].tint[3]<.5F,"upcoming rake remains protected after ordinary warning clock expires");
+  run.boss_combat->next_release=3;
+  auto after=frame;
+  hr::product::preserve_play_visibility(after,1,&run);
+  require(after.instances[0].tint[3]==1,"released rake paths cannot leave phantom scenery fading");
+}
 } // namespace
 int main(int argc, char** argv) {
   require(argc == 2, "cooked fixture root is explicit");
@@ -406,4 +432,5 @@ int main(int argc, char** argv) {
   fading_is_continuous_and_requires_real_geometry();
   shotgun_outer_lane_has_independent_protection();
   boss_outer_lanes_protect_consumed_canopy();
+  rake_visibility_removes_released_paths();
 }

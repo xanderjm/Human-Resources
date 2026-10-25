@@ -101,26 +101,29 @@ void preserve_play_visibility(presentation::StyleFrame& frame, std::size_t scene
   }
   if (run) {
     const auto point = [&](gameplay::Vec2 p, float height) { return Vec3{p.x, height, run->runner_distance - p.z + 2.3F}; };
-    for (const auto& actor : run->entities)
+    for (const auto& actor : run->entities) {
+      if (actor.kind == gameplay::EntityKind::boss) {
+        const auto* boss = run->boss_combat && run->boss_combat->actor_id == actor.id ? &*run->boss_combat : nullptr;
+        if (boss && boss->plan && (boss->phase == gameplay::BossPhase::warning || boss->phase == gameplay::BossPhase::salvo))
+          for (std::size_t i = boss->next_release; i < boss->plan->shells.size(); ++i) {
+            const auto& shell = boss->plan->shells[i];
+            const float range = std::hypot(shell.aim.x - shell.shot.origin.x, shell.aim.z - shell.shot.origin.z);
+            const gameplay::Vec2 end{shell.shot.origin.x + range * shell.trajectory.x,
+                shell.shot.origin.z + range * shell.trajectory.z};
+            critical.add(project_region(frame.camera, world_box(point(shell.shot.origin, .08F), point(end, .08F), .45F)));
+          }
+        continue;
+      }
       if (actor.warning_seconds > 0) {
         critical.add(project_region(frame.camera, world_box(point(actor.position, .08F), point(actor.warning_aim, .08F), .45F)));
         if (actor.kind == gameplay::EntityKind::jeep) {
           const auto muzzle=gameplay::jeep_minigun_shot(actor,actor.warning_aim,actor.minigun_barrel);
           if(muzzle.valid) critical.add(project_region(frame.camera,world_box(point(muzzle.origin,.08F),point(actor.warning_aim,.08F),.45F)));
         }
-        if(actor.kind==gameplay::EntityKind::tank || actor.kind==gameplay::EntityKind::boss) {
+        if(actor.kind==gameplay::EntityKind::tank) {
           const auto muzzle=gameplay::vehicle_cannon_shot(actor,actor.warning_aim);
-          if(muzzle.valid) {
-            const auto geometry=gameplay::cannon_geometry();
-            const unsigned count=actor.kind==gameplay::EntityKind::boss ? geometry.boss_projectiles : 1U;
-            const float distance=std::hypot(actor.warning_aim.x-muzzle.origin.x,actor.warning_aim.z-muzzle.origin.z);
-            for(unsigned lane=0;lane<count;++lane) {
-              const float angle=(static_cast<float>(lane)-static_cast<float>(count-1)*.5F)*geometry.boss_spread_radians;
-              const gameplay::Vec2 end{muzzle.origin.x+distance*(muzzle.direction.x*std::cos(angle)-muzzle.direction.z*std::sin(angle)),
-                  muzzle.origin.z+distance*(muzzle.direction.x*std::sin(angle)+muzzle.direction.z*std::cos(angle))};
-              critical.add(project_region(frame.camera,world_box(point(muzzle.origin,.08F),point(end,.08F),.45F)));
-            }
-          }
+          if(muzzle.valid)
+            critical.add(project_region(frame.camera,world_box(point(muzzle.origin,.08F),point(actor.warning_aim,.08F),.45F)));
         }
         if (actor.kind != gameplay::EntityKind::soldier)
           continue;
@@ -136,6 +139,7 @@ void preserve_play_visibility(presentation::StyleFrame& frame, std::size_t scene
           critical.add(project_region(frame.camera, world_box(point(muzzle.origin, .08F), point(end, .08F), .45F)));
         }
       }
+    }
     for (const auto& beam : run->beams) {
       const auto p = point(beam.target, .025F);
       critical.add(project_region(frame.camera, world_box(p, p, beam.vehicle ? 1.2F : .9F)));

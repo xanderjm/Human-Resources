@@ -1,5 +1,33 @@
 # Technical Decisions
 
+## 25 October 2026 — One authoritative boss attack plan and mobile recovery
+
+Boss combat has one private state-machine owner inside the existing gameplay
+target. A fixed three-shell plan stores the locked chassis frame, physical source
+poses, projectile trajectories and release offsets. Snapshot exposes one optional
+boss view; rendering, visibility and turret assembly consume that value. Fan
+trajectories share one physical opening, while rake shots use separate solved
+barrel poses. Released warning rays disappear. This avoids independent visual
+retargeting, a scene graph or plans duplicated on every actor.
+
+Only warning/salvo plants the chassis. Recovery carries scroll and uses bounded
+steering/turning; occupied approach capsules may select the clear opposite flank.
+Braking integrates actual velocity, and approach readiness forecasts its stopped
+source before the final fresh admission check. These boundaries fix reproduced
+recovery pinning, vehicle-lane blockage and high-scroll brake/reject loops without
+loosening source distance, retirement, damage or population limits. Opening with
+rake makes the distinct attack visible before short natural encounters end.
+
+Authority8 deliberately changes continuation semantics. One conditional boss
+suffix is at most178bytes, preserving48KiB Game/continuation and64KiB account
+limits. Decode validates canonical geometry, phase/index/timer/cache relations,
+capacity and the quiet warning window before replacing live state. Existing
+protected handling of older authority continues. Eight actual phase checkpoints,
+600-step futures and separate real SDL storage processes verify this boundary.
+The314-line public header remains a compact value contract; the cohesive265-line
+boss file owns attack progression. Existing large interface.cpp only gains its
+existing Pause branches; shared credit projection belongs in flight_report.
+
 ## 25 October 2026 — Conservative shadow-influence rejection
 
 Keep the existing world/caster visibility and margin policy. The renderer may

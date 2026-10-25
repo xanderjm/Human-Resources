@@ -153,6 +153,21 @@ def validate(arch, cat, encounter, spatial):
         raise ValueError('harvest gain must retain bounded normal capture')
     if isinstance(harvest['chain_target'], bool) or not isinstance(harvest['chain_target'], int) or not 2 <= harvest['chain_target'] <= 8:
         raise ValueError('harvest chain count must be bounded')
+    boss = spatial['boss_combat']
+    for key, value in boss.items():
+        finite(value, 'boss combat ' + key, 0 if key == 'station_minimum' else .001, 64)
+        if key.endswith('_seconds') and abs(value * spatial['fixed_hz'] - round(value * spatial['fixed_hz'])) > .0001:
+            raise ValueError('boss phase duration must use whole fixed ticks')
+    if not boss['station_minimum'] < boss['station_switch_low'] < boss['station_switch_high'] < boss['station_maximum'] <= rhythm['warning_entry_ahead']:
+        raise ValueError('boss station hysteresis must fit readable flight')
+    if not 0 < boss['aim_lead_fraction'] <= .5 or not 0 < boss['fan_spread_radians'] < boss['rake_spread_radians'] < 1:
+        raise ValueError('invalid bounded boss aim or spread')
+    if not boss['brake_seconds'] < min(boss['fan_reposition_seconds'], boss['rake_reposition_seconds']):
+        raise ValueError('boss braking must fit reposition budget')
+    fan_cycle = boss['fan_warning_seconds'] + boss['recovery_seconds'] + boss['fan_reposition_seconds']
+    rake_cycle = boss['rake_warning_seconds'] + 2 * boss['rake_interval_seconds'] + boss['recovery_seconds'] + boss['rake_reposition_seconds']
+    if abs(fan_cycle - rake_cycle) > .0001:
+        raise ValueError('boss attack intentions must retain the same cycle budget')
     starter = spatial['starter_dash']
     finite(starter['distance'], 'starter dash distance', .1, 3)
     finite(starter['invulnerability'], 'starter dash invulnerability', .01, .2)
@@ -283,6 +298,8 @@ def generate(root, output):
         scalar('scroll_' + key, value)
     for key, value in spatial['enemy_tactics'].items():
         scalar('tactics_' + key, value)
+    for key, value in spatial['boss_combat'].items():
+        scalar('boss_' + key, value)
     radii = spatial['biological_body_radius']
     if len(radii) != 5 or any(not 0 < radius < 1 for radius in radii):
         raise ValueError('invalid biological body radii')

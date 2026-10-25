@@ -149,8 +149,6 @@ struct MinigunShot final {
 struct CannonGeometry final {
   std::array<float,3> socket, muzzle;
   float visible_missile_scale{}, launch_forward_offset{};
-  unsigned boss_projectiles{};
-  float boss_spread_radians{};
 };
 struct CannonShot final {
   Vec2 origin, direction;
@@ -159,6 +157,31 @@ struct CannonShot final {
 };
 [[nodiscard]] CannonGeometry cannon_geometry();
 [[nodiscard]] CannonShot vehicle_cannon_shot(const EntityView& actor, Vec2 aim);
+enum class BossAttackKind : std::uint8_t { fan, rake };
+enum class BossPhase : std::uint8_t { approach, recovery, reposition, braking, warning, salvo };
+struct BossShellPlan final {
+  // CannonShot retains its physical barrel axis. Fan trajectories spread from
+  // that common aperture; each rake trajectory equals its own physical axis.
+  CannonShot shot;
+  Vec2 aim, trajectory; // aim validates the physical source; trajectory drives the shell/warning.
+  float release_offset{};
+};
+struct BossAttackPlan final {
+  BossAttackKind kind{};
+  std::array<BossShellPlan, 3> shells; // Chronological order; never retargeted.
+  Vec2 locked_root;
+  float warning_seconds{}, salvo_seconds{}, initial_turret_yaw{}, locked_body_heading{};
+};
+// The single source of boss order, warnings, source poses and release offsets.
+[[nodiscard]] std::optional<BossAttackPlan> boss_attack_plan(const EntityView& actor,
+    Vec2 player, Vec2 player_velocity, BossAttackKind kind);
+struct BossCombatView final {
+  std::uint32_t actor_id{};
+  BossPhase phase{BossPhase::approach};
+  float phase_remaining{}, phase_duration{};
+  std::uint8_t next_release{};
+  std::optional<BossAttackPlan> plan; // Absent until first actual commitment.
+};
 struct ProjectileView final {
   std::uint32_t id{};
   Vec2 position, velocity;
@@ -251,6 +274,7 @@ struct Snapshot final {
   std::vector<EntityView> entities;
   std::vector<ProjectileView> projectiles;
   std::vector<BeamView> beams;
+  std::optional<BossCombatView> boss_combat; // One boss; derived from saved authority.
   std::vector<ShotView> shots;
   // Bounded recent authoritative outcomes, overwritten oldest-first. Sequence
   // resets with start(); consumers track it once and never infer a hit/kill

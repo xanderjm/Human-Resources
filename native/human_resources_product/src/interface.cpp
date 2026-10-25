@@ -218,13 +218,17 @@ Interface wide_interface(const View& v) {
       c.button(x, 292, 252, "CHOOSE " + number(i + 1), static_cast<Command>(static_cast<unsigned>(Command::pick0) + i), true, mint, 64);
     }
     break;
-  case Screen::pause:
+  case Screen::pause: {
+    const auto bank = pause_bank_preview(v);
     title(v.restored_run ? "RUN SAVED" : "ON HOLD", std::string(location_name(v.theme)) + (v.restored_run ? " / Level " + number(run.stats.level) + " / " + time_text(run.stats.active_seconds) + " saved. Resume or end and bank credits." : " / Your run clock is paused. Stay near specimens and avoid coral warnings."));
+    c.fitted(300, 144, 512, bank.heading, 24, mint);
+    c.wrap(300, 182, 512, bank.detail, 19, muted, 2);
     c.button(32, 190, 244, "CURRENT BUILD", Command::current_build, true, white, 64);
     c.button(32, 278, 244, "RESUME", Command::resume, true, mint, 64);
     c.button(300, 278, 244, "SETTINGS", Command::settings, true, white, 64);
     c.button(568, 278, 244, "END & BANK", Command::finish, true, white, 64);
     break;
+  }
   case Screen::death:
   case Screen::results: {
     const auto report = flight_report(v);
@@ -373,12 +377,14 @@ std::vector<ReadableSection> readable_sections(const View& v) {
     add("EVOLUTIONS\nRead all six recipes and your ingredient ranks.", Command::recipe0, "EVOLUTIONS");
     break;
   }
-  case Screen::pause:
-    add(std::string(v.restored_run ? "RUN SAVED\n" : "ON HOLD\n") + std::string(location_name(v.theme)) + " / Level " + number(run.stats.level) + " / " + time_text(run.stats.active_seconds) + ". Score " + number(run.stats.score) + ". Hull " + number(static_cast<unsigned>(std::max(0.F, run.hull))) + ", shield " + number(static_cast<unsigned>(std::max(0.F, run.shield))) + ". The run clock is paused. Stay near specimens and avoid coral shots and warning circles." + (run.phase == gameplay::Phase::choosing_upgrade ? " Your earned upgrade is waiting." : ""), Command::resume, "RESUME");
+  case Screen::pause: {
+    const auto bank = pause_bank_preview(v);
+    add(std::string(v.restored_run ? "RUN SAVED\n" : "ON HOLD\n") + bank.heading + "\n" + bank.detail + "\n" + std::string(location_name(v.theme)) + " / Level " + number(run.stats.level) + " / " + time_text(run.stats.active_seconds) + ". Score " + number(run.stats.score) + ". Hull " + number(static_cast<unsigned>(std::max(0.F, run.hull))) + ", shield " + number(static_cast<unsigned>(std::max(0.F, run.shield))) + ". The run clock is paused. Stay near specimens and avoid coral shots and warning circles." + (run.phase == gameplay::Phase::choosing_upgrade ? " Your earned upgrade is waiting." : ""), Command::resume, "RESUME");
     add("CURRENT BUILD\nInspect installed hardware, temporary flight research, evolutions and permanent Hangar ranks.", Command::current_build, "CURRENT BUILD");
     add("FLIGHT SETTINGS\nThe run stays paused while you change settings.", Command::settings, "SETTINGS");
-    add("END RUN\nBank this flight's earned Research Credits exactly once. Flights shorter than 30 seconds earn no credits.", Command::finish, "END & BANK");
+    add("END RUN\n" + bank.heading + "\n" + bank.detail, Command::finish, "END & BANK");
     break;
+  }
   case Screen::death:
   case Screen::results: {
     const auto report = flight_report(v);
@@ -502,7 +508,7 @@ Interface readable_interface(const View& v) {
     if (room >= heading_size) {
       std::string text = sections.front().text;
       if (v.screen == Screen::title) text += "\nLocation: " + std::string(location_name(v.theme)) + ".";
-      if (v.screen == Screen::pause) text += "\nHardware and research last for this flight. Hangar ranks are permanent. End Run banks earned credits once; flights shorter than 30 seconds earn none.";
+      if (v.screen == Screen::pause) text += "\nHardware and research last for this flight. Hangar ranks are permanent. End Run finishes this flight and banks earned credits once.";
       sections = {{std::move(text), Command::none, {}, true}};
     } else primary.clear();
   }
@@ -1152,14 +1158,18 @@ Interface standard_interface(const View& v) {
       c.button(208, footer, 156, "EVOLUTIONS", Command::recipe0, true, white, 60);
       break;
     }
-    case Screen::pause:
+    case Screen::pause: {
+      const auto bank = pause_bank_preview(v);
       heading(v.restored_run ? "RUN SAVED" : "ON HOLD", std::string(location_name(v.theme)) + " / LV " + number(run.stats.level) + " / SCORE " + number(run.stats.score) + " / Clock paused.");
       c.wrap(26, 152, 338, v.restored_run ? "Level " + number(run.stats.level) + " / " + time_text(run.stats.active_seconds) + " saved. " + (run.phase == gameplay::Phase::choosing_upgrade ? "Your earned upgrade is waiting. " : "") + "Resume your flight or end it and bank credits." : "Fly close to capture faster. Keep moving through targets. Three sweeps trigger Overdrive. Dash through danger: tap Dash or press Space. Avoid coral warnings.", 19, white, 7);
       c.button(26, 360, 338, "RESUME", Command::resume, true, mint, 56);
       c.button(26, 438, 338, "SETTINGS", Command::settings, true, white, 56);
       c.button(26, 516, 338, "CURRENT BUILD", Command::current_build, true, white, 56);
+      c.fitted(26, 598, 338, bank.heading, 24, mint);
+      c.wrap(26, 630, 338, bank.detail, 19, muted, 2);
       c.button(26, 690, 338, "END RUN & BANK CREDITS", Command::finish, true, white, 56);
       break;
+    }
     case Screen::death:
     case Screen::results:
       flight_report_panel(c, v);

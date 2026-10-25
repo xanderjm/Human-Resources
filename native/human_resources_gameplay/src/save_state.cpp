@@ -7,7 +7,7 @@ namespace {
 constexpr std::uint32_t magic = 0x31535248U; // HRS1, explicit little-endian bytes.
 constexpr std::uint32_t schema = 1;
 // Increment when authority semantics/field meaning change independently of tuning.
-constexpr std::uint32_t authority_revision = 7;
+constexpr std::uint32_t authority_revision = 8;
 constexpr std::size_t maximum_bytes = 48 * 1024;
 constexpr std::uint32_t maximum_actors = 128, maximum_projectiles = 96;
 
@@ -73,6 +73,24 @@ template <class IO> void projectile_fields(IO& io, detail::Projectile& p) {
   io(p.view.radius); io(p.view.damage); io(p.source); io(p.age); io(p.removed);
   io(p.view.infantry_role); vector2(io, p.view.launch_position); io(p.view.launch_height); io(p.view.rise_per_second); io(p.view.kind); io(p.view.muzzle_index); vector2(io,p.view.launch_direction);
 }
+template <class IO> void boss_fields(IO& io, detail::BossState& boss) {
+  io(boss.actor_id); io(boss.next_kind); io(boss.phase);
+  io(boss.remaining_ticks); io(boss.total_ticks); io(boss.next_release);
+  io(boss.behind); io(boss.flank_right); io(boss.body_heading);
+  bool has_plan = boss.plan.has_value(); io(has_plan);
+  if constexpr (std::is_same_v<IO, Reader>) {
+    if (has_plan) boss.plan.emplace(); else boss.plan.reset();
+  }
+  if (!has_plan) return;
+  auto& plan = *boss.plan;
+  io(plan.kind); vector2(io, plan.locked_root); io(plan.warning_seconds); io(plan.salvo_seconds);
+  io(plan.initial_turret_yaw); io(plan.locked_body_heading);
+  for (auto& shell : plan.shells) {
+    vector2(io, shell.shot.origin); vector2(io, shell.shot.direction);
+    io(shell.shot.height); io(shell.shot.yaw_radians); io(shell.shot.valid);
+    vector2(io, shell.aim); vector2(io, shell.trajectory); io(shell.release_offset);
+  }
+}
 } // namespace
 namespace detail {
 struct SaveStateCodec final {
@@ -110,6 +128,16 @@ struct SaveStateCodec final {
     if constexpr (std::is_same_v<IO, Reader>) { if (!io.ok) return false; s.view.beams.resize(beams); }
     for (auto& beam : s.view.beams) {
       io(beam.target_id); vector2(io, beam.target); io(beam.progress); io(beam.vehicle);
+    }
+    // One conditional suffix, never a fixed plan attached to every actor.
+    const auto bosses = std::count_if(s.actors.begin(), s.actors.end(), [](const auto& actor) { return actor.view.kind == EntityKind::boss; });
+    if (bosses > 1) return false;
+    if constexpr (std::is_same_v<IO, Reader>) {
+      if (bosses == 1) s.boss.emplace(); else s.boss.reset();
+    }
+    if (bosses == 1) {
+      if (!s.boss) return false;
+      boss_fields(io, *s.boss);
     }
     if (s.view.phase == Phase::choosing_upgrade) {
       for (auto& choice : s.view.choices) {
@@ -184,7 +212,8 @@ struct SaveStateCodec final {
       if (role > InfantryRole::rocketeer ||
           (a.view.kind == EntityKind::soldier ? role == InfantryRole::none : role != InfantryRole::none) ||
           a.view.fire_recovery_seconds < 0 ||
-          a.view.fire_recovery_seconds > (vehicle(a.view.kind) ? tuning::capture_return_seconds : infantry_attack(role).recovery_seconds) + .0001F ||
+          a.view.fire_recovery_seconds > (a.view.kind == EntityKind::boss ? tuning::boss_recovery_seconds :
+              vehicle(a.view.kind) ? tuning::capture_return_seconds : infantry_attack(role).recovery_seconds) + .0001F ||
           (a.view.kind == EntityKind::jeep ? a.view.minigun_barrel >= 6 : a.view.minigun_barrel != 0))
         return false;
       ++counts[a.view.kind < EntityKind::soldier ? 0 : military_index(a.view.kind) + 1];
@@ -221,6 +250,7 @@ struct SaveStateCodec final {
       targets.push_back(beam.target_id); slots += beam.vehicle ? 2U : 1U;
     }
     if (slots > v.beam_capacity) return false;
+    if (!s.valid_boss()) return false;
     for (const auto& a : s.actors)
       if (a.lifted && std::find(targets.begin(), targets.end(), a.view.id) == targets.end()) return false;
     if (v.phase == Phase::choosing_upgrade) {

@@ -5,6 +5,7 @@
 #include <algorithm>
 #include <array>
 #include <cmath>
+#include <human_resources/gameplay/tuning.h>
 
 namespace {
 namespace hr = human_resources;
@@ -26,6 +27,28 @@ struct Fixture final {
     return v;
   }
 };
+void pause_previews_current_receipt_without_mutation() {
+  Fixture f;
+  auto view = f.view(Screen::pause);
+  const auto writes = f.backend.writes;
+  const auto minimum_ms = hr::gameplay::tuning::credit_minimum_seconds * 1000;
+  f.receipt.active_milliseconds = minimum_ms - 1;
+  auto bank = pause_bank_preview(view);
+  require(bank.credits == 0 && bank.heading == "BANK NOW +0 CR" && bank.detail.starts_with("Resume to reach "), "pause explains minimum before ending a short flight");
+  f.receipt.active_milliseconds = minimum_ms;
+  f.receipt.boss_kills = 1;
+  bank = pause_bank_preview(view);
+  require(bank.credits == hr::progression::base_credits(f.receipt) && bank.credits > 0 && bank.detail.find("Resume to reach") == std::string::npos, "exact minimum uses canonical current vehicle and boss rewards");
+  require(bank.heading == "BANK NOW +" + std::to_string(bank.credits) + " CR", "pause names the exact bankable receipt amount");
+  view.restored_run = true;
+  require(pause_bank_preview(view).heading == bank.heading, "restored flight uses the same exact receipt projection");
+  view.guest = true;
+  bank = pause_bank_preview(view);
+  require(bank.credits == 0 && bank.detail.find("Saving unavailable") != std::string::npos, "guest cannot promise saved rewards");
+  view.guest = false; view.current_receipt = nullptr;
+  require(pause_bank_preview(view).heading == "BANK PREVIEW UNAVAILABLE", "missing receipt cannot reuse old results or claim a zero reward");
+  require(f.backend.writes == writes && f.store.account().credits == 0, "all pause previews leave bank and storage untouched");
+}
 void actual_preview_settlement_and_no_mutation() {
   Fixture f;
   auto view = f.view(Screen::death);
@@ -119,4 +142,4 @@ void stable_actions_safe_pages_and_motion() {
   }
 }
 } // namespace
-int main() { actual_preview_settlement_and_no_mutation(); unlocks_caps_and_recovery_are_real(); stable_actions_safe_pages_and_motion(); }
+int main() { pause_previews_current_receipt_without_mutation(); actual_preview_settlement_and_no_mutation(); unlocks_caps_and_recovery_are_real(); stable_actions_safe_pages_and_motion(); }

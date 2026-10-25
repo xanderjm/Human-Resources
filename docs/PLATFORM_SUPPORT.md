@@ -27,6 +27,17 @@ Rows not selected in `project.json` are informative extension capabilities, not 
 
 ## Current product qualification,25October2026
 
+Latest host authority8 boss/Pause source passes optimized dev/46suites and actual
+native portrait motion/UI review. Independent phase continuations and four-process
+SDL storage banking pass; a120-simulated-minute CPU audit remains host-only.
+The owner-requested separate938ea35playtest is open; twelve user previews and
+30discovered bundles are protected. None of these later results updates mobile
+or supplemental Windows package qualification, which remainsb99c373 below.
+Current mobile refresh preparation preserves the old packages; no completed new
+platform build, physical runtime, human-fun or store claim follows.
+
+### Qualified b99c373 clean/platform epoch
+
 Sourceb99c373 adds cumulative Hangar values, actual-device onboarding and
 conservative shadow work. Its exact738-file clean archive freshly cooks/builds,
 passes45native suites and source-bound112-file package checks. Current iOS device/
@@ -37,8 +48,8 @@ Windows GUI/DXIL client with package/internal-notice audits. These reports are
 under `clean-hangar-shadow/`, `hangar-shadow-mobile/` and
 `hangar-shadow-windows/` in `build/evidence/`. Independent host/mobile review and
 root Windows package/object/archive recheck accept their compile/package scope.
-The owner's latest separate macOS playtest runsb99c373; eleven user previews and
-their saves are protected. No physical-mobile/Windows/Linux execution, human feel
+At this epoch the owner's separate macOS playtest ranb99c373; eleven user previews
+and their saves were protected. No physical-mobile/Windows/Linux execution, human feel
 or store qualification is inferred. Actual isolated Android runtime remains853169.
 
 Later direct-flight/held-surface/sweep-charge source has separate host45suite and

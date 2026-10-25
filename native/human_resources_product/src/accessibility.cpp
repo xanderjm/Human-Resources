@@ -93,7 +93,10 @@ void describe_control(ui::AccessibilityNode& node, const View& view, const Butto
     break;
   case Command::finish:
     node.label = "End run and bank credits";
-    node.value = "End this flight and save its earned Research Credits exactly once.";
+    if (view.screen == Screen::pause) {
+      const auto bank = pause_bank_preview(view);
+      node.value = bank.heading + ". " + bank.detail;
+    } else node.value = "End this flight and save its earned Research Credits exactly once.";
     break;
   case Command::pause:
     node.label = "Pause run";

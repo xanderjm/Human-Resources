@@ -9,6 +9,19 @@ using test_support::require;
 using test_support::require_near;
 namespace {
 constexpr float dt = 1.F / 60.F;
+void startup_scroll_is_not_pilot_motion() {
+  gp::Game run; run.start({.seed=418});
+  auto& state=*run.state_;
+  require_near(run.snapshot().velocity.z,run.snapshot().forward_speed,0,"start initializes coherent automatic-scroll velocity");
+  auto& animal=state.actors.front();animal.view.position=state.view.player;
+  const auto id=animal.view.id;
+  for(unsigned frame=0;frame<6;++frame) {
+    run.advance(dt);
+    require(state.actor(id) && state.actor(id)->sweep_progress==0,"zero-input startup ticks cannot earn false sweep participation");
+  }
+  for(unsigned frame=0;frame<12;++frame)run.advance(dt,{{1,0},false});
+  require(state.actor(id) && state.actor(id)->sweep_progress>0,"real commanded startup movement can earn accepted participation");
+}
 gp::Game::State harvest() {
   gp::Game::State s;
   s.view.phase = gp::Phase::active;
@@ -369,6 +382,7 @@ void unknown_and_zero_damage_cause() {
 }
 }
 int main() {
+  startup_scroll_is_not_pilot_motion();
   actual_contact_damage_cause();
   actual_projectile_damage_cause();
   unknown_and_zero_damage_cause();

@@ -51,12 +51,23 @@ struct Projectile final {
   float age{};
   bool removed{};
 };
+struct BossState final {
+  std::uint32_t actor_id{};
+  BossAttackKind next_kind{BossAttackKind::rake};
+  BossPhase phase{BossPhase::approach};
+  std::uint16_t remaining_ticks{}, total_ticks{};
+  std::uint8_t next_release{};
+  bool behind{}, flank_right{};
+  float body_heading{};
+  std::optional<BossAttackPlan> plan;
+};
 } // namespace detail
 struct Game::State final {
   Snapshot view;
   RunSetup setup;
   std::vector<detail::Actor> actors;
   std::vector<detail::Projectile> bullets;
+  std::optional<detail::BossState> boss;
   std::uint64_t random_state{1}, draft_random_state{2}, combat_random_state{3};
   std::uint32_t next_id{1}, streak{}, revive_count{}, picks{};
   std::uint64_t next_presentation_sequence{1};
@@ -95,10 +106,15 @@ struct Game::State final {
   void spawn(EntityKind kind, bool initial = false, std::optional<Vec2> pocket_position = std::nullopt);
   [[nodiscard]] bool place_biological(detail::Actor& target, float lateral_sample, float forward_sample, bool initial);
   void move_biological(float dt);
-  [[nodiscard]] Vec2 military_velocity(const detail::Actor& actor, Vec2 preferred, float dt) const;
+  [[nodiscard]] Vec2 military_velocity(const detail::Actor& actor, Vec2 preferred, float dt, Vec2 carry = {}) const;
   void place_military(detail::Actor& actor);
   void enemies(float dt);
   void shoot(detail::Actor& enemy);
+  void boss_update(detail::Actor& actor, float dt);
+  [[nodiscard]] bool boss_preparing() const;
+  [[nodiscard]] bool boss_leading() const;
+  [[nodiscard]] bool valid_boss() const;
+  void boss_release(detail::Actor& actor);
   void capture(float dt);
   void captured(detail::Actor& target);
   void combat(float dt);

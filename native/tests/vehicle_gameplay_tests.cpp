@@ -269,7 +269,14 @@ void cannon_geometry_and_typed_futures() {
       ++rays;
     }
     gp::Game run;run.start({.seed=781});auto& s=*run.state_;
-    auto a=jeep();a.view.kind=kind;s.actors={a};s.next_id=2;s.shoot(s.actors.front());s.sync();
+    auto a=jeep();a.view.kind=kind;s.actors={a};s.next_id=2;
+    if(kind==gp::EntityKind::boss) {
+      s.boss.emplace();s.boss->actor_id=a.view.id;
+      s.boss->plan=gp::boss_attack_plan(a.view,a.aim,{},gp::BossAttackKind::fan);
+      require(s.boss->plan.has_value(),"source fixture has a legal committed boss fan");
+      for(unsigned i=0;i<3;++i)s.boss_release(s.actors.front());
+    } else s.shoot(s.actors.front());
+    s.sync();
     const unsigned count=kind==gp::EntityKind::boss?3:1;
     const auto profile=kind==gp::EntityKind::boss?gp::EnemyProjectileKind::boss_missile:gp::EnemyProjectileKind::vehicle_missile;
     require(s.bullets.size()==count,"tank and boss retain existing one/three projectile budgets");

@@ -177,5 +177,67 @@ void cannon_origin_and_guided_departure() {
       }
     }
 }
+void boss_ordered_cannon_uses_exact_source_pose() {
+  using namespace hr::gameplay;
+  auto raw=cannon_geometry().muzzle;raw[2]+=cannon_geometry().launch_forward_offset;
+  for(const auto kind:{BossAttackKind::fan,BossAttackKind::rake}) for(float heading:{-2.9F,0.F,2.9F})
+    for(bool reduced:{false,true}) {
+      Snapshot run;run.stats.active_seconds=10;run.player={-2,0};
+      run.entities.push_back({.id=7,.kind=EntityKind::boss,.position={1,12},.body_heading=heading});
+      const auto plan=boss_attack_plan(run.entities[0],run.player,{1,2.2F},kind);
+      require(plan.has_value(),"boss fixed plan has real physical source poses");
+      for(unsigned release=0;release<3;++release) {
+        const auto& shell=plan->shells[release];
+        const bool recovery=kind==BossAttackKind::fan || release==2;
+        run.boss_combat=BossCombatView{.actor_id=7,.phase=recovery?BossPhase::recovery:BossPhase::salvo,
+            .phase_remaining=recovery?.9F:plan->salvo_seconds-shell.release_offset,
+            .phase_duration=recovery?.9F:plan->salvo_seconds,
+            .next_release=static_cast<std::uint8_t>(kind==BossAttackKind::fan?3U:release+1),.plan=plan};
+        run.presentation_events[0]={.sequence=release+1,.active_seconds=10,.kind=PresentationEventKind::enemy_shot,.actor_id=7};
+        const auto frame=hr::product::scene(run,390.F/844.F,reduced);
+        const auto turret=hr::presentation::model_matrix(mesh(frame,"tank-turret"));
+        const auto muzzle=point(turret,{raw[0],raw[1],raw[2]});
+        require_near(muzzle.x,shell.shot.origin.x,8e-6F,"ordered release actual source aperture X equals stored physical origin");
+        require_near(muzzle.y,shell.shot.height,8e-6F,"ordered release actual source aperture height equals stored physical origin");
+        require_near(muzzle.z,2.3F-shell.shot.origin.z,8e-6F,"ordered release actual source aperture station equals stored physical origin");
+        const float scale=1.6F;
+        require_near(turret[2]/scale,shell.shot.direction.x,1e-5F,"actual turret axis X retains physical source, including fan centre");
+        require_near(-turret[10]/scale,shell.shot.direction.z,1e-5F,"actual turret axis station retains physical source");
+        if(kind==BossAttackKind::rake) {
+          require_near(shell.trajectory.x,turret[2]/scale,1e-5F,"each rake shell leaves its own actual aligned barrel X");
+          require_near(shell.trajectory.z,-turret[10]/scale,1e-5F,"each rake shell leaves its own actual aligned barrel station");
+        }
+      }
+      // Recovery moves the real chassis. The brief flash stays on its current
+      // physical muzzle, rather than the historical world-space launch origin.
+      run.entities[0].position.x+=.15F;run.entities[0].position.z+=.07F;
+      run.entities[0].body_heading=heading+.06F;
+      run.boss_combat->phase=BossPhase::recovery;run.boss_combat->phase_duration=.9F;run.boss_combat->phase_remaining=.87F;
+      run.stats.active_seconds=10.03;
+      const auto moving=hr::product::scene(run,390.F/844.F,reduced);
+      const auto muzzle=point(hr::presentation::model_matrix(mesh(moving,"tank-turret")),{raw[0],raw[1],raw[2]});
+      const auto flash=std::find_if(moving.instances.begin(),moving.instances.end(),[](const auto& part){return part.effect&&part.mesh=="cube"&&part.tint[1]==.66F;});
+      require(flash!=moving.instances.end(),"actual final release flash survives mobile weapon recovery");
+      require_near(flash->position.x,muzzle.x,6e-6F,"moving recovery flash follows current assembled source X");
+      require_near(flash->position.z,muzzle.z,6e-6F,"moving recovery flash follows current assembled source station");
+      require(std::hypot(flash->position.x-plan->shells.back().shot.origin.x,flash->position.z-(2.3F-plan->shells.back().shot.origin.z))>.05F,
+          "moving recovery does not pin a flash to the old source world point");
+    }
+  Snapshot run;run.stats.active_seconds=10;run.player={-2,0};
+  run.entities.push_back({.id=7,.kind=EntityKind::boss,.position={1,12},.body_heading=2.9F});
+  const auto plan=boss_attack_plan(run.entities[0],run.player,{},BossAttackKind::rake);
+  require(plan.has_value(),"motion fixture uses real rake source plan");
+  run.boss_combat=BossCombatView{.actor_id=7,.phase=BossPhase::salvo,.phase_remaining=plan->salvo_seconds,
+      .phase_duration=plan->salvo_seconds,.next_release=1,.plan=plan};
+  float previous=mesh(hr::product::scene(run,390.F/844.F,false),"tank-turret").rotation.y;
+  for(unsigned step=1;step<30;++step) {
+    run.boss_combat->phase_remaining=plan->salvo_seconds-static_cast<float>(step)*.01F;
+    const float current=mesh(hr::product::scene(run,390.F/844.F,false),"tank-turret").rotation.y;
+    require(std::abs(std::remainder(current-previous,2*std::numbers::pi_v<float>))<.12F,
+        "inter-shot turret follows the short smooth turn without a long-way snap");
+    previous=current;
+  }
 }
-int main() {rigid_assemblies();true_muzzle_and_static_source_death();vehicle_capture_enter_return();cannon_origin_and_guided_departure();std::cout<<"Vehicle assembly contracts passed.\n";}
+
+}
+int main() {rigid_assemblies();true_muzzle_and_static_source_death();vehicle_capture_enter_return();cannon_origin_and_guided_departure();boss_ordered_cannon_uses_exact_source_pose();std::cout<<"Vehicle assembly contracts passed.\n";}
