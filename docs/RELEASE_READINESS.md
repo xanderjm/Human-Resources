@@ -31,9 +31,13 @@ windows. The accepted17-file shared portrait-stage slice now fixes that defect
 with44host suites and native full-flight comparisons. Ordinary phone world/UI
 and restored menu backgrounds are byte-identical to accepted5fa75ab. Evidence is
 under `build/evidence/gameplay-framing/`; rationale is
-`docs/adr/004-shared-flight-framing.md`. A dedicated UI owner continues the
-pre-existing enlarged-phone HUD overlap, so no complete supported-layout or
-release-ready claim is made.
+`docs/adr/004-shared-flight-framing.md`. The enlarged RUN HUD follow-up now passes44host suites,192UI states, consumed
+glyph-alpha/fullrig tests and independent native review. Four changed files
+remove the pre-existing row overlap; ordinary1x phone UI and all tested phone
+world frames remain exact. See `build/evidence/enlarged-phone-hud/`. Separate
+compact-rail arithmetic at320point/3.2x leaves a14x24point stage; a coherent
+fallback remains local work, with current-device reachability unverified. No
+complete supported-layout or release-ready claim is made.
 
 Fresh physical-device audit: the paired iPhone has developer mode enabled, but
 its tunnel/DDI services are unavailable and lock state is unknown; no Android

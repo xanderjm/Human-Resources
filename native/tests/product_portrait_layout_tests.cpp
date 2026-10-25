@@ -12,6 +12,9 @@
 #include <array>
 #include <cmath>
 #include <iostream>
+#include <filesystem>
+#include <fstream>
+#include <human_resources/assets/preview_mesh.h>
 
 namespace {
 namespace hr = human_resources;
@@ -19,6 +22,23 @@ using namespace hr::product;
 using test_support::require;
 bool glyph(const hr::presentation::ScreenQuad& q) {
   return std::abs(q.uv[2] - 64.F / 1024.F) < .00001F && std::abs(q.uv[3] - 80.F / 2048.F) < .00001F;
+}
+hr::assets::PreviewMesh atlas;
+hr::ui::Rect actual_glyph_ink(const hr::presentation::ScreenQuad& q, const hr::ui::Rect& viewport) {
+  const unsigned x = static_cast<unsigned>(std::lround(q.uv[0] * static_cast<float>(atlas.width)));
+  const unsigned y = static_cast<unsigned>(std::lround(q.uv[1] * static_cast<float>(atlas.height)));
+  unsigned left = 64, top = 80, right = 0, bottom = 0;
+  for (unsigned cy = 0; cy < 80; ++cy) for (unsigned cx = 0; cx < 64; ++cx)
+    if (std::to_integer<unsigned>(atlas.rgba[(static_cast<std::size_t>(y + cy) * atlas.width + x + cx) * 4 + 3])) {
+      left = std::min(left, cx); top = std::min(top, cy); right = std::max(right, cx + 1); bottom = std::max(bottom, cy + 1);
+    }
+  if (right == 0) return {};
+  left = left ? left - 1 : 0; top = top ? top - 1 : 0;
+  right = std::min(64U, right + 1); bottom = std::min(80U, bottom + 1);
+  return {viewport.x + q.rect[0] * viewport.width + q.rect[2] * viewport.width * static_cast<float>(left) / 64,
+      viewport.y + q.rect[1] * viewport.height + q.rect[3] * viewport.height * static_cast<float>(top) / 80,
+      q.rect[2] * viewport.width * static_cast<float>(right - left) / 64,
+      q.rect[3] * viewport.height * static_cast<float>(bottom - top) / 80};
 }
 void compact_phone_cards_preserve_effects_and_scene_stage() {
   progression_tests::MemoryBackend backend;
@@ -114,7 +134,12 @@ void readable_page_is_real_safe_and_scaled(const View& view, const Interface& pa
     require(size >= 14.F * view.text_scale - .01F, "readable body AND action glyphs honor requested text scale");
     const float x = q.rect[0] * view.viewport.width + size * 4.F / 48.F;
     const float y = q.rect[1] * view.viewport.height + size * 8.F / 48.F;
-    require(x >= safe.x && x < safe.right() && y >= safe.y && y + size <= safe.bottom(), "measured glyph origins and line height stay in safe area");
+    if (view.screen == Screen::run) {
+      const auto ink = actual_glyph_ink(q, view.viewport);
+      require(ink.width == 0 || (ink.x >= safe.x - .01F && ink.y >= safe.y - .01F && ink.right() <= safe.right() + .01F && ink.bottom() <= safe.bottom() + .01F), "actual consumed-atlas RUN ink stays inside safe area, including enlarged transparent bearings");
+    } else {
+      require(x >= safe.x && x < safe.right() && y >= safe.y && y + size <= safe.bottom(), "measured glyph origins and line height stay in safe area");
+    }
     const unsigned col = static_cast<unsigned>(std::lround(q.uv[0] * 1024.F / 64.F));
     const unsigned row = static_cast<unsigned>(std::lround(q.uv[1] * 2048.F / 80.F));
     rendered += static_cast<char>(32 + row * 16 + col);
@@ -518,7 +543,7 @@ void harvest_feedback_explains_sweeps_boost_and_dash_without_expanding_top_hud()
         run.harvest_overdrive_seconds = boosted ? 4.2F : 0;
         const auto ui = interface(view);
         const auto copy = compact(atlas_copy(ui));
-        require(copy.find(boosted ? (scale == 1 ? "OVERDRIVE5s" : "BOOST5s") : "SWEEP2/3") != std::string::npos, "actual timed sweep/Overdrive state is visible without inferring reward from animation");
+        require(copy.find(boosted ? (scale == 1 ? "OVERDRIVE5s" : scale >= 3.2F ? "BOOST" : "BOOST5s") : scale >= 3.2F ? "2/3" : "SWEEP2/3") != std::string::npos, "actual timed sweep/Overdrive state is visible without inferring reward from animation");
         const auto pause = std::find_if(ui.buttons.begin(), ui.buttons.end(), [](const auto& b){return b.command == Command::pause;})->bounds;
         require(pause.y == original_pause.y && pause.bottom() == original_pause.bottom(), "harvest payoff leaves tactical top ingress and Pause bounds unchanged");
         if (boosted && scale == 1) {
@@ -652,7 +677,7 @@ void promotion_preserves_choice_safety_and_collected_return_controls() {
     const auto receipt=interface(view);
     require(receipt.page_text.find(chosen.title)!=std::string::npos,"confirmation names the actual installed choice");
     require(!receipt.text_overflow,"confirmation preserves complete actual title at requested text size");
-    require(compact(atlas_copy(receipt)).find("Installed")!=std::string::npos,"compact receipt visibly acknowledges the saved choice at every text size");
+    require(compact(atlas_copy(receipt)).find("Installed")!=std::string::npos || (scale>1 && compact(atlas_copy(receipt)).find("ADDED")!=std::string::npos),"compact receipt visibly acknowledges the saved choice at every text size");
     const auto semantics=accessibility_snapshot(view,receipt);
     require(semantics[1].value.find("Installed: "+chosen.title)!=std::string::npos,"compact receipt retains exact installed title in native spoken context");
     const auto pause=std::find_if(receipt.buttons.begin(),receipt.buttons.end(),[](const auto& b){return b.command==Command::pause;})->bounds;
@@ -697,8 +722,9 @@ void actual_damage_feedback_stays_inside_the_tactical_hud() {
     view.damage_feedback={.1F,hull,cause};
     const auto hit=interface(view);
     const auto copy=compact(atlas_copy(hit));
-    const bool short_stage=gameplay_framing(viewport,view.safe_area,scale).compact;
-    const std::string expected=short_stage?std::string(hull?"HP":"SH")+(cause==hr::gameplay::DamageCause::contact?"BUMP":cause==hr::gameplay::DamageCause::projectile?"SHOT":"HIT"):std::string(damage_label(view.damage_feedback));
+    const auto framing=gameplay_framing(viewport,view.safe_area,scale);
+    const bool short_stage=framing.compact || scale>1;
+    const std::string expected=short_stage?std::string(hull?"HP":"SH")+(framing.compact?"":":")+(cause==hr::gameplay::DamageCause::contact?"BUMP":cause==hr::gameplay::DamageCause::projectile?"SHOT":"HIT"):std::string(damage_label(view.damage_feedback));
     require(copy.find(compact(expected))!=std::string::npos,"committed hit identifies agreed full or compact actual cause and affected defence at every text size");
     const auto after=std::find_if(hit.buttons.begin(),hit.buttons.end(),[](const auto& b){return b.command==Command::pause;})->bounds;
     require(after.x==pause.x && after.y==pause.y && after.height==pause.height,"hit feedback preserves Pause and tactical field height");
@@ -710,43 +736,95 @@ void actual_damage_feedback_stays_inside_the_tactical_hud() {
   }
 }
 
-void wrapped_damage_hud_keeps_ingress_vitality_clear() {
+void bounded_damage_hud_keeps_ingress_vitality_clear() {
   progression_tests::MemoryBackend backend;
   hr::progression::AccountStore store{backend};
-  require(store.load().playable(), "wrapped-hit ingress account loads");
-  hr::gameplay::Game game;
-  game.start();
-  auto run = game.snapshot();
-  run.stats.active_seconds = 30;
-  unsigned visible_meters = 0, wrapped = 0;
-  for (const auto viewport : {hr::ui::Rect{0,0,320,568}, hr::ui::Rect{0,0,390,844}})
-    for (float scale : {1.3F, 2.F, 3.2F})
-      for (float z : {5.F, 9.5F, 13.F, 16.5F}) {
-        // Explicit synthetic layout fixture: actual path attribution is covered
-        // by the gameplay contact/projectile tests, not inferred from this pose.
-        run.entities = {{.id=7, .kind=hr::gameplay::EntityKind::boss, .position={0,z}, .hull=100, .maximum_hull=160},
-            {.id=8, .kind=hr::gameplay::EntityKind::tank, .position={4,z}, .hull=100, .maximum_hull=300}};
-        run.presentation_events[0] = {1,30,hr::gameplay::PresentationEventKind::impact,8,{4,z}};
-        View view{Screen::run,&run,&store,viewport,{0,20,0,0}};
-        view.text_scale = scale;
-        view.damage_feedback = {0,false,hr::gameplay::DamageCause::contact};
-        const auto result = interface(view);
-        if (result.damage_hud_bottom > 0) {
-          ++wrapped;
-          const auto& panel = result.quads.front();
-          test_support::require_near(result.damage_hud_bottom, (panel.rect[1] + panel.rect[3]) * viewport.height, .01F, "wrapped clearance matches the actual drawn hit panel");
-        }
-        for (std::size_t i = 1; i < result.quads.size(); ++i) {
-          const auto& q = result.quads[i];
-          if (result.damage_hud_bottom == 0 || q.uv[2] >= 0 || q.color != std::array<float,4>{.035F,.105F,.17F,.96F}) continue;
-          const float y = q.rect[1] * viewport.height;
-          require(y >= result.damage_hud_bottom + 11.99F, "rendered boss/vehicle meter never overlaps wrapped damage HUD");
-          ++visible_meters;
-        }
-        view.damage_feedback = {};
-        require(interface(view).damage_hud_bottom == 0, "no-hit UI retains original clearance behavior");
+  require(store.load().playable(), "bounded-hit ingress account loads");
+  hr::gameplay::Game game; game.start();
+  auto run = game.snapshot(); run.stats.active_seconds = 30;
+  unsigned visible_meters = 0;
+  for (const auto viewport : {hr::ui::Rect{0,0,320,568}, hr::ui::Rect{0,0,390,844}, hr::ui::Rect{0,0,768,1024}})
+    for (float scale : {1.3F, 2.F, 3.2F}) for (float z : {5.F, 9.5F, 13.F, 16.5F}) {
+      View view{Screen::run,&run,&store,viewport,{0,20,0,0}};
+      view.text_scale = scale;
+      view.damage_feedback = {0,false,hr::gameplay::DamageCause::contact};
+      run.entities.clear();
+      const auto base = interface(view);
+      run.entities = {{.id=7, .kind=hr::gameplay::EntityKind::boss, .position={0,z}, .hull=100, .maximum_hull=160},
+          {.id=8, .kind=hr::gameplay::EntityKind::tank, .position={4,z}, .hull=100, .maximum_hull=300}};
+      run.presentation_events[0] = {1,30,hr::gameplay::PresentationEventKind::impact,8,{4,z}};
+      const auto result = interface(view);
+      require(result.damage_hud_bottom == 0, "actual hit cause never expands the bounded tactical row");
+      const auto pause=std::find_if(result.buttons.begin(),result.buttons.end(),[](const auto& b){return b.command==Command::pause;})->bounds;
+      const auto dash=std::find_if(result.buttons.begin(),result.buttons.end(),[](const auto& b){return b.command==Command::dash;})->bounds;
+      for (std::size_t i=base.quads.size(); i<result.quads.size(); ++i) {
+        const auto& q=result.quads[i];
+        if (q.uv[2]>=0 || q.color!=std::array<float,4>{.035F,.105F,.17F,.96F}) continue;
+        const float y=q.rect[1]*viewport.height, bottom=y+q.rect[3]*viewport.height;
+        require(y>=pause.bottom()+11.99F && bottom<=dash.y-11.99F, "actual appended vitality panels clear both fixed controls during damage");
+        ++visible_meters;
       }
-  require(wrapped > 0 && visible_meters > 0, "real wrapping is covered and clearance does not globally suppress combat progress");
+    }
+  require(visible_meters>0,"bounded damage row retains actual combat progress meters when they fit");
+}
+
+void enlarged_run_preserves_two_bands_and_complete_semantics() {
+  progression_tests::MemoryBackend backend;
+  hr::progression::AccountStore store{backend};
+  require(store.load().playable(),"enlarged tactical account loads");
+  hr::gameplay::Game game; game.start();
+  const auto original=game.snapshot();
+  hr::gameplay::UpgradeChoice installed; installed.title="Shield Generator";
+  unsigned percentage_cases=0;
+  for (const auto viewport : {hr::ui::Rect{0,0,320,568},hr::ui::Rect{0,0,390,844},hr::ui::Rect{0,0,768,1024},hr::ui::Rect{0,0,1366,1024}})
+    for (float scale : {1.3F,2.F,3.2F}) for (unsigned state=0; state<16; ++state) {
+      auto run=original; run.stats.active_seconds=30; run.stats.level=24;
+      run.hull=112; run.maximum_hull=130; run.shield=80; run.maximum_shield=100;
+      run.xp=50; run.next_level_xp=100;
+      const hr::ui::Insets insets{0,viewport.width==390?59.F:20.F,0,viewport.width==390?34.F:0.F};
+      const auto framing=gameplay_framing(viewport,insets,scale,{static_cast<unsigned>(viewport.width*2),static_cast<unsigned>(viewport.height*2)});
+      const auto safe=framing.constrained?framing.run_layout:framing.safe;
+      View view{Screen::run,&run,&store,viewport,insets}; view.text_scale=scale; view.framing=&framing;
+      if(state==1){run.hull=run.maximum_hull=130;run.shield=run.maximum_shield=40;}
+      if(state==2){run.hull=run.maximum_hull=100000000;run.shield=run.maximum_shield=100000000;}
+      if(state>=3 && state<9)view.damage_feedback={.1F,state%2==0,static_cast<hr::gameplay::DamageCause>((state-3)/2)};
+      if(state==9){run.harvest_chain=2;run.harvest_chain_seconds=3.2F;}
+      if(state==10 || state==11)run.harvest_overdrive_seconds=5.5F;
+      if(state==11){view.promotion={.1F,&installed,false};view.damage_feedback={.1F,true,hr::gameplay::DamageCause::projectile};}
+      if(state==12)run.stats.active_seconds=2;
+      if(state==13)run.stats.active_seconds=8;
+      if(state==14)run.dash_cooldown_seconds=4;
+      if(state==15)run.stats.level=1000000;
+      const auto ui=interface(view);
+      require(!ui.text_overflow,"every bounded tactical state fits at actual requested font size");
+      const auto pause=std::find_if(ui.buttons.begin(),ui.buttons.end(),[](const auto& b){return b.command==Command::pause;})->bounds;
+      const auto dash=std::find_if(ui.buttons.begin(),ui.buttons.end(),[](const auto& b){return b.command==Command::dash;})->bounds;
+      test_support::require_near(pause.y,safe.y,.01F,"Pause starts at actual safe stage top");
+      test_support::require_near(pause.height,44,.01F,"Pause never grows into flight field");
+      test_support::require_near(dash.bottom(),safe.bottom()-12,.01F,"Dash retains safe bottom margin");
+      require(dash.width>=44 && dash.height==44,"actual Dash target remains complete forty-four points");
+      for(const auto& q:ui.quads) {
+        hr::ui::Rect bounds{viewport.x+q.rect[0]*viewport.width,viewport.y+q.rect[1]*viewport.height,q.rect[2]*viewport.width,q.rect[3]*viewport.height};
+        if(glyph(q)) {
+          require(q.rect[2]*viewport.width*48.F/64.F>=14*scale-.01F,"bounded rows never shrink requested readable type");
+          bounds=actual_glyph_ink(q,viewport);
+          if(bounds.width==0)continue;
+        }
+        require(bounds.x>=safe.x-.01F && bounds.right()<=safe.right()+.01F,"entire actual ink/control stays within safe stage sides");
+        require((bounds.y>=safe.y-.01F && bounds.bottom()<=safe.y+44.01F) || (bounds.y>=dash.y-.01F && bounds.bottom()<=dash.bottom()+.01F),"all actual glyph alpha, panels and controls remain in the two bounded strips");
+      }
+      const auto copy=compact(atlas_copy(ui));
+      if(state==2){
+        const bool percentage=copy.find("HP100%")!=std::string::npos;
+        percentage_cases+=percentage?1U:0U;
+        require((percentage || copy.find("HP100000000")!=std::string::npos) && copy.find("SH")!=std::string::npos,"uncapped health retains full numeric value or honest labelled percentage with shield fraction");
+      }
+      if(state==11)require(copy.find("ADDED")!=std::string::npos && copy.find("HP:SHOT")!=std::string::npos && copy.find("BOOST")==std::string::npos,"saved installation and actual hit retain priority without an extra strip");
+      const auto spoken=accessibility_snapshot(view,ui);
+      require(spoken[1].value.find("Hull "+std::to_string(static_cast<unsigned>(run.hull)))!=std::string::npos && spoken[1].value.find("Shield "+std::to_string(static_cast<unsigned>(run.shield)))!=std::string::npos,"full absolute defences survive qualitative visual fallback");
+      if(state==11)require(spoken[1].value.find("Installed: Shield Generator")!=std::string::npos && spoken[1].value.find(damage_announcement(view.damage_feedback))!=std::string::npos,"full installed title and exact damage cause/layer remain spoken");
+    }
+  require(percentage_cases>0,"extreme size/value matrix genuinely exercises bounded percentage fallback");
 }
 
 void late_value_hud_keeps_level_at_small_portrait() {
@@ -773,8 +851,17 @@ void late_value_hud_keeps_level_at_small_portrait() {
   }
 }
 } // namespace
-int main() {
-  wrapped_damage_hud_keeps_ingress_vitality_clear();
+int main(int argc, char** argv) {
+  require(argc == 2, "actual cooked atlas directory is supplied");
+  std::ifstream file(std::filesystem::path(argv[1]) / "ui-atlas.hrm", std::ios::binary | std::ios::ate);
+  require(file.good(), "actual cooked UI atlas opens");
+  const auto count = file.tellg();
+  require(count > 0 && count < 16 * 1024 * 1024, "atlas fixture is bounded");
+  std::vector<std::byte> bytes(static_cast<std::size_t>(count));
+  file.seekg(0); file.read(reinterpret_cast<char*>(bytes.data()), count);
+  require(hr::assets::decode_preview_mesh(bytes, atlas), "actual production atlas decodes");
+  bounded_damage_hud_keeps_ingress_vitality_clear();
+  enlarged_run_preserves_two_bands_and_complete_semantics();
   late_value_hud_keeps_level_at_small_portrait();
   compact_choice_titles_stay_on_the_dark_frame();
   promotion_preserves_choice_safety_and_collected_return_controls();

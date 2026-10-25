@@ -17,9 +17,12 @@ The qualified Game7 mobile source is `053d08aa` (Flight Report). Later actual-hi
 cause feedback and the supported-aspect framing fix cannot inherit that exact
 package qualification; their desktop/source evidence remains separate until a
 coherent mobile refresh. The framing slice now passes44host suites and
-source-bound native comparisons under `build/evidence/gameplay-framing/`. A
-measured enlarged-phone HUD overlap is the next local correction; mobile
-rebuilds wait for that fix rather than inheriting qualification from old packages.
+source-bound native comparisons under `build/evidence/gameplay-framing/`. The enlarged
+RUN HUD correction also passes44host suites and independent source-bound native
+review under `build/evidence/enlarged-phone-hud/`. A compact short-window rail
+budget defect at3.2x remains local work; current-device reachability is unverified.
+Mobile rebuilds await the coherent presentation source rather than inheriting
+qualification from old packages.
 
 This 25 October 2026 checkpoint refreshes the qualified authority-3 vehicle/Privacy build with native-resolution UI composition. Game authority remains **3**, outer account schema remains **2**, and the rules fingerprint is unchanged: `13238298123916137634`. It is a source-bound platform checkpoint, not a release-ready declaration.
 

@@ -656,54 +656,107 @@ Interface build_overview(const View& v) {
   c.button(26, 832 - back_height, 338, "BACK TO PAUSE", Command::current_build, true, mint, back_height);
   return std::move(c.output);
 }
-Interface readable_run(const View& v) {
+// Enlarged run text shares two bounded tactical strips. The approved UI atlas
+// has transparent vertical bearings: centre the visible caps/digits/slash ink
+// (16..59 relative to the nominal anchor at 48pt, including linear-filter
+// support), rather than the nominal
+// em. Cooked-alpha regressions verify
+// this envelope for every rendered character; ordinary typography is unchanged.
+Interface enlarged_run(const View& v) {
   Canvas c(v);
-  const float size = std::max(17.F * c.scale, 14.F) * v.text_scale;
   const auto safe = c.safe;
   c.scale = c.type_scale = 1;
   c.ox = safe.x;
   c.oy = safe.y;
-  const float height = std::max(44.F, size + 12);
-  // Tactical field stays clear: only hull and Pause occupy a single top row.
-  // Secondary stats remain available on Pause and in Current Build.
-  // Long hit provenance wraps at the actual text size without reducing type.
-  const auto hit_lines = v.damage_feedback.age >= 0 ? readable_lines(c, damage_label(v.damage_feedback), safe.width - height - 32, size) : std::vector<std::string>{};
-  const float heading_height = hit_lines.size() > 1 ? static_cast<float>(hit_lines.size()) * size * 1.2F + 12 : height;
-  c.fill(0, 0, safe.width, heading_height + 16, navy);
-  if (hit_lines.size() > 1) c.output.damage_hud_bottom = safe.y + heading_height + 16;
-  std::string health = "HP " + number(static_cast<unsigned>(std::max(0.F, v.run->hull)));
+  const float size = 14.F * v.text_scale, row = 44.F;
+  const float ink_height = size * 43.F / 48.F;
+  const auto line = [&](float x, float y, float width, std::string_view copy, Color color, bool centered = false) {
+    if (c.measure(copy, size) > width) c.output.text_overflow = true;
+    const float origin = y + (row - ink_height) * .5F - size * 16.F / 48.F;
+    if (centered) c.centered(x, origin, width, copy, size, color);
+    else c.text(x, origin, copy, size, color);
+  };
+  const auto bar = [&](float x, float y, float width, float fraction, Color color) {
+    c.fill(x, y, width, 2, panel);
+    c.fill(x, y, width * std::clamp(fraction, 0.F, 1.F), 2, color);
+  };
+  const float pause_x = safe.width - row - 4, stats_width = pause_x - 12;
+  c.fill(0, 0, safe.width, row, navy);
+  // XP remains visible without adding a second header row.
+  bar(4, 0, stats_width, v.run->xp / std::max(1.F, v.run->next_level_xp), gold);
   if (v.damage_feedback.age >= 0) {
-    health = damage_label(v.damage_feedback);
-    c.fill(0,heading_height+12,safe.width,3,v.damage_feedback.hull ? coral : mint);
+    const auto cause = v.damage_feedback.cause == gameplay::DamageCause::contact ? "BUMP" :
+        v.damage_feedback.cause == gameplay::DamageCause::projectile ? "SHOT" : "HIT";
+    const std::string copy = std::string(v.damage_feedback.hull ? "HP:" : "SH:") + cause;
+    line(4, 0, stats_width, copy, v.damage_feedback.hull ? coral : mint);
+    c.fill(4, row - 3, stats_width, 3, v.damage_feedback.hull ? coral : mint);
+  } else {
+    const std::string hull = "HP " + number(static_cast<unsigned>(std::max(0.F, v.run->hull)));
+    const std::string shield = "SH " + number(static_cast<unsigned>(std::max(0.F, v.run->shield)));
+    if (c.measure(hull + "  " + shield, size) <= stats_width) {
+      line(4, 0, stats_width, hull + "  " + shield, white);
+    } else {
+      std::string hp = hull;
+      const float shield_width = c.measure("SH", size);
+      if (c.measure(hp, size) + 8 + shield_width > stats_width) {
+        const auto percent = static_cast<unsigned>(std::ceil(100.F * std::clamp(v.run->hull / std::max(1.F, v.run->maximum_hull), 0.F, 1.F)));
+        hp = "HP" + number(percent) + "%";
+      }
+      line(4, 0, stats_width - shield_width - 8, hp, white);
+      const float sx = 4 + stats_width - shield_width;
+      line(sx, 0, shield_width, "SH", {.57F, .83F, 1, 1});
+      bar(sx, row - 2, shield_width, v.run->shield / std::max(1.F, v.run->maximum_shield), {.57F, .83F, 1, 1});
+    }
   }
-  if (hit_lines.empty()) c.text(12, 8, health, size);
-  else for (std::size_t i = 0; i < hit_lines.size(); ++i) c.text(12, 8 + static_cast<float>(i) * size * 1.2F, hit_lines[i], size, v.damage_feedback.hull ? coral : mint);
-  c.fill(safe.width - height - 8, 8, height, height, white);
-  c.centered(safe.width - height - 8, 14, height, "II", size, navy);
-  c.output.buttons.push_back({c.rect(safe.width - height - 8, 8, height, height), Command::pause, "PAUSE", true});
-  { // Starter evade is always available; Phase Drive improves its rules.
-    const bool ready = v.run->dash_cooldown_seconds <= 0;
-    c.fill(12, safe.height - height - 12, safe.width - 24, height, ready ? mint : panel);
-    c.centered(12, safe.height - height - 6, safe.width - 24, ready ? "DASH" : "DASH " + number(static_cast<unsigned>(std::ceil(v.run->dash_cooldown_seconds))) + "s", size, ready ? navy : muted);
-    c.output.buttons.push_back({c.rect(12, safe.height - height - 12, safe.width - 24, height), Command::dash, ready ? "DASH" : "DASH " + number(static_cast<unsigned>(std::ceil(v.run->dash_cooldown_seconds))) + "s", ready});
-  }
-  const bool overdrive = v.run->harvest_overdrive_seconds > 0;
-  const bool reward = overdrive || v.run->harvest_chain;
-  const float phase_room = height + 12;
-  if (reward) {
-    const float top = safe.height - height - 12 - phase_room;
-    c.fill(12, top, safe.width - 24, height, overdrive ? mint : navy);
-    c.centered(12, top + 6, safe.width - 24, overdrive ? "BOOST " + number(static_cast<unsigned>(std::ceil(v.run->harvest_overdrive_seconds))) + "s" : "SWEEP " + number(v.run->harvest_chain) + "/" + number(gameplay::tuning::harvest_chain_target), size, overdrive ? navy : white);
-    const float remaining = overdrive ? v.run->harvest_overdrive_seconds / gameplay::tuning::harvest_overdrive_seconds : v.run->harvest_chain_seconds / gameplay::tuning::harvest_chain_window_seconds;
-    c.fill(20, top + height - 4, (safe.width - 40) * std::clamp(remaining, 0.F, 1.F), 2, overdrive ? navy : mint);
+  c.fill(pause_x, 0, row, row, white);
+  // Familiar pause marks need no oversized textual bearings.
+  c.fill(pause_x + 13, 12, 6, 20, navy);
+  c.fill(pause_x + 25, 12, 6, 20, navy);
+  c.output.buttons.push_back({c.rect(pause_x, 0, row, row), Command::pause, "PAUSE", true});
+
+  const float bottom = safe.height - row - 12, available = safe.width - 8;
+  const bool detailed = c.measure("DASH 4s", size) + c.measure("SWEEP 2/3", size) + 24 <= available;
+  const float dash_width = std::max(44.F, c.measure(detailed ? "DASH 4s" : "DASH", size) + 8);
+  const float status_width = available - dash_width - 8, dash_x = safe.width - 4 - dash_width;
+  const bool ready = v.run->dash_cooldown_seconds <= 0;
+  const auto seconds = number(static_cast<unsigned>(std::ceil(v.run->dash_cooldown_seconds))) + "s";
+  const std::string dash = ready ? "DASH" : detailed ? "DASH " + seconds : seconds;
+  c.fill(dash_x, bottom, dash_width, row, ready ? mint : panel);
+  line(dash_x + 4, bottom, dash_width - 8, dash, ready ? navy : muted, true);
+  c.output.buttons.push_back({c.rect(dash_x, bottom, dash_width, row), Command::dash, ready ? "DASH" : "DASH " + seconds, ready});
+
+  std::string status;
+  Color status_color = white;
+  float fraction = -1;
+  if (v.promotion.installed) {
+    status = "ADDED";
+    c.output.page_text = "INSTALLED " + v.promotion.installed->title;
+    status_color = mint;
+  } else if (v.run->harvest_overdrive_seconds > 0) {
+    status = "BOOST " + number(static_cast<unsigned>(std::ceil(v.run->harvest_overdrive_seconds))) + "s";
+    if (c.measure(status, size) > status_width - 8) status = "BOOST";
+    fraction = v.run->harvest_overdrive_seconds / gameplay::tuning::harvest_overdrive_seconds;
+    status_color = mint;
+  } else if (v.run->harvest_chain) {
+    status = "SWEEP " + number(v.run->harvest_chain) + "/" + number(gameplay::tuning::harvest_chain_target);
+    if (c.measure(status, size) > status_width - 8) status = number(v.run->harvest_chain) + "/" + number(gameplay::tuning::harvest_chain_target);
+    fraction = v.run->harvest_chain_seconds / gameplay::tuning::harvest_chain_window_seconds;
+    status_color = mint;
   } else if (v.run->stats.active_seconds < 12) {
-    const auto help = readable_lines(c, v.run->stats.active_seconds < 4 ? "DRAG TO FLY" : "FLY CLOSE", safe.width - 24, size);
-    const float bottom = safe.height - 12 - phase_room;
-    float y = bottom - static_cast<float>(help.size()) * size * 1.25F;
-    c.fill(0, y - 6, safe.width, bottom - y + 12, navy);
-    for (const auto& line : help) {
-      c.centered(12, y, safe.width - 24, line, size);
-      y += size * 1.25F;
+    status = v.run->stats.active_seconds < 4 ? "DRAG TO FLY" : "FLY CLOSE";
+    if (c.measure(status, size) > status_width - 8) status = v.run->stats.active_seconds < 4 ? "DRAG" : "CLOSE";
+  } else {
+    status = "LV " + number(v.run->stats.level);
+    if (c.measure(status, size) > status_width - 8) status = "LEVEL";
+  }
+  c.fill(4, bottom, status_width, row, navy);
+  line(8, bottom, status_width - 8, status, status_color, true);
+  if (fraction >= 0) {
+    bar(8, bottom + row - 2, status_width - 8, fraction, mint);
+    if (v.run->harvest_chain && v.run->harvest_overdrive_seconds <= 0 && !v.promotion.installed) {
+      const float pip = (status_width - 16) / static_cast<float>(gameplay::tuning::harvest_chain_target);
+      for (unsigned i = 1; i < gameplay::tuning::harvest_chain_target; ++i)
+        c.fill(8 + static_cast<float>(i) * pip, bottom + row - 2, 2, 2, navy);
     }
   }
   return std::move(c.output);
@@ -1110,6 +1163,7 @@ Interface standard_interface(const View& v) {
 Interface interface(const View& v) {
   const auto framing = v.framing ? *v.framing : gameplay_framing(v.viewport, v.safe_area, v.text_scale);
   const bool large = std::isfinite(v.text_scale) && v.text_scale > 1.F;
+  const bool enlarged_tactical = large && !framing.compact;
   if (v.screen == Screen::settings && v.show_privacy) return readable_interface(v);
   if (v.screen == Screen::pause && v.show_build && !v.save_error) return large ? readable_interface(v) : build_overview(v);
   const auto finish = [&](Interface result) {
@@ -1126,7 +1180,7 @@ Interface interface(const View& v) {
         if (button.command == Command::dash) bottom = std::min(bottom, button.bounds.y - 12);
       }
       // Installation confirmation owns its existing strip under the HUD.
-      if (v.promotion.installed) top += std::max(36.F, text_size + 16) + 12;
+      if (v.promotion.installed && !enlarged_tactical) top += std::max(36.F, text_size + 16) + 12;
       const ui::Rect field = framing.compact ? ui::Rect{framing.stage.x + 4, framing.stage.y + 4, framing.stage.width - 8, framing.stage.height - 8} :
           ui::Rect{feedback.safe.x + 8, top, feedback.safe.width - 16, std::max(0.F, bottom - top)};
       for (const auto& vitality : enemy_vitality(*v.run, framing, field, text_size)) {
@@ -1149,7 +1203,7 @@ Interface interface(const View& v) {
       }
       result.quads.insert(result.quads.end(), feedback.output.quads.begin(), feedback.output.quads.end());
     }
-    if (!v.promotion.installed || framing.compact) return result;
+    if (!v.promotion.installed || framing.compact || enlarged_tactical) return result;
     Canvas c{v};
     c.scale = 1;
     c.ox = c.safe.x;
@@ -1173,7 +1227,7 @@ Interface interface(const View& v) {
     return result;
   };
   if (framing.compact && v.screen == Screen::run && !v.save_error) return finish(compact_run(v, framing));
-  if (large && v.screen == Screen::run && !v.save_error && v.text_scale >= 1.3F) return finish(readable_run(v));
+  if (enlarged_tactical && v.screen == Screen::run && !v.save_error) return finish(enlarged_run(v));
   if (large && v.screen == Screen::blueprints && v.show_recipes && !v.save_error) {
     // One recipe must not change the navigation model when the next recipe's
     // longer description overflows. Choose consistently for this preference.
@@ -1186,6 +1240,6 @@ Interface interface(const View& v) {
   auto standard = standard_interface(v);
   if ((v.screen == Screen::death || v.screen == Screen::results) && standard.text_overflow) return readable_interface(v);
   if (!large || !standard.text_overflow) return finish(std::move(standard));
-  return finish(v.screen == Screen::run && !v.save_error ? readable_run(v) : readable_interface(v));
+  return finish(v.screen == Screen::run && !v.save_error ? enlarged_run(v) : readable_interface(v));
 }
 } // namespace human_resources::product

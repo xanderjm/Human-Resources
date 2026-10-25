@@ -58,11 +58,18 @@ std::array<float, 2> hud_vertical_limits(std::array<float, 2> size) {
   (void)store.load();
   hr::gameplay::Snapshot run;
   run.phase = hr::gameplay::Phase::active;
-  const auto ui = hr::product::interface({.screen = hr::product::Screen::run, .run = &run, .store = &store, .viewport = {0, 0, size[0], size[1]}, .safe_area = {0, size[0] == 320 ? 20.F : 59.F, 0, size[0] == 320 ? 0.F : 34.F}});
-  const auto pause = std::find_if(ui.buttons.begin(), ui.buttons.end(), [](const auto& b) { return b.command == hr::product::Command::pause; });
-  const auto dash = std::find_if(ui.buttons.begin(), ui.buttons.end(), [](const auto& b) { return b.command == hr::product::Command::dash; });
-  require(pause != ui.buttons.end() && dash != ui.buttons.end(), "actual HUD and control boundaries exist");
-  return cache[key] = {pause->bounds.bottom() + 12, dash->bounds.y - 10};
+  std::array<float,2> limits{0,size[1]};
+  for(float scale:{1.F,1.3F,2.F,3.2F}) {
+    hr::product::View view{.screen=hr::product::Screen::run,.run=&run,.store=&store,.viewport={0,0,size[0],size[1]},.safe_area={0,size[0]==320?20.F:59.F,0,size[0]==320?0.F:34.F}};
+    view.text_scale=scale;
+    const auto ui=hr::product::interface(view);
+    const auto pause=std::find_if(ui.buttons.begin(),ui.buttons.end(),[](const auto& b){return b.command==hr::product::Command::pause;});
+    const auto dash=std::find_if(ui.buttons.begin(),ui.buttons.end(),[](const auto& b){return b.command==hr::product::Command::dash;});
+    require(pause!=ui.buttons.end() && dash!=ui.buttons.end(),"actual HUD and control boundaries exist at every supported text size");
+    limits[0]=std::max(limits[0],pause->bounds.bottom()+12);
+    limits[1]=std::min(limits[1],dash->bounds.y-10);
+  }
+  return cache[key]=limits;
 }
 void full_gear_has_real_phone_margins() {
   float worst_clearance = 10000, top_clearance = 10000, bottom_clearance = 10000;
@@ -130,9 +137,12 @@ void supported_stages_keep_real_flight_and_readable_controls() {
   for (auto module : {hr::gameplay::Module::laser_array, hr::gameplay::Module::orbit_drones, hr::gameplay::Module::shield_generator, hr::gameplay::Module::beam_splitter, hr::gameplay::Module::tractor_lens, hr::gameplay::Module::emp_ring})
     run.modules[static_cast<unsigned>(module)] = 3;
   run.evolution_bits = (1U << static_cast<unsigned>(hr::gameplay::Evolution::great_vacuum)) | (1U << static_cast<unsigned>(hr::gameplay::Evolution::storm_drain));
-  for (const auto display : displays) for (float text_scale : {1.F,2.F}) {
+  for (const auto display : displays) for (float text_scale : {1.F,2.F,3.2F}) {
     const hr::ui::Rect viewport{0,0,static_cast<float>(display.width),static_cast<float>(display.height)};
     const auto framing = hr::product::gameplay_framing(viewport, display.insets, text_scale, {display.width*2,display.height*2});
+    // The inherited short-canvas matrix covers 1x/2x; this slice extends
+    // noncompact phone/tablet strips to the full 3.2x preference.
+    if(text_scale>2 && framing.compact)continue;
     require(framing.stage.width > 100 && framing.stage.height > 180, "largest supported text leaves a real portrait combat stage");
     const auto actual = hr::presentation::fit_world_destination(framing.render_extent.width, framing.render_extent.height, display.width*2,display.height*2,framing.destination);
     require_near(framing.stage.x, static_cast<float>(actual.x)*.5F, .001F, "attachment stage matches exact renderer destination x");

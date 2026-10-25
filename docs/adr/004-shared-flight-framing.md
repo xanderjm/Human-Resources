@@ -44,8 +44,13 @@ and restored menu backgrounds exactly. Synthetic extreme and damage display
 fixtures are labelled separately from the actual earned 400-second checkpoint.
 See `build/evidence/gameplay-framing/` for source-bound results.
 
-This decision does not accept the pre-existing enlarged-phone HUD overlap:
-at 320x568 and 2x text, a full forward rig can pass behind the expanded header,
-and the boost strip can occupy the rear flight band. A dedicated follow-up must
-resolve that hierarchy/placement conflict without silently changing the phone
-camera or treating the known overlap as release-ready.
+The enlarged RUN follow-up resolves the old full-rig/header/boost overlap with
+one 44-point strip at either end, centering actual consumed glyph ink instead of
+transparent nominal bearings. It applies to noncompact enlarged phones and
+tablets; ordinary phone pixels and camera remain exact. Full defence values stay
+spoken/available in Pause when largest type needs a labelled fraction display.
+
+A separate compact short-window budget defect remains: at 320 points and 3.2x
+text, measured rails leave only a 14x24-point world stage. Physical reachability
+on current devices is unverified. This value-contract defect needs a coherent
+layout fallback; a positive-sized but unusable stage is not release acceptance.
