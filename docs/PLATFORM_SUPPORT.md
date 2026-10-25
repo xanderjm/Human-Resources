@@ -27,17 +27,23 @@ Rows not selected in `project.json` are informative extension capabilities, not 
 
 ## Current product qualification,25October2026
 
-Latest host authority8 boss/Pause source passes optimized dev/46suites and actual
-native portrait motion/UI review. Independent phase continuations and four-process
+Latest accepted host source includes authority8 boss/Pause and later single-report
+natural death/measured header fit. It passes optimized dev/47suites, actual
+native portrait motion/UI review and an accelerated SDL/Metal player smoke. Independent phase continuations and four-process
 SDL storage banking pass; a120-simulated-minute CPU audit remains host-only.
-The owner-requested separate938ea35playtest is open; twelve user previews and
-30discovered bundles are protected. The exact741-filefafd40be mobile checkpoint
+The owner-requested fafd40be playtest was confirmed at launch PID52722; a later
+read-only check finds that process absent, without automated quit/relaunch.
+Thirteen user previews and31discovered bundles are protected. The exact741-filefafd40be mobile checkpoint
 now passes both iOS Release builds and Android both ABIs/variants/lint/16KiB/AAB
 and package/source audits, with independent review. Its five packages/227entries
 retain all81runtime payloads/eight animations. See `boss-ui-mobile/` and
 `boss-ui-mobile-independent/` evidence. Supplemental Windows remainsb99c373;
-isolated Android runtime remains853169 pending a new bounded run. No physical
-runtime, human-fun or store claim follows.
+isolated Android runtime now covers frozen fafd40be rendering, earned draft,
+exact force-stop/cold paused restore, Resume and early zero-credit settlement.
+The owned API36/software-Vulkan VM exits cleanly; root accepts50bound records and
+actual frames under `boss-android-runtime-attempt2/`. Pending death-flow edits,
+active-run background flush, positive payout, boss phases, physical runtime,
+human fun and store acceptance are outside that diagnostic.
 
 ### Qualified b99c373 clean/platform epoch
 

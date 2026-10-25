@@ -1,5 +1,19 @@
 # Mobile qualification — current package and later host scopes
 
+## Later host-only single-report UI slice
+
+Seven accepted owners now consolidate natural death into one saved report, preserve
+checkpoint/settlement retry and queued-death haptic eligibility, and fix an actual
+small-phone header overflow through measured physical glyphs. Final optimizeddev
+47contracts/static/diff, native320/390/2x frames, independent fit review and one
+actual accelerated SDL/Metal player smoke pass. Source freeze is
+`123577408f8fc0ef03391a8f465cf98b56497ee7f9df9c9d33e2a3777f7711d8`;
+owner evidence is `death-flow-quality-fafd40be/REPORT.json`, root acceptance under
+`death-flow-integration/revised/`. Game8/codec/account and runtime art remain.
+These later App/product UI changes are not in the frozenfaf mobile packages or
+Android runtime below; no new phone compilation/runtime or hardware-feel claim
+is transferred. The last delivered owner test app remains fafd40be.
+
 ## Qualified authority8 package checkpoint
 
 Source **fafd40be775bcf1f87aca2a5555ee32ba5ac13a8**, tree
@@ -29,8 +43,39 @@ reproducible dev objects/tests are reclaimed after stat/hash guards; all old
 packages, archives/classes, assets and30protected bundles remain exact. The disk
 guard stays above1GiB throughout, with minimum1,113,968,640bytes. These are
 compile/package results, not physical/Simulator runtime, TalkBack, storage,
-signing or store qualification. Isolated current Android runtime preparation is
-separate; latest completed Android runtime remains853169 until a new run passes.
+signing or store qualification. The separately scoped isolated current Android
+runtime diagnostic below now passes; physical-device qualification remains open.
+
+## Isolated authority8 Android runtime diagnostic
+
+Frozen fafd40be now launches and renders through software Vulkan on an owned
+read-only API36 arm64 emulator. A manifest-only isolated app ID retains136ordinary
+non-manifest/non-signature ZIP files exactly from the qualified debug APK. The
+actual current client earns a level2 draft at11.283active seconds/seven captures,
+then survives force-stop/cold paused restore with exact account bytes, state
+digest and choices. Explicit Resume returns the same draft. OS Settings
+backgrounds this already-paused draft; an explicit early bank records one
+completed run, clears the continuation and cold-reopens byte-exact without a
+second settlement. Its zero-credit reward is correct below30active seconds.
+
+The first attempt refuses startup at the emulator capacity gate before install;
+that failure remains intact. After bounded transparent filesystem compression of
+477enumerated evidence files, a single new attempt completes in95.97seconds and
+the owned VM exits0. Minimum free space is2,223,247,360bytes; observed global
+growth122,593,280bytes stays under128MiB. Evidence is2.87MB under16MiB. All31
+protected app bundles, backing AVD data and existing QA APKs remain exact. No
+ADB touch/key/sendevent injection or user account operation occurs.
+
+Evidence: `boss-android-runtime-attempt2/REPORT.json` SHA
+`129bd4d1f7f69a1974d4b8ad4fb572b821da79f0f9d3a8eac3f6e53fdcf8fa71`.
+Root rehashes50bound records and both APKs, compares136identical ZIP files and
+views four actual frames; root acceptance SHA
+`9a032060a2ee1bc8f653947bbadfd4c1c7450bd1107351d3dd124700eb08c606`.
+This diagnostic excludes pending death-flow source edits, physical input/GPU
+budgets, human feel, production app ID, iOS runtime, active-run background flush,
+positive payout, natural death and boss-phase recovery. Older evidence for those
+flows retains its exact earlier epochs; the private parser only inspects account2
+structure while the current native App owns actual Game8 restore/settlement.
 
 ## Pre-refresh host scope, preserved history
 

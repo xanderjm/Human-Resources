@@ -84,11 +84,16 @@ FlightReport flight_report(const View& view) {
   report.bank = account.credits;
   report.best_score = account.best_score;
   report.credits = report.guest ? 0 : report.preview || report.pending ? (receipt ? progression::base_credits(*receipt) : account.continuation.earned_base_credits) : results.base_credits + results.bonus_credits;
-  report.heading = report.preview ? "SIGNAL LOST" : report.recovered ? "RECOVERED FLIGHT" : "RESEARCH COMPLETE";
+  const bool natural_loss = !report.recovered && view.run->phase == gameplay::Phase::dead;
+  report.heading = report.preview || natural_loss ? "SIGNAL LOST" : report.recovered ? "RECOVERED FLIGHT" : "RESEARCH COMPLETE";
   report.reward_label = report.guest ? "GUEST FLIGHT" : report.preview ? "CREDITS TO BANK" : report.pending ? "CREDITS TO SAVE" : "CREDITS SAVED";
   report.status = report.guest ? "Saving unavailable. This flight earns no saved credits." : report.preview ? "Your flight ended. Bank its earned research." : report.pending ? "Saving credits. Keep the game open." : report.recovered ? "Recorded rewards recovered and saved." : std::string(location_name(view.theme)) + " / Research Credits saved.";
+  if (natural_loss && !report.preview && !report.pending && !report.guest) {
+    const auto hardware = std::count_if(view.run->modules.begin(), view.run->modules.end(), [](auto rank) { return rank != 0; });
+    report.status = std::string(location_name(view.theme)) + " / LV " + std::to_string(view.run->stats.level) + " / " + std::to_string(hardware) + " of 6 hardware.";
+  }
   if (!report.guest && !report.pending && !report.recovered && report.credits == 0 && report.seconds < gameplay::tuning::credit_minimum_seconds)
-    report.status = "Flights under " + std::to_string(gameplay::tuning::credit_minimum_seconds) + " seconds earn no credits.";
+    report.status = (natural_loss && !report.preview ? report.status + " " : "") + "Flights under " + std::to_string(gameplay::tuning::credit_minimum_seconds) + " seconds earn no credits.";
   report.summary = report.heading + ". " + report.status + " Score " + std::to_string(report.score) + ". Captures " + std::to_string(report.captures) + ". Survived " + std::to_string(static_cast<unsigned>(report.seconds)) + " seconds. " + report.reward_label + ": " + std::to_string(report.credits) + ".";
   if (!report.preview && !report.pending && !report.guest) {
     report.summary += " Bank " + std::to_string(report.bank) + ". Best score " + std::to_string(report.best_score) + ".";

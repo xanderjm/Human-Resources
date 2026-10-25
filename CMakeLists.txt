@@ -491,6 +491,16 @@ if(HUMAN_RESOURCES_BUILD_CLIENT)
   target_compile_definitions(${game_client_target} PRIVATE SDL_MAIN_USE_CALLBACKS=1)
   game_apply_cpp_defaults(${game_client_target})
 
+  if(HUMAN_RESOURCES_BUILD_TESTS AND NOT IOS AND NOT ANDROID)
+    # Exercise the real client transition with in-memory account storage. This
+    # host test starts no SDL window/device and never accesses a user account.
+    add_executable(human_resources_client_death_flow_tests native/tests/client_death_flow_tests.cpp)
+    target_link_libraries(human_resources_client_death_flow_tests PRIVATE
+      human_resources_product human_resources_game_renderer human_resources_platform human_resources_renderer SDL3::SDL3)
+    game_apply_cpp_defaults(human_resources_client_death_flow_tests)
+    add_test(NAME client_death_flow_contracts COMMAND human_resources_client_death_flow_tests)
+  endif()
+
   if(APPLE)
     set_target_properties(${game_client_target} PROPERTIES XCODE_ATTRIBUTE_CLANG_ENABLE_OBJC_ARC YES)
   endif()

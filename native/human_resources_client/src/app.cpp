@@ -169,7 +169,11 @@ bool retain_qa_vehicle_checkpoint(App& app) {
   return true;
 }
 void haptics_policy(App& app) {
-  const bool active_screen = app.screen == Screen::run || app.screen == Screen::upgrade || app.screen == Screen::death;
+  // Android dispatch expires after150ms. Keep the accepted death cue eligible
+  // through that bounded queue window plus one frame, without delaying UI.
+  const bool loss_report_entry = app.screen == Screen::results && app.game.snapshot().phase == hr::gameplay::Phase::dead &&
+      !app.store.account().results.recovered && app.report_entry_seconds >= 0 && app.report_entry_seconds < .17F;
+  const bool active_screen = app.screen == Screen::run || app.screen == Screen::upgrade || app.screen == Screen::death || loss_report_entry;
   app.haptics.set_policy(app.store.account().settings.haptics, app.lifecycle.presence == hr::lifecycle::Presence::foreground && app.audio_focused && active_screen && !app.save_error);
 }
 hr::progression::RunReceipt receipt(const App& app) {
@@ -323,6 +327,26 @@ void finish(App& app) {
     return;
   }
   commit_settlement(app);
+}
+void complete_flight_advance(App& app, hr::gameplay::Phase previous_phase) {
+  // Only the active client's accepted advance owns this transition. Restored
+  // dead checkpoints retain their explicit Pause/recovery banking route.
+  if (app.screen != Screen::run || previous_phase != hr::gameplay::Phase::active)
+    return;
+  const auto phase = app.game.snapshot().phase;
+  if (phase == hr::gameplay::Phase::dead) {
+    app.audio.play(hr::feedback::Cue::death);
+    app.haptics.play(hr::feedback::HapticCue::death, SDL_GetTicks());
+    // Establish the loss context before a potentially failing boundary write;
+    // a dead Game cannot be paused by checkpoint_game's failure path.
+    change_screen(app, Screen::death);
+    finish(app);
+    return;
+  }
+  if (phase == hr::gameplay::Phase::choosing_upgrade)
+    change_screen(app, Screen::upgrade);
+  if (!app.guest && !app.pending_settlement)
+    (void)checkpoint_game(app, phase == hr::gameplay::Phase::choosing_upgrade);
 }
 void dispatch(App& app, Command command) {
   haptics_policy(app);
@@ -1060,6 +1084,7 @@ SDL_AppResult SDL_AppIterate(void* state) {
   if (app.playthrough)
     smoke_input(app);
   if (app.screen == Screen::run && !app.save_error && !app.promotion.holds_combat()) {
+    const auto previous_phase = app.game.snapshot().phase;
     const auto control = app.controls.sample();
     for (unsigned i = 0; i < (app.playthrough ? 12U : 1U); ++i)
       app.game.advance(app.qa ? app.qa_step : (app.playthrough ? 1.F / 60 : elapsed), control);
@@ -1067,18 +1092,7 @@ SDL_AppResult SDL_AppIterate(void* state) {
       SDL_Log("Cannot retain bounded QA vehicle Game checkpoint");
       return SDL_APP_FAILURE;
     }
-    const auto& current = app.game.snapshot();
-    if (current.phase == hr::gameplay::Phase::dead) {
-      app.audio.play(hr::feedback::Cue::death);
-      app.haptics.play(hr::feedback::HapticCue::death, SDL_GetTicks());
-    }
-    const auto phase = app.game.snapshot().phase;
-    if (phase == hr::gameplay::Phase::choosing_upgrade)
-      change_screen(app, Screen::upgrade);
-    else if (phase == hr::gameplay::Phase::dead)
-      change_screen(app, Screen::death);
-    if (!app.guest && !app.pending_settlement)
-      (void)checkpoint_game(app, phase == hr::gameplay::Phase::choosing_upgrade || phase == hr::gameplay::Phase::dead);
+    complete_flight_advance(app, previous_phase);
   }
   if (app.resume_qa.active() && !app.save_error && !app.store.pending() && app.resume_qa.take_hold_marker(app.screen)) {
     log_run_detail(app);

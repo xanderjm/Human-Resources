@@ -921,11 +921,24 @@ void flight_report_panel(Canvas& c, const View& v) {
     c.fitted(x, y, width, value, size, color, title, center);
     if (c.measure(value, 14.F / c.scale, title) > width) c.output.text_overflow = true;
   };
-  c.fill(20, 24, 350, 108, navy);
+  const float status_size = std::max(16.F, 14.F / c.scale) * c.type_scale;
+  const auto status_lines = readable_lines(c, report.status, 322, 16);
+  // Canvas has a physical14pt floor. Allocate the consumed lines at that size,
+  // including descender/filter room and panel padding, rather than the design's
+  // unscaled16pt assumption. Longer complete reports use the existing fallback.
+  const float status_bottom = 82 + (status_lines.empty() ? 0.F : static_cast<float>(status_lines.size() - 1) * status_size * 1.2F + status_size * 1.25F);
+  const float header_bottom = std::max(132.F, status_bottom + std::max(8.F, 4.F / c.scale));
+  const float reward_top = std::max(150.F, header_bottom + 8);
+  if (reward_top + 6.F / c.scale > 164) c.output.text_overflow = true;
+  c.fill(20, 24, 350, header_bottom - 24, navy);
   line(34, 38, 322, report.heading, 29, white, true);
-  c.wrap(34, 82, 322, report.status, 16, muted, 2);
-  c.fill(20, 150, 350, 260, navy);
-  c.fill(20, 150, 4, 260, report.preview ? gold : mint);
+  float status_y = 82;
+  for (const auto& status : status_lines) {
+    c.text(34, status_y, status, 16, muted);
+    status_y += status_size * 1.2F;
+  }
+  c.fill(20, reward_top, 350, 410 - reward_top, navy);
+  c.fill(20, reward_top, 4, 410 - reward_top, report.preview ? gold : mint);
   line(38, 164, 314, report.reward_label, 17, muted);
   line(38, 199, 314, "+ " + number(report.credits), 48, report.preview ? gold : mint, true);
   c.fill(24, 272, 346, 138, white);

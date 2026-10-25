@@ -105,6 +105,46 @@ void unlocks_caps_and_recovery_are_real() {
   view.store = &cold;
   report = flight_report(view);
   require(report.recovered && report.heading == "RECOVERED FLIGHT" && report.credits == cold.account().results.base_credits, "recovery uses recorded settled reward");
+  auto dead = f.game.snapshot(); dead.phase = hr::gameplay::Phase::dead; view.run = &dead;
+  require(flight_report(view).heading == "RECOVERED FLIGHT", "recorded recovery label takes precedence over a transient dead presentation snapshot");
+}
+void natural_loss_is_one_saved_report_with_flight_context() {
+  Fixture f;
+  require(f.store.settle(f.receipt).succeeded(), "actual receipt settles before saved loss report");
+  auto run = f.game.snapshot();
+  run.phase = hr::gameplay::Phase::dead; // Explicit presentation fixture, no runtime mutation.
+  run.stats.level = 4;
+  run.modules[0] = 1; run.modules[1] = 2; run.modules[2] = 3;
+  auto view = f.view(Screen::results);
+  view.run = &run;
+  const auto report = flight_report(view);
+  require(!report.preview && report.heading == "SIGNAL LOST" && report.reward_label == "CREDITS SAVED", "settled natural loss keeps defeat identity with truthful saved rewards");
+  require(report.status.find("LV 4 / 3 of 6 hardware") != std::string::npos && report.summary.find("LV 4 / 3 of 6 hardware") != std::string::npos, "single loss report keeps reached level and occupied hardware in visible and spoken copy");
+  require(!report.blueprint_name.empty() && !report.hangar_name.empty(), "single saved loss exposes account goals immediately");
+  for (const auto size : {hr::ui::Size{320,568}, hr::ui::Size{390,844}}) {
+    view.viewport = {0,0,size.width,size.height};
+    for (const float scale : {1.F,2.F,3.F}) {
+      view.text_scale = scale; view.ui_page = 0;
+      const unsigned count = interface(view).page_count;
+      for (unsigned page=0; page<count; ++page) {
+        view.ui_page=page; const auto ui=interface(view);
+        require(!ui.text_overflow, "complete loss context fits ordinary/readable report layouts");
+        bool retry=false,hangar=false;
+        for (const auto& button : ui.buttons) {
+          retry |= button.command == Command::retry;
+          hangar |= button.command == Command::hangar;
+          require(button.bounds.x>=0 && button.bounds.y>=20 && button.bounds.right()<=size.width+.01F && button.bounds.bottom()<=size.height+.01F && button.bounds.width>=44 && button.bounds.height>=44, "all consolidated report controls stay safe and reachable");
+        }
+        require(retry && hangar, "single loss report exposes retry and progression without another bank action");
+      }
+    }
+  }
+  view.pending_results = &f.receipt;
+  require(flight_report(view).heading == "SIGNAL LOST" && flight_report(view).reward_label == "CREDITS TO SAVE", "pending natural loss never claims saved rewards");
+  view.pending_results=nullptr;view.guest=true;
+  require(flight_report(view).heading == "SIGNAL LOST" && flight_report(view).credits==0 && flight_report(view).status.find("no saved credits")!=std::string::npos, "guest loss retains truthful ephemeral status");
+  view.guest=false; run.phase=hr::gameplay::Phase::paused;
+  require(flight_report(view).heading == "RESEARCH COMPLETE", "explicit Pause banking is not labelled a death");
 }
 void stable_actions_safe_pages_and_motion() {
   Fixture f;
@@ -142,4 +182,4 @@ void stable_actions_safe_pages_and_motion() {
   }
 }
 } // namespace
-int main() { pause_previews_current_receipt_without_mutation(); actual_preview_settlement_and_no_mutation(); unlocks_caps_and_recovery_are_real(); stable_actions_safe_pages_and_motion(); }
+int main() { pause_previews_current_receipt_without_mutation(); actual_preview_settlement_and_no_mutation(); unlocks_caps_and_recovery_are_real(); natural_loss_is_one_saved_report_with_flight_context(); stable_actions_safe_pages_and_motion(); }

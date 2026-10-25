@@ -1194,6 +1194,67 @@ void late_value_hud_keeps_level_at_small_portrait() {
     }
   }
 }
+void report_header_contains_complete_consumed_glyph_ink() {
+  progression_tests::MemoryBackend backend;
+  hr::progression::AccountStore store{backend};
+  require(store.load().playable() && store.begin_run().succeeded(), "report ink fixture account begins");
+  hr::progression::RunReceipt receipt{.run_id=store.account().checkpoint.run_id,.active_milliseconds=75000,.score=85,.captures=23};
+  require(store.settle(receipt).succeeded(), "report ink fixture has a saved receipt");
+  hr::gameplay::Game game; game.start(); auto run=game.snapshot();run.phase=hr::gameplay::Phase::dead;
+  run.stats.level=124;for(unsigned i=0;i<6;++i)run.modules[i]=3;
+  for(const auto phone:std::array<hr::ui::Rect,2>{{{0,0,320,568},{0,0,390,844}}})
+    for(const auto theme:{hr::presentation::SceneryTheme::farmland,hr::presentation::SceneryTheme::suburbia,hr::presentation::SceneryTheme::desert})
+      for(unsigned scenario=0;scenario<4;++scenario) {
+        View view{Screen::results,&run,&store,phone,{0,20,0,0}};view.theme=theme;
+        if(scenario==1)view.guest=true;
+        // A genuine interrupted-checkpoint recovery supplies the longer status.
+        progression_tests::MemoryBackend recovered_backend;
+        hr::progression::AccountStore interrupted{recovered_backend};
+        hr::progression::AccountStore recovered{recovered_backend};
+        progression_tests::MemoryBackend short_backend;
+        hr::progression::AccountStore short_store{short_backend};
+        if(scenario==2) {
+          require(short_store.load().playable() && short_store.begin_run().succeeded(), "short report fixture begins");
+          auto short_receipt=receipt;short_receipt.run_id=short_store.account().checkpoint.run_id;short_receipt.active_milliseconds=10000;
+          require(short_store.settle(short_receipt).succeeded(), "actual earlyzero settlement");
+          view.store=&short_store;
+        }
+        if(scenario==3) {
+          require(interrupted.load().playable() && interrupted.begin_run().succeeded(), "report ink recovery begins");
+          auto pending=receipt;pending.run_id=interrupted.account().checkpoint.run_id;pending.active_milliseconds=75000;
+          require(interrupted.checkpoint(pending,true).succeeded(), "report ink recovery checkpoint persists");
+          require(recovered.load().issue==hr::progression::LoadIssue::recovered_checkpoint,"actual recovery report fixture");
+          view.store=&recovered;
+        }
+        const auto report=flight_report(view);const auto ui=interface(view);
+        if(!ui.page_text.empty()) {
+          std::string copy;
+          for(unsigned page=0;page<ui.page_count;++page){view.ui_page=page;const auto readable=interface(view);readable_page_is_real_safe_and_scaled(view,readable);copy+=readable.page_text;}
+          require(compact(copy).find(compact(report.status))!=std::string::npos,"measured fallback preserves complete longer report status");
+          continue;
+        }
+        // The standard interface's translucent scene dimmer precedes the report
+        // panel. Own the navy header itself, never that full-viewport overlay.
+        const auto first=std::find_if(ui.quads.begin(),ui.quads.end(),[](const auto& q){return q.uv[2]<0 && q.color[0]==.035F && q.color[1]==.105F && q.color[2]==.17F;});
+        require(first!=ui.quads.end(),"ordinary report has its own navy header");
+        const auto header_index=static_cast<std::size_t>(first-ui.quads.begin());
+        const hr::ui::Rect header{phone.x+first->rect[0]*phone.width,phone.y+first->rect[1]*phone.height,first->rect[2]*phone.width,first->rect[3]*phone.height};
+        std::string copy;bool left_header=false;float ink_bottom=header.y;
+        for(std::size_t i=header_index+1;i<ui.quads.size();++i) {
+          const auto& q=ui.quads[i];
+          if(!glyph(q)){left_header=true;break;}
+          const auto ink=actual_glyph_ink(q,phone);if(ink.width==0)continue;
+          require(ink.x>=header.x+3.99F && ink.right()<=header.right()-3.99F && ink.y>=header.y+3.99F && ink.bottom()<=header.bottom()-3.99F,"actual consumed report header alpha and filtering fringe stay inside navy with physical padding");
+          ink_bottom=std::max(ink_bottom,ink.bottom());
+        }
+        require(left_header && ink_bottom>header.y,"report header has real consumed glyph ink before reward content");
+        for(std::size_t i=header_index+1;i<ui.quads.size() && glyph(ui.quads[i]);++i) {
+          const auto& q=ui.quads[i];const unsigned col=static_cast<unsigned>(std::lround(q.uv[0]*16));const float bank=q.uv[1]*2048>=512?512.F:0.F;const unsigned row=static_cast<unsigned>(std::lround((q.uv[1]*2048-bank)/80));copy+=static_cast<char>(32+row*16+col);
+        }
+        require(compact(copy)==compact(report.heading+report.status),"all status words are drawn before reward panel, without max-lines truncation");
+        require(!ui.text_overflow,"bounded ordinary report header allocation does not falsely declare a fit");
+      }
+}
 } // namespace
 int main(int argc, char** argv) {
   require(argc == 2, "actual cooked atlas directory is supplied");
@@ -1211,6 +1272,7 @@ int main(int argc, char** argv) {
   enlarged_run_preserves_two_bands_and_complete_semantics();
   banded_framing_keeps_pixel_fit_and_global_contacts();
   late_value_hud_keeps_level_at_small_portrait();
+  report_header_contains_complete_consumed_glyph_ink();
   compact_choice_titles_stay_on_the_dark_frame();
   promotion_preserves_choice_safety_and_collected_return_controls();
   actual_damage_feedback_stays_inside_the_tactical_hud();

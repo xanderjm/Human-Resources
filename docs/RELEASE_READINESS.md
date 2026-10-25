@@ -33,20 +33,39 @@ not phone/GPU performance. Detailed reports are under `boss-cycle-contract-938ea
 `boss-presentation-prep-938ea358/`, `pause-bank-disclosure/`,
 `boss-continuation-independent-qa/` and `boss-runtime-performance/` in evidence.
 
-The owner's latest requested app is the separate **Latest Playtest938ea35**,
-confirmed at PID33473, with original ship size and a fresh test save. All104
-bundle files/signature are verified; the retained executable's missing permission
-was corrected in the new bundle before successful normal launch. Twelve user
-previews and30discovered bundles are protected. This app contains accepted direct
-flight/held-button/sweep feedback; later boss/Pause source does not hot-update it.
+A later accepted host-only slice removes the no-choice death preview tap: an
+actual active-to-dead advance uses existing durable finish and shows one saved
+SIGNAL LOST report with flight context, goals and Fly Again/Hangar. Protected
+checkpoint/settlement retries, explicit Pause/recovery banking and guest truth
+remain. A short existing-timer eligibility preserves queued death haptics without
+a UI hold. Native review rejects a320header leak despite the first green gate;
+measured full status/physical glyph padding fixes it, with existing readable
+fallback. Final47host suites/static/diff, three revised native sizes, independent
+review and actual accelerated player smoke pass. `death-flow-quality-fafd40be/`
+and `death-flow-integration/revised/` bind source/evidence. This new UI is outside
+the frozenfaf mobile/runtime and delivered test app described below.
+
+The owner's latest requested app is the separate **Latest Playtest fafd40be**,
+confirmed at PID52722, with original ship size and a fresh test save. It includes
+accepted authority8 boss attacks, Pause bank disclosure and preceding UI/sweep
+feedback. All104 bundle files and the strict ad hoc signature are verified;
+the raw executable matches the accepted68-input closure. Thirteen user previews
+and31discovered bundles are protected. Exact staging/launch evidence is under
+`build/evidence/latest-playtest-fafd40be/`. Later work does not hot-update it.
 Current mobile compile/package qualification is now the exact741-filefafd40be
 checkpoint: both iOS Release builds, Android both ABIs/variants/lint/16KiB/AAB
 and source/package audits pass, independently reviewed. Reports are under
 `boss-ui-mobile/` and `boss-ui-mobile-independent/`; all81payloads/eight animations
 remain exact and previous packages are preserved. Root rehashes49report records
 and227artifact entries. The supplemental Windows package remainsb99c373.
-An isolated current Android runtime is being prepared; physical input, sustained
-budgets, human feel, distribution and store acceptance remain open. Goal stays active.
+The frozen fafd40be isolated-ID API36/software-Vulkan diagnostic now passes
+actual render, earned draft, exact force-stop/cold paused restore, Resume and
+under30s zero-credit bank/cold reopen. Root rehashes50records and136identical
+APK entries and views four actual frames. The owned read-only VM exits cleanly;
+`boss-android-runtime-attempt2/REPORT.json` binds the result. This does not cover
+pending death-flow source edits, active-run background flush, positive payout,
+boss phases, physical input/budgets, human feel, distribution or store acceptance.
+Goal stays active.
 
 ## Historical b99c373 clean/platform checkpoint
 
