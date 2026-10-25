@@ -92,6 +92,9 @@ void replaced_offer_and_purchase_reject_stale_actions() {
   interface = hr::product::interface(view);
   nodes = accessibility_snapshot(view, interface);
   require(session.publish(nodes), "hangar snapshot publishes");
+  const auto& weapon = named(nodes, "Weapon Calibration");
+  require(weapon.value.find("Owned: +0% original weapon damage. Next: +5% original weapon damage.") != std::string::npos &&
+      weapon.value.find("next flight") != std::string::npos, "Hangar speaks owned and next totals with complete stat basis and permanent scope");
   for (const auto& node : nodes)
     if (node.role == hr::ui::SemanticRole::button && node.disabled) {
       require(!node.value.empty(), "disabled purchase still describes rank benefit and price");

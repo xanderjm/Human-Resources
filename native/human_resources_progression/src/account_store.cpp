@@ -17,6 +17,9 @@ constexpr std::array<std::string_view, 4> track_names{"Weapon Calibration", "Hul
 constexpr std::array<std::string_view, 4> track_benefits{
     "% original weapon damage", " starting and maximum hull",
     " starting and maximum shield", "% base capture rate"};
+constexpr std::array<std::string_view, 4> track_bonus_basis{
+    "original weapon damage", "starting & maximum hull",
+    "starting & maximum shield", "base capture rate"};
 std::string_view milestone_unit(const std::string_view counter) {
   if (counter == "captures") return "captures";
   if (counter == "military_kills") return "military defeats";
@@ -214,9 +217,14 @@ std::array<TrackView, 4> AccountStore::hangar() const {
     const auto cost = rank < tuning::permanent_maximum_ranks[i] ? tuning::permanent_costs[rank] : 0;
     const auto gain = static_cast<int>(std::lround(tuning::permanent_per_rank[i] * ((i == 0 || i == 3) ? 100 : 1)));
     const auto benefit = "+" + std::to_string(gain) + std::string(track_benefits[i]);
+    const auto total = [&](const unsigned projected_rank) {
+      const auto amount = std::lround(tuning::permanent_per_rank[i] * static_cast<float>(projected_rank) * ((i == 0 || i == 3) ? 100.F : 1.F));
+      return "+" + std::to_string(amount) + ((i == 0 || i == 3) ? "%" : "");
+    };
     result[i] = {static_cast<Track>(i), track_names[i], benefit, rank,
         tuning::permanent_maximum_ranks[i], cost,
-        writable() && account_.checkpoint.run_id == 0 && cost != 0 && account_.credits >= cost};
+        writable() && account_.checkpoint.run_id == 0 && cost != 0 && account_.credits >= cost,
+        total(rank), rank < tuning::permanent_maximum_ranks[i] ? total(rank + 1U) : "", std::string(track_bonus_basis[i])};
   }
   return result;
 }

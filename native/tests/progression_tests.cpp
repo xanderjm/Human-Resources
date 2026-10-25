@@ -42,12 +42,23 @@ void hangar_costs_caps_and_run_isolation() {
   constexpr std::array<std::uint64_t, 5> costs{80, 140, 240, 400, 640};
   const auto before = store.account().credits;
   for (unsigned track = 0; track < 4; ++track) {
+    unsigned expected_rank = 0;
     for (const auto cost : costs) {
-      require(store.hangar()[track].cost == cost, "exact next rank cost");
+      const auto view = store.hangar()[track];
+      require(view.cost == cost, "exact next rank cost");
+      constexpr std::array<unsigned, 4> gains{5, 6, 4, 3};
+      const auto suffix = track == 0 || track == 3 ? "%" : "";
+      require(view.owned_bonus == "+" + std::to_string(expected_rank * gains[track]) + suffix &&
+          view.next_bonus == "+" + std::to_string((expected_rank + 1) * gains[track]) + suffix,
+          "all owned and next totals follow actual permanent ranks, including zero and final purchase");
+      require(!view.bonus_basis.empty(), "bonus retains original damage, starting/max pool or base capture basis");
       require(store.purchase(static_cast<Track>(track)).succeeded(), "purchase rank");
+      ++expected_rank;
     }
     require(store.purchase(static_cast<Track>(track)).issue == MutationIssue::capped, "five rank cap");
     require(store.hangar()[track].cost == 0, "max rank no cost");
+    require(store.hangar()[track].next_bonus.empty() && !store.hangar()[track].owned_bonus.empty(),
+        "capped track keeps its owned power and never advertises a sixth purchase");
   }
   require(before - store.account().credits == 6000, "all twenty purchases total six thousand");
   require(!store.credit_bonus_available(), "hide bonus when all remaining upgrades affordable");

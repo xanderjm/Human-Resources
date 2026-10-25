@@ -1,5 +1,19 @@
 # Technical Decisions
 
+## 25 October 2026 — Hangar displays cumulative purchase value
+
+AccountStore::hangar projects owned and next cumulative permanent bonuses from
+the same canonical tuning as run setup. Keep existing per-rank benefit compatible;
+add derived display totals and their complete basis, never separate UI balance
+math. A capped track has no next bonus. These fields are transient view metadata,
+not account/save schema or a second runtime tuning authority.
+
+Ordinary cards retain existing purchase geometry and show owned→next totals with
+original-weapon-damage, starting-and-maximum-pool or base-capture labels. Small
+phones wrap scope/captions using measured bounds; readable pages and accessibility
+retain complete descriptions. Permanent power applies to the next flight. Preserve
+real consumed-glyph clearance rather than accepting fitted advances alone.
+
 ## 25 October 2026 — Raw authoring bytes survive checkout and package audits
 
 Keep the reviewed authoring tools and mesh recipe at explicit LF endings through

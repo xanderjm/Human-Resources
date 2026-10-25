@@ -230,14 +230,16 @@ Interface wide_interface(const View& v) {
     break;
   }
   case Screen::hangar: {
-    title("HANGAR", number(account.credits) + " Research Credits / permanent upgrades");
+    title("HANGAR", number(account.credits) + " Research Credits / next-flight bonuses");
     const auto tracks = v.store->hangar();
     for (unsigned i = 0; i < 4; ++i) {
       const auto& track = tracks[i];
       const float x = 32 + static_cast<float>(i) * 196;
       c.fill(x, 120, 184, 146, panel);
       c.wrap(x + 10, 130, 164, track.title, 18, white, 2);
-      c.wrap(x + 10, 182, 164, track.benefit, 14, muted, 3);
+      c.text(x + 10, 174, track.next_bonus.empty() ? "OWNED / MAX" : "OWNED / NEXT", 14, mint);
+      c.fitted(x + 10, 196, 164, track.owned_bonus + (track.next_bonus.empty() ? "" : " -> " + track.next_bonus), 22);
+      c.wrap(x + 10, 226, 164, track.bonus_basis, 14, muted, 2);
       c.button(x, 282, 184, track.rank >= track.maximum_rank ? "MAXED" : number(track.cost) + " CR", static_cast<Command>(static_cast<unsigned>(Command::buy0) + i), track.affordable, mint, 64);
     }
     c.button(688, 28, 124, "BACK", Command::home, true, white, 64);
@@ -376,7 +378,7 @@ std::vector<ReadableSection> readable_sections(const View& v) {
     const auto tracks = v.store->hangar();
     for (unsigned i = 0; i < tracks.size(); ++i) {
       const auto& track = tracks[i];
-      add("HANGAR / " + number(account.credits) + " RESEARCH CREDITS\nPermanent upgrades apply to future runs.\n" + std::string(track.title) + " / rank " + number(track.rank) + " of " + number(track.maximum_rank) + "\n" + track.benefit, static_cast<Command>(static_cast<unsigned>(Command::buy0) + i), track.rank >= track.maximum_rank ? "MAXED" : "BUY / " + number(track.cost) + " CR", track.affordable);
+      add("HANGAR / " + number(account.credits) + " RESEARCH CREDITS\nPermanent bonuses apply to your next flight.\n" + std::string(track.title) + " / rank " + number(track.rank) + " of " + number(track.maximum_rank) + "\nOwned: " + track.owned_bonus + " " + track.bonus_basis + "." + (track.next_bonus.empty() ? " Maximum rank." : "\nNext: " + track.next_bonus + " " + track.bonus_basis + "."), static_cast<Command>(static_cast<unsigned>(Command::buy0) + i), track.rank >= track.maximum_rank ? "MAXED" : "BUY / " + number(track.cost) + " CR", track.affordable);
     }
     add("BLUEPRINT LIBRARY\nFree milestones unlock hardware in future upgrade draws.", Command::blueprints, "BLUEPRINTS");
     break;
@@ -1129,7 +1131,7 @@ Interface standard_interface(const View& v) {
       c.text(24, 28, "HANGAR", 32, white, true);
       c.icon(24, 83, 0, 28);
       c.text(64, 79, number(account.credits) + " RESEARCH CREDITS", 17, mint);
-      c.fitted(24, 114, 342, "Permanent flight upgrades.", 16, muted);
+      c.wrap(24, 108, 342, "Permanent bonuses for your next flight.", 16, muted, 2, 1.F);
       const auto tracks = store.hangar();
       for (unsigned i = 0; i < 4; ++i) {
         const float y = 162 + static_cast<float>(i) * 138;
@@ -1139,8 +1141,9 @@ Interface standard_interface(const View& v) {
                                                 : 1U,
             30);
         c.fitted(78, y + 10, 276, track.title, 20);
-        c.text(78, y + 43, "RANK " + number(track.rank) + " / " + number(track.maximum_rank), 14, mint);
-        c.wrap(34, y + 78, 180, track.benefit, 14, white, 2);
+        c.fitted(78, y + 32, 276, "RANK " + number(track.rank) + "/" + number(track.maximum_rank) + (track.next_bonus.empty() ? " / OWNED MAX" : " / OWNED / NEXT"), 14, mint);
+        c.fitted(34, y + 52, 180, track.owned_bonus + (track.next_bonus.empty() ? "" : " -> " + track.next_bonus), 20, white);
+        c.wrap(34, y + 70, 180, track.bonus_basis, 14, muted, 2, 1.F);
         c.button(226, y + 67, 130, track.rank >= track.maximum_rank ? "MAXED" : number(track.cost) + " CR", static_cast<Command>(static_cast<int>(Command::buy0) + static_cast<int>(i)), track.affordable, mint, 48);
       }
       c.button(26, 756, 148, "BACK", Command::home, true, white, 56);

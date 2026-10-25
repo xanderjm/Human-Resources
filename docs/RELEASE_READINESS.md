@@ -19,6 +19,15 @@ fresh separate test save. All ten owner previews/accounts are now protected from
 automation, replacement and quit. Exact staging and actual launch are recorded in
 `build/evidence/latest-playtest-853169/`. No later source edit hot-updates it.
 
+A later host-accepted Hangar slice now makes permanent purchase value explicit:
+actual owned→next totals, complete stat basis and next-flight scope, with owned
+maximum power shown at cap. Canonical progression projects the values; costs,
+rules, targets and saves stay unchanged. Seven source/test files pass44native
+suites and six final320/390/large-text native fixtures; root and independent review
+accept them. `build/evidence/hangar-bonus-review/` binds source, pixels and retained
+binaries. It is newer than the running owner preview and qualified mobile/Windows
+packages; a subsequent combined platform refresh must include it.
+
 The same734-file source checkpoint passes a fresh optimized archive build/cook,
 44native suites, six new mesh-tool tests and its112-file source-bound package
 allowlist using pinned existing dependency/tool caches. Fresh product/SDL objects,

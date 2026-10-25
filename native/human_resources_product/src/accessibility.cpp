@@ -132,7 +132,9 @@ void describe_control(ui::AccessibilityNode& node, const View& view, const Butto
     const auto& track = tracks[static_cast<unsigned>(button.command) - static_cast<unsigned>(Command::buy0)];
     node.label = std::string(track.title);
     node.value = "Rank " + std::to_string(track.rank) + " of " + std::to_string(track.maximum_rank) + ". " +
-                 track.benefit + ". " + (track.rank >= track.maximum_rank ? "Maximum rank" : std::to_string(track.cost) + " credits");
+                 "Owned: " + track.owned_bonus + " " + track.bonus_basis + ". " +
+                 (track.next_bonus.empty() ? "Maximum rank." : "Next: " + track.next_bonus + " " + track.bonus_basis + ". " + std::to_string(track.cost) + " credits.") +
+                 " Permanent bonuses apply to your next flight.";
     break;
   }
   default:

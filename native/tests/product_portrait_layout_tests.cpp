@@ -123,6 +123,82 @@ std::string atlas_copy(const Interface& ui) {
   }
   return text;
 }
+void hangar_shows_owned_and_next_power_with_visible_basis() {
+  progression_tests::MemoryBackend backend;
+  hr::progression::AccountStore store{backend};
+  require(store.load().playable(), "Hangar display fixture loads");
+  for (unsigned i = 0; i < 10; ++i) {
+    require(store.begin_run().succeeded(), "fund display fixture through actual progression");
+    require(store.settle({.run_id = store.account().checkpoint.run_id, .active_milliseconds = 3600000,
+        .score = 1500, .captures = 710, .soldier_kills = 60, .jeep_kills = 4,
+        .tank_kills = 3, .vehicle_captures = 2, .boss_kills = 2}).succeeded(), "bank fixture reward");
+  }
+  hr::gameplay::Game game; game.start();
+  for (const unsigned rank : {0U, 1U, 4U, 5U}) {
+    for (unsigned track = 0; track < 4; ++track)
+      while (store.hangar()[track].rank < rank)
+        require(store.purchase(static_cast<hr::progression::Track>(track)).succeeded(), "purchase actual displayed rank");
+    for (const auto phone : {hr::ui::Rect{0,0,320,568}, hr::ui::Rect{0,0,390,844}}) {
+      View view{Screen::hangar, &game.snapshot(), &store, phone, {0,20,0,0}};
+      const auto ui = interface(view);
+      const auto copy = compact(atlas_copy(ui));
+      require(copy.find("Permanentbonusesforyournextflight.") != std::string::npos,
+          "ordinary Hangar visibly states when permanent power applies");
+      for (const auto& track : store.hangar()) {
+        require(copy.find(compact(track.owned_bonus + (track.next_bonus.empty() ? "" : " -> " + track.next_bonus))) != std::string::npos,
+            "ordinary cards show actual owned to next totals, including maximum owned power");
+        require(copy.find(compact(track.bonus_basis)) != std::string::npos,
+            "ordinary cards retain complete original damage, starting/max pools and base capture basis");
+      }
+      require(ui.buttons.size() == 6, "four comparisons and stable Back/Blueprints remain together");
+      for (unsigned i = 0; i < 4; ++i)
+        require(ui.buttons[i].enabled == (rank < 5), "capped cards retain owned power but no purchase action");
+      const auto safe = hr::ui::inset(view.viewport, view.safe_area);
+      const float scale = std::min(safe.width / 390.F, safe.height / 844.F);
+      const float ox = safe.x + (safe.width - 390.F * scale) * .5F;
+      const float oy = safe.y + (safe.height - 844.F * scale) * .5F;
+      bool price_label = false;
+      for (const auto& q : ui.quads) {
+        if (!glyph(q)) {
+          price_label = false;
+          for (unsigned i = 0; i < 4; ++i)
+            if (std::abs(q.rect[0] * phone.width - ui.buttons[i].bounds.x) < .01F &&
+                std::abs(q.rect[2] * phone.width - ui.buttons[i].bounds.width) < .01F) price_label = true;
+          continue;
+        }
+        const auto ink = actual_glyph_ink(q, view.viewport);
+        if (ink.width == 0) continue;
+        require(ink.x >= ox + 8 * scale && ink.right() <= ox + 382 * scale,
+            "actual Hangar caption and heading ink stays inside its visible panel on small phones");
+        // Purchase label ink belongs inside its button; comparison/caption ink
+        // must not cross that price column or the following track's panel.
+        if (price_label) continue;
+        for (unsigned i = 0; i < 4; ++i) {
+          const float top = oy + (162 + static_cast<float>(i) * 138) * scale;
+          if (ink.y >= top + 56 * scale && ink.y < top + 126 * scale) {
+            if (!(ink.right() < ui.buttons[i].bounds.x && ink.bottom() <= top + 126 * scale))
+              std::cerr << "Hangar ink width=" << phone.width << " rank=" << rank << " track=" << i <<
+                  " ink=" << ink.x << ',' << ink.y << ',' << ink.width << ',' << ink.height <<
+                  " price-x=" << ui.buttons[i].bounds.x << " card-bottom=" << top + 126 * scale << '\n';
+            require(ink.right() < ui.buttons[i].bounds.x && ink.bottom() <= top + 126 * scale,
+                "consumed comparison and full stat-basis ink clears price targets and stays inside its card");
+          }
+        }
+      }
+    }
+  }
+  View enlarged{Screen::hangar, &game.snapshot(), &store, {0,0,390,844}, {0,47,0,34}};
+  enlarged.text_scale = 2;
+  std::string all;
+  const auto count = interface(enlarged).page_count;
+  for (unsigned page = 0; page < count; ++page) {
+    enlarged.ui_page = page;
+    all += interface(enlarged).page_text;
+  }
+  for (const auto& track : store.hangar())
+    require(compact(all).find(compact("Owned: " + track.owned_bonus + " " + track.bonus_basis)) != std::string::npos,
+        "enlarged fallback retains complete maximum owned power and basis");
+}
 
 void readable_page_is_real_safe_and_scaled(const View& view, const Interface& page) {
   const auto safe = hr::ui::inset(view.viewport, view.safe_area);
@@ -991,6 +1067,7 @@ int main(int argc, char** argv) {
   file.seekg(0); file.read(reinterpret_cast<char*>(bytes.data()), count);
   require(hr::assets::decode_preview_mesh(bytes, atlas), "actual production atlas decodes");
   bounded_damage_hud_keeps_ingress_vitality_clear();
+  hangar_shows_owned_and_next_power_with_visible_basis();
   enlarged_run_preserves_two_bands_and_complete_semantics();
   banded_framing_keeps_pixel_fit_and_global_contacts();
   late_value_hud_keeps_level_at_small_portrait();

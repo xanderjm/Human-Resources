@@ -80,6 +80,11 @@ struct TrackView final {
   std::uint32_t maximum_rank{};
   std::uint64_t cost{};
   bool affordable{};
+  // Display projections of the owned and next permanent totals, from the same
+  // tuning as run setup. A capped track has no next bonus.
+  std::string owned_bonus;
+  std::string next_bonus;
+  std::string bonus_basis;
 };
 struct BlueprintView final {
   std::string_view id;
