@@ -129,7 +129,9 @@ void SceneEffects::update(const gameplay::Snapshot& run) {
       for (std::size_t j = 0; j < previous_count_; ++j)
         if (previous_[j].id == run.entities[i].id) {
           const auto a = previous_[j].position, b = run.entities[i].position;
-          next_angles[i] = std::fmod(wheel_angles_[j] - std::min(5.F, std::hypot(b.x - a.x, b.z - a.z)) / .3F, 2 * std::numbers::pi_v<float>);
+          const float yaw = gameplay::vehicle_body_yaw(run.entities[i]);
+          const float travel = (b.x - a.x) * std::sin(yaw) - (b.z - a.z) * std::cos(yaw);
+          next_angles[i] = std::fmod(wheel_angles_[j] - std::clamp(travel, -5.F, 5.F) / .3F, 2 * std::numbers::pi_v<float>);
           break;
         }
   wheel_angles_ = next_angles;

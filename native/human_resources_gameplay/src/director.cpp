@@ -293,10 +293,16 @@ void Game::State::enemies(float dt) {
     const bool planted = a.view.warning_seconds > 0 || (infantry && a.view.fire_recovery_seconds > 0) || shot_recovery;
     const float arrival = std::min(1.F, std::sqrt(length_squared(route)) / tuning::tactics_arrival_radius);
     const float speed = planted ? 0.F : tuning::military_movement_speed[index] * (1 - slow) * arrival;
-    a.view.velocity = planted ? Vec2{} : military_velocity(a, scaled(direction(route), speed), dt);
-    if (!infantry && length_squared(a.view.velocity) > .0001F) {
-      a.locomotion_velocity = a.view.velocity;
-      a.view.body_heading = std::atan2(a.view.velocity.x, -a.view.velocity.z);
+    if (infantry) {
+      a.view.velocity = planted ? Vec2{} : military_velocity(a, scaled(direction(route), speed), dt);
+    } else if (planted) {
+      a.view.velocity = {};
+    } else {
+      const auto motion = vehicle_motion(a, destination, dt);
+      a.view.velocity = motion.velocity;
+      a.locomotion_velocity = motion.facing;
+      a.escape = motion.escape;
+      a.view.body_heading = std::atan2(motion.facing.x, -motion.facing.z);
     }
     a.view.position = add(a.view.position, scaled(a.view.velocity, dt));
     const float screen_station = a.view.position.z - view.runner_distance;

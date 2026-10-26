@@ -375,3 +375,15 @@ resize and minimize/restore. World dimensions/draws/shadows/geometry and the
 Game digest stay equal across the measured rendering paths. These are
 functional/pixel checks, not a physical-phone performance pass. Final current
 packages and native aggregate remain qualification gates for this source epoch.
+
+## 25 October 2026 — Committed vehicle recovery
+
+[ADR 005](adr/005-committed-vehicle-maneuvers.md) records the approved Game9
+implementation direction after actual finite cases reject two stateless steering
+candidates. Ordinary vehicles retain a bounded maneuver commitment through
+braking, turning, planting and recovery. On26October the final codec2/authority9
+source passes47host contracts, exact continuation/finite gates and bounded native
+motion/HUD review. A discovered crowded boss regression is corrected through a
+clear lateral corridor using existing saved flank choice. Host cost, original
+failures and native limits remain explicit in the development log. Mobile refresh
+and physical qualification remain open; the owner test app is still a0a4128/Game8.

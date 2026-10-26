@@ -525,52 +525,38 @@ void small_preferences_preserve_type_growth_and_useful_menus() {
 }
 
 void compact_hud_maximum_values_preserve_spacing_and_ingress_bound() {
-  progression_tests::MemoryBackend backend;
-  hr::progression::AccountStore store{backend};
+  progression_tests::MemoryBackend backend;hr::progression::AccountStore store{backend};
   require(store.load().playable(), "HUD account loads");
-  hr::gameplay::Game game;
-  game.start();
-  auto run = game.snapshot();
-  run.hull = run.maximum_hull = run.shield = run.maximum_shield = 9999;
-  run.stats.level = std::numeric_limits<std::uint32_t>::max();
-  run.stats.active_seconds = 30;
-  for (const auto phone : std::array<hr::ui::Rect,2>{{{0,0,320,568},{0,0,390,844}}}) {
-    View view{Screen::run,&run,&store,phone,{0,20,0,0}};
-    for (const auto score : {std::uint64_t{0},std::uint64_t{9999},std::uint64_t{999999},std::numeric_limits<std::uint64_t>::max()}) {
-      run.stats.score = score;
-      const auto ui = interface(view);
-      const auto pause = std::find_if(ui.buttons.begin(),ui.buttons.end(),[](const auto& b){return b.command==Command::pause;});
-      require(pause != ui.buttons.end(), "maximum HUD retains Pause");
-      std::string text;
-      std::vector<hr::ui::Rect> origins;
-      float occupied_bottom = 0;
-      for (const auto& q : ui.quads) {
-        const float top = q.rect[1] * phone.height, bottom = (q.rect[1] + q.rect[3]) * phone.height;
-        // Starter Dash has its own lower control. This assertion owns only the
-        // tactical top HUD that constrains hostile ingress.
-        if (top > pause->bounds.bottom()) continue;
-        occupied_bottom = std::max(occupied_bottom,bottom);
-        require(bottom <= pause->bounds.bottom() + .01F, "actual HUD panels and full glyph quads do not extend below existing Pause ingress boundary");
-        if (!glyph(q)) continue;
-        const float size = q.rect[2] * phone.width * 48.F / 64.F;
-        const unsigned col = static_cast<unsigned>(std::lround(q.uv[0]*1024.F/64.F));
-        const unsigned row = static_cast<unsigned>(std::lround(q.uv[1]*2048.F/80.F));
-        text += static_cast<char>(32+row*16+col);
-        origins.push_back({q.rect[0]*phone.width+size*4.F/48.F,top+size*8.F/48.F,size,size});
+  hr::gameplay::Game game;game.start();auto run=game.snapshot();
+  run.hull=run.maximum_hull=run.shield=run.maximum_shield=9999;
+  run.stats.level=std::numeric_limits<std::uint32_t>::max();run.stats.active_seconds=30;
+  for(const auto phone:std::array<hr::ui::Rect,2>{{{0,0,320,568},{0,0,390,844}}})
+    for(const auto score:{std::uint64_t{0},std::uint64_t{9999},std::uint64_t{999999},std::numeric_limits<std::uint64_t>::max()}) {
+      run.stats.score=score;View view{Screen::run,&run,&store,phone,{0,20,0,0}};
+      const auto ui=interface(view);
+      const auto pause=std::find_if(ui.buttons.begin(),ui.buttons.end(),[](const auto& b){return b.command==Command::pause;});
+      require(pause!=ui.buttons.end(),"maximum HUD retains Pause");
+      std::vector<hr::ui::Rect> pods;
+      for(const auto& q:ui.quads) if(q.uv[2]<0 && q.color==std::array<float,4>{.035F,.105F,.17F,.96F} && q.rect[1]*phone.height<pause->bounds.bottom()) {
+        const hr::ui::Rect box{q.rect[0]*phone.width,q.rect[1]*phone.height,q.rect[2]*phone.width,q.rect[3]*phone.height};
+        require(box.bottom()<=pause->bounds.bottom()+.01F,"grouped HUD keeps original hostile ingress boundary");pods.push_back(box);
       }
-      const auto hp=text.find("HP 9999"), sh=text.find("SH 9999"), points=text.find("SCORE ");
-      require(hp!=std::string::npos && sh!=std::string::npos && points!=std::string::npos, "maximum hull/shield and distinct SCORE labels remain visible");
-      const auto advance_end = [&](std::size_t start) {
-        const auto last=start+6;
-        return origins[last].x + origins[last].x-origins[last-1].x;
-      };
-      require(origins[sh].x >= advance_end(hp)+6, "measured HP and shield keep a visible gap at maximum values");
-      require(origins[points].x >= advance_end(sh)+6, "score cannot collide with maximum shield or optional level");
-      if (score==9999) require(text.find("SCORE 9999")!=std::string::npos, "four-digit score remains fully visible inside one row");
-      if (phone.width==320) require(std::abs(pause->bounds.bottom()-64.0711F)<.02F, "compact correction preserves exact existing Pause/source-fit boundary");
-      std::cout << "HUD phone=" << phone.width << 'x' << phone.height << " score=" << score << " occupied_bottom=" << occupied_bottom << " ingress_guard=" << pause->bounds.bottom() << '\n';
+      require(pods.size()==2 && pods[0].right()+7.99F<=pods[1].x,"survival and progress have separate stable groups");
+      std::string copy;std::vector<hr::ui::Rect> inks;
+      for(const auto& q:ui.quads) if(glyph(q)) {
+        const auto ink=actual_glyph_ink(q,phone);if(ink.width==0 || ink.y>pause->bounds.bottom() || ink.x>=pause->bounds.x)continue;
+        const bool inside=std::any_of(pods.begin(),pods.end(),[&](const auto& box){return ink.x>=box.x+1.99F && ink.right()<=box.right()-1.99F && ink.y>=box.y+1.99F && ink.bottom()<=box.bottom()-1.99F;});
+        require(inside,"actual body/title glyph alpha plus filtering stays inside the correct tactical pod with physical padding");
+        const unsigned col=static_cast<unsigned>(std::lround(q.uv[0]*16));const float bank=q.uv[1]*2048>=512?512.F:0.F;
+        const unsigned row=static_cast<unsigned>(std::lround((q.uv[1]*2048-bank)/80));copy+=static_cast<char>(32+row*16+col);inks.push_back(ink);
+      }
+      for(const auto value:{"HP9999","SHIELD9999","LV4B","XP","SCORE"}) require(copy.find(value)!=std::string::npos,"grouped HUD retains absolute defences and distinct level/XP/score values");
+      const auto gap_after=[&](std::string_view label){const auto start=copy.find(label);const auto last=start+label.size()-1;require(last+1<inks.size(),"numeric anchor follows label");require(inks[last].right()+1.99F<=inks[last+1].x,"label and heavy numeric anchor have visible actual-ink separation");};
+      gap_after("HP");gap_after("SHIELD");gap_after("LV");gap_after("SCORE");
+      if(score==9999) require(copy.find("SCORE9999")!=std::string::npos,"four-digit score remains fully visible");
+      require(!ui.text_overflow,"ordinary grouped HUD honestly fits maximum supported visual values");
+      if(phone.width==320)require(std::abs(pause->bounds.bottom()-64.0711F)<.02F,"grouping preserves exact existing Pause/source-fit boundary");
     }
-  }
 }
 
 void current_build_separates_temporary_and_permanent_identity() {
@@ -823,26 +809,18 @@ void harvest_feedback_explains_sweeps_boost_and_dash_without_expanding_top_hud()
         require(copy.find(boosted ? (scale == 1 ? "OVERDRIVE5s" : scale >= 3.2F ? "BOOST" : "BOOST5s") : scale >= 3.2F ? "2/3" : "SWEEP2/3") != std::string::npos, "actual timed sweep/Overdrive state is visible without inferring reward from animation");
         const auto pause = std::find_if(ui.buttons.begin(), ui.buttons.end(), [](const auto& b){return b.command == Command::pause;})->bounds;
         require(pause.y == original_pause.y && pause.bottom() == original_pause.bottom(), "harvest payoff leaves tactical top ingress and Pause bounds unchanged");
-        if (boosted && scale == 1) {
-          const auto safe = hr::ui::inset(view.viewport, view.safe_area);
-          const float fit = std::min(safe.width / 390.F, safe.height / 844.F);
-          const float ox = safe.x + (safe.width - 390.F * fit) * .5F;
-          const float oy = safe.y + (safe.height - 844.F * fit) * .5F;
-          const hr::ui::Rect panel{ox + 20 * fit, oy + 752 * fit, 190 * fit, 60 * fit};
-          unsigned caption_glyphs = 0;
-          for (const auto& q : ui.quads) {
-            if (!glyph(q)) continue;
-            const float size = q.rect[2] * phone.width * 48.F / 64.F;
-            const float origin_y = q.rect[1] * phone.height + size * 8.F / 48.F;
-            if (std::abs(origin_y - (oy + 785 * fit)) > .1F) continue;
-            ++caption_glyphs;
-            const hr::ui::Rect ink_guard{q.rect[0] * phone.width, origin_y, q.rect[2] * phone.width, size * 1.25F};
-            require(size >= 13.99F, "Overdrive caption retains the readable physical text floor");
-            require(ink_guard.x >= panel.x && ink_guard.right() <= panel.right() &&
-                ink_guard.y >= panel.y && ink_guard.bottom() <= panel.bottom() + .1F,
-                "Overdrive caption including horizontal atlas bearings stays inside its existing mint panel, clear of Dash");
+        if (scale == 1) {
+          const auto safe=hr::ui::inset(view.viewport,view.safe_area);const float fit=std::min(safe.width/390.F,safe.height/844.F);
+          const float ox=safe.x+(safe.width-390*fit)*.5F,oy=safe.y+(safe.height-844*fit)*.5F;
+          const hr::ui::Rect status{ox+20*fit,oy+752*fit,190*fit,60*fit};
+          require(std::any_of(ui.quads.begin(),ui.quads.end(),[&](const auto& q){return q.uv[2]<0 && q.color==std::array<float,4>{.035F,.105F,.17F,.96F} && std::abs(q.rect[0]*phone.width-status.x)<.01F && std::abs(q.rect[1]*phone.height-status.y)<.01F;}),"passive sweep/Overdrive has a navy status backing distinct from the mint Dash action");
+          require(ui.buttons.size()==2,"passive sweep/Overdrive does not become an input target");
+          unsigned pips=0;
+          for(const auto& q:ui.quads) {
+            if(glyph(q)) {const auto ink=actual_glyph_ink(q,phone);if(ink.width>0 && ink.y>status.y && ink.x<status.right() && ink.x>status.x) require(ink.right()<=status.right()-2 && ink.bottom()<=status.bottom()-2,"complete passive status title uses consumed atlas ink inside its existing footprint");}
+            if(q.uv[2]<0 && q.color==std::array<float,4>{.06F,.16F,.23F,.97F} && std::abs(q.rect[1]*phone.height-(oy+789*fit))<.01F)++pips;
           }
-          require(caption_glyphs > 0, "ordinary Overdrive keeps a visible benefit caption");
+          require(pips==hr::gameplay::tuning::harvest_chain_target,"counted empty/filled sweep pips retain non-color chain meaning");
         }
         if (scale > 1) readable_page_is_real_safe_and_scaled(view, ui);
         auto dash = std::find_if(ui.buttons.begin(), ui.buttons.end(), [](const auto& b){return b.command == Command::dash;});
@@ -1001,8 +979,9 @@ void actual_damage_feedback_stays_inside_the_tactical_hud() {
     const auto copy=compact(atlas_copy(hit));
     const auto framing=gameplay_framing(viewport,view.safe_area,scale);
     const bool short_stage=framing.compact || scale>1;
-    const std::string expected=short_stage?std::string(hull?"HP":"SH")+(framing.compact?"":":")+(cause==hr::gameplay::DamageCause::contact?"BUMP":cause==hr::gameplay::DamageCause::projectile?"SHOT":"HIT"):std::string(damage_label(view.damage_feedback));
+    const std::string expected=short_stage?std::string(hull?"HP":"SH")+(framing.compact?"":":")+(cause==hr::gameplay::DamageCause::contact?"BUMP":cause==hr::gameplay::DamageCause::projectile?"SHOT":"HIT"):std::string(hull?"HP ":"SHIELD ")+(cause==hr::gameplay::DamageCause::contact?"BUMP":cause==hr::gameplay::DamageCause::projectile?"SHOT":"HIT");
     require(copy.find(compact(expected))!=std::string::npos,"committed hit identifies agreed full or compact actual cause and affected defence at every text size");
+    if(!short_stage)for(const auto value:{"HP100","SHIELD20","LV1","XP","SCORE0"}) require(copy.find(value)!=std::string::npos,"ordinary damage keeps every persistent survival/progress value visible");
     const auto after=std::find_if(hit.buttons.begin(),hit.buttons.end(),[](const auto& b){return b.command==Command::pause;})->bounds;
     require(after.x==pause.x && after.y==pause.y && after.height==pause.height,"hit feedback preserves Pause and tactical field height");
     if(scale>1) readable_page_is_real_safe_and_scaled(view,hit);
@@ -1186,7 +1165,7 @@ void late_value_hud_keeps_level_at_small_portrait() {
     View view{Screen::run,&run,&store,viewport,{0,20,0,0}};
     const auto ui = interface(view);
     const auto copy = compact(atlas_copy(ui));
-    for (const auto value : {"HP112","SH80","LV24","SCORE2126","XP"})
+    for (const auto value : {"HP112","SHIELD80","LV24","SCORE2126","XP"})
       require(copy.find(value) != std::string::npos, "late normal HUD retains every actual value and experience label");
     for (const auto& q : ui.quads) if (glyph(q)) {
       const float size = q.rect[2] * viewport.width * 48.F / 64.F;

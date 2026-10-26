@@ -359,6 +359,57 @@ void malformed_military_authority() {
   bad = good; bad[projectile_role] = static_cast<std::byte>(game::InfantryRole::shotgunner); reject(bad);
   pass("malformed role, recovery and source-role metadata reject transactionally");
 }
+void ordinary_physical_frames_plant_and_emit_exact_sources() {
+  for(const auto kind:{game::EntityKind::jeep,game::EntityKind::tank})for(bool reverse:{false,true}) {
+    game::Game::State state;state.view.player={0,0};state.view.hull=state.view.maximum_hull=100;
+    game::detail::Actor source;source.view.id=3;source.view.kind=kind;
+    source.view.hull=source.view.maximum_hull=90;
+    const auto index=game::detail::military_index(kind);
+    source.attack_timer=tune::enemy_attack_period[index]*.5F;
+    state.view.stats.active_seconds=tune::director_boss_first_second-.5;
+    source.view.position={reverse?tune::field_half_width-tune::military_body_radius[index]:-4.F,12};
+    source.locomotion_velocity=reverse?game::Vec2{1,0}:game::Vec2{0,-1};
+    source.view.body_heading=reverse?1.57079632679F:0.F;
+    state.actors.push_back(source);
+    bool moved=false;
+    for(unsigned tick=0;tick<180;++tick) {
+      state.enemies(dt);const auto& a=state.actors.front();
+      const auto facing=game::detail::direction(a.locomotion_velocity);
+      const float longitudinal=a.view.velocity.x*facing.x+a.view.velocity.z*facing.z;
+      if(reverse?longitudinal<-.05F:std::abs(*a.view.body_heading)>.02F) {moved=true;break;}
+    }
+    if(!moved) {const auto& a=state.actors.front();std::cerr<<"physical-source kind="<<static_cast<unsigned>(kind)<<" reverse="<<reverse<<" final="<<a.view.position.x<<','<<a.view.position.z<<" v="<<a.view.velocity.x<<','<<a.view.velocity.z<<" face="<<a.locomotion_velocity.x<<','<<a.locomotion_velocity.z<<" age="<<a.age<<'\n';}
+    require(moved,"real director reaches forward-turn and backing physical frames before weapon commit");
+    state.view.stats.active_seconds=0;state.actors.front().attack_timer=0;state.enemies(dt);
+    const auto locked=state.actors.front();
+    require(locked.view.warning_seconds>0,"physical moving source commits an actual eligible warning");
+    const auto shell=game::vehicle_cannon_shot(locked.view,locked.view.warning_aim);
+    const auto gun=game::jeep_minigun_shot(locked.view,locked.view.warning_aim,locked.view.minigun_barrel);
+    const auto origin=kind==game::EntityKind::jeep?gun.origin:shell.origin;
+    const auto axis=kind==game::EntityKind::jeep?gun.direction:shell.direction;
+    require(kind==game::EntityKind::jeep?gun.valid:shell.valid,"committed ray is valid in the same accepted physical chassis frame");
+    for(unsigned tick=0;tick<120 && state.bullets.empty();++tick) {
+      state.view.player={-2,-1};state.enemies(dt);
+      const auto& a=state.actors.front();
+      near(a.view.position,locked.view.position,0,"warning forbids both physical translation and reverse escape");
+      near(a.locomotion_velocity,locked.locomotion_velocity,0,"warning freezes canonical chassis facing instead of following velocity sign");
+      require(a.view.body_heading==locked.view.body_heading,"warning/source body yaw remains frozen exactly");
+      require(a.escape.phase==locked.escape.phase && a.escape.turn_remaining==locked.escape.turn_remaining && a.escape.forward_remaining==locked.escape.forward_remaining,"planted warning retains the admitted maneuver phase, side and exit distance exactly");
+    }
+    require(state.bullets.size()==1,"one ordinary committed warning emits exactly one projectile");
+    near(state.bullets.front().view.launch_position,origin,0,"turn/reverse warning projectile exits its exact committed physical muzzle");
+    near(state.bullets.front().view.launch_direction,axis,0,"turn/reverse release uses the exact committed barrel axis");
+    for(unsigned tick=0;tick<8;++tick) {state.enemies(dt);near(state.actors.front().view.position,locked.view.position,0,"existing shot recovery remains planted");}
+    for(bool lifted:{false,true}) {
+      auto& a=state.actors.front();a.lifted=lifted;a.view.disabled_seconds=lifted?0.F:1.F;
+      const auto before=a.locomotion_velocity;const auto escape=a.escape;state.enemies(dt);
+      near(a.view.velocity,{},0,"disabled and lifted vehicles have zero physical travel");
+      near(a.locomotion_velocity,before,0,"disabled and lifted stops retain physical facing");
+      require(a.escape.phase==escape.phase && a.escape.turn_remaining==escape.turn_remaining && a.escape.forward_remaining==escape.forward_remaining,"disable and lift cannot consume or replace the committed maneuver");
+    }
+  }
+  pass("ordinary turn/reverse physical frames own warning, muzzle, recovery and stop poses");
+}
 } // namespace
 
 int main() {
@@ -370,5 +421,6 @@ int main() {
   muzzle_geometry_and_invalid_aims();
   continuation_and_revision();
   malformed_military_authority();
+  ordinary_physical_frames_plant_and_emit_exact_sources();
   std::cout << "RESULT " << groups << " military gameplay groups passed, zero failures\n";
 }

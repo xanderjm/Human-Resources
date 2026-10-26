@@ -11,9 +11,13 @@ namespace game = human_resources::gameplay;
 using test_support::require;
 namespace {
 using Bytes = std::vector<std::byte>;
-// HRS1 authority-eight retains these no-boss fieldwise offsets from revision three.
+// HRS1 codec2/authority9 retains the run prefix. Only ordinary vehicle records
+// append the versioned nine-byte committed maneuver after their base body.
 constexpr std::size_t phase_offset = 36, player_offset = 37, hull_offset = 57;
-constexpr std::size_t actor_count_offset = 374, actor_stride = 101;
+constexpr std::size_t actor_count_offset = 374, base_actor_bytes = 101;
+std::size_t actor_bytes(game::EntityKind kind) {
+  return base_actor_bytes+(kind==game::EntityKind::jeep||kind==game::EntityKind::tank?9U:0U);
+}
 void put32(Bytes& bytes, std::size_t offset, std::uint32_t value) {
   require(offset + 4 <= bytes.size(), "mutation offset exists");
   for (std::size_t i = 0; i < 4; ++i) bytes[offset + i] = static_cast<std::byte>((value >> (8 * i)) & 255U);
@@ -23,6 +27,16 @@ std::uint32_t get32(const Bytes& bytes, std::size_t offset) {
   std::uint32_t value{};
   for (std::size_t i = 0; i < 4; ++i) value |= static_cast<std::uint32_t>(std::to_integer<unsigned>(bytes[offset + i])) << (i * 8);
   return value;
+}
+std::size_t actor_bytes(const Bytes& bytes,std::size_t offset) {
+  require(offset+5<=bytes.size(),"versioned actor record has its kind tag");
+  return actor_bytes(static_cast<game::EntityKind>(std::to_integer<unsigned>(bytes[offset+4])));
+}
+std::size_t actors_end(const Bytes& bytes) {
+  std::size_t offset=actor_count_offset+4;
+  for(std::size_t i=0;i<get32(bytes,actor_count_offset);++i)offset+=actor_bytes(bytes,offset);
+  require(offset<=bytes.size(),"kind-aware conditional actor records fit the portable fixture");
+  return offset;
 }
 void put64(Bytes& bytes, std::size_t offset, std::uint64_t value) {
   for (std::size_t i = 0; i < 8; ++i) bytes[offset + i] = static_cast<std::byte>((value >> (8 * i)) & 255U);
@@ -150,10 +164,15 @@ void corruption_and_rollback() {
   for (std::size_t length = 0; length < good.size(); ++length) reject(Bytes(good.begin(), good.begin() + static_cast<std::ptrdiff_t>(length)));
   auto bad = good; bad.push_back(std::byte{}); reject(bad);
   reject(Bytes(48 * 1024 + 1));
-  bad = good; put32(bad, 4, 2); reject(bad, game::SaveStateIssue::unsupported_schema);
+  require(get32(good,4)==2,"committed maneuver fields explicitly own Game codec two");
+  bad = good; put32(bad, 4, 3); reject(bad, game::SaveStateIssue::unsupported_schema);
   bad = good; put32(bad, 8, 0xffffffffU); reject(bad, game::SaveStateIssue::incompatible_rules);
   bad = good; put32(bad, 8, 7); bad.resize(28);
   reject(bad, game::SaveStateIssue::incompatible_rules); // Reject old authority before missing body/checksum.
+  require(get32(good, 8) == 9, "physical vehicle steering explicitly owns authority nine");
+  bad = good; put32(bad, 8, 8); reject(bad, game::SaveStateIssue::incompatible_rules);
+  bad.resize(28); reject(bad, game::SaveStateIssue::incompatible_rules);
+  for(unsigned previous:{7U,8U}) {bad=good;put32(bad,4,1);put32(bad,8,previous);bad.resize(28);reject(bad,game::SaveStateIssue::unsupported_schema);}
   bad = good; bad[12] ^= std::byte{1}; reject(bad, game::SaveStateIssue::incompatible_rules);
   bad = good; bad[100] ^= std::byte{1}; reject(bad);
   bad = good; put32(bad, player_offset, 0x7fc00000U); seal(bad); reject(bad);
@@ -161,8 +180,8 @@ void corruption_and_rollback() {
   bad = good; put32(bad, hull_offset, std::bit_cast<std::uint32_t>(-1.0F)); seal(bad); reject(bad);
   bad = good; put32(bad, actor_count_offset, 129); seal(bad); reject(bad);
   const auto first_actor = actor_count_offset + 4;
-  bad = good; put32(bad, first_actor + actor_stride, get32(good, first_actor)); seal(bad); reject(bad);
-  const auto projectile_count = first_actor + actor_stride * get32(good, actor_count_offset);
+  bad = good; put32(bad, first_actor + actor_bytes(good,first_actor), get32(good, first_actor)); seal(bad); reject(bad);
+  const auto projectile_count = actors_end(good);
   require(get32(good, projectile_count) == 0, "starter projectile count is zero");
   bad = good; put32(bad, projectile_count, 97); seal(bad); reject(bad);
   const auto beam_count = projectile_count + 4;
@@ -235,15 +254,17 @@ Bytes maximum_boss_population(const Bytes& actual_recovery) {
   const auto actor_count = get32(actual_recovery, actor_count_offset);
   const auto first_actor = actor_count_offset + 4;
   Bytes boss_actor;
+  std::size_t offset=first_actor;
   for (std::size_t i = 0; i < actor_count; ++i) {
-    const auto offset = first_actor + i * actor_stride;
+    const auto stride=actor_bytes(actual_recovery,offset);
     if (actual_recovery[offset + 4] == static_cast<std::byte>(game::EntityKind::boss))
       boss_actor = Bytes(actual_recovery.begin() + static_cast<std::ptrdiff_t>(offset),
-          actual_recovery.begin() + static_cast<std::ptrdiff_t>(offset + actor_stride));
+          actual_recovery.begin() + static_cast<std::ptrdiff_t>(offset + stride));
+    offset+=stride;
   }
-  require(boss_actor.size() == actor_stride, "actual recovery has exactly one boss record");
+  require(boss_actor.size() == base_actor_bytes, "actual recovery has exactly one unchanged boss record");
   const auto boss_id = get32(boss_actor, 0);
-  const auto projectile_count_offset = first_actor + actor_count * actor_stride;
+  const auto projectile_count_offset = actors_end(actual_recovery);
   const auto beam_count_offset = projectile_count_offset + 4 + get32(actual_recovery, projectile_count_offset) * projectile_stride;
   const auto boss_suffix_offset = beam_count_offset + 4 + get32(actual_recovery, beam_count_offset) * beam_stride;
   require(boss_suffix_offset < actual_recovery.size() - 8, "version-eight conditional boss suffix follows populations");
@@ -255,12 +276,13 @@ Bytes maximum_boss_population(const Bytes& actual_recovery) {
   std::uint32_t next_id = boss_id + 1;
   auto add_actor = [&](game::EntityKind kind, unsigned count) {
     for (unsigned i = 0; i < count; ++i) {
-      Bytes actor(actor_stride);
+      Bytes actor(actor_bytes(kind));
       put32(actor, 0, next_id++); actor[4] = static_cast<std::byte>(kind);
       put_float(actor, 5, static_cast<float>(i % 5) * 3.F - 6.F);
       put_float(actor, 9, 20.F + static_cast<float>(i / 5) * 3.5F);
       put_float(actor, 29, 10); put_float(actor, 33, 10);
       if (kind == game::EntityKind::soldier) actor[49] = static_cast<std::byte>(game::InfantryRole::rifleman);
+      if (kind == game::EntityKind::jeep || kind == game::EntityKind::tank) put_float(actor,91,-1);
       bytes.insert(bytes.end(), actor.begin(), actor.end());
     }
   };
@@ -296,7 +318,7 @@ Bytes maximum_boss_population(const Bytes& actual_recovery) {
 }
 void malformed_boss_plans_preserve_live_run(const Bytes& warning) {
   constexpr std::size_t projectile_stride = 64, beam_stride = 17;
-  const auto projectiles = actor_count_offset + 4 + get32(warning, actor_count_offset) * actor_stride;
+  const auto projectiles = actors_end(warning);
   const auto beams = projectiles + 4 + get32(warning, projectiles) * projectile_stride;
   const auto boss = beams + 4 + get32(warning, beams) * beam_stride;
   // Revision-eight conditional prefix is18 bytes; a complete three-shell plan
@@ -314,7 +336,7 @@ void malformed_boss_plans_preserve_live_run(const Bytes& warning) {
   auto scalar = [&](std::size_t relative, float value) { auto bad = warning; put_float(bad, boss + relative, value); reject(std::move(bad)); };
   const auto boss_id = get32(warning, boss);
   std::size_t boss_actor = actor_count_offset + 4;
-  while (boss_actor < projectiles && get32(warning, boss_actor) != boss_id) boss_actor += actor_stride;
+  while (boss_actor < projectiles && get32(warning, boss_actor) != boss_id) boss_actor += actor_bytes(warning,boss_actor);
   require(boss_actor < projectiles, "conditional boss state has an actor for cache corruption tests");
   auto bad = warning; put_float(bad, boss_actor + 41, 0); reject(std::move(bad)); // Saved warning contradicts active phase.
   bad = warning; put_float(bad, boss_actor + 50, .1F); reject(std::move(bad)); // Recovery cannot run during warning.
@@ -391,7 +413,7 @@ void area_damage_retires_owned_beam() {
   bytes[actor + 49] = static_cast<std::byte>(game::InfantryRole::rifleman);
   put_float(bytes, actor + 5, 0); put_float(bytes, actor + 9, 0);
   bytes[actor + 95] = std::byte{1}; // Stable lifted authority, owned by the beam below.
-  const auto beam_count = actor + actor_stride * get32(bytes, actor_count_offset) + 4;
+  const auto beam_count = actors_end(bytes) + 4;
   put32(bytes, beam_count, 1);
   bytes.insert(bytes.end() - 8, 17, std::byte{});
   put32(bytes, beam_count + 4, target_id);
@@ -404,8 +426,138 @@ void area_damage_retires_owned_beam() {
       [target_id](const auto& beam) { return beam.target_id == target_id; }), "same-tick area defeat retires capture beam ownership");
   require(!run.save_state().empty(), "real post-area-damage state remains checkpointable");
 }
+void physical_vehicle_continuations() {
+  // Versioned legal wire fixtures set geometry/facing only. Every checkpoint
+  // below is then produced by public Game::advance, never a private math model.
+  for (unsigned mode=0; mode<4; ++mode) {
+    game::Game run;run.start({514});
+    const auto starter=run.save_state();
+    const auto first_actor=actor_count_offset+4;
+    const auto old_end=actors_end(starter);
+    Bytes bytes(starter.begin(),starter.begin()+static_cast<std::ptrdiff_t>(actor_count_offset));
+    append32(bytes,mode==2?5U:1U);
+    auto append_actor=[&](std::uint32_t id,game::EntityKind kind,game::Vec2 position,game::Vec2 facing,float disabled) {
+      Bytes actor(actor_bytes(kind));put32(actor,0,id);actor[4]=static_cast<std::byte>(kind);
+      put_float(actor,5,position.x);put_float(actor,9,position.z);
+      put_float(actor,29,90);put_float(actor,33,90);put_float(actor,45,disabled);
+      put_float(actor,59,5); // No new warning until the physical pose is earned.
+      if(kind==game::EntityKind::soldier)actor[49]=static_cast<std::byte>(game::InfantryRole::rifleman);
+      put_float(actor,87,facing.x);put_float(actor,91,facing.z);
+      if(mode==3 && id==100) {
+        put_float(actor,41,.4F);put_float(actor,59,game::tuning::enemy_attack_period[1]);
+      }
+      bytes.insert(bytes.end(),actor.begin(),actor.end());
+    };
+    const float edge=game::tuning::field_half_width-game::tuning::military_body_radius[1];
+    append_actor(100,game::EntityKind::jeep,mode==0?game::Vec2{edge,10}:mode==1?game::Vec2{-4,16}:game::Vec2{0,10},mode==0?game::Vec2{1,0}:game::Vec2{0,-1},0);
+    if(mode==2) {
+      const float gap=game::tuning::military_body_radius[1]+game::tuning::military_body_radius[0]+game::tuning::military_spacing_margin;
+      for(unsigned side=0;side<4;++side) {
+        const float angle=static_cast<float>(side)*1.57079632679F;
+        append_actor(101+side,game::EntityKind::soldier,{gap*std::cos(angle),10+gap*std::sin(angle)},{},5);
+      }
+    }
+    bytes.insert(bytes.end(),starter.begin()+static_cast<std::ptrdiff_t>(old_end),starter.end());
+    put32(bytes,245,200);seal(bytes);
+    require(run.restore_state(bytes)==game::SaveStateIssue::none,"legal physical motion fixture restores through public codec");
+    bool observed=false;
+    for(unsigned tick_index=0;tick_index<120;++tick_index) {
+      run.advance(1.F/60);
+      const auto& actor=run.snapshot().entities.front();
+      require(actor.id==100 && actor.body_heading.has_value(),"actual director retains canonical ordinary vehicle facing");
+      const float longitudinal=actor.velocity.x*std::sin(*actor.body_heading)-actor.velocity.z*std::cos(*actor.body_heading);
+      const bool ready=mode==0?longitudinal<-.05F:mode==1?std::abs(*actor.body_heading)>.02F:mode==2?std::hypot(actor.velocity.x,actor.velocity.z)<.001F:actor.warning_seconds>0;
+      if(!ready)continue;
+      observed=true;
+      const auto saved=run.save_state();game::Game cold;
+      require(!saved.empty() && cold.restore_state(saved)==game::SaveStateIssue::none,"reverse, turn, blocked and planted checkpoints cold restore");
+      require(cold.snapshot().entities.front().body_heading==actor.body_heading,"first cold draw has exact physical facing before any advance");
+      same(run,cold);
+      if(mode==0) {
+        auto reject_motion=[&](Bytes bad) {seal(bad);require(cold.restore_state(bad)==game::SaveStateIssue::malformed && game::inspect_saved_state(bad).issue==game::SaveStateIssue::malformed,"nonphysical ordinary motion is rejected by both restore and inspection");require(cold.save_state()==saved,"malformed physical motion rejects transactionally");};
+        auto bad=saved;put_float(bad,first_actor+87,0);put_float(bad,first_actor+91,0);reject_motion(bad);
+        const float yaw=*actor.body_heading;
+        bad=saved;put_float(bad,first_actor+13,std::cos(yaw));put_float(bad,first_actor+17,std::sin(yaw));reject_motion(bad);
+        const float excessive=game::tuning::military_movement_speed[1]*(game::tuning::vehicle_reverse_speed_fraction+.1F);
+        bad=saved;put_float(bad,first_actor+13,-excessive*std::sin(yaw));put_float(bad,first_actor+17,excessive*std::cos(yaw));reject_motion(bad);
+        auto disabled=saved;put_float(disabled,first_actor+13,0);put_float(disabled,first_actor+17,0);put_float(disabled,first_actor+45,.25F);seal(disabled);
+        game::Game disabled_copy;require(disabled_copy.restore_state(disabled)==game::SaveStateIssue::none && disabled_copy.save_state()==disabled,"disabled zero-velocity vehicle keeps its nonzero physical facing in valid continuation");
+      }
+      run.pause();cold.pause();const auto paused=run.save_state();run.advance(5,{{1,1},true});cold.advance(5);
+      require(run.save_state()==paused && cold.save_state()==paused,"inactive interruption freezes saved physical motion and reverse intent");
+      run.resume();cold.resume();
+      for(unsigned future=0;future<180;++future) {tick(run,future);tick(cold,future);same(run,cold);}
+      break;
+    }
+    require(observed,"bounded actual Game reaches each physical continuation state");
+  }
+}
+void lifted_vehicle_keeps_facing_and_collected_removal_saves() {
+  game::Game run;run.start({.seed=514,.unlocked_blueprints=0xffffU});const auto starter=run.save_state();
+  const auto old_end=actors_end(starter);
+  Bytes bytes(starter.begin(),starter.begin()+static_cast<std::ptrdiff_t>(actor_count_offset));append32(bytes,1);
+  Bytes actor(actor_bytes(game::EntityKind::jeep));put32(actor,0,100);actor[4]=static_cast<std::byte>(game::EntityKind::jeep);
+  put_float(actor,9,1);put_float(actor,29,10);put_float(actor,33,90);put_float(actor,37,.999F);put_float(actor,59,2);put_float(actor,91,-1);actor[95]=std::byte{1};
+  bytes.insert(bytes.end(),actor.begin(),actor.end());append32(bytes,0);append32(bytes,1);
+  append32(bytes,100);append_float(bytes,0);append_float(bytes,1);append_float(bytes,.999F);bytes.push_back(std::byte{1});
+  // Starter has no projectiles/beams; retain its absent-boss tag and checksum.
+  require(get32(starter,old_end)==0 && get32(starter,old_end+4)==0,"versioned lifted fixture starts without populations in its trailer");
+  bytes.insert(bytes.end(),starter.begin()+static_cast<std::ptrdiff_t>(old_end+8),starter.end());
+  bytes[85+static_cast<unsigned>(game::Module::laser_array)]=std::byte{1};
+  bytes[85+static_cast<unsigned>(game::Module::beam_splitter)]=std::byte{2};bytes[85+static_cast<unsigned>(game::Module::heavy_winch)]=std::byte{1};
+  put32(bytes,245,200);put_float(bytes,297,1);seal(bytes);
+  require(run.restore_state(bytes)==game::SaveStateIssue::none,"lifted zero-velocity jeep with real two-slot beam retains canonical physical facing");
+  require(run.snapshot().entities.front().body_heading==0.F && run.save_state()==bytes,"lifted cold first draw preserves exact physical chassis frame");
+  run.advance(1.F/60);
+  require(run.snapshot().stats.vehicle_captures==1 && run.snapshot().beams.empty() && std::none_of(run.snapshot().entities.begin(),run.snapshot().entities.end(),[](const auto& a){return a.id==100;}),"actual next capture step collects and removes the owned vehicle and beam");
+  const auto saved=run.save_state();game::Game cold;require(!saved.empty() && cold.restore_state(saved)==game::SaveStateIssue::none && cold.save_state()==saved,"same-tick captured vehicle removal does not falsely invalidate a save");
+}
+void committed_vehicle_primitive_phase_continuations() {
+  game::Game run;run.start({514});const auto starter=run.save_state();
+  const auto first=actor_count_offset+4;
+  Bytes bytes(starter.begin(),starter.begin()+static_cast<std::ptrdiff_t>(actor_count_offset));append32(bytes,1);
+  Bytes actor(actor_bytes(game::EntityKind::jeep));put32(actor,0,100);actor[4]=static_cast<std::byte>(game::EntityKind::jeep);
+  put_float(actor,5,game::tuning::field_half_width-game::tuning::military_body_radius[1]);put_float(actor,9,14);
+  put_float(actor,29,90);put_float(actor,33,90);put_float(actor,59,5);put_float(actor,87,1);
+  bytes.insert(bytes.end(),actor.begin(),actor.end());bytes.insert(bytes.end(),starter.begin()+static_cast<std::ptrdiff_t>(actors_end(starter)),starter.end());put32(bytes,245,200);seal(bytes);
+  require(run.restore_state(bytes)==game::SaveStateIssue::none,"codec2 edge fixture starts with a canonical inactive maneuver");
+  std::array<Bytes,4> checkpoints;
+  for(unsigned frame=0;frame<600 && std::any_of(checkpoints.begin(),checkpoints.end(),[](const auto& b){return b.empty();});++frame) {
+    if(run.snapshot().phase==game::Phase::choosing_upgrade)require(run.choose_upgrade(0),"primitive fixture accepts its actual earned choice");
+    run.advance(1.F/60);const auto saved=run.save_state();require(!saved.empty(),"every actual committed maneuver tick remains checkpointable");
+    require(get32(saved,first)==100,"versioned maneuver fixture retains its first ordinary actor");
+    const unsigned phase=std::to_integer<unsigned>(saved[first+101]);
+    const auto& a=run.snapshot().entities.front();const float speed=std::hypot(a.velocity.x,a.velocity.z);
+    const unsigned slot=phase==1?0U:phase==2&&speed>.001F?1U:phase==3&&speed<.00001F?2U:phase==3&&speed>.001F?3U:4U;
+    if(slot<4 && checkpoints[slot].empty())checkpoints[slot]=saved;
+  }
+  require(std::none_of(checkpoints.begin(),checkpoints.end(),[](const auto& b){return b.empty();}),"actual public Game exposes reverse turn, reverse brake, zero-speed boundary and forward exit");
+  auto check_future=[&](const Bytes& saved) {
+    game::Game a,b;require(a.restore_state(saved)==game::SaveStateIssue::none && b.restore_state(saved)==game::SaveStateIssue::none,"every committed maneuver phase cold restores");
+    require(a.save_state()==saved && b.save_state()==saved,"all committed phase, turn and exit residuals survive the first cold draw byte exactly");same(a,b);
+    require(a.snapshot().entities.front().body_heading==b.snapshot().entities.front().body_heading,"cold first draw retains phase's exact physical body axis");
+    a.pause();b.pause();const auto paused=a.save_state();a.advance(10,{{1,1},true});b.advance(10);require(a.save_state()==paused && b.save_state()==paused,"paused/background elapsed cannot consume committed turn or exit distance");a.resume();b.resume();
+    for(unsigned frame=0;frame<180;++frame){tick(a,frame);tick(b,frame);same(a,b);}
+  };
+  for(const auto& saved:checkpoints)check_future(saved);
+  // Force only the existing attack timer ready, then let the actual director
+  // commit a warning while the earned reverse primitive remains in progress.
+  auto warning=checkpoints[0];put_float(warning,first+59,0);seal(warning);game::Game planted;
+  require(planted.restore_state(warning)==game::SaveStateIssue::none,"mid-turn fixture makes its ordinary attack ready");planted.advance(1.F/60);
+  require(planted.snapshot().entities.front().warning_seconds>0,"actual director plants an ordinary warning mid-maneuver");
+  warning=planted.save_state();require(std::to_integer<unsigned>(warning[first+101])!=0,"warning preserves the committed escape instead of inventing a new side");check_future(warning);
+  auto reject=[&](Bytes bad){seal(bad);game::Game stable;stable.start({77});const auto before=stable.save_state();require(stable.restore_state(bad)==game::SaveStateIssue::malformed && game::inspect_saved_state(bad).issue==game::SaveStateIssue::malformed && stable.save_state()==before,"malformed maneuver rejects transactionally with identical inspection");};
+  auto bad=checkpoints[0];bad[first+101]=std::byte{255};reject(bad);
+  bad=checkpoints[0];put_float(bad,first+102,std::numeric_limits<float>::quiet_NaN());reject(bad);
+  bad=checkpoints[0];put_float(bad,first+106,game::tuning::vehicle_recovery_clearance_metres+1);reject(bad);
+  bad=checkpoints[0];bad[first+101]=std::byte{};reject(bad);
+  for(unsigned slot:{0U,3U}) {
+    bad=checkpoints[slot];const float x=std::bit_cast<float>(get32(bad,first+87)),z=std::bit_cast<float>(get32(bad,first+91));
+    const float speed=(slot==0?.25F:-.25F)/std::hypot(x,z);put_float(bad,first+13,x*speed);put_float(bad,first+17,z*speed);reject(bad);
+  }
+}
 } // namespace
 int main() {
-  phases_and_future(); corruption_and_rollback(); many_natural_checkpoints(); hidden_authority_fixtures(); boss_phase_continuations(); area_damage_retires_owned_beam();
+  phases_and_future(); corruption_and_rollback(); many_natural_checkpoints(); hidden_authority_fixtures(); boss_phase_continuations(); area_damage_retires_owned_beam(); physical_vehicle_continuations(); lifted_vehicle_keeps_facing_and_collected_removal_saves(); committed_vehicle_primitive_phase_continuations();
   std::cout << "Gameplay continuation codec contracts passed\n";
 }

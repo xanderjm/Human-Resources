@@ -91,6 +91,14 @@ def validate(arch, cat, encounter, spatial):
     finite(spacing['margin_metres'], 'military spacing margin', .01, .3)
     if spacing['spawn_rows'] != 8:
         raise ValueError('bounded military ingress requires eight candidate rows')
+    steering = spatial['vehicle_steering']
+    bounds = {'turn_radians_per_second': (.1, 4), 'minimum_turn_radius_metres': (.5, 4),
+              'acceleration': (1, 30), 'braking': (1, 40),
+              'reverse_speed_fraction': (.1, .6), 'recovery_clearance_metres': (.1, 3)}
+    if set(steering) != set(bounds):
+        raise ValueError('ordinary vehicle steering keys changed')
+    for key, (minimum, maximum) in bounds.items():
+        finite(steering[key], 'vehicle steering ' + key, minimum, maximum)
     finite(spatial['attack_prediction_fraction'], 'attack prediction', 0, 1)
     scroll = spatial['scroll_progression']
     finite(scroll['maximum_metres_per_second'], 'maximum forward speed', spatial['forward_scroll_metres_per_second'], 8)
@@ -300,6 +308,8 @@ def generate(root, output):
         scalar('tactics_' + key, value)
     for key, value in spatial['boss_combat'].items():
         scalar('boss_' + key, value)
+    for key, value in spatial['vehicle_steering'].items():
+        scalar('vehicle_' + key, value)
     radii = spatial['biological_body_radius']
     if len(radii) != 5 or any(not 0 < radius < 1 for radius in radii):
         raise ValueError('invalid biological body radii')

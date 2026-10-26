@@ -140,6 +140,35 @@ class NativeTuningTests(unittest.TestCase):
                     lambda v: v['military_spacing']['body_radius'].__setitem__(1, -1))
         self.reject()
 
+    def test_vehicle_steering_semantics_invalidate_resume(self):
+        original = self.fingerprint()
+        path = self.root / 'native/human_resources_gameplay/runtime-spatial.json'
+        baseline = json.loads(path.read_text())
+        for key in ('turn_radians_per_second', 'minimum_turn_radius_metres',
+                    'acceleration', 'braking', 'reverse_speed_fraction',
+                    'recovery_clearance_metres'):
+            with self.subTest(key=key):
+                value = json.loads(json.dumps(baseline))
+                value['vehicle_steering'][key] *= 1.01
+                path.write_text(json.dumps(value))
+                self.assertNotEqual(original, self.fingerprint())
+
+    def test_vehicle_steering_rejects_nonphysical_bounds(self):
+        path = self.root / 'native/human_resources_gameplay/runtime-spatial.json'
+        baseline = json.loads(path.read_text())
+        for key, invalid in (('turn_radians_per_second', 0),
+                             ('minimum_turn_radius_metres', -1),
+                             ('acceleration', 0), ('braking', -1),
+                             ('reverse_speed_fraction', 0),
+                             ('reverse_speed_fraction', 1.1),
+                             ('recovery_clearance_metres', -1)):
+            with self.subTest(key=key, invalid=invalid):
+                value = json.loads(json.dumps(baseline))
+                value['vehicle_steering'][key] = invalid
+                path.write_text(json.dumps(value))
+                self.output.unlink(missing_ok=True)
+                self.reject()
+
     def test_invalid_starter_dash_rejected(self):
         self.mutate('native/human_resources_gameplay/runtime-spatial.json',
                     lambda v: v['starter_dash'].update(cooldown=.1))

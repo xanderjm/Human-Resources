@@ -6,6 +6,7 @@
 
 #include <algorithm>
 #include <cmath>
+#include <iostream>
 
 namespace {
 namespace gp = human_resources::gameplay;
@@ -149,7 +150,23 @@ void completed_revive_commits_the_actual_live_continuation() {
   MemoryBackend backend; pr::AccountSession session(backend); gp::Game game; start(session, game, 2, 1);
   for (unsigned frame = 0; frame < 20000 && game.snapshot().phase != gp::Phase::dead; ++frame) {
     if (game.snapshot().phase == gp::Phase::choosing_upgrade) {
-      require(game.choose_upgrade(0), "actual earned choice in revive fixture");
+      // This is a revive-transaction fixture, not an idle-build difficulty
+      // expectation. Prefer real offered defenses while earning eligibility.
+      unsigned selected=0;float best=-1;
+      for(unsigned i=0;i<3;++i) {
+        const auto& choice=game.snapshot().choices[i];float score=1;
+        if(choice.hardware) {
+          if(choice.module==gp::Module::repair_swarm)score=100;
+          else if(choice.module==gp::Module::shield_generator)score=90;
+          else if(choice.module==gp::Module::mirror_plating)score=70;
+          else if(choice.module==gp::Module::phase_drive)score=60;
+          else if(choice.module==gp::Module::laser_array)score=30;
+        } else if(choice.research==gp::Research::emergency_repairs)score=game.snapshot().hull<game.snapshot().maximum_hull*.7F?110.F:20.F;
+        else if(choice.research==gp::Research::hull_reinforcement||choice.research==gp::Research::shield_capacity)score=80;
+        if(score>best){best=score;selected=i;}
+      }
+      std::cout<<"revive fixture earned choice active="<<game.snapshot().stats.active_seconds<<" title="<<game.snapshot().choices[selected].title<<'\n';
+      require(game.choose_upgrade(selected), "actual earned defensive choice in revive fixture");
       continue;
     }
     gp::Control control{};
@@ -159,6 +176,7 @@ void completed_revive_commits_the_actual_live_continuation() {
     }
     game.advance(.25F, control);
   }
+  if(!(game.snapshot().phase==gp::Phase::dead && game.revive_available()))std::cerr<<"revive fixture phase="<<static_cast<unsigned>(game.snapshot().phase)<<" active="<<game.snapshot().stats.active_seconds<<" hull="<<game.snapshot().hull<<'\n';
   require(game.snapshot().phase == gp::Phase::dead && game.revive_available(), "eligible real death fixture");
   const auto dead = receipt(session, game);
   gp::Game candidate;
@@ -218,7 +236,7 @@ public:
     return memory.write_atomically(scope, path, bytes);
   }
 };
-void incompatible_run_backs_up_before_recorded_settlement(bool old_revision) {
+void incompatible_run_backs_up_before_recorded_settlement(unsigned old_revision) {
   RecoveryFailureBackend backend; pr::AccountSession seed_account(backend); gp::Game game;
   require(seed_account.load().playable(), "initial account exists for owned-power fixture");
   auto owned = seed_account.account();
@@ -231,10 +249,12 @@ void incompatible_run_backs_up_before_recorded_settlement(bool old_revision) {
   if (old_revision) {
     // A former Game authority header remains protected even inside the current
     // account envelope. It cannot be reinterpreted with newly added actor fields.
-    account.continuation.game_state[8] = std::byte{7};
+    account.continuation.game_state[8] = static_cast<std::byte>(old_revision);
     for (std::size_t i = 9; i < 12; ++i) account.continuation.game_state[i] = std::byte{};
+    account.continuation.game_state[4] = std::byte{1};
+    for (std::size_t i = 5; i < 8; ++i) account.continuation.game_state[i] = std::byte{};
     // Deliberately absent actor body and invalid checksum: authority must reject
-    // the Game7 header before trying to interpret a Game8 field layout.
+    // the Game7/8 header before trying to interpret changed Game9 semantics.
     account.continuation.game_state.resize(28);
   } else
     account.continuation.game_state[12] ^= std::byte{1}; // Known Game header's numeric-rule fingerprint.
@@ -324,10 +344,11 @@ int main() {
   cold_resume_does_not_bank_and_end_is_terminal(); choice_reroll_and_pick_are_durable_boundaries();
   failed_full_checkpoint_retains_exact_bytes(); dead_checkpoint_cannot_resume_or_revive();
   full_settlement_supersedes_failed_checkpoint_without_losing_authority();
-  completed_revive_commits_the_actual_live_continuation();
   legacy_migration_and_future_protection();
-  incompatible_run_backs_up_before_recorded_settlement(false);
-  incompatible_run_backs_up_before_recorded_settlement(true);
+  incompatible_run_backs_up_before_recorded_settlement(0);
+  incompatible_run_backs_up_before_recorded_settlement(7);
+  incompatible_run_backs_up_before_recorded_settlement(8);
+  completed_revive_commits_the_actual_live_continuation();
   historical_results_do_not_recompute_current_reward();
   maximum_continuation_fits_account_envelope();
   malformed_current_payload_is_not_a_future_schema();

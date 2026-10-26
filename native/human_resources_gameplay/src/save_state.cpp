@@ -5,9 +5,9 @@
 namespace human_resources::gameplay {
 namespace {
 constexpr std::uint32_t magic = 0x31535248U; // HRS1, explicit little-endian bytes.
-constexpr std::uint32_t schema = 1;
+constexpr std::uint32_t schema = 2;
 // Increment when authority semantics/field meaning change independently of tuning.
-constexpr std::uint32_t authority_revision = 8;
+constexpr std::uint32_t authority_revision = 9;
 constexpr std::size_t maximum_bytes = 48 * 1024;
 constexpr std::uint32_t maximum_actors = 128, maximum_projectiles = 96;
 
@@ -67,6 +67,9 @@ template <class IO> void actor_fields(IO& io, detail::Actor& a) {
   io(a.age); io(a.attack_timer); io(a.slow_timer); io(a.focused_hits); io(a.focus_timer); io(a.grace);
   vector2(io, a.aim); vector2(io, a.locomotion_velocity); io(a.lifted); io(a.removed);
   io(a.sweep_progress);
+  if (detail::vehicle(v.kind)) {
+    io(a.escape.phase); io(a.escape.turn_remaining); io(a.escape.forward_remaining);
+  }
 }
 template <class IO> void projectile_fields(IO& io, detail::Projectile& p) {
   io(p.view.id); vector2(io, p.view.position); vector2(io, p.view.velocity);
@@ -216,6 +219,31 @@ struct SaveStateCodec final {
               vehicle(a.view.kind) ? tuning::capture_return_seconds : infantry_attack(role).recovery_seconds) + .0001F ||
           (a.view.kind == EntityKind::jeep ? a.view.minigun_barrel >= 6 : a.view.minigun_barrel != 0))
         return false;
+      if (vehicle(a.view.kind)) {
+        const float facing_square = length_squared(a.locomotion_velocity);
+        const float speed_square = length_squared(a.view.velocity);
+        const float maximum = tuning::military_movement_speed[military_index(a.view.kind)];
+        const float cross = a.view.velocity.x * a.locomotion_velocity.z - a.view.velocity.z * a.locomotion_velocity.x;
+        if (facing_square < .0001F || facing_square > maximum * maximum + .001F ||
+            speed_square > maximum * maximum + .001F ||
+            cross * cross > .000001F * facing_square * std::max(1.F, speed_square)) return false;
+        const float signed_speed = (a.view.velocity.x * a.locomotion_velocity.x + a.view.velocity.z * a.locomotion_velocity.z) /
+            std::sqrt(facing_square);
+        if (signed_speed < -maximum * tuning::vehicle_reverse_speed_fraction - .001F) return false;
+        const auto& escape = a.escape;
+        if (escape.phase > VehicleEscapePhase::forward_exit || !std::isfinite(escape.turn_remaining) ||
+            !std::isfinite(escape.forward_remaining) || std::abs(escape.turn_remaining) > 3.141593F ||
+            escape.forward_remaining < 0 || escape.forward_remaining > tuning::vehicle_recovery_clearance_metres + .001F)
+          return false;
+        if (escape.phase == VehicleEscapePhase::none) {
+          if (escape.turn_remaining != 0 || escape.forward_remaining != 0) return false;
+        } else if (!(escape.forward_remaining > 0) ||
+            (escape.phase == VehicleEscapePhase::reverse_turn ? escape.turn_remaining == 0 : escape.turn_remaining != 0))
+          return false;
+        if ((escape.phase == VehicleEscapePhase::forward_exit && signed_speed < -.001F) ||
+            ((escape.phase == VehicleEscapePhase::reverse_turn || escape.phase == VehicleEscapePhase::reverse_brake) && signed_speed > .001F))
+          return false;
+      }
       ++counts[a.view.kind < EntityKind::soldier ? 0 : military_index(a.view.kind) + 1];
       if (a.view.warning_seconds > 0) ++warnings;
     }

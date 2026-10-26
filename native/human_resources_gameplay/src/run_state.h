@@ -37,19 +37,30 @@ inline constexpr std::size_t research_count = static_cast<std::size_t>(Research:
 [[nodiscard]] inline std::size_t military_index(EntityKind kind) {
   return static_cast<std::size_t>(kind) - static_cast<std::size_t>(EntityKind::soldier);
 }
+enum class VehicleEscapePhase : std::uint8_t { none, reverse_turn, reverse_brake, forward_exit };
+struct VehicleEscape final {
+  VehicleEscapePhase phase{};
+  float turn_remaining{}, forward_remaining{};
+};
 struct Actor final {
   EntityView view;
   float age{}, attack_timer{}, slow_timer{}, focused_hits{}, focus_timer{}, grace{};
   Vec2 aim;
-  Vec2 locomotion_velocity; // Passive preferred movement, or last nonzero vehicle velocity retaining its stopped heading.
+  Vec2 locomotion_velocity; // Passive preferred movement, or vehicle physical forward retaining its facing through reverse/stops.
   bool lifted{}, removed{};
   float sweep_progress{}; // Capture progress earned by moving inside the core, capped at qualification.
+  VehicleEscape escape;
 };
 struct Projectile final {
   ProjectileView view;
   std::uint32_t source{};
   float age{};
   bool removed{};
+};
+struct VehicleMotion final {
+  Vec2 velocity;
+  Vec2 facing;
+  VehicleEscape escape;
 };
 struct BossState final {
   std::uint32_t actor_id{};
@@ -107,6 +118,7 @@ struct Game::State final {
   [[nodiscard]] bool place_biological(detail::Actor& target, float lateral_sample, float forward_sample, bool initial);
   void move_biological(float dt);
   [[nodiscard]] Vec2 military_velocity(const detail::Actor& actor, Vec2 preferred, float dt, Vec2 carry = {}) const;
+  [[nodiscard]] detail::VehicleMotion vehicle_motion(const detail::Actor& actor, Vec2 destination, float dt) const;
   void place_military(detail::Actor& actor);
   void enemies(float dt);
   void shoot(detail::Actor& enemy);

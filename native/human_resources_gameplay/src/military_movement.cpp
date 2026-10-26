@@ -117,4 +117,166 @@ Vec2 Game::State::military_velocity(const Actor& actor, Vec2 preferred, float dt
   }
   return best;
 }
+
+detail::VehicleMotion Game::State::vehicle_motion(const Actor& actor, Vec2 destination, float dt) const {
+  auto facing = direction(actor.locomotion_velocity);
+  if (length_squared(facing) == 0) facing = direction(actor.view.velocity);
+  if (length_squared(facing) == 0) facing = {0, -1};
+  if (!(dt > 0) || !vehicle(actor.view.kind)) return {{}, facing, actor.escape};
+  const auto dot = [](Vec2 a, Vec2 b) { return a.x * b.x + a.z * b.z; };
+  const float nominal = tuning::military_movement_speed[military_index(actor.view.kind)];
+  const auto route_direction = [&](Vec2 position, Vec2 forward) {
+    const Vec2 route{destination.x - position.x, destination.z - position.z};
+    return length_squared(route) > .00000001F ? direction(route) : forward;
+  };
+  const auto requested_speed = [&](Vec2 position, float slow) {
+    const float arrival = std::min(1.F, std::sqrt(distance_squared(destination, position)) / tuning::tactics_arrival_radius);
+    return nominal * (slow > 0 ? 1 - tuning::storm_slow : 1) * arrival;
+  };
+  const auto desired = route_direction(actor.view.position, facing);
+  const float horizon = std::max(tuning::vehicle_recovery_clearance_metres,
+      nominal * tuning::military_spacing_lookahead + nominal * nominal / (2 * tuning::vehicle_braking));
+  const float allowed = std::max(tuning::field_half_width - radius(actor), std::abs(actor.view.position.x));
+  const auto clearance = [&](Vec2 origin, Vec2 heading) {
+    float clear = horizon;
+    if (heading.x > .00001F) clear = std::min(clear, (allowed - origin.x) / heading.x);
+    if (heading.x < -.00001F) clear = std::min(clear, (-allowed - origin.x) / heading.x);
+    for (const auto& other : actors) {
+      if (&actor == &other || !obstacle(other)) continue;
+      const Vec2 offset{other.view.position.x - origin.x, other.view.position.z - origin.z};
+      const float along = dot(offset, heading);
+      if (along <= 0) continue;
+      const float before = length_squared(offset);
+      const float gap = radius(actor) + radius(other) + tuning::military_spacing_margin;
+      const float across = std::max(0.F, before - along * along);
+      const float square = std::min(gap * gap, before);
+      if (across < square - .000001F)
+        clear = std::min(clear, along - std::sqrt(std::max(0.F, square - across)));
+    }
+    return std::max(0.F, clear);
+  };
+  const auto next_speed = [&](float before, float goal) {
+    if (goal * before < 0) goal = 0;
+    const float acceleration = std::abs(goal) < std::abs(before) ? tuning::vehicle_braking : tuning::vehicle_acceleration;
+    return before + std::clamp(goal - before, -acceleration * dt, acceleration * dt);
+  };
+  struct Step final { VehicleMotion motion; bool clear; };
+  const auto braking_travel = [&](float speed) {
+    // Include this step, then exactly the discrete straight brake available on
+    // following ticks. A turned root must retain this entire stopping corridor.
+    const float decrement = tuning::vehicle_braking * dt;
+    const float steps = std::ceil(std::abs(speed) / decrement);
+    return std::max(0.F, dt * (steps * std::abs(speed) - decrement * steps * (steps - 1) * .5F));
+  };
+  const auto ordinary_guide = [&](Vec2 position, Vec2 forward) {
+    const auto wanted = route_direction(position, forward);
+    Vec2 guide = wanted;
+    float best_score = -1000;
+    for (int candidate = 0; candidate < 16; ++candidate) {
+      const int offset = candidate == 0 ? 0 : ((candidate + 1) / 2) * (candidate & 1 ? 1 : -1);
+      const auto heading = rotated(wanted, static_cast<float>(offset) * .39269908F);
+      const float score = 3 * clearance(position, heading) / horizon + dot(heading, wanted) +
+          .25F * dot(heading, forward) + .001F * ((actor.view.id & 1U) == (offset > 0));
+      if (score > best_score) { best_score = score; guide = heading; }
+    }
+    return guide;
+  };
+  struct OrdinaryStep final { Step step; bool blocked; };
+  const auto ordinary_step = [&](Vec2 position, Vec2 forward, float previous_speed, float slow) {
+    const float requested = requested_speed(position, slow);
+    const auto guide = ordinary_guide(position, forward);
+    const float forward_clear = clearance(position, forward);
+    const bool blocked = requested > .0001F && (forward_clear < tuning::vehicle_recovery_clearance_metres || dot(forward, guide) < -.25F);
+    const float admitted = std::sqrt(2 * tuning::vehicle_braking * std::max(0.F, forward_clear - .02F));
+    const float speed = next_speed(previous_speed, blocked ? 0.F : std::min(requested, admitted));
+    const float angle = std::atan2(forward.x * guide.z - forward.z * guide.x, dot(forward, guide));
+    const float turn_limit = blocked ? 0.F : std::min(tuning::vehicle_turn_radians_per_second * dt,
+        std::abs(speed) * dt / tuning::vehicle_minimum_turn_radius_metres);
+    const auto heading = direction(rotated(forward, std::clamp(angle, -turn_limit, turn_limit)));
+    const auto safe = [&](Vec2 next_facing, float next) {
+      return clearance(position, next < 0 ? scaled(next_facing, -1) : next_facing) + .00001F >= braking_travel(next);
+    };
+    if (safe(heading, speed))
+      return OrdinaryStep{{{scaled(heading, speed), heading, {}}, true}, blocked};
+    // The previous accepted frame reserved a straight brake. Do not rotate
+    // into a short clear segment that leaves no room for the following brake.
+    const float braking = next_speed(previous_speed, 0);
+    const bool clear = safe(forward, braking);
+    return OrdinaryStep{{{clear ? scaled(forward, braking) : Vec2{}, forward, {}}, clear}, blocked};
+  };
+  // This exact fixed-step transition is both the primitive simulator and the
+  // executor. Admission therefore includes actual ramp, turn, braking drift and
+  // exit travel; no sampled curve is replaced by another guide during motion.
+  const auto primitive_step = [&](Vec2 position, Vec2 forward, float speed, VehicleEscape escape, float slow) {
+    const float maximum = nominal * (slow > 0 ? 1 - tuning::storm_slow : 1);
+    const float goal = escape.phase == VehicleEscapePhase::reverse_turn ? -maximum * tuning::vehicle_reverse_speed_fraction :
+        escape.phase == VehicleEscapePhase::forward_exit ? maximum : 0;
+    const float actual = next_speed(speed, goal);
+    float turn = 0;
+    if (escape.phase == VehicleEscapePhase::reverse_turn) {
+      const float limit = std::min(tuning::vehicle_turn_radians_per_second * dt,
+          std::abs(actual) * dt / tuning::vehicle_minimum_turn_radius_metres);
+      turn = std::clamp(escape.turn_remaining, -limit, limit);
+    }
+    const auto heading = rotated(forward, turn);
+    const auto velocity = scaled(heading, actual);
+    if (clearance(position, actual < 0 ? scaled(heading, -1) : heading) + .00001F < std::abs(actual) * dt)
+      return Step{{{}, forward, escape}, false};
+    if (escape.phase == VehicleEscapePhase::reverse_turn) {
+      escape.turn_remaining -= turn;
+      if (std::abs(escape.turn_remaining) < .000001F) {
+        escape.turn_remaining = 0;
+        escape.phase = VehicleEscapePhase::reverse_brake;
+      }
+    } else if (escape.phase == VehicleEscapePhase::reverse_brake && std::abs(actual) < .00001F) {
+      escape.phase = VehicleEscapePhase::forward_exit;
+    } else if (escape.phase == VehicleEscapePhase::forward_exit) {
+      escape.forward_remaining = std::max(0.F, escape.forward_remaining - std::abs(actual) * dt);
+      if (escape.forward_remaining == 0) escape = {};
+    }
+    return Step{{velocity, heading, escape}, true};
+  };
+  const float previous_speed = dot(actor.view.velocity, facing);
+  if (actor.escape.phase != VehicleEscapePhase::none) {
+    const auto step = primitive_step(actor.view.position, facing, previous_speed, actor.escape, actor.slow_timer);
+    // Only a changed constraint invalidates a committed primitive. Hold without
+    // consuming its progress, then admit a new primitive from the real rest pose.
+    return step.clear ? step.motion : VehicleMotion{{}, facing, {}};
+  }
+  const auto ordinary = ordinary_step(actor.view.position, facing, previous_speed, actor.slow_timer);
+  if (ordinary.blocked && std::abs(previous_speed) < .00001F) {
+    VehicleEscape selected;
+    float selected_score = -1000;
+    // Sixteen finite local primitives, with impossible prefixes pruned. This
+    // is a back-turn/stop/forward-exit choice, not a general navigation search.
+    for (float side : {-1.F, 1.F}) for (unsigned turn = 1; turn <= 8; ++turn) {
+      const VehicleEscape candidate{VehicleEscapePhase::reverse_turn, side * static_cast<float>(turn) * .39269908F,
+          tuning::vehicle_recovery_clearance_metres};
+      auto escape = candidate;
+      auto position = actor.view.position, heading = facing;
+      float speed = 0;
+      for (unsigned tick = 0; tick < 600; ++tick) {
+        const auto step = primitive_step(position, heading, speed, escape, std::max(0.F, actor.slow_timer - static_cast<float>(tick) * dt));
+        if (!step.clear) break;
+        position = add(position, scaled(step.motion.velocity, dt));
+        heading = step.motion.facing; speed = dot(step.motion.velocity, heading); escape = step.motion.escape;
+        if (escape.phase != VehicleEscapePhase::none) continue;
+        // A primitive must hand back to the very same runnable ordinary
+        // transition, including destination/arrival and physical braking tail.
+        // A short exit still inside its blocked region merely repeats recovery.
+        const auto handoff = ordinary_step(position, direction(heading), speed,
+            std::max(0.F, actor.slow_timer - static_cast<float>(tick + 1) * dt));
+        if (handoff.blocked || !handoff.step.clear || length_squared(handoff.step.motion.velocity) < .00000001F) break;
+        const Vec2 travel{position.x - actor.view.position.x, position.z - actor.view.position.z};
+        const float score = dot(travel, desired) + .25F * dot(heading, desired) - .05F * static_cast<float>(tick + 1) * dt +
+            .001F * ((actor.view.id & 1U) == (side > 0));
+        if (score > selected_score) { selected_score = score; selected = candidate; }
+        break;
+      }
+    }
+    if (selected.phase == VehicleEscapePhase::none) return {{}, facing, {}};
+    return primitive_step(actor.view.position, facing, 0, selected, actor.slow_timer).motion;
+  }
+  return ordinary.step.motion;
+}
 } // namespace human_resources::gameplay

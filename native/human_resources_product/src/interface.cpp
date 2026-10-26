@@ -1001,47 +1001,55 @@ Interface standard_interface(const View& v) {
     };
     c.scale = c.type_scale = 1;
     c.ox = c.oy = 0;
-    const float hull_size = stat_size(17), other_size = stat_size(14);
+    const float label_size = stat_size(14);
+    const float value_size = std::max(18.F, 22.F * original_scale);
+    const float score_size = std::max(16.F, 20.F * original_scale);
     const bool damaged = v.damage_feedback.age >= 0;
-    const std::string hull = (damaged && v.damage_feedback.hull ? std::string(damage_label(v.damage_feedback)) + " " : "HP ") + short_number(static_cast<std::uint64_t>(std::max(0.F, run.hull)));
-    const std::string shield = (damaged && !v.damage_feedback.hull ? std::string(damage_label(v.damage_feedback)) + " " : "SH ") + short_number(static_cast<std::uint64_t>(std::max(0.F, run.shield)));
-    const std::string level = "LV " + short_number(run.stats.level);
-    const std::string score = "SCORE " + short_number(run.stats.score);
-    const float left = safe.x + 8, right = pause_bounds.x - 8;
-    const float gap = 7;
-    const float hull_width = c.measure(hull, hull_size), shield_width = c.measure(shield, other_size), score_width = c.measure(score, other_size), level_width = c.measure(level, hull_size);
-    if (hull_width + shield_width + (damaged ? 0 : score_width + gap) + gap > right - left) c.output.text_overflow = true;
-    const float panel_height = pause_bounds.height - 4;
-    const float top = pause_bounds.y + 2;
-    c.fill(left - 4, top, right - left + 8, panel_height, navy);
-    c.text(left, top + 2, hull, hull_size, damaged && v.damage_feedback.hull ? coral : white);
-    c.text(left + hull_width + gap, top + 2, shield, other_size, damaged && !v.damage_feedback.hull ? mint : Color{.57F,.83F,1,1});
-    const float score_x = right - score_width;
-    const bool level_in_top = hull_width + shield_width + level_width + score_width + 3 * gap <= right - left;
-    if (!damaged && level_in_top)
-      c.text(left + hull_width + shield_width + 2 * gap, top + 2, level, hull_size);
-    if (!damaged) c.text(score_x, top + 2, score, other_size);
-    const float bar_top = top + hull_size + 7;
-    const float hull_fraction = std::clamp(run.hull / std::max(1.F, run.maximum_hull), 0.F, 1.F);
-    const float shield_fraction = std::clamp(run.shield / std::max(1.F, run.maximum_shield), 0.F, 1.F);
-    const auto shield_color = Color{.57F, .83F, 1, 1};
-    c.fill(left, bar_top, hull_width, 4, {.16F, .29F, .33F, 1});
-    c.fill(left, bar_top, hull_width * hull_fraction, 4, damaged && v.damage_feedback.hull ? coral : mint);
-    const float shield_x = left + hull_width + gap;
-    c.fill(shield_x, bar_top, shield_width, 4, {.16F, .29F, .33F, 1});
-    c.fill(shield_x, bar_top, shield_width * shield_fraction, 4, shield_color);
-    float progress_x = shield_x + shield_width + gap;
-    if (!damaged && !level_in_top) {
-      c.text(progress_x, bar_top - 3, level, other_size);
-      progress_x += c.measure(level, other_size) + gap;
-    }
-    const float label_width = c.measure("XP", other_size);
-    const float progress_width = right - progress_x - label_width - 4;
-    if (progress_width >= 12 && !damaged) {
-      c.text(progress_x, bar_top - 3, "XP", other_size, gold);
-      c.fill(progress_x + label_width + 4, bar_top + 3, progress_width, 4, {.16F, .29F, .33F, 1});
-      c.fill(progress_x + label_width + 4, bar_top + 3, progress_width * std::clamp(run.xp / std::max(1.F, run.next_level_xp), 0.F, 1.F), 4, gold);
-    }
+    const auto hull = short_number(static_cast<std::uint64_t>(std::max(0.F, run.hull)));
+    const auto shield = short_number(static_cast<std::uint64_t>(std::max(0.F, run.shield)));
+    const auto level = short_number(run.stats.level), score = short_number(run.stats.score);
+    const float left = safe.x + 4, right = pause_bounds.x - 8;
+    const float top = pause_bounds.y + 2, panel_height = pause_bounds.height - 4;
+    const float padding = 6, gap = 8, row = (panel_height - 4) * .5F;
+    const float defence_label = c.measure("SHIELD", label_size);
+    // Reserve four digits so ordinary damage does not move the progress pod.
+    const float defence_value = std::max({c.measure("9999", value_size, true),
+        c.measure(hull, value_size, true), c.measure(shield, value_size, true)});
+    const float defence_width = 2 * padding + defence_label + 4 + defence_value;
+    const float progress_x = left + defence_width + gap, progress_width = right - progress_x;
+    c.fill(left, top, defence_width, panel_height, navy);
+    c.fill(progress_x, top, progress_width, panel_height, navy);
+    // Both existing atlas faces have their capital/digit ink around19..54 at48pt.
+    // Centre that consumed ink in each row; the physical14pt floor stays intact.
+    const auto line = [&](float x, float y, std::string_view text, float size, Color color, bool title = false) {
+      c.text(x, y + row * .5F - size * 36.5F / 48.F, text, size, color, title);
+    };
+    const auto defence = [&](unsigned index, std::string_view label, const std::string& value, float fraction, Color color, bool hit) {
+      const float y = top + 2 + static_cast<float>(index) * row;
+      line(left + padding, y, label, label_size, hit ? color : white);
+      line(left + defence_width - padding - c.measure(value, value_size, true), y, value, value_size, color, true);
+      c.fill(left + padding, y + row - 2, defence_label, 2, panel);
+      c.fill(left + padding, y + row - 2, defence_label * std::clamp(fraction, 0.F, 1.F), 2, color);
+      if (hit) c.fill(left, y, 2, row, color);
+    };
+    defence(0, "HP", hull, run.hull / std::max(1.F, run.maximum_hull), damaged && v.damage_feedback.hull ? coral : mint, damaged && v.damage_feedback.hull);
+    defence(1, "SHIELD", shield, run.shield / std::max(1.F, run.maximum_shield), {.57F,.83F,1,1}, damaged && !v.damage_feedback.hull);
+    const float progress_left = progress_x + padding, progress_right = right - padding;
+    const float first = top + 2, second = first + row;
+    line(progress_left, first, "LV", label_size, white);
+    const float level_x = progress_left + c.measure("LV", label_size) + 4;
+    line(level_x, first, level, value_size, white, true);
+    const float xp_x = level_x + c.measure(level, value_size, true) + 8;
+    line(xp_x, first, "XP", label_size, gold);
+    const float track_x = xp_x + c.measure("XP", label_size) + 4;
+    const float track_width = progress_right - track_x;
+    if (track_width < 8) c.output.text_overflow = true;
+    c.fill(track_x, first + row * .5F - 2, std::max(0.F, track_width), 4, panel);
+    c.fill(track_x, first + row * .5F - 2, std::max(0.F, track_width) * std::clamp(run.xp / std::max(1.F, run.next_level_xp), 0.F, 1.F), 4, gold);
+    line(progress_left, second, "SCORE", label_size, muted);
+    const float score_x = progress_left + c.measure("SCORE", label_size) + 4;
+    line(score_x, second, score, score_size, white, true);
+    if (score_x + c.measure(score, score_size, true) > progress_right) c.output.text_overflow = true;
     c.scale = original_scale; c.ox = original_ox; c.oy = original_oy;
     c.type_scale = std::isfinite(v.text_scale) && v.text_scale > 1 ? v.text_scale : 1;
     const bool overdrive = run.harvest_overdrive_seconds > 0;
@@ -1055,20 +1063,39 @@ Interface standard_interface(const View& v) {
       c.fitted(28, 675, 334, run.stats.active_seconds < 4 ? movement_hint : sweep_hint, 17, white, false, true);
       c.fitted(28, 703, 334, run.stats.active_seconds < 4 ? dash_hint : "3 SWEEPS = OVERDRIVE", 14, muted, false, true);
     }
-    if (overdrive || run.harvest_chain) {
-      const auto color = overdrive ? navy : white;
-      c.fill(20, 752, 190, 60, overdrive ? mint : navy);
-      c.fitted(28, 758, 174, overdrive ? "OVERDRIVE " + number(static_cast<unsigned>(std::ceil(run.harvest_overdrive_seconds))) + "s" : "SWEEP " + number(run.harvest_chain) + "/" + number(gameplay::tuning::harvest_chain_target), 17, color, false, true);
-      // Reserve the atlas bearings as well as advances at the physical text
-      // floor: tight phones use the shorter label without reducing legibility.
-      const float caption_bearing = std::max(14.F, 14.F / c.scale) * 64.F / 48.F;
-      const std::string benefit = overdrive ? (c.measure("CAPTURE/FIRE", 14) + caption_bearing <= 174 ? "CAPTURE/FIRE" : "BOOST") : number(gameplay::tuning::harvest_chain_target - run.harvest_chain) + " TO OVERDRIVE";
-      c.fitted(28, 785, 174, benefit, 14, color, false, true);
-      const float remaining = overdrive ? run.harvest_overdrive_seconds / gameplay::tuning::harvest_overdrive_seconds : run.harvest_chain_seconds / gameplay::tuning::harvest_chain_window_seconds;
-      c.fill(32, 807, 166, 2, panel);
-      c.fill(32, 807, 166 * std::clamp(remaining, 0.F, 1.F), 2, overdrive ? navy : mint);
+    if (overdrive || run.harvest_chain || damaged) {
+      // This is passive flight status, not a second mint action button.
+      c.fill(20, 752, 190, 60, navy);
+      const std::string cause = std::string(v.damage_feedback.hull ? "HP " : "SHIELD ") +
+          (v.damage_feedback.cause == gameplay::DamageCause::contact ? "BUMP" : v.damage_feedback.cause == gameplay::DamageCause::projectile ? "SHOT" : "HIT");
+      if (overdrive || run.harvest_chain) {
+        c.fitted(28, 758, 174, overdrive ? "OVERDRIVE " + number(static_cast<unsigned>(std::ceil(run.harvest_overdrive_seconds))) + "s" :
+            "SWEEP " + number(run.harvest_chain) + "/" + number(gameplay::tuning::harvest_chain_target), 19, overdrive ? mint : white, true, true);
+        if (damaged) c.fitted(28, 784, 174, cause, 14, v.damage_feedback.hull ? coral : white, false, true);
+        else {
+          const float target = static_cast<float>(gameplay::tuning::harvest_chain_target);
+          const float pip_width = (174 - (target - 1) * 6) / target;
+          for (unsigned i = 0; i < gameplay::tuning::harvest_chain_target; ++i) {
+            const float x = 28 + static_cast<float>(i) * (pip_width + 6);
+            c.fill(x, 789, pip_width, 8, panel);
+            if (overdrive || i < run.harvest_chain) c.fill(x + 2, 791, pip_width - 4, 4, mint);
+          }
+        }
+        const float remaining = overdrive ? run.harvest_overdrive_seconds / gameplay::tuning::harvest_overdrive_seconds : run.harvest_chain_seconds / gameplay::tuning::harvest_chain_window_seconds;
+        c.fill(28, 805, 174, 3, panel);
+        c.fill(28, 805, 174 * std::clamp(remaining, 0.F, 1.F), 3, mint);
+      } else c.fitted(28, 770, 174, cause, 17, v.damage_feedback.hull ? coral : white, false, true);
     }
-    c.button(224, 752, 150, run.dash_cooldown_seconds > 0 ? "DASH " + number(static_cast<unsigned>(std::ceil(run.dash_cooldown_seconds))) + "s" : "DASH", Command::dash, run.dash_cooldown_seconds <= 0, mint, 60);
+    const bool dash_ready = run.dash_cooldown_seconds <= 0;
+    const std::string dash_label = dash_ready ? "DASH" : "DASH " + number(static_cast<unsigned>(std::ceil(run.dash_cooldown_seconds))) + "s";
+    // Reuse the exact button target/held treatment, with a stronger action face.
+    c.button(224, 752, 150, "", Command::dash, dash_ready, mint, 60);
+    c.output.buttons.back().label = dash_label;
+    if (dash_ready) c.centered(224, 763, 150, "DASH", 25, navy, true);
+    else {
+      c.centered(224, 755, 150, "DASH", 20, muted, true);
+      c.centered(224, 781, 150, number(static_cast<unsigned>(std::ceil(run.dash_cooldown_seconds))) + "s", 16, white);
+    }
     if (v.stick_active) {
       const float x = (v.stick_origin.x - c.ox) / c.scale, y = (v.stick_origin.y - c.oy) / c.scale;
       c.fill(x - 24, y - 24, 48, 48, {.06F, .2F, .25F, .35F});

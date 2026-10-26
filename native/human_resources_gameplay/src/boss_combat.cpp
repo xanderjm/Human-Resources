@@ -195,11 +195,12 @@ void Game::State::boss_update(Actor& actor, float dt) {
     if ((destination - station) * (current - station) < 0 &&
         std::abs(actor.view.position.x - view.player.x) < tuning::military_body_radius[3] + tuning::player_radius + tuning::boss_bypass_margin)
       destination = current;
-    const auto occupied = [&](float lateral) {
-      const Vec2 route{lateral - actor.view.position.x, view.runner_distance + destination - actor.view.position.z};
+    const float station_z = view.runner_distance + destination;
+    const auto occupied = [&](Vec2 target, bool all_bodies = false) {
+      const Vec2 route{target.x - actor.view.position.x, target.z - actor.view.position.z};
       const float square = length_squared(route);
       for (const auto& other : actors) {
-        if (other.removed || !vehicle(other.view.kind)) continue;
+        if (&other == &actor || other.removed || !(all_bodies ? military(other.view.kind) : vehicle(other.view.kind))) continue;
         const Vec2 offset{other.view.position.x - actor.view.position.x, other.view.position.z - actor.view.position.z};
         const float along = square > .000001F ? std::clamp((offset.x * route.x + offset.z * route.z) / square, 0.F, 1.F) : 0;
         const float gap = tuning::military_body_radius[3] + tuning::military_body_radius[military_index(other.view.kind)] + tuning::military_spacing_margin;
@@ -207,22 +208,52 @@ void Game::State::boss_update(Actor& actor, float dt) {
       }
       return false;
     };
-    // Keep the selected flank until its finite approach capsule is occupied.
-    // Switching requires an entirely clear legal alternative; both blocked
-    // retains honest local avoidance rather than oscillating or moving bodies.
+    // Prefer an entirely clear station route. A blocked diagonal can instead
+    // admit a horizontal detour without changing any occupied body root.
     const float alternative = view.player.x - flank;
-    if (std::abs(alternative) <= edge && occupied(x) && !occupied(alternative)) {
+    const bool blocked = occupied({x, station_z});
+    const bool alternative_legal = std::abs(alternative) <= edge;
+    const bool alternative_blocked = !alternative_legal || occupied({alternative, station_z});
+    bool lateral_bypass = false;
+    if (blocked && !alternative_blocked) {
       state.flank_right = !state.flank_right; x = alternative;
+    } else if (blocked && alternative_blocked) {
+      // Two blocked station diagonals need not block the horizontal corridor
+      // underneath them. Retain the stored lateral destination until reached;
+      // only then choose the opposite clear side, so the detour cannot toggle.
+      if (alternative_legal && std::abs(x - actor.view.position.x) <= tuning::tactics_arrival_radius &&
+          !occupied({alternative, actor.view.position.z})) {
+        state.flank_right = !state.flank_right; x = alternative;
+      }
+      lateral_bypass = !occupied({x, actor.view.position.z});
     }
-    const Vec2 route{x - actor.view.position.x, view.runner_distance + destination - actor.view.position.z};
+    const Vec2 route{x - actor.view.position.x, lateral_bypass ? 0.F : station_z - actor.view.position.z};
     const float arrival = std::min(1.F, std::sqrt(length_squared(route)) / tuning::tactics_arrival_radius);
     const float slow = actor.slow_timer > 0 ? tuning::storm_boss_slow : 0;
     auto relative = scaled(direction(route), tuning::military_movement_speed[3] * arrival * (1 - slow));
-    const Vec2 desired{relative.x, relative.z + view.forward_speed};
+    const Vec2 carry{0, lateral_bypass ? 0.F : view.forward_speed};
+    const auto desired = add(relative, carry);
     const float change = tuning::boss_movement_acceleration * dt;
     relative = {actor.view.velocity.x + std::clamp(desired.x - actor.view.velocity.x, -change, change),
-        actor.view.velocity.z + std::clamp(desired.z - actor.view.velocity.z, -change, change) - view.forward_speed};
-    actor.view.velocity = military_velocity(actor, relative, dt, {0, view.forward_speed});
+        actor.view.velocity.z + std::clamp(desired.z - actor.view.velocity.z, -change, change) - carry.z};
+    if (lateral_bypass) {
+      // The whole lateral corridor is already admitted. Follow the bounded
+      // world transition, including the real forward braking drift, rather
+      // than rotating a carry-relative velocity back toward the field edge.
+      const auto clear_step = [&](Vec2 velocity) {
+        const auto next = add(actor.view.position, scaled(velocity, dt));
+        return std::abs(next.x) <= std::max(edge, std::abs(actor.view.position.x)) + .00001F && !occupied(next, true);
+      };
+      auto velocity = relative;
+      if (!clear_step(velocity)) {
+        velocity = {actor.view.velocity.x + std::clamp(-actor.view.velocity.x, -change, change),
+            actor.view.velocity.z + std::clamp(-actor.view.velocity.z, -change, change)};
+        if (!clear_step(velocity)) velocity = {};
+      }
+      actor.view.velocity = velocity;
+    } else {
+      actor.view.velocity = military_velocity(actor, relative, dt, carry);
+    }
     actor.view.position = add(actor.view.position, scaled(actor.view.velocity, dt));
     const float toward = std::atan2(view.player.x - actor.view.position.x, -(view.player.z - actor.view.position.z));
     state.body_heading = wrap(state.body_heading + std::clamp(wrap(toward - state.body_heading),

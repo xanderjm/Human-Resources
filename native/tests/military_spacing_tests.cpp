@@ -19,7 +19,8 @@ gp::detail::Actor actor(gp::EntityKind kind, unsigned id, gp::Vec2 position) {
   a.view.hull = a.view.maximum_hull = 90;
   if (kind == gp::EntityKind::soldier)
     a.view.infantry_role = gp::InfantryRole::rifleman;
-  a.attack_timer = 100; // Isolate approach; committed attacks have separate proofs below.
+  a.attack_timer = gp::detail::vehicle(kind)?tune::enemy_attack_period[gp::detail::military_index(kind)]*.5F:100;
+  if (gp::detail::vehicle(kind)) a.locomotion_velocity={0,-1};
   return a;
 }
 void bounded_approach_and_planted_sources() {
@@ -27,6 +28,9 @@ void bounded_approach_and_planted_sources() {
     for (auto fixed : {gp::EntityKind::soldier, gp::EntityKind::jeep, gp::EntityKind::tank, gp::EntityKind::boss}) {
       gp::Game::State s;
       s.view.player = {0, 0};
+      // Existing boss-ingress quiet window isolates approach without falsely
+      // encoding an enormous timer as the vehicle's planted shot recovery.
+      s.view.stats.active_seconds=tune::director_boss_first_second-.5;
       const float gap = tune::military_body_radius[static_cast<unsigned>(moving) - 4] +
                         tune::military_body_radius[static_cast<unsigned>(fixed) - 4] + tune::military_spacing_margin;
       s.actors.push_back(actor(fixed, 1, {0, 9}));
@@ -38,9 +42,12 @@ void bounded_approach_and_planted_sources() {
         auto& a = s.actors[1];
         const auto before = a.view.position;
         const auto wanted = gp::detail::scaled(gp::detail::direction({0 - before.x, 4 - before.z}), tune::military_movement_speed[static_cast<unsigned>(moving) - 4]);
-        const auto velocity = s.military_velocity(a, wanted, dt);
-        a.view.velocity = velocity;
-        a.view.position = gp::detail::add(a.view.position, gp::detail::scaled(velocity, dt));
+        if(gp::detail::vehicle(moving)) s.enemies(dt); // Real facing/translation commit before weapons.
+        else {
+          const auto velocity = s.military_velocity(a, wanted, dt);
+          a.view.velocity = velocity;
+          a.view.position = gp::detail::add(a.view.position, gp::detail::scaled(velocity, dt));
+        }
         moved = moved || distance(a.view.position, before) > .001F;
         require(distance(a.view.position, original) + .0001F >= gap, "every military body pair keeps its measured approach envelope");
         require(distance(a.view.position, before) <= tune::military_movement_speed[static_cast<unsigned>(moving) - 4] * dt + .00001F,
@@ -48,6 +55,7 @@ void bounded_approach_and_planted_sources() {
         require(std::abs(a.view.position.x) <= tune::field_half_width - tune::military_body_radius[static_cast<unsigned>(moving) - 4] + .0001F,
             "accepted military body motion stays within the whole-body field edge");
       }
+      if(!(moved && distance(s.actors[1].view.position, original)>gap))std::cerr<<"fixed-pair moving="<<static_cast<unsigned>(moving)<<" fixed="<<static_cast<unsigned>(fixed)<<" moved="<<moved<<" final="<<s.actors[1].view.position.x<<','<<s.actors[1].view.position.z<<" gap="<<gap<<'\n';
       require(moved && distance(s.actors[1].view.position, original) > gap, "approaching military can route around a fixed body without hiding it");
       require(distance(s.actors[0].view.position, original) == 0, "local approach never changes the obstacle root");
     }
@@ -94,10 +102,8 @@ void capture_projection_and_edge_return() {
       state.actors[0].lifted = false;
       state.actors[0].view.capture_progress = 0;
     }
-    auto& moving = state.actors[1];
-    const gp::Vec2 wanted = gp::detail::scaled(gp::detail::direction({0 - moving.view.position.x, 4 - moving.view.position.z}), tune::military_movement_speed[1]);
-    moving.view.velocity = state.military_velocity(moving, wanted, dt);
-    moving.view.position = gp::detail::add(moving.view.position, gp::detail::scaled(moving.view.velocity, dt));
+    state.enemies(dt);
+    const auto& moving = state.actors[1];
     require(distance(moving.view.position, state.actors[0].view.position) >= tune::military_body_radius[0] + tune::military_body_radius[1],
         "capture reserves its ground projection so cancellation never returns into another body");
   }
@@ -111,6 +117,113 @@ void capture_projection_and_edge_return() {
   require(state.actors[0].view.position.x < tune::field_half_width - tune::military_body_radius[0],
       "a soldier released beyond the whole-body field edge returns through normal movement");
   std::cout << "PASS capture projection reservation and bounded inward return after edge release\n";
+}
+float swept_distance(gp::Vec2 point,gp::Vec2 from,gp::Vec2 to) {
+  const gp::Vec2 travel{to.x-from.x,to.z-from.z},offset{point.x-from.x,point.z-from.z};
+  const float square=gp::detail::length_squared(travel);
+  const float t=square>0?std::clamp((offset.x*travel.x+offset.z*travel.z)/square,0.F,1.F):0;
+  return distance(point,gp::detail::add(from,gp::detail::scaled(travel,t)));
+}
+void physical_reverse_escape_and_reopened_cage() {
+  unsigned failures=0;
+  unsigned physical_failures=0;
+  for(const auto kind:{gp::EntityKind::jeep,gp::EntityKind::tank}) {
+    for(unsigned fixture=0;fixture<6;++fixture) {
+      gp::Game::State state;state.view.player={0,0};state.view.hull=state.view.maximum_hull=100;
+      state.view.stats.active_seconds=tune::director_boss_first_second-.5;
+      const float own=tune::military_body_radius[gp::detail::military_index(kind)],edge=tune::field_half_width-own;
+      auto moving=actor(kind,3,{fixture==0||fixture==3?edge:-2.F,14});
+      moving.locomotion_velocity={1,0};moving.view.body_heading=1.57079632679F;
+      if(fixture==5)moving.view.position={0,14};
+      state.actors.push_back(moving);
+      auto fixed=[&](unsigned id,gp::EntityKind body,gp::Vec2 position) {
+        auto a=actor(body,id,position);a.view.disabled_seconds=100;state.actors.push_back(a);
+      };
+      const float gap=own+tune::military_body_radius[0]+tune::military_spacing_margin;
+      if(fixture==1||fixture==2||fixture==4)fixed(10,gp::EntityKind::soldier,{-2+gap,14});
+      if(fixture==2)fixed(11,gp::EntityKind::soldier,{-3.2F,10.2F});
+      if(fixture==3)fixed(10,gp::EntityKind::soldier,{edge-gap,12});
+      if(fixture==4) {fixed(11,gp::EntityKind::soldier,{-5.5F,10});fixed(12,gp::EntityKind::soldier,{-5.5F,18});}
+      if(fixture==5)for(unsigned side=0;side<4;++side) {
+        const float angle=static_cast<float>(side)*1.57079632679F;
+        fixed(10+side,gp::EntityKind::soldier,{gap*std::cos(angle),14+gap*std::sin(angle)});
+      }
+      unsigned forward_ticks=0,reverse_ticks=0,longest_stop=0,stopped=0,reverse_run=0,longest_reverse=0,side_flips=0;
+      float previous_turn=0;
+      float maximum_turn=0,minimum_margin=100;
+      bool physical_reported=false;
+      const auto start=state.actors[0].view.position;
+      bool escaped=false;
+      for(unsigned frame=0;frame<600;++frame) {
+        if(fixture==5 && frame==60) {state.actors[2].removed=true;state.actors[3].removed=true;}
+        const auto before=state.actors[0];state.enemies(dt);const auto& a=state.actors[0];
+        require(!a.removed,"finite escape never succeeds by retirement or deleting the moving body");
+        const auto facing=gp::detail::direction(a.locomotion_velocity);
+        const float speed=std::hypot(a.view.velocity.x,a.view.velocity.z);
+        const float longitudinal=a.view.velocity.x*facing.x+a.view.velocity.z*facing.z;
+        const float turn=std::abs(std::remainder(std::atan2(facing.x,-facing.z)-std::atan2(before.locomotion_velocity.x,-before.locomotion_velocity.z),6.28318530718F));
+        const float signed_turn=std::remainder(std::atan2(facing.x,-facing.z)-std::atan2(before.locomotion_velocity.x,-before.locomotion_velocity.z),6.28318530718F);
+        if(std::abs(signed_turn)>.0001F && std::abs(previous_turn)>.0001F && signed_turn*previous_turn<0)++side_flips;
+        previous_turn=signed_turn;
+        maximum_turn=std::max(maximum_turn,turn);
+        require(turn<=tune::vehicle_turn_radians_per_second*dt+.00001F,"physical ordinary chassis obeys authoritative per-tick angular limit");
+        require(turn<=speed*dt/tune::vehicle_minimum_turn_radius_metres+.00001F,"physical back-turn respects its minimum turning radius at actual signed speed");
+        require(std::abs(a.view.velocity.x*facing.z-a.view.velocity.z*facing.x)<.00002F,"actual translation is forward or reverse along physical facing, never sideways");
+        const auto old_facing=gp::detail::direction(before.locomotion_velocity);
+        const float old_longitudinal=before.view.velocity.x*old_facing.x+before.view.velocity.z*old_facing.z;
+        require(longitudinal*old_longitudinal>=-.00001F,"reverse-to-forward physical gear change passes through a complete stop");
+        // These fixtures contain static known geometry; reopening only removes
+        // obstacles. Emergency stops for newly crossing bodies are separate.
+        const float old_speed=std::abs(old_longitudinal),change=speed-old_speed;
+        if(!(change<=tune::vehicle_acceleration*dt+.0001F && -change<=tune::vehicle_braking*dt+.0001F)) {
+          ++physical_failures;
+          if(!physical_reported)std::cerr<<"static-motion kind="<<static_cast<unsigned>(kind)<<" fixture="<<fixture<<" frame="<<frame<<" signed_speed="<<old_longitudinal<<"->"<<longitudinal<<" before="<<before.view.position.x<<','<<before.view.position.z<<" after="<<a.view.position.x<<','<<a.view.position.z<<" face_before="<<before.locomotion_velocity.x<<','<<before.locomotion_velocity.z<<" face_after="<<a.locomotion_velocity.x<<','<<a.locomotion_velocity.z<<" phase="<<static_cast<unsigned>(before.escape.phase)<<"->"<<static_cast<unsigned>(a.escape.phase)<<" turn="<<before.escape.turn_remaining<<"->"<<a.escape.turn_remaining<<" exit="<<before.escape.forward_remaining<<"->"<<a.escape.forward_remaining<<'\n';
+          physical_reported=true;
+        }
+        require(std::abs(a.view.position.x)<=edge+.0001F,"reverse escape preserves whole-body field boundary");
+        if(speed<.0001F) {++stopped;longest_stop=std::max(longest_stop,stopped);require(turn<.00001F,"stopped chassis never rotates cosmetically");}
+        else {stopped=0;if(longitudinal<0){++reverse_ticks;++reverse_run;longest_reverse=std::max(longest_reverse,reverse_run);}else {++forward_ticks;reverse_run=0;}}
+        for(std::size_t i=1;i<state.actors.size();++i)if(!state.actors[i].removed) {
+          const auto& other=state.actors[i];
+          const float margin=swept_distance(other.view.position,before.view.position,a.view.position)-own-tune::military_body_radius[gp::detail::military_index(other.view.kind)]-tune::military_spacing_margin;
+          minimum_margin=std::min(minimum_margin,margin);
+          require(margin>=-.0002F,"complete actual reverse/forward step preserves reserved swept body gap");
+        }
+        if(fixture==5 && frame<60)require(distance(a.view.position,start)<.0001F,"closed cage holds honestly until an actual opening appears");
+        const bool beyond=fixture==0?a.view.position.x<edge-2.F:
+            fixture==3?(a.view.position.x<edge-1.F && a.view.position.z<11.F):
+            fixture==5?(a.view.position.x>1.5F && a.view.position.z<11.F):
+            (a.view.position.x>-2+gap+gap*.5F && a.view.position.z<12.5F);
+        if((fixture!=5||frame>=60) && longitudinal>.1F && beyond) {escaped=true;break;}
+      }
+      const auto& final=state.actors[0];
+      std::cout<<"escape kind="<<static_cast<unsigned>(kind)<<" fixture="<<fixture<<" forward="<<forward_ticks<<" reverse="<<reverse_ticks<<" max_reverse="<<longest_reverse<<" max_stop="<<longest_stop<<" side_flips="<<side_flips<<" max_turn="<<maximum_turn<<" min_margin="<<minimum_margin<<" escaped="<<escaped<<" final="<<final.view.position.x<<','<<final.view.position.z<<" facing="<<final.locomotion_velocity.x<<','<<final.locomotion_velocity.z<<'\n';
+      if(!escaped)++failures;
+      if(fixture==0)require(reverse_ticks>0,"head-on field edge requires real backing before forward escape");
+    }
+  }
+  require(failures==0,"each available physical maneuver reaches finite forward progress beyond its initial obstruction");
+  require(physical_failures==0,"known static escape geometry preserves bounded acceleration and braking");
+}
+void moving_vehicle_crossings_keep_both_bodies_and_progress() {
+  for(bool crossing:{false,true}) {
+    gp::Game::State s;s.view.player={0,0};s.view.hull=s.view.maximum_hull=100;
+    s.view.stats.active_seconds=tune::director_boss_first_second-.5;
+    auto first=actor(gp::EntityKind::jeep,3,{-4,14});first.locomotion_velocity={1,0};
+    auto second=actor(gp::EntityKind::tank,4,crossing?gp::Vec2{2,19}:gp::Vec2{4,14});second.locomotion_velocity=crossing?gp::Vec2{0,-1}:gp::Vec2{-1,0};
+    s.actors={first,second};float minimum=100;
+    const float gap=tune::military_body_radius[1]+tune::military_body_radius[2]+tune::military_spacing_margin;
+    for(unsigned frame=0;frame<600;++frame) {
+      const auto a=s.actors[0].view.position,b=s.actors[1].view.position;s.enemies(dt);
+      const auto after_a=s.actors[0].view.position,after_b=s.actors[1].view.position;
+      const float swept=swept_distance({}, {a.x-b.x,a.z-b.z}, {after_a.x-after_b.x,after_a.z-after_b.z});
+      minimum=std::min(minimum,swept-gap);
+      require(swept>=gap-.0002F,"opposing and crossing actual vehicle sweeps preserve both measured envelopes");
+      require(!s.actors[0].removed && !s.actors[1].removed,"moving-neighbor escape cannot delete or retire pressure");
+    }
+    std::cout<<"moving-neighbor crossing="<<crossing<<" min_margin="<<minimum<<" first="<<s.actors[0].view.position.x<<','<<s.actors[0].view.position.z<<" second="<<s.actors[1].view.position.x<<','<<s.actors[1].view.position.z<<'\n';
+    require(s.actors[0].view.position.x>0 && s.actors[0].view.position.z<12 && s.actors[1].view.position.x<0 && s.actors[1].view.position.z<13,"both opposing/crossing vehicles make finite forward progress toward their actual flank stations");
+  }
 }
 void ingress_and_random_stream() {
   for (unsigned seed = 1; seed <= 40; ++seed) {
@@ -143,11 +256,28 @@ void public_reproduction_and_restore() {
     gp::Game run;
     run.start({.seed = seed});
     bool checkpointed = false;
+    std::vector<gp::EntityView> previous;
     for (unsigned frame = 0; frame < 60 * 150 && run.snapshot().phase != gp::Phase::dead; ++frame) {
       if (run.snapshot().phase == gp::Phase::choosing_upgrade)
         require(run.choose_upgrade(0), "ordinary earned choice resumes the public spacing reproduction");
-      run.advance(dt);
+      // This checkpoint fixture tests recovery of a live crowded encounter.
+      // Seed 7841's idle pilot naturally dies before 32 seconds; use ordinary
+      // semantic flight and ready Dash while preserving the same seed/time.
+      gp::Control control{};
+      if (seed == 7841U) {
+        control.movement = {static_cast<float>(std::sin(run.snapshot().stats.active_seconds * .8)), 1};
+        control.dash = run.snapshot().dash_cooldown_seconds <= 0;
+      }
+      run.advance(dt, control);
       const auto& s = run.snapshot();
+      for(const auto& a:s.entities)if(gp::detail::vehicle(a.kind) && a.capture_progress==0) {
+        const auto before=std::find_if(previous.begin(),previous.end(),[&](const auto& old){return old.id==a.id && old.capture_progress==0;});
+        if(before==previous.end())continue;
+        const float turn=std::abs(std::remainder(gp::vehicle_body_yaw(a)-gp::vehicle_body_yaw(*before),6.28318530718F));
+        require(turn<=tune::vehicle_turn_radians_per_second*dt+.00005F,"actual public Game ordinary body headings stay within the physical per-tick turn bound");
+        const float yaw=gp::vehicle_body_yaw(a);
+        require(std::abs(a.velocity.x*std::cos(yaw)+a.velocity.z*std::sin(yaw))<.0001F,"actual public Game motion remains longitudinal in the published body frame");
+      }
       for (std::size_t i = 0; i < s.entities.size(); ++i)
         for (std::size_t j = i + 1; j < s.entities.size(); ++j) {
           const auto& a = s.entities[i];
@@ -178,7 +308,9 @@ void public_reproduction_and_restore() {
           require(run.save_state() == copy.save_state(), "body avoidance preserves exact future after pause, cold restore and Dash");
         }
       }
+      previous=run.snapshot().entities;
     }
+    if(!checkpointed)std::cerr<<"public spacing seed="<<seed<<" phase="<<static_cast<unsigned>(run.snapshot().phase)<<" active="<<run.snapshot().stats.active_seconds<<" captures="<<run.snapshot().stats.captures<<'\n';
     require(checkpointed, "real public reproduction reaches actual crowded military encounters");
   }
   std::cout << "PASS fresh public spacing reproduction and exact paused/restored futures\n";
@@ -189,5 +321,7 @@ int main() {
   locked_aim_and_recovery();
   capture_projection_and_edge_return();
   ingress_and_random_stream();
+  physical_reverse_escape_and_reopened_cage();
+  moving_vehicle_crossings_keep_both_bodies_and_progress();
   public_reproduction_and_restore();
 }

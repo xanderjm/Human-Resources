@@ -237,6 +237,14 @@
     "margin_metres": 0.08,
     "spawn_rows": 8
   },
+  "vehicle_steering": {
+    "turn_radians_per_second": 2.4,
+    "minimum_turn_radius_metres": 1.25,
+    "acceleration": 10,
+    "braking": 14,
+    "reverse_speed_fraction": 0.45,
+    "recovery_clearance_metres": 1.0
+  },
   "boss_combat": {
     "fan_warning_seconds": 1.25,
     "rake_warning_seconds": 1.35,

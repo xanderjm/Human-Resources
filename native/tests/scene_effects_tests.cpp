@@ -57,6 +57,34 @@ void windmill_uses_saved_active_time_and_keeps_its_assembly() {
     }
   }
 }
+void jeep_wheels_follow_signed_physical_travel_and_identity() {
+  hr::gameplay::Snapshot run;
+  run.phase = hr::gameplay::Phase::active;
+  run.entities = {{.id=7,.kind=hr::gameplay::EntityKind::jeep,.position={0,10},.body_heading=0.F},
+      {.id=9,.kind=hr::gameplay::EntityKind::jeep,.position={3,10},.body_heading=0.F}};
+  hr::product::SceneEffects effects;
+  effects.update(run);
+  run.stats.active_seconds=.1;
+  run.entities[0].position.z-=.15F;run.entities[0].velocity={0,-1.5F};
+  run.entities[1].position.z+=.15F;run.entities[1].velocity={0,1.5F};
+  effects.update(run);
+  require_near(effects.wheel_angle(7),-.5F,1e-5F,"forward chassis travel rolls wheels forward");
+  require_near(effects.wheel_angle(9),.5F,1e-5F,"reverse chassis travel reverses wheel roll without reversing facing");
+  std::swap(run.entities[0],run.entities[1]);
+  run.stats.active_seconds=.2;
+  run.entities[0].body_heading=.2F;run.entities[0].velocity={};
+  run.entities[1].body_heading=.2F;run.entities[1].velocity={};
+  effects.update(run);
+  require_near(effects.wheel_angle(7),-.5F,1e-5F,"stationary heading changes cannot invent forward wheel travel");
+  require_near(effects.wheel_angle(9),.5F,1e-5F,"wheel history follows actor identity when public entity order changes");
+  for(const auto phase:{hr::gameplay::Phase::paused,hr::gameplay::Phase::choosing_upgrade}) {
+    run.phase=phase;run.entities[0].position.z+=1;
+    effects.update(run);
+    require_near(effects.wheel_angle(9),.5F,1e-5F,"unchanged active clock freezes wheels during pause, draft and interruption");
+  }
+  effects.reset();effects.update(run);
+  require_near(effects.wheel_angle(7),0,0,"cold presentation reconstructs wheels without replaying prior travel");
+}
 void actual_convergence_and_rays() {
   hr::gameplay::Snapshot run;
   run.player = {2, 100};
@@ -618,6 +646,7 @@ void only_confirmed_collection_can_retain_a_source_body() {
 }
 } // namespace
 int main() {
+  jeep_wheels_follow_signed_physical_travel_and_identity();
   windmill_uses_saved_active_time_and_keeps_its_assembly();
   actual_damage_is_local_typed_and_pause_safe();
   actual_convergence_and_rays();

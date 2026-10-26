@@ -36,6 +36,7 @@ constexpr std::array<Point,6> source_openings{{
 gp::detail::Actor jeep() {
   gp::detail::Actor a;
   a.view.id=1;a.view.kind=gp::EntityKind::jeep;a.view.position={0,9};a.view.velocity={0,-1};
+  a.locomotion_velocity={0,-1};
   a.view.hull=4;a.view.maximum_hull=400;a.attack_timer=.001F;a.aim=a.view.warning_aim={0,-2};
   return a;
 }
@@ -219,7 +220,7 @@ void malformed_vehicle_authority() {
   gp::Game run;run.start({.seed=775});auto& s=*run.state_;
   s.actors={jeep()};s.actors.front().view.minigun_barrel=3;s.next_id=2;s.shoot(s.actors.front());s.sync();
   const auto good=run.save_state();require(!good.empty(),"actual minigun wire fixture is valid");
-  constexpr std::size_t actor=378,projectile=actor+101+4;
+  constexpr std::size_t actor=378,projectile=actor+110+4;
   auto seal=[](auto& bytes) {
     std::uint64_t hash=14695981039346656037ULL;
     for(std::size_t i=0;i<bytes.size()-8;++i) hash=(hash^std::to_integer<std::uint8_t>(bytes[i]))*1099511628211ULL;

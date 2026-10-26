@@ -10,7 +10,7 @@ change together. Prior landscape captures are historical integration evidence.
 
 ## Current truth
 
-The latest accepted host source implements authority8 boss combat and Pause bank
+The accepted authority8 baseline implements boss combat and Pause bank
 disclosure. Exact source/commit is recorded in
 `build/evidence/boss-source-checkpoint/checkpoint.json`. Bosses open with a
 three-shell rake, visibly turn between stored shots, recover while moving and
@@ -43,15 +43,47 @@ measured full status/physical glyph padding fixes it, with existing readable
 fallback. Final47host suites/static/diff, three revised native sizes, independent
 review and actual accelerated player smoke pass. `death-flow-quality-fafd40be/`
 and `death-flow-integration/revised/` bind source/evidence. This new UI is outside
-the frozenfaf mobile/runtime and delivered test app described below.
+the frozenfaf mobile/runtime; it is included in the owner test app below.
 
-The owner's latest requested app is the separate **Latest Playtest fafd40be**,
-confirmed at PID52722, with original ship size and a fresh test save. It includes
-accepted authority8 boss attacks, Pause bank disclosure and preceding UI/sweep
-feedback. All104 bundle files and the strict ad hoc signature are verified;
-the raw executable matches the accepted68-input closure. Thirteen user previews
-and31discovered bundles are protected. Exact staging/launch evidence is under
-`build/evidence/latest-playtest-fafd40be/`. Later work does not hot-update it.
+The owner's latest requested app is the separate **Latest Playtest a0a4128**,
+confirmed at PID64130, with original ship size and a fresh test save. It includes
+accepted authority8 boss attacks, Pause bank disclosure, the single saved defeat
+report and preceding UI/sweep feedback. All104 bundle files and the strict ad hoc
+signature are verified; the raw executable matches the accepted68-input closure.
+Fourteen user previews and32discovered bundles are protected. Exact staging and
+launch evidence is under `build/evidence/latest-playtest-a0a4128/`. Later work does
+not hot-update it. Three agents complete physical ordinary vehicle steering,
+regression/continuation tests and independent motion/UI review. The accepted
+Game9 host slice below is not included in the owner app.
+The revised committed-maneuver candidate rebuilds all12gameplay translation units
+and passes all12finite spacing/braking cases, five other focused C++ suites and
+25tuning checks. Repeated eight-vehicle planning peaks1.668ms including warm-up,
+with no counted ordinary C++ allocations; early actual Game.advance peaks165us
+on the host, with at most two ordinary vehicles. The combined repository gate
+first passes46/47 and exposes a real crowded max-scroll boss retirement when
+tanks enter; that failure is preserved under
+`vehicle-steering-integration-game9/failed-handoff-aggregate/`. A narrow lateral
+detour using existing saved flank choice fixes the unchanged90second crowded
+gate, with positive swept clearance and exact labelled cold futures. The revised
+seventeen-owner source now passes47/47/static/diff with32bundles preserved;
+68matching native inputs are retained. Root and independent native review accept
+the actual45active-second opening, real reverse/turn/plant/resume sequence and
+readable persistent HUD. The natural film has no hit; a separate clearly labelled
+presentation-only damage/Overdrive still preserves all stats and fits its cause
+text. No Game event/health/save is altered for that still. One current accelerated
+native player smoke and required host evidence pass. Authority9 uses fingerprint
+`13450486980726334161`, codec2/account2; it is outside the delivered owner app and
+frozen mobile packages. This does not qualify native late tanks/bosses, physical
+phone budgets or human fun. Next motion priority is actual non-attack infantry
+heading jitter; no new asset or ship/world scale change is made in this slice.
+The parallel persistent HUD hierarchy passes actual-atlas focused checks and
+passes combined bounded native review. ADR005 records the codec2/Game9 boundary.
+The local source/records checkpoint is identified by
+`build/evidence/vehicle-steering-source-checkpoint/checkpoint.json`; root host
+acceptance is `vehicle-steering-integration-game9/ROOT_ACCEPTANCE.json`.
+Generated duplicate-buffer canonical cloning recovers1.314GB without changing
+logical contents; root verifies784outputs,75sources and all32bundles. The ordinary
+build free-space floor remains unchanged, and no further capacity pass is active.
 Current mobile compile/package qualification is now the exact741-filefafd40be
 checkpoint: both iOS Release builds, Android both ABIs/variants/lint/16KiB/AAB
 and source/package audits pass, independently reviewed. Reports are under
@@ -63,7 +95,7 @@ actual render, earned draft, exact force-stop/cold paused restore, Resume and
 under30s zero-credit bank/cold reopen. Root rehashes50records and136identical
 APK entries and views four actual frames. The owned read-only VM exits cleanly;
 `boss-android-runtime-attempt2/REPORT.json` binds the result. This does not cover
-pending death-flow source edits, active-run background flush, positive payout,
+later host death-flow/Game9 changes, active-run background flush, positive payout,
 boss phases, physical input/budgets, human feel, distribution or store acceptance.
 Goal stays active.
 
