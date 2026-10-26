@@ -207,10 +207,8 @@ void Game::State::spawn(EntityKind kind, bool initial, std::optional<Vec2> pocke
     a.locomotion_velocity = a.view.velocity;
   } else {
     const auto index = military_index(kind);
-    if (kind != EntityKind::soldier) {
-      a.locomotion_velocity = {0, -tuning::military_movement_speed[index]};
-      a.view.body_heading = 0;
-    }
+    a.locomotion_velocity = {0, -tuning::military_movement_speed[index]};
+    a.view.body_heading = 0;
     if (kind == EntityKind::boss) {
       a.view.position.x = (2 * lateral_sample - 1) * tuning::encounter_boss_entry_half_width;
     } else {
@@ -234,13 +232,79 @@ void Game::State::spawn(EntityKind kind, bool initial, std::optional<Vec2> pocke
   }
   actors.push_back(a);
 }
+void Game::State::infantry_update(Actor& actor, float dt, InfantryAttackWindow window) {
+  const auto attack = infantry_attack(actor.view.infantry_role);
+  auto& pose = actor.infantry_aim;
+  actor.view.fire_recovery_seconds = std::max(0.F, actor.view.fire_recovery_seconds - dt);
+  const float station = actor.view.position.z - view.runner_distance;
+  const bool visible = station <= tuning::encounter_warning_entry_ahead && station >= -tuning::encounter_warning_retire_behind;
+  if (actor.view.warning_seconds > 0) {
+    actor.view.velocity = {};
+    if (!visible || !infantry_shot(actor.view.infantry_role, actor.view.position, actor.aim).valid) {
+      actor.view.warning_seconds = 0;
+      actor.attack_timer = tuning::enemy_attack_period[0];
+      pose = {};
+      return;
+    }
+    pose.pose_seconds += dt;
+    actor.view.warning_seconds = std::max(0.F, actor.view.warning_seconds - dt);
+    if (actor.view.warning_seconds == 0) { shoot(actor); pose = {}; }
+    return;
+  }
+  actor.attack_timer = std::max(0.F, actor.attack_timer - dt);
+  const float distance = std::sqrt(distance_squared(view.player, actor.view.position));
+  const bool permitted = window.permitted && visible && actor.view.capture_progress == 0 &&
+      actor.view.fire_recovery_seconds <= 0 && distance < tuning::laser_range * 1.2F;
+  if (!permitted) pose = {};
+  if (permitted && (pose.preparing || window.available > 0)) {
+    // Prepare within the existing cooldown budget, refreshing the provisional
+    // point throughout turning/slot waits. Only a real warning locks the point.
+    const float lead = (actor.attack_timer + attack.warning_seconds + distance / attack.projectile_speed) * tuning::attack_prediction_fraction;
+    auto point = add(view.player, scaled(view.velocity, lead));
+    point.x = std::clamp(point.x, -tuning::field_half_width, tuning::field_half_width);
+    const auto shot = infantry_shot(actor.view.infantry_role, actor.view.position, point);
+    if (shot.valid) {
+      const float yaw = std::atan2(shot.direction.x, -shot.direction.z) - attack.weapon_yaw_radians;
+      const Vec2 target{std::sin(yaw), -std::cos(yaw)};
+      auto facing = direction(actor.locomotion_velocity);
+      if (length_squared(facing) == 0) facing = {0, -1};
+      const float angle = std::abs(std::atan2(facing.x * target.z - facing.z * target.x, facing.x * target.x + facing.z * target.z));
+      if (pose.preparing || actor.attack_timer <= angle / tuning::infantry_turn_radians_per_second + dt) {
+        if (pose.preparing) pose.pose_seconds += dt;
+        else pose = {true, 0};
+        actor.aim = actor.view.warning_aim = point;
+        actor.view.velocity = {};
+        actor.locomotion_velocity = infantry_turn(facing, target, dt);
+        actor.view.body_heading = std::atan2(actor.locomotion_velocity.x, -actor.locomotion_velocity.z);
+        if (actor.attack_timer == 0 && angle <= tuning::infantry_turn_radians_per_second * dt && window.available > 0) {
+          pose.preparing = false;
+          actor.view.warning_seconds = attack.warning_seconds;
+          actor.attack_timer = attack.cooldown_seconds;
+          present(PresentationEventKind::warning_lock, actor.view.position, actor.view.id);
+        }
+        return;
+      }
+    } else pose = {};
+  }
+  if (actor.view.fire_recovery_seconds > 0) { actor.view.velocity = {}; return; }
+  const auto motion = infantry_motion(actor, tactical_target(view, actor), dt);
+  actor.view.velocity = motion.velocity;
+  actor.locomotion_velocity = motion.facing;
+  actor.view.body_heading = std::atan2(motion.facing.x, -motion.facing.z);
+  actor.view.position = add(actor.view.position, scaled(motion.velocity, dt));
+}
+
 void Game::State::enemies(float dt) {
   const auto window = encounter_window(view.stats.active_seconds);
   const bool boss_alive = std::any_of(actors.begin(), actors.end(), [](const Actor& a) {
     return !a.removed && a.view.kind == EntityKind::boss;
   });
   const auto warning_cap = boss_alive ? tuning::encounter_boss_warning_cap : window.warning_cap;
-  unsigned warnings = static_cast<unsigned>(std::count_if(actors.begin(), actors.end(), [](const Actor& a) { return a.view.warning_seconds > 0; }));
+  // Derive occupancy at admission so removal, disable and cancellation release
+  // their reservation immediately, including early-return actor paths.
+  const auto occupied_slots = [&] {
+    return static_cast<unsigned>(std::count_if(actors.begin(), actors.end(), reserves_threat_slot));
+  };
   for (auto& a : actors) {
     if (a.removed) {
       continue;
@@ -277,25 +341,33 @@ void Game::State::enemies(float dt) {
     if (captured_vehicle) a.view.fire_recovery_seconds = std::max(0.F, a.view.fire_recovery_seconds - dt);
     if (a.lifted || a.view.disabled_seconds > 0) {
       a.view.warning_seconds = 0;
+      a.infantry_aim = {};
       if (!captured_vehicle || a.lifted) a.view.fire_recovery_seconds = 0;
       a.view.velocity = {};
       continue;
     }
     const bool infantry = a.view.kind == EntityKind::soldier;
-    const auto attack = infantry_attack(a.view.infantry_role);
-    if (!captured_vehicle) a.view.fire_recovery_seconds = std::max(0.F, a.view.fire_recovery_seconds - dt);
+    if (infantry) {
+      const float contact_distance = distance_squared(view.player, a.view.position);
+      const unsigned own_cap = boss_alive ? warning_cap - 1 : warning_cap;
+      const auto occupied = occupied_slots();
+      // A preparation owns its slot until cancellation/fire, even if a phase
+      // change lowers the admission cap below existing occupied reservations.
+      const auto available = a.infantry_aim.preparing ? 1U : occupied < own_cap ? own_cap - occupied : 0;
+      infantry_update(a, dt, {!window.boss_ingress && !boss_preparing(), available});
+      const float contact_radius = tuning::military_contact_radius[0] + tuning::player_radius;
+      if (contact_distance < contact_radius * contact_radius) {
+        const float growth = 1 + std::max(0.F, static_cast<float>(view.stats.active_seconds / 60) - 2) * tuning::director_damage_growth_after_2min;
+        hurt(tuning::enemy_damage[0] * growth, DamageCause::contact, a.view.id);
+      }
+      continue;
+    }
     const float distance = std::sqrt(distance_squared(view.player, a.view.position));
     const auto destination = tactical_target(view, a);
-    const Vec2 route{destination.x - a.view.position.x, destination.z - a.view.position.z};
-    const float slow = a.slow_timer > 0 ? (a.view.kind == EntityKind::boss ? tuning::storm_boss_slow : tuning::storm_slow) : 0;
-    const bool shot_recovery = !infantry && a.view.fire_recovery_seconds <= 0 &&
+    const bool shot_recovery = a.view.fire_recovery_seconds <= 0 &&
         a.attack_timer > tuning::enemy_attack_period[index] - tuning::tactics_vehicle_fire_recovery;
-    const bool planted = a.view.warning_seconds > 0 || (infantry && a.view.fire_recovery_seconds > 0) || shot_recovery;
-    const float arrival = std::min(1.F, std::sqrt(length_squared(route)) / tuning::tactics_arrival_radius);
-    const float speed = planted ? 0.F : tuning::military_movement_speed[index] * (1 - slow) * arrival;
-    if (infantry) {
-      a.view.velocity = planted ? Vec2{} : military_velocity(a, scaled(direction(route), speed), dt);
-    } else if (planted) {
+    const bool planted = a.view.warning_seconds > 0 || shot_recovery;
+    if (planted) {
       a.view.velocity = {};
     } else {
       const auto motion = vehicle_motion(a, destination, dt);
@@ -317,27 +389,23 @@ void Game::State::enemies(float dt) {
         (cannon && !vehicle_cannon_shot(a.view,a.aim).valid))) {
       a.view.warning_seconds = 0;
       a.attack_timer = tuning::enemy_attack_period[index];
-      if (warnings > 0) --warnings;
       continue;
     }
     if (a.view.warning_seconds > 0) {
       a.view.warning_seconds = std::max(0.0F, a.view.warning_seconds - dt);
       if (a.view.warning_seconds == 0) {
         shoot(a);
-        if (warnings > 0) {
-          --warnings;
-        }
       }
     } else {
       a.attack_timer = std::max(0.F, a.attack_timer - dt);
-      const bool boss = a.view.kind == EntityKind::boss;
-      const unsigned own_cap = boss_alive && !boss ? warning_cap - 1 : warning_cap;
-      const bool may_commit = (boss || !window.boss_ingress) && warning_visible && !boss_preparing();
+      const unsigned own_cap = boss_alive ? warning_cap - 1 : warning_cap;
+      const auto occupied = occupied_slots();
+      const bool may_commit = !window.boss_ingress && warning_visible && !boss_preparing();
       // Keep one slot available for the boss even when older infantry appear
       // earlier in the actor list. Recovery reduces pressure, never freezes AI.
-      if (may_commit && warnings < own_cap && a.attack_timer <= 0 && a.view.fire_recovery_seconds <= 0 && distance < tuning::laser_range * 1.2F && warnings < warning_cap) {
-        const float warning = infantry ? attack.warning_seconds : tuning::attack_warning_seconds[index];
-        const float shot_speed = infantry ? attack.projectile_speed : tuning::projectile_speed[index];
+      if (may_commit && occupied < own_cap && a.attack_timer <= 0 && a.view.fire_recovery_seconds <= 0 && distance < tuning::laser_range * 1.2F && occupied < warning_cap) {
+        const float warning = tuning::attack_warning_seconds[index];
+        const float shot_speed = tuning::projectile_speed[index];
         const float flight = distance / shot_speed;
         const float lead = (warning + flight) * tuning::attack_prediction_fraction;
         a.aim = add(view.player, scaled(view.velocity, lead));
@@ -357,10 +425,7 @@ void Game::State::enemies(float dt) {
         a.view.warning_seconds = warning;
         a.view.warning_aim = a.aim; // warning commits the shot; movement can dodge it
         present(PresentationEventKind::warning_lock, a.view.position, a.view.id);
-        a.attack_timer = infantry ? attack.cooldown_seconds : tuning::enemy_attack_period[index];
-        if (infantry)
-          a.view.velocity = {}; // Deliberate planted aim; movement resumes after authored fire recovery.
-        ++warnings;
+        a.attack_timer = tuning::enemy_attack_period[index];
       }
     }
   }

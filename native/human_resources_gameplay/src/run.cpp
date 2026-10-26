@@ -201,8 +201,13 @@ void Game::State::sync() {
       auto entity = a.view;
       if (entity.kind == EntityKind::boss && boss && boss->actor_id == entity.id)
         entity.body_heading = boss->body_heading;
-      else if (military(entity.kind) && entity.kind != EntityKind::soldier && length_squared(a.locomotion_velocity) > .0001F)
+      else if (military(entity.kind) && length_squared(a.locomotion_velocity) > .0001F)
         entity.body_heading = std::atan2(a.locomotion_velocity.x, -a.locomotion_velocity.z);
+      if (entity.kind == EntityKind::soldier) {
+        entity.preparing = a.infantry_aim.preparing;
+        entity.aim_pose_seconds = entity.preparing || entity.warning_seconds > 0 ?
+            std::optional<float>{a.infantry_aim.pose_seconds} : std::nullopt;
+      }
       view.entities.push_back(entity);
     }
   }
@@ -241,6 +246,16 @@ void Game::State::step(float dt, Control control) {
   capture(dt);
   combat(dt);
   projectiles(dt);
+  // Capture/EMP may interrupt after enemies() has prepared a weapon this tick.
+  // Settle that interruption in authority before publishing or saving the pose.
+  for (auto& actor : actors) {
+    if (actor.view.kind == EntityKind::soldier && (actor.lifted || actor.view.capture_progress > 0 || actor.view.disabled_seconds > 0)) {
+      actor.infantry_aim = {};
+      actor.view.warning_seconds = 0;
+      actor.view.fire_recovery_seconds = 0;
+      actor.view.velocity = {};
+    }
+  }
   std::erase_if(actors, [](const Actor& a) { return a.removed; });
   // Area damage or a reflected projectile can retire a captured actor after
   // capture() has published its beam. Keep ownership valid between ticks.
@@ -249,6 +264,12 @@ void Game::State::step(float dt, Control control) {
   std::erase_if(view.shots, [](const ShotView& shot) { return shot.remaining_seconds <= 0; });
   if (view.hull <= 0) {
     view.hull = 0;
+    for (auto& actor : actors) if (actor.view.kind == EntityKind::soldier) {
+      actor.infantry_aim = {};
+      actor.view.warning_seconds = 0;
+      actor.view.fire_recovery_seconds = 0;
+      actor.view.velocity = {};
+    }
     view.phase = Phase::dead;
     return;
   }

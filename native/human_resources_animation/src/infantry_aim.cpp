@@ -4,6 +4,77 @@
 #include <cmath>
 
 namespace human_resources::animation {
+namespace {
+Vec3 minus(Vec3 a, Vec3 b) { return {a[0]-b[0],a[1]-b[1],a[2]-b[2]}; }
+Vec3 plus(Vec3 a, Vec3 b) { return {a[0]+b[0],a[1]+b[1],a[2]+b[2]}; }
+Vec3 times(Vec3 a,float s) { return {a[0]*s,a[1]*s,a[2]*s}; }
+float product(Vec3 a,Vec3 b) { return a[0]*b[0]+a[1]*b[1]+a[2]*b[2]; }
+float magnitude(Vec3 a) { return std::sqrt(product(a,a)); }
+Vec3 unit(Vec3 a) { return times(a,1/std::max(.000001F,magnitude(a))); }
+Vec3 cross(Vec3 a,Vec3 b) { return {a[1]*b[2]-a[2]*b[1],a[2]*b[0]-a[0]*b[2],a[0]*b[1]-a[1]*b[0]}; }
+Vec3 position(const Matrix& m) { return {m[12],m[13],m[14]}; }
+Quaternion conjugate(Quaternion q) { return {-q[0],-q[1],-q[2],q[3]}; }
+Quaternion multiply(Quaternion a,Quaternion b) {
+  return {a[3]*b[0]+a[0]*b[3]+a[1]*b[2]-a[2]*b[1],a[3]*b[1]-a[0]*b[2]+a[1]*b[3]+a[2]*b[0],
+      a[3]*b[2]+a[0]*b[1]-a[1]*b[0]+a[2]*b[3],a[3]*b[3]-a[0]*b[0]-a[1]*b[1]-a[2]*b[2]};
+}
+Quaternion normalized(Quaternion q) {
+  float n=0;for(float v:q)n+=v*v;
+  const float inverse=1/std::sqrt(std::max(.00000001F,n));for(float& v:q)v*=inverse;return q;
+}
+Quaternion rotation(const Matrix& m) {
+  Quaternion q{};const float trace=m[0]+m[5]+m[10];
+  if(trace>0) {const float s=std::sqrt(trace+1)*2;q={(m[6]-m[9])/s,(m[8]-m[2])/s,(m[1]-m[4])/s,.25F*s};}
+  else if(m[0]>m[5] && m[0]>m[10]) {const float s=std::sqrt(1+m[0]-m[5]-m[10])*2;q={.25F*s,(m[4]+m[1])/s,(m[8]+m[2])/s,(m[6]-m[9])/s};}
+  else if(m[5]>m[10]) {const float s=std::sqrt(1+m[5]-m[0]-m[10])*2;q={(m[4]+m[1])/s,.25F*s,(m[9]+m[6])/s,(m[8]-m[2])/s};}
+  else {const float s=std::sqrt(1+m[10]-m[0]-m[5])*2;q={(m[8]+m[2])/s,(m[9]+m[6])/s,.25F*s,(m[1]-m[4])/s};}
+  return normalized(q);
+}
+Quaternion between(Vec3 from,Vec3 to) {
+  from=unit(from);to=unit(to);const float d=product(from,to);
+  if(d<-.9999F) {const auto axis=unit(cross(from,std::abs(from[0])<.8F ? Vec3{1,0,0}:Vec3{0,1,0}));return {axis[0],axis[1],axis[2],0};}
+  const auto axis=cross(from,to);return normalized({axis[0],axis[1],axis[2],1+d});
+}
+bool orient(const Asset& asset,Pose& pose,std::size_t node,Quaternion world) {
+  const auto parent=asset.nodes()[node].parent;
+  const Quaternion parent_rotation=parent<0 ? Quaternion{0,0,0,1}:rotation(pose.world[static_cast<std::size_t>(parent)]);
+  pose.local[node].rotation=normalized(multiply(conjugate(parent_rotation),world));
+  return detail::compose(asset,pose);
+}
+constexpr std::array<std::array<std::string_view,3>,2> legs{{{"thigh.L","shin.L","foot.L"},{"thigh.R","shin.R","foot.R"}}};
+}
+bool place_infantry_feet(const Asset& asset,const Pose& base,const std::array<Matrix,2>& targets,const std::array<Vec3,2>& knee_poles,Pose& output,float weight) {
+  if(base.node_count!=asset.nodes().size() || !std::isfinite(weight) || weight<0 || weight>1)return false;
+  Pose candidate=base;
+  for(std::size_t side=0;side<2;++side) {
+    const auto thigh=asset.find_node(legs[side][0]),shin=asset.find_node(legs[side][1]),foot=asset.find_node(legs[side][2]);
+    if(thigh>=base.node_count || shin>=base.node_count || foot>=base.node_count || !detail::finite_matrix(targets[side]) ||
+        asset.nodes()[shin].parent!=static_cast<std::int32_t>(thigh) || asset.nodes()[foot].parent!=static_cast<std::int32_t>(shin))return false;
+    const auto start=position(candidate.world[thigh]),old_knee=position(candidate.world[shin]);
+    const float a=magnitude(minus(old_knee,start)),b=magnitude(minus(position(candidate.world[foot]),old_knee));
+    const auto end=position(targets[side]);const auto ray=minus(end,start);const float distance=magnitude(ray);
+    if(!(a>.0001F && b>.0001F && distance>.0001F) || distance>a+b+.0002F || distance<std::abs(a-b)+.00001F)return false;
+    const auto direction=unit(ray);auto pole=minus(knee_poles[side],start);pole=minus(pole,times(direction,product(pole,direction)));
+    if(magnitude(pole)<.0001F) {pole=minus(Vec3{0,0,1},times(direction,direction[2]));if(magnitude(pole)<.0001F)pole={1,0,0};}
+    const float d=std::min(distance,a+b-.000001F),along=(a*a-b*b+d*d)/(2*d);
+    const auto knee=plus(start,plus(times(direction,along),times(unit(pole),std::sqrt(std::max(0.F,a*a-along*along)))));
+    if(!orient(asset,candidate,thigh,multiply(between(minus(old_knee,start),minus(knee,start)),rotation(candidate.world[thigh]))))return false;
+    const auto current_knee=position(candidate.world[shin]);
+    if(!orient(asset,candidate,shin,multiply(between(minus(position(candidate.world[foot]),current_knee),minus(end,current_knee)),rotation(candidate.world[shin]))) ||
+        !orient(asset,candidate,foot,rotation(targets[side])))return false;
+    if(weight<1)for(const auto node:{thigh,shin,foot})candidate.local[node]=detail::interpolate(base.local[node],candidate.local[node],weight);
+  }
+  if(!detail::compose(asset,candidate))return false;
+  output=candidate;return true;
+}
+bool Player::adopt_infantry_legs(const Pose& visible) {
+  if(!asset_ || visible.node_count!=pose_.node_count)return false;
+  for(const auto& chain:legs)for(const auto name:chain) {
+    const auto node=asset_->find_node(name);if(node>=pose_.node_count || !detail::valid_transform(visible.local[node]))return false;
+  }
+  for(const auto& chain:legs)for(const auto name:chain) {const auto node=asset_->find_node(name);pose_.local[node]=visible.local[node];}
+  return detail::compose(*asset_,pose_);
+}
 bool aim_infantry_pose(const Asset& asset, const Pose& base, const Pose& reference, Vec3 target, Pose& output, float weight) {
   const auto count = asset.nodes().size(), chest = asset.find_node("chest"), weapon = asset.find_node("socket_weapon");
   if (!std::isfinite(weight) || weight < 0 || weight > 1 || base.node_count != count || reference.node_count != count || chest >= count || weapon >= count ||

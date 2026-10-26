@@ -37,20 +37,41 @@ inline constexpr std::size_t research_count = static_cast<std::size_t>(Research:
 [[nodiscard]] inline std::size_t military_index(EntityKind kind) {
   return static_cast<std::size_t>(kind) - static_cast<std::size_t>(EntityKind::soldier);
 }
+[[nodiscard]] inline Vec2 infantry_turn(Vec2 forward, Vec2 toward, float dt) {
+  forward = direction(forward);
+  if (length_squared(forward) == 0) forward = {0, -1};
+  if (length_squared(toward) == 0) return forward;
+  const float angle = std::atan2(forward.x * toward.z - forward.z * toward.x,
+      forward.x * toward.x + forward.z * toward.z);
+  const float turn = std::clamp(angle, -tuning::infantry_turn_radians_per_second * dt,
+      tuning::infantry_turn_radians_per_second * dt);
+  if (std::abs(angle) <= tuning::infantry_turn_radians_per_second * dt) return direction(toward);
+  return direction({forward.x * std::cos(turn) - forward.z * std::sin(turn),
+      forward.x * std::sin(turn) + forward.z * std::cos(turn)});
+}
 enum class VehicleEscapePhase : std::uint8_t { none, reverse_turn, reverse_brake, forward_exit };
 struct VehicleEscape final {
   VehicleEscapePhase phase{};
   float turn_remaining{}, forward_remaining{};
 };
+struct InfantryAim final {
+  bool preparing{};
+  float pose_seconds{}; // Real active time since weapon raise; retained through warning, cleared on fire/cancel.
+};
 struct Actor final {
   EntityView view;
   float age{}, attack_timer{}, slow_timer{}, focused_hits{}, focus_timer{}, grace{};
   Vec2 aim;
-  Vec2 locomotion_velocity; // Passive preferred movement, or vehicle physical forward retaining its facing through reverse/stops.
+  Vec2 locomotion_velocity; // Passive preferred movement, or military physical forward retaining its facing through stops.
   bool lifted{}, removed{};
   float sweep_progress{}; // Capture progress earned by moving inside the core, capped at qualification.
   VehicleEscape escape;
+  InfantryAim infantry_aim;
 };
+[[nodiscard]] inline bool reserves_threat_slot(const Actor& actor) {
+  return !actor.removed && (actor.view.warning_seconds > 0 ||
+      (actor.view.kind == EntityKind::soldier && actor.infantry_aim.preparing));
+}
 struct Projectile final {
   ProjectileView view;
   std::uint32_t source{};
@@ -62,6 +83,9 @@ struct VehicleMotion final {
   Vec2 facing;
   VehicleEscape escape;
 };
+struct InfantryMotion final { Vec2 velocity, facing; };
+// Available includes an existing preparation's own reserved slot.
+struct InfantryAttackWindow final { bool permitted{}; unsigned available{}; };
 struct BossState final {
   std::uint32_t actor_id{};
   BossAttackKind next_kind{BossAttackKind::rake};
@@ -119,6 +143,8 @@ struct Game::State final {
   void move_biological(float dt);
   [[nodiscard]] Vec2 military_velocity(const detail::Actor& actor, Vec2 preferred, float dt, Vec2 carry = {}) const;
   [[nodiscard]] detail::VehicleMotion vehicle_motion(const detail::Actor& actor, Vec2 destination, float dt) const;
+  [[nodiscard]] detail::InfantryMotion infantry_motion(const detail::Actor& actor, Vec2 destination, float dt) const;
+  void infantry_update(detail::Actor& actor, float dt, detail::InfantryAttackWindow window);
   void place_military(detail::Actor& actor);
   void enemies(float dt);
   void shoot(detail::Actor& enemy);

@@ -1,6 +1,7 @@
 #pragma once
 #include <array>
 #include <cstdint>
+#include <optional>
 namespace human_resources::presentation {
 inline constexpr float capture_lift_fraction = .65F;
 // Presentation-only input. Root placement and gameplay remain with their owners.
@@ -18,5 +19,13 @@ struct ActorAnimation final {
   // finish. The same fraction owns source lift/struggle and body transport.
   float capture_progress{};
   bool fleeing{}; // Real civilian escape gait, independent of military warnings.
+  bool preparing{}; // Actual infantry weapon raise; no committed warning yet.
+  // Real elapsed raise/aim time, including the warning. Absent for legacy or
+  // synthetic inputs; upper-body sampling matches after load. Transient turning
+  // feet start from the canonical authored pose without saved visual history.
+  std::optional<float> aim_pose_seconds{};
+  // Actual physical infantry yaw. Renderer history may articulate only feet;
+  // this never changes root orientation or implies world travel.
+  std::optional<float> body_heading{};
 };
 } // namespace human_resources::presentation

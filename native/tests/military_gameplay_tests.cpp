@@ -31,6 +31,10 @@ game::detail::Actor soldier(game::InfantryRole role, unsigned id = 1) {
   actor.view.position = {2, 8};
   actor.view.hull = actor.view.maximum_hull = 400;
   actor.aim = actor.view.warning_aim = {-2, -3};
+  const auto shot = game::infantry_shot(role, actor.view.position, actor.aim);
+  const float yaw = std::atan2(shot.direction.x, -shot.direction.z) - game::infantry_attack(role).weapon_yaw_radians;
+  actor.locomotion_velocity = {std::sin(yaw), -std::cos(yaw)};
+  actor.view.body_heading = yaw;
   return actor;
 }
 void encounter_stream_and_bounds() {
@@ -69,7 +73,8 @@ void planted_telegraph_and_recovery() {
     game::Game::State state;
     state.view.player = {};
     state.actors.push_back(soldier(role));
-    state.enemies(dt);
+    for (unsigned frame = 0; frame < 120 && state.actors.front().view.warning_seconds == 0; ++frame)
+      state.enemies(dt);
     auto& actor = state.actors.front();
     require(actor.view.warning_seconds > 0, "eligible soldier begins a visible warning");
     const auto locked_position = actor.view.position;
@@ -101,6 +106,209 @@ void planted_telegraph_and_recovery() {
         "ordinary soldier pursuit resumes after recovery");
   }
   pass("committed warnings and fire recovery plant each role before pursuit resumes");
+}
+void physical_preparation_aligns_and_cancels() {
+  for (const auto role : roles) {
+    game::Game::State state;
+    auto source = soldier(role);
+    source.locomotion_velocity = {0, 1};
+    source.view.body_heading = 3.14159265359F;
+    state.actors = {source}; state.next_id = 2;
+    std::optional<game::Game::State> preparation;
+    for (unsigned frame = 0; frame < 180 && state.actors.front().view.warning_seconds == 0; ++frame) {
+      const auto before = state.actors.front();
+      if (frame == 3) state.view.player = {-3, -1}; // Provisional aim may follow a real target change.
+      state.enemies(dt); state.sync();
+      const auto& actor = state.actors.front();
+      const float old_yaw = std::atan2(before.locomotion_velocity.x, -before.locomotion_velocity.z);
+      const float yaw = std::atan2(actor.locomotion_velocity.x, -actor.locomotion_velocity.z);
+      require(std::abs(std::remainder(yaw - old_yaw, 6.28318530718F)) <= tune::infantry_turn_radians_per_second * dt + .00001F,
+          "preparation physically turns each equipped body within the per-step limit");
+      if (actor.infantry_aim.preparing) {
+        require(actor.view.warning_seconds == 0 && actor.view.fire_recovery_seconds == 0 && state.bullets.empty(),
+            "preparation cannot advertise a committed warning or release a shot early");
+        near(actor.view.velocity, {}, .00001F, "preparation raises and turns from a planted root");
+        if (before.infantry_aim.preparing) {
+          near(actor.view.position, before.view.position, .00001F, "ongoing preparation never slides the root");
+          require_near(actor.infantry_aim.pose_seconds - before.infantry_aim.pose_seconds, dt, .00001F,
+              "preparation age consumes real active time rather than cooldown-derived history");
+        }
+        const auto& view = state.view.entities.front();
+        require(view.preparing && view.aim_pose_seconds == actor.infantry_aim.pose_seconds && view.body_heading.has_value(),
+            "public preparation publishes the actual physical frame and age");
+        near(view.warning_aim, actor.aim, 0, "preparation projection carries the provisional physical aim");
+        if (!preparation) preparation = state;
+      }
+    }
+    auto& actor = state.actors.front();
+    require(preparation.has_value() && actor.view.warning_seconds > 0 && !actor.infantry_aim.preparing,
+        "a rear-facing eligible soldier exposes finite physical preparation before warning lock");
+    const auto root = actor.view.position, facing = actor.locomotion_velocity, aim = actor.aim;
+    const auto muzzle = game::infantry_shot(role, root, aim);
+    const float physical_yaw = std::atan2(facing.x, -facing.z);
+    const float aimed_yaw = std::atan2(muzzle.direction.x, -muzzle.direction.z) - game::infantry_attack(role).weapon_yaw_radians;
+    require(muzzle.valid && std::abs(std::remainder(physical_yaw - aimed_yaw, 6.28318530718F)) < .001F,
+        "warning begins only when actual physical body and authored muzzle solve the same aim");
+    const auto locked = state;
+    for (unsigned frame = 0; frame < 100 && state.bullets.empty(); ++frame) {
+      state.view.player = {5, 1};
+      const float age = actor.infantry_aim.pose_seconds;
+      state.enemies(dt); state.sync();
+      near(actor.view.position, root, 0, "committed prepared warning retains its physical source");
+      near(actor.locomotion_velocity, facing, .00001F, "committed prepared warning retains body facing");
+      near(actor.aim, aim, 0, "prepared lock cannot track a later target movement");
+      if (state.bullets.empty()) require_near(actor.infantry_aim.pose_seconds - age, dt, .00001F,
+          "warning continues the real preparation pose clock");
+    }
+    require(state.bullets.size() == game::infantry_attack(role).pellets && actor.view.fire_recovery_seconds > 0 &&
+        actor.infantry_aim.pose_seconds == 0 && !state.view.entities.front().aim_pose_seconds.has_value(),
+        "actual release emits the role volley and clears preparation before fire recovery");
+    for (const auto& projectile : state.bullets) near(projectile.view.launch_position, muzzle.origin, .00001F,
+        "prepared actual volley launches from the frozen source-derived muzzle");
+    for (const bool during_warning : {false, true}) for (const bool lifted : {false, true}) {
+      auto cancelled = during_warning ? locked : *preparation;
+      auto& interrupted = cancelled.actors.front(); const auto retained = interrupted.locomotion_velocity;
+      if (lifted) interrupted.lifted = true; else interrupted.view.disabled_seconds = 1;
+      cancelled.enemies(dt); cancelled.sync();
+      require(cancelled.bullets.empty() && !interrupted.infantry_aim.preparing && interrupted.infantry_aim.pose_seconds == 0 &&
+          interrupted.view.warning_seconds == 0 && !cancelled.view.entities.front().aim_pose_seconds.has_value(),
+          "capture or disable cancels actual preparation and warning without a phantom shot or stale pose");
+      near(interrupted.locomotion_velocity, retained, 0, "cancellation preserves the real stopped physical facing");
+    }
+  }
+  pass("all roles physically prepare, lock one source, fire and cancel with truthful active pose clocks");
+}
+unsigned occupied_threats(const game::Game::State& state) {
+  return static_cast<unsigned>(std::count_if(state.actors.begin(), state.actors.end(), [](const auto& a) {
+    return !a.removed && (a.view.warning_seconds > 0 || a.infantry_aim.preparing);
+  }));
+}
+void held_warning_slots_keep_provisional_aim_fresh_and_durable() {
+  game::Game run; run.start({.seed=514}); auto& state = *run.state_;
+  auto source = soldier(game::InfantryRole::rifleman);
+  source.locomotion_velocity = {0, 1}; source.view.body_heading = 3.14159265359F;
+  state.actors = {source}; state.view.beams.clear(); state.next_id = 200;
+  state.enemies(dt); state.sync();
+  require(state.actors.front().infantry_aim.preparing, "reservation fixture first earns actual preparation");
+  // The preparing owner already occupies one place: only cap-1 warnings fit.
+  for (unsigned i = 0; i + 1 < tune::encounter_build_warning_cap; ++i) {
+    auto blocker = soldier(game::InfantryRole::rifleman, 100 + i);
+    blocker.view.position = {-5.F, 12.F + 3.F * static_cast<float>(i)};
+    blocker.aim = blocker.view.warning_aim = {};
+    const auto shot = game::infantry_shot(blocker.view.infantry_role, blocker.view.position, blocker.aim);
+    const float yaw = std::atan2(shot.direction.x, -shot.direction.z) - game::infantry_attack(blocker.view.infantry_role).weapon_yaw_radians;
+    blocker.locomotion_velocity = {std::sin(yaw), -std::cos(yaw)};
+    blocker.view.body_heading = yaw; blocker.view.warning_seconds = .9F; blocker.age = 1;
+    state.actors.push_back(blocker);
+  }
+  const auto vehicle_index = state.actors.size();
+  game::detail::Actor vehicle;
+  vehicle.view.id = 101; vehicle.view.kind = game::EntityKind::jeep;
+  vehicle.view.position = {4.5F, 10}; vehicle.view.hull = vehicle.view.maximum_hull = 90;
+  vehicle.locomotion_velocity = {0, -1}; vehicle.view.body_heading = 0;
+  state.actors.push_back(vehicle);
+  const auto waiting_index = state.actors.size();
+  auto waiting = soldier(game::InfantryRole::rifleman, 102);
+  waiting.view.position = {-4, 7}; waiting.locomotion_velocity = {0, -1};
+  state.actors.push_back(waiting);
+  require(occupied_threats(state) == tune::encounter_build_warning_cap, "fixture has one real owner and a legally full shared budget");
+  std::optional<game::Game::State> preparing;
+  std::vector<std::byte> saved;
+  bool waiting_moved = false;
+  for (unsigned frame = 0; frame < 21 && state.actors.front().view.warning_seconds == 0; ++frame) {
+    const auto before = state.actors.front(); const auto waiting_before = state.actors[waiting_index].view.position;
+    state.view.player.x = frame < 2 ? 2.F : 1.F; state.view.velocity.x = 0;
+    state.enemies(dt); state.sync(); const auto& owner = state.actors.front();
+    require_near(owner.aim.x, state.view.player.x, .00001F,
+        "reserved preparation refreshes the actual provisional target until warning lock");
+    require(state.actors[vehicle_index].view.warning_seconds == 0 && !state.actors[waiting_index].infantry_aim.preparing &&
+        state.actors[waiting_index].view.warning_seconds == 0,
+        "ready vehicles and infantry cannot steal an owned preparation slot");
+    waiting_moved = waiting_moved || distance(waiting_before, state.actors[waiting_index].view.position) > .00001F;
+    require(occupied_threats(state) == tune::encounter_build_warning_cap, "preparation to warning converts one slot without overbooking");
+    if (owner.infantry_aim.preparing) {
+      require_near(owner.infantry_aim.pose_seconds - before.infantry_aim.pose_seconds, dt, .00001F,
+          "reserved preparation keeps its real active clock");
+      if (!preparing) { preparing = state; saved = run.save_state(); }
+    }
+  }
+  require(waiting_moved, "eligible actors without a slot continue ordinary movement rather than planted aim waiting");
+  require(preparing.has_value() && state.actors.front().view.warning_seconds > 0,
+      "an owner converts its full-budget reservation without waiting for a second free slot");
+  require_near(state.actors.front().view.warning_seconds, .9F, .00001F, "reservation preserves the complete authored warning");
+  for (unsigned interruption = 0; interruption < 3; ++interruption) {
+    auto cancelled = *preparing;
+    if (interruption == 0) cancelled.actors.front().view.disabled_seconds = 1;
+    else if (interruption == 1) cancelled.actors.front().lifted = true;
+    else cancelled.actors.front().removed = true;
+    cancelled.enemies(dt);
+    require(cancelled.actors[vehicle_index].view.warning_seconds > 0 && occupied_threats(cancelled) == tune::encounter_build_warning_cap,
+        "disable, lift or removal releases the reservation for a later ready vehicle in the same actor pass");
+  }
+  game::Game live, cold;
+  require(!saved.empty() && live.restore_state(saved) == game::SaveStateIssue::none &&
+      cold.restore_state(saved) == game::SaveStateIssue::none && live.save_state() == saved && cold.save_state() == saved,
+      "a legally full reserved preparation cold restores exactly");
+  const auto& before = live.snapshot().entities.front(); const auto& after = cold.snapshot().entities.front();
+  require(before.preparing && after.preparing && before.body_heading == after.body_heading &&
+      before.aim_pose_seconds == after.aim_pose_seconds && before.warning_aim.x == after.warning_aim.x,
+      "first cold reserved draw retains refreshed target, physical facing and actual pose age");
+  for (unsigned future = 0; future < 180; ++future) {
+    for (auto* instance : {&live, &cold}) if (instance->snapshot().phase == game::Phase::choosing_upgrade)
+      require(instance->choose_upgrade(0), "reserved continuation accepts the same earned choice");
+    const game::Control control{{future < 30 ? -.5F : .5F, .1F}, future == 60};
+    live.advance(dt, control); cold.advance(dt, control);
+    require(!live.save_state().empty() && live.save_state() == cold.save_state(),
+        "reserved preparation cold future stays exact through target changes, warning release and Dash");
+  }
+  pass("legal preparation reservations convert, block theft, release and cold restore without freezing waiting actors");
+}
+void reservation_contraction_and_boss_drain() {
+  game::Game::State state;
+  state.view.stats.active_seconds = tune::encounter_build_seconds + 1;
+  for (unsigned i = 0; i < tune::encounter_assault_warning_cap; ++i) {
+    auto a = soldier(game::InfantryRole::rifleman, i + 1);
+    a.view.position = {-4.5F + 3.F * static_cast<float>(i), 8};
+    a.locomotion_velocity = {0, 1}; state.actors.push_back(a);
+  }
+  state.enemies(dt);
+  require(occupied_threats(state) == tune::encounter_assault_warning_cap &&
+      std::all_of(state.actors.begin(), state.actors.end(), [](const auto& a) { return a.infantry_aim.preparing; }),
+      "assault fixture earns its actual preparations under the larger cap");
+  auto waiting = soldier(game::InfantryRole::rifleman, 10); waiting.view.position = {-5, 12};
+  state.actors.push_back(waiting);
+  state.view.stats.active_seconds = tune::encounter_build_seconds + tune::encounter_assault_seconds + 1;
+  bool committed = false;
+  for (unsigned frame = 0; frame < 21 && !committed; ++frame) {
+    state.enemies(dt);
+    require(!state.actors.back().infantry_aim.preparing && state.actors.back().view.warning_seconds == 0,
+        "contracted phase cap blocks fresh reservations while previous owners drain");
+    committed = std::all_of(state.actors.begin(), state.actors.end() - 1, [](const auto& a) { return a.view.warning_seconds > 0; });
+  }
+  require(committed && occupied_threats(state) == tune::encounter_assault_warning_cap,
+      "previous owners convert their own reservations despite phase cap contraction without a self-slot deadlock");
+  for (const bool boss_first : {false, true}) {
+    game::Game::State encounter;
+    for (unsigned i = 0; i < tune::encounter_build_warning_cap; ++i) {
+      auto a = soldier(game::InfantryRole::rifleman, i + 1);
+      a.view.position = {i == 0 ? -4.F : 4.F, 8}; a.locomotion_velocity = {0, 1};
+      encounter.actors.push_back(a);
+    }
+    encounter.enemies(dt);
+    require(occupied_threats(encounter) == tune::encounter_build_warning_cap, "boss drain starts after actual preparation admission");
+    encounter.view.stats.active_seconds = 155;
+    game::detail::Actor boss; boss.view.id = 20; boss.view.kind = game::EntityKind::boss;
+    boss.view.position = {0, 10}; boss.view.hull = boss.view.maximum_hull = 160; boss.view.body_heading = 0;
+    if (boss_first) encounter.actors.insert(encounter.actors.begin(), boss); else encounter.actors.push_back(boss);
+    const auto boss_index = boss_first ? 0U : encounter.actors.size() - 1;
+    for (unsigned frame = 0; frame < 180 && encounter.actors[boss_index].view.warning_seconds == 0; ++frame) encounter.enemies(dt);
+    require(encounter.actors[boss_index].view.warning_seconds > 0,
+        "a boss before or after preparers still drains their reservations and commits its reserved volley");
+    require(std::none_of(encounter.actors.begin(), encounter.actors.end(), [](const auto& a) {
+      return a.view.kind != game::EntityKind::boss && (a.view.warning_seconds > 0 || a.infantry_aim.preparing);
+    }), "planted boss warning excludes both ordinary warnings and uncommitted preparations");
+  }
+  pass("phase contraction retains existing owners and boss drain cancels preparations in either actor order");
 }
 void attack_cadence() {
   for (const auto role : roles) {
@@ -276,8 +484,8 @@ void continuation_and_revision() {
     auto& state = *run.state_;
     state.actors = {soldier(role)};
     state.next_id = 2;
-    state.actors.front().view.warning_seconds = .01F;
-    state.enemies(dt);
+    for (unsigned frame = 0; frame < 180 && state.bullets.empty(); ++frame)
+      state.enemies(dt); // Earn the real physical preparation, lock and release.
     state.projectiles(.1F);
     state.sync();
     require(state.actors.front().view.fire_recovery_seconds > 0 && !run.snapshot().projectiles.empty(),
@@ -327,9 +535,9 @@ void malformed_military_authority() {
   state.sync();
   const auto good = run.save_state();
   require(!good.empty(), "wire corruption fixture starts with valid actual military state");
-  // Revision-four fieldwise offsets are deliberately explicit corruption fixtures.
+  // Codec-three kind-aware offsets are deliberate corruption fixtures.
   constexpr std::size_t actor = 378, role = actor + 49, recovery = actor + 50;
-  constexpr std::size_t projectile = actor + 101 + 4, projectile_role = projectile + 37;
+  constexpr std::size_t projectile = actor + 106 + 4, projectile_role = projectile + 37;
   auto seal = [](auto& bytes) {
     std::uint64_t hash = 14695981039346656037ULL;
     for (std::size_t i = 0; i < bytes.size() - 8; ++i)
@@ -415,6 +623,9 @@ void ordinary_physical_frames_plant_and_emit_exact_sources() {
 int main() {
   encounter_stream_and_bounds();
   planted_telegraph_and_recovery();
+  physical_preparation_aligns_and_cancels();
+  held_warning_slots_keep_provisional_aim_fresh_and_durable();
+  reservation_contraction_and_boss_drain();
   attack_cadence();
   cancellation_and_warning_cap();
   volleys_and_capacity();

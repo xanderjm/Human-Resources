@@ -6,6 +6,7 @@
 #include <iomanip>
 #include <iostream>
 #include <limits>
+#include <numbers>
 
 namespace game = human_resources::gameplay;
 namespace tune = game::tuning;
@@ -106,25 +107,66 @@ game::detail::Actor threat(game::EntityKind kind, unsigned id, game::Vec2 positi
   game::detail::Actor a;
   a.view.id = id;
   a.view.kind = kind;
-  a.view.infantry_role = game::InfantryRole::rifleman;
+  if (kind == game::EntityKind::soldier)
+    a.view.infantry_role = game::InfantryRole::rifleman;
   a.view.position = position;
   a.view.hull = a.view.maximum_hull = 1000;
+  if (game::detail::military(kind)) {
+    a.locomotion_velocity = {0, -tune::military_movement_speed[game::detail::military_index(kind)]};
+    a.view.body_heading = 0;
+  }
   return a;
+}
+void await_physical_infantry_warning(game::Game::State& state) {
+  const float maximum_turn_seconds = std::numbers::pi_v<float> / tune::infantry_turn_radians_per_second;
+  const auto maximum_ticks = static_cast<unsigned>(std::ceil(maximum_turn_seconds / dt)) + 2;
+  bool prepared = false;
+  unsigned ticks = 0;
+  while (state.actors.front().view.warning_seconds == 0 && ticks < maximum_ticks) {
+    const auto before = state.actors.front();
+    state.enemies(dt); ++ticks;
+    const auto& actor = state.actors.front();
+    const auto facing = game::detail::direction(actor.locomotion_velocity);
+    const auto old_facing = game::detail::direction(before.locomotion_velocity);
+    const float turn = std::abs(std::remainder(std::atan2(facing.x, -facing.z) -
+        std::atan2(old_facing.x, -old_facing.z), 2 * std::numbers::pi_v<float>));
+    require(turn <= tune::infantry_turn_radians_per_second * dt + .00001F,
+        "warning admission respects the real per-step infantry turn limit");
+    require(distance(actor.view.position, before.view.position) == 0 &&
+        game::detail::length_squared(actor.view.velocity) == 0 && state.bullets.empty(),
+        "eligible infantry plants to prepare without sliding or releasing an early shot");
+    require(actor.infantry_aim.pose_seconds <= maximum_turn_seconds + dt + .00001F,
+        "fixed-target preparation fits the physical half-turn budget");
+    if (actor.infantry_aim.preparing) {
+      prepared = true;
+      require(actor.view.warning_seconds == 0, "physical preparation does not advertise an early committed warning");
+    }
+  }
+  const auto& actor = state.actors.front();
+  require(prepared && actor.view.warning_seconds > 0 && !actor.infantry_aim.preparing,
+      "a visible eligible infantry threat physically prepares and commits within a bounded half-turn");
+  const auto shot = game::infantry_shot(actor.view.infantry_role, actor.view.position, actor.view.warning_aim);
+  const float aimed_yaw = std::atan2(shot.direction.x, -shot.direction.z) -
+      game::infantry_attack(actor.view.infantry_role).weapon_yaw_radians;
+  const float actual_yaw = std::atan2(actor.locomotion_velocity.x, -actor.locomotion_velocity.z);
+  require(shot.valid && std::abs(std::remainder(actual_yaw - aimed_yaw, 2 * std::numbers::pi_v<float>)) < .00001F,
+      "first committed warning and source muzzle agree with the actual physical body frame");
+  require_near(actor.view.warning_seconds, .9F, .001F, "visible infantry retains full authored dodge warning");
 }
 void visible_warnings_and_recovery() {
   game::Game::State horizon;
   horizon.view.player = {0, 6};
   horizon.actors.push_back(threat(game::EntityKind::soldier, 1, {0, 17}));
   horizon.enemies(dt);
-  require(horizon.actors.front().view.warning_seconds == 0, "forward flying cannot trigger invisible military warnings");
+  require(horizon.actors.front().view.warning_seconds == 0 && !horizon.actors.front().infantry_aim.preparing,
+      "forward flying cannot trigger invisible military warnings or weapon preparation");
   horizon.actors.front().view.position = {0, 10};
-  horizon.enemies(dt);
-  require_near(horizon.actors.front().view.warning_seconds, .9F, .001F, "visible infantry retains full authored dodge warning");
+  await_physical_infantry_warning(horizon);
 
   game::Game::State recovery;
   recovery.view.stats.active_seconds = tune::encounter_build_seconds + tune::encounter_assault_seconds + 1;
   recovery.actors.push_back(threat(game::EntityKind::soldier, 1, {0, 8}));
-  recovery.enemies(dt);
+  await_physical_infantry_warning(recovery);
   require(recovery.actors.front().view.warning_seconds > 0, "recovery keeps readable attacks alive");
   const auto aim = recovery.actors.front().view.warning_aim;
   for (unsigned frame = 0; frame < 65; ++frame) {

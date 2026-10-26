@@ -128,7 +128,9 @@ struct EntityView final {
   InfantryRole infantry_role{InfantryRole::none};
   float fire_recovery_seconds{};
   std::uint8_t minigun_barrel{}; // Jeep's committed/last barrel, advanced only on accepted warning.
-  std::optional<float> body_heading; // Actual vehicle orientation; absent in legacy/synthetic presentation values.
+  std::optional<float> body_heading; // Actual military body orientation; absent in legacy/synthetic presentation values.
+  bool preparing{}; // Infantry is physically turning/raising before a warning is committed.
+  std::optional<float> aim_pose_seconds{}; // Real active pose age through preparation/warning; absent in legacy values.
 };
 struct MinigunGeometry final {
   std::array<float,3> anchor, yaw_pivot, pitch_offset;

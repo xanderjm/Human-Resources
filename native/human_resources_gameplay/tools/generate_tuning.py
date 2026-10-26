@@ -99,6 +99,12 @@ def validate(arch, cat, encounter, spatial):
         raise ValueError('ordinary vehicle steering keys changed')
     for key, (minimum, maximum) in bounds.items():
         finite(steering[key], 'vehicle steering ' + key, minimum, maximum)
+    human = spatial['infantry_motion']
+    human_bounds = {'turn_radians_per_second': (4, 16), 'acceleration': (4, 32), 'braking': (8, 48)}
+    if set(human) != set(human_bounds):
+        raise ValueError('infantry motion keys changed')
+    for key, (minimum, maximum) in human_bounds.items():
+        finite(human[key], 'infantry motion ' + key, minimum, maximum)
     finite(spatial['attack_prediction_fraction'], 'attack prediction', 0, 1)
     scroll = spatial['scroll_progression']
     finite(scroll['maximum_metres_per_second'], 'maximum forward speed', spatial['forward_scroll_metres_per_second'], 8)
@@ -310,6 +316,8 @@ def generate(root, output):
         scalar('boss_' + key, value)
     for key, value in spatial['vehicle_steering'].items():
         scalar('vehicle_' + key, value)
+    for key, value in spatial['infantry_motion'].items():
+        scalar('infantry_' + key, value)
     radii = spatial['biological_body_radius']
     if len(radii) != 5 or any(not 0 < radius < 1 for radius in radii):
         raise ValueError('invalid biological body radii')

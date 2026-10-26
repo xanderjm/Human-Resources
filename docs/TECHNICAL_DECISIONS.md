@@ -387,3 +387,11 @@ motion/HUD review. A discovered crowded boss regression is corrected through a
 clear lateral corridor using existing saved flank choice. Host cost, original
 failures and native limits remain explicit in the development log. Mobile refresh
 and physical qualification remain open; the owner test app is still a0a4128/Game8.
+
+## 26 October 2026 — Infantry facing and aim preparation
+
+[ADR 006](adr/006-infantry-facing-and-aim-preparation.md) records authoritative
+human pivot/step/facing and explicit real preparation age. Its five-byte
+infantry-only codec3 suffix supports truthful cold aim poses while retaining
+account2 and protected Game9 handling. Gameplay/native qualification is pending;
+existing gait/aim/fire assets and other actor controllers remain the authorities.

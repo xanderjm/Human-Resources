@@ -146,11 +146,11 @@ void Game::State::boss_update(Actor& actor, float dt) {
   }
   actor.attack_timer = std::max(0.F, actor.attack_timer - dt);
   const auto braking = ticks(tuning::boss_brake_seconds);
-  const bool old_warning = std::any_of(actors.begin(), actors.end(), [&](const Actor& other) {
-    return !other.removed && other.view.id != actor.view.id && other.view.warning_seconds > 0;
+  const bool old_threat = std::any_of(actors.begin(), actors.end(), [&](const Actor& other) {
+    return other.view.id != actor.view.id && reserves_threat_slot(other);
   });
   if ((state.phase == BossPhase::reposition && state.remaining_ticks <= braking) ||
-      (state.phase == BossPhase::approach && actor.attack_timer <= 0 && !old_warning && ready_to_brake(*this, actor)))
+      (state.phase == BossPhase::approach && actor.attack_timer <= 0 && !old_threat && ready_to_brake(*this, actor)))
     phase(state, BossPhase::braking, tuning::boss_brake_seconds);
   if (state.phase == BossPhase::warning || state.phase == BossPhase::salvo) {
     actor.view.velocity = {};
@@ -175,7 +175,7 @@ void Game::State::boss_update(Actor& actor, float dt) {
     if (--state.remaining_ticks == 0) {
       actor.view.velocity = {};
       auto plan = eligible(*this, actor);
-      if (plan && !old_warning) {
+      if (plan && !old_threat) {
         state.plan = std::move(plan); state.next_release = 0;
         phase(state, BossPhase::warning, state.plan->warning_seconds);
         present(PresentationEventKind::warning_lock, actor.view.position, actor.view.id);
@@ -284,7 +284,7 @@ bool Game::State::valid_boss() const {
         !near(state.body_heading, state.plan->locked_body_heading) || length_squared(actor->view.velocity) != 0 ||
         bullets.size() + 3 - state.next_release > tuning::projectile_active_cap) return false;
     if (std::any_of(actors.begin(), actors.end(), [&](const Actor& other) {
-      return !other.removed && other.view.id != state.actor_id && other.view.warning_seconds > 0;
+      return other.view.id != state.actor_id && reserves_threat_slot(other);
     })) return false;
   }
   switch (state.phase) {

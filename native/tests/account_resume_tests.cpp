@@ -1,10 +1,12 @@
 #include <human_resources/gameplay/gameplay.h>
+#include <human_resources/gameplay/tuning.h>
 #include <human_resources/progression/account_session.h>
 
 #include "progression_test_backend.h"
 #include "test_support.h"
 
 #include <algorithm>
+#include <array>
 #include <cmath>
 #include <iostream>
 
@@ -144,11 +146,90 @@ void dead_checkpoint_cannot_resume_or_revive() {
   require(reopened.account().credits == pr::base_credits(dead) && !reopened.store().revive_available(dead),
       "dead run preserves exact earned reward and cannot revive through restart");
 }
+// Fixed public-pilot style0 policy used by the existing opening qualification.
+// This fixture exercises revive persistence, so controls avoid predicted hazards
+// and seek reachable specimens instead of requiring a passive build to survive.
+namespace revive_pilot {
+float length(gp::Vec2 a) { return std::hypot(a.x, a.z); }
+gp::Vec2 delta(gp::Vec2 a, gp::Vec2 b) { return {a.x-b.x,a.z-b.z}; }
+gp::Vec2 plus(gp::Vec2 a, gp::Vec2 b) { return {a.x+b.x,a.z+b.z}; }
+gp::Vec2 times(gp::Vec2 a,float n) { return {a.x*n,a.z*n}; }
+float dot(gp::Vec2 a,gp::Vec2 b) { return a.x*b.x+a.z*b.z; }
+float body(gp::EntityKind k) { return gp::tuning::military_contact_radius[static_cast<unsigned>(k)-4]; }
+float ray_distance(gp::Vec2 p,gp::Vec2 a,gp::Vec2 b) {
+  const auto line=delta(b,a); const float t=std::clamp(dot(delta(p,a),line)/std::max(.001F,dot(line,line)),0.F,1.F);
+  return length(delta(p,plus(a,times(line,t))));
+}
+struct Pilot {
+  gp::Vec2 previous{};
+  gp::Control choose(const gp::Snapshot& s) {
+    const gp::EntityView* food=nullptr; float food_score=1.e9F;
+    for(const auto& e:s.entities) if(e.kind<gp::EntityKind::soldier) {
+      float d=length(delta(e.position,s.player));
+      // Choose a reachable pocket, not a specimen already carried off the rear edge.
+      if(e.position.z-s.runner_distance < -13 || std::abs(e.position.x)>6.8F) continue;
+      float threat=0;
+      for(const auto& a:s.entities) if(a.kind>=gp::EntityKind::soldier)
+        threat+=std::max(0.F,body(a.kind)+2.8F-length(delta(e.position,a.position)))*3;
+      if(d+threat<food_score) {food_score=d+threat;food=&e;}
+    }
+    gp::Vec2 goal{0,s.runner_distance-2};
+    if(food) goal=food->position;
+    // Practical field discipline: keep room to dodge on either side and retreat.
+    goal.x=std::clamp(goal.x,-6.F,6.F);
+    goal.z=std::clamp(goal.z,s.runner_distance-11.F,s.runner_distance+10.F);
+    const std::array<gp::Vec2,9> moves{{{0,0},{1,0},{-.7071068F,.7071068F},{0,1},{.7071068F,.7071068F},{-1,0},{-.7071068F,-.7071068F},{0,-1},{.7071068F,-.7071068F}}};
+    gp::Vec2 best_move{};float best=-1.e9F,current_risk=0;
+    for(const auto m:moves) {
+      const gp::Vec2 velocity{m.x*s.movement_speed,m.z*s.movement_speed+s.forward_speed};
+      const auto future=plus(s.player,times(velocity,.5F));
+      const float relative=future.z-(s.runner_distance+s.forward_speed*.5F);
+      float risk=0;
+      risk=static_cast<float>(static_cast<double>(risk)+std::pow(std::max(0.F,std::abs(future.x)-6.5F),2)*25);
+      risk=static_cast<float>(static_cast<double>(risk)+std::pow(std::max(0.F,-12.F-relative),2)*15+std::pow(std::max(0.F,relative-12.F),2)*15);
+      for(const auto& e:s.entities) if(e.kind>=gp::EntityKind::soldier) {
+        // A lifted ground body cannot contact the ship; do not avoid its stale root.
+        if(e.capture_progress>0)continue;
+        const auto relative_v=delta(e.velocity,velocity),offset=delta(e.position,s.player);
+        const float t=std::clamp(-dot(offset,relative_v)/std::max(.001F,dot(relative_v,relative_v)),0.F,.65F);
+        const float clearance=length(plus(offset,times(relative_v,t)))-body(e.kind)-gp::tuning::player_radius;
+        risk=static_cast<float>(static_cast<double>(risk)+std::pow(std::max(0.F,1.F-clearance),2)*55);
+        if(e.warning_seconds>0) {
+          const float d=ray_distance(future,e.position,e.warning_aim);
+          risk=static_cast<float>(static_cast<double>(risk)+std::pow(std::max(0.F,1.2F-d),2)*7/(.4F+e.warning_seconds));
+        }
+      }
+      for(const auto& p:s.projectiles) {
+        const auto rv=delta(p.velocity,velocity),offset=delta(p.position,s.player);
+        const float t=std::clamp(-dot(offset,rv)/std::max(.001F,dot(rv,rv)),0.F,.8F);
+        const float clearance=length(plus(offset,times(rv,t)))-gp::tuning::player_radius-p.radius;
+        risk=static_cast<float>(static_cast<double>(risk)+std::pow(std::max(0.F,.45F-clearance),2)*35/(.2F+t));
+      }
+      const auto direction_goal=delta(goal,s.player);const float distance_goal=std::max(1.F,length(direction_goal));
+      float score=dot(m,direction_goal)/distance_goal*3-risk;
+      score+=dot(m,previous)*.45F; // retain a chosen dodge side rather than chatter each tick
+      if(m.x==0&&m.z==0)current_risk=risk;
+      if(score>best){best=score;best_move=m;}
+    }
+    previous=best_move;
+    bool dash=s.dash_cooldown_seconds<=0&&current_risk>25&&length(best_move)>.5F;
+    // A two metre dash must finish inside the field and outside contact bodies.
+    if(dash) {
+      const float distance=s.modules[static_cast<unsigned>(gp::Module::phase_drive)]?3.F:2.F;
+      const auto destination=plus(s.player,times(best_move,distance));
+      if(std::abs(destination.x)>7.1F||destination.z-s.runner_distance < -14.F||destination.z-s.runner_distance>14.F)dash=false;
+      for(const auto& e:s.entities)if(e.kind>=gp::EntityKind::soldier&&e.capture_progress==0&&length(delta(destination,e.position))<body(e.kind)+1.1F)dash=false;
+    }
+    return {best_move,dash};
+  }
+};
+} // namespace revive_pilot
 void completed_revive_commits_the_actual_live_continuation() {
-  // Earn eligibility through ordinary forward weaving and ready Dash, then
-  // release the controls after 91 seconds and let actual combat end the run.
+  // Earn eligibility with the fixed risk-aware movement policy, then release
+  // controls after 91 seconds and let actual combat end the run.
   MemoryBackend backend; pr::AccountSession session(backend); gp::Game game; start(session, game, 2, 1);
-  for (unsigned frame = 0; frame < 20000 && game.snapshot().phase != gp::Phase::dead; ++frame) {
+  revive_pilot::Pilot pilot; gp::Control control{}; unsigned control_tick{};
+  for (unsigned frame = 0; frame < 60 * 900 && game.snapshot().phase != gp::Phase::dead; ++frame) {
     if (game.snapshot().phase == gp::Phase::choosing_upgrade) {
       // This is a revive-transaction fixture, not an idle-build difficulty
       // expectation. Prefer real offered defenses while earning eligibility.
@@ -167,14 +248,14 @@ void completed_revive_commits_the_actual_live_continuation() {
       }
       std::cout<<"revive fixture earned choice active="<<game.snapshot().stats.active_seconds<<" title="<<game.snapshot().choices[selected].title<<'\n';
       require(game.choose_upgrade(selected), "actual earned defensive choice in revive fixture");
+      control = {}; control_tick = 0;
       continue;
     }
-    gp::Control control{};
     if (game.snapshot().stats.active_seconds < 91) {
-      control.movement = {static_cast<float>(std::sin(game.snapshot().stats.active_seconds * .8)), 1};
-      control.dash = game.snapshot().dash_cooldown_seconds <= 0;
-    }
-    game.advance(.25F, control);
+      if (control_tick % 6 == 0) control = pilot.choose(game.snapshot());
+    } else control = {};
+    game.advance(1.F / 60, control);
+    control.dash = false; ++control_tick;
   }
   if(!(game.snapshot().phase==gp::Phase::dead && game.revive_available()))std::cerr<<"revive fixture phase="<<static_cast<unsigned>(game.snapshot().phase)<<" active="<<game.snapshot().stats.active_seconds<<" hull="<<game.snapshot().hull<<'\n';
   require(game.snapshot().phase == gp::Phase::dead && game.revive_available(), "eligible real death fixture");
@@ -251,10 +332,15 @@ void incompatible_run_backs_up_before_recorded_settlement(unsigned old_revision)
     // account envelope. It cannot be reinterpreted with newly added actor fields.
     account.continuation.game_state[8] = static_cast<std::byte>(old_revision);
     for (std::size_t i = 9; i < 12; ++i) account.continuation.game_state[i] = std::byte{};
-    account.continuation.game_state[4] = std::byte{1};
+    account.continuation.game_state[4] = static_cast<std::byte>(old_revision == 9 ? 2 : 1);
     for (std::size_t i = 5; i < 8; ++i) account.continuation.game_state[i] = std::byte{};
-    // Deliberately absent actor body and invalid checksum: authority must reject
-    // the Game7/8 header before trying to interpret changed Game9 semantics.
+    if (old_revision == 9) {
+      constexpr std::uint64_t game9_fingerprint = 13450486980726334161ULL;
+      for (std::size_t i = 0; i < 8; ++i)
+        account.continuation.game_state[12 + i] = static_cast<std::byte>(game9_fingerprint >> (i * 8));
+    }
+    // Deliberately absent actor body and invalid checksum: reject the real
+    // Game7/8/9 header pairs before interpreting the new infantry semantics.
     account.continuation.game_state.resize(28);
   } else
     account.continuation.game_state[12] ^= std::byte{1}; // Known Game header's numeric-rule fingerprint.
@@ -348,6 +434,7 @@ int main() {
   incompatible_run_backs_up_before_recorded_settlement(0);
   incompatible_run_backs_up_before_recorded_settlement(7);
   incompatible_run_backs_up_before_recorded_settlement(8);
+  incompatible_run_backs_up_before_recorded_settlement(9);
   completed_revive_commits_the_actual_live_continuation();
   historical_results_do_not_recompute_current_reward();
   maximum_continuation_fits_account_envelope();

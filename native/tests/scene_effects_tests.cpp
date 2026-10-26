@@ -369,25 +369,96 @@ void skill_feedback_consumes_real_events_once() {
   effects.update(run);
   require(effects.feedback().phase_dash, "fresh run sequence one is not hidden behind a prior run cursor");
 }
-void six_beam_guides_are_bounded_and_reduced_motion_is_static() {
+struct CaptureCues final {
+  std::vector<const hr::presentation::StyleInstance*> cores, backings, cones, intakes;
+};
+CaptureCues capture_cues(const hr::presentation::StyleFrame& frame) {
+  CaptureCues result;
+  for (const auto& instance : frame.instances) {
+    if (!instance.effect) continue;
+    if (instance.mesh == "cube" && instance.tint == std::array<float, 4>{.46F, 1, .75F, .90F}) result.cores.push_back(&instance);
+    if (instance.mesh == "cube" && instance.tint == std::array<float, 4>{.025F, .07F, .11F, .42F}) result.backings.push_back(&instance);
+    if (instance.mesh == "beam") result.cones.push_back(&instance);
+    if (instance.mesh == "ring" && instance.tint == std::array<float, 4>{.48F, 1, .76F, .7F}) result.intakes.push_back(&instance);
+  }
+  return result;
+}
+void require_paired_capture_paths(const CaptureCues& cues) {
+  require(!cues.cores.empty() && cues.cores.size() == cues.backings.size() &&
+      cues.cores.size() + cues.backings.size() <= 72, "active capture paths have one backing per core within the shared72-segment ceiling");
+  for (std::size_t i = 0; i < cues.cores.size(); ++i) {
+    const auto& core = *cues.cores[i];
+    const auto& backing = *cues.backings[i];
+    require(core.mesh == backing.mesh && !core.casts_shadow && !backing.casts_shadow,
+        "capture path contrast adds no shadow work");
+    require(core.position.x == backing.position.x && core.position.y == backing.position.y && core.position.z == backing.position.z &&
+        core.rotation.x == backing.rotation.x && core.rotation.y == backing.rotation.y && core.rotation.z == backing.rotation.z,
+        "each mint path and its quiet backing follow the same target-to-intake segment");
+    require(core.scale.x > 0 && core.scale.y > 0 && core.scale.z > 0 &&
+        backing.scale.x > core.scale.x && backing.scale.y > core.scale.y && backing.scale.z == core.scale.z,
+        "backing reveals the positive-width mint path without extending its direction or length");
+  }
+}
+void capture_paths_are_paired_bounded_and_reduced_motion_is_static() {
   hr::gameplay::Snapshot run;
   for (unsigned i = 0; i < 6; ++i)
     run.beams.push_back({.target_id = i + 1, .target = {static_cast<float>(i) - 3, 1}, .progress = .5F});
   const auto first = hr::product::scene(run, 390.F / 844.F, true);
   run.stats.active_seconds = 10;
   const auto second = hr::product::scene(run, 390.F / 844.F, true);
-  std::vector<hr::presentation::Vec3> before, after;
-  for (const auto& i : first.instances)
-    if (i.effect && i.tint[0] == .46F)
-      before.push_back(i.position);
-  for (const auto& i : second.instances)
-    if (i.effect && i.tint[0] == .46F)
-      after.push_back(i.position);
-  require(before.size() == 84 && before.size() == after.size(), "six-beam maximum produces exactly 84 bounded guide dashes");
-  for (std::size_t i = 0; i < before.size(); ++i) {
-    require_near(before[i].x, after[i].x, 1e-6F, "reduced-motion guide X remains static");
-    require_near(before[i].y, after[i].y, 1e-6F, "reduced-motion guide Y remains static");
-    require_near(before[i].z, after[i].z, 1e-6F, "reduced-motion guide Z remains static");
+  const auto before = capture_cues(first), after = capture_cues(second);
+  require(before.cores.size() == 36 && before.backings.size() == 36,
+      "six captures show three paired dashes each with one contrast backing");
+  require_paired_capture_paths(before);
+  require(before.cores.size() == after.cores.size() && before.backings.size() == after.backings.size(),
+      "reduced-motion capture path counts remain static");
+  for (std::size_t i = 0; i < before.cores.size(); ++i) {
+    require(hr::presentation::model_matrix(*before.cores[i]) == hr::presentation::model_matrix(*after.cores[i]) &&
+        hr::presentation::model_matrix(*before.backings[i]) == hr::presentation::model_matrix(*after.backings[i]),
+        "reduced motion freezes complete core/backing transforms including width and orientation");
+  }
+  for (double seconds : {0., .137, .413, 4.2}) {
+    run.stats.active_seconds = seconds;
+    const auto moving = hr::product::scene(run, 390.F / 844.F, false);
+    require_paired_capture_paths(capture_cues(moving));
+  }
+}
+void capture_intake_and_soft_opacity_are_shared() {
+  hr::gameplay::Snapshot run;
+  const auto empty = hr::product::scene(run, 390.F / 844.F, true);
+  const auto empty_cues = capture_cues(empty);
+  require(empty_cues.intakes.empty() && empty_cues.cones.empty() && empty_cues.cores.empty() && empty_cues.backings.empty(),
+      "no active capture invents an acquisition ring, path or soft volume");
+  const auto opacity = [](const CaptureCues& cues) {
+    float total = 0;
+    for (const auto* cone : cues.cones) {
+      require(cone->tint[3] > 0 && !cone->casts_shadow, "capture volumes retain positive soft opacity without shadows");
+      total += cone->tint[3];
+    }
+    return total;
+  };
+  float ordinary_opacity = 0;
+  for (bool overdrive : {false, true}) {
+    run.harvest_overdrive_seconds = overdrive ? 1.F : 0;
+    run.beams = {{.target_id = 1, .target = {-3, 1}, .progress = .5F}};
+    const auto single = hr::product::scene(run, 390.F / 844.F, true);
+    const auto one = capture_cues(single);
+    for (unsigned i = 1; i < 6; ++i)
+      run.beams.push_back({.target_id = i + 1, .target = {static_cast<float>(i) - 3, 1}, .progress = .5F});
+    const auto multiple = hr::product::scene(run, 390.F / 844.F, true);
+    const auto six = capture_cues(multiple);
+    require(one.intakes.size() == 1 && six.intakes.size() == 1 && one.cones.size() == 1 && six.cones.size() == 6,
+        "one real intake responds once while every target keeps its own soft path");
+    require(hr::presentation::model_matrix(*one.intakes[0]) == hr::presentation::model_matrix(*six.intakes[0]),
+        "equal real progress produces the same intake response with one or six captures");
+    require_near(opacity(one), opacity(six), 1e-6F, "six captures share the same aggregate soft-opacity budget as one");
+    if (overdrive) require(opacity(six) > ordinary_opacity, "actual Overdrive retains its stronger shared soft response");
+    else ordinary_opacity = opacity(six);
+    run.beams.back().progress = .9F;
+    const auto advanced = hr::product::scene(run, 390.F / 844.F, true);
+    const auto leading = capture_cues(advanced);
+    require(leading.intakes.size() == 1 && leading.intakes[0]->scale.x < six.intakes[0]->scale.x,
+        "the shared intake contracts toward a genuinely advancing specimen rather than duplicating rings");
   }
 }
 void flight_attitude_and_capture_payoff() {
@@ -655,7 +726,8 @@ int main() {
   actual_game_events_match_confirmed_outcomes();
   semantic_feedback_never_replays_persistent_flashes();
   skill_feedback_consumes_real_events_once();
-  six_beam_guides_are_bounded_and_reduced_motion_is_static();
+  capture_paths_are_paired_bounded_and_reduced_motion_is_static();
+  capture_intake_and_soft_opacity_are_shared();
   flight_attitude_and_capture_payoff();
   capture_loss_continuity_and_lifecycle();
   real_game_range_loss_is_continuous();

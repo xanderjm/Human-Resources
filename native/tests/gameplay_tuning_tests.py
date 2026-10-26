@@ -174,6 +174,35 @@ class NativeTuningTests(unittest.TestCase):
                     lambda v: v['starter_dash'].update(cooldown=.1))
         self.reject()
 
+    def test_infantry_motion_semantics_invalidate_resume(self):
+        path = self.root / 'native/human_resources_gameplay/runtime-spatial.json'
+        baseline = json.loads(path.read_text())
+        original = self.fingerprint()
+        for key in ('turn_radians_per_second', 'acceleration', 'braking'):
+            with self.subTest(key=key):
+                value = json.loads(json.dumps(baseline))
+                value['infantry_motion'][key] += 1
+                path.write_text(json.dumps(value))
+                self.assertNotEqual(original, self.fingerprint())
+
+    def test_invalid_infantry_motion_rejected(self):
+        path = self.root / 'native/human_resources_gameplay/runtime-spatial.json'
+        baseline = json.loads(path.read_text())
+        for key in ('turn_radians_per_second', 'acceleration', 'braking'):
+            for invalid in (0, 99, float('nan')):
+                with self.subTest(key=key, invalid=invalid):
+                    value = json.loads(json.dumps(baseline))
+                    value['infantry_motion'][key] = invalid
+                    path.write_text(json.dumps(value))
+                    self.output.unlink(missing_ok=True)
+                    self.reject()
+        for invalid_keys in ({}, {'turn_radians_per_second': 10, 'acceleration': 16, 'braking': 24, 'extra': 1}):
+            value = json.loads(json.dumps(baseline))
+            value['infantry_motion'] = invalid_keys
+            path.write_text(json.dumps(value))
+            self.output.unlink(missing_ok=True)
+            self.reject()
+
     def test_rhythm_cannot_delete_recovery_or_overfill_field(self):
         self.mutate('native/human_resources_gameplay/runtime-spatial.json',
                     lambda v: v['encounter_rhythm'].update(open_route_half_width=20))

@@ -177,6 +177,41 @@ void infantry_source_and_launch_contract(float aspect) {
     }
   }
 }
+void infantry_physical_facing_and_preparation(float aspect) {
+  using Role=hr::gameplay::InfantryRole;
+  const std::array roles{Role::rifleman,Role::shotgunner,Role::rocketeer};
+  const std::array bodies{"infantry-rifleman-body","infantry-shotgunner-body","infantry-rocketeer-body"};
+  for(std::size_t k=0;k<roles.size();++k) {
+    hr::gameplay::Snapshot run;
+    run.entities.push_back({.id=902,.kind=hr::gameplay::EntityKind::soldier,.position={1,5},
+        .velocity={3,0},.warning_aim={0,0},.infantry_role=roles[k],.body_heading=.7F,
+        .preparing=true,.aim_pose_seconds=.23F});
+    const auto before=run.entities.front();
+    const auto preparation=hr::product::scene(run,aspect,true);
+    const auto& body=instance(preparation,bodies[k]);
+    require_near(body.rotation.y,.7F,1e-6F,"infantry uses its real facing independently of translation or target");
+    require(body.animation.preparing && !body.animation.warning && body.animation.aim_pose_seconds==.23F,
+        "actual preparation target and age reach animation without inventing a committed warning");
+    require(body.animation.body_heading==before.body_heading && body.animation.speed==3.F,
+        "physical turn input remains distinct from actual world speed");
+    require(std::none_of(preparation.instances.begin(),preparation.instances.end(),[](const auto& part){
+      return part.mesh=="ring" && part.tint[0]==1.F && part.tint[1]==.28F;
+    }),"preparation does not draw committed warning targets");
+    auto& actor=run.entities.front();
+    actor.velocity={};
+    for(unsigned phase=0;phase<3;++phase) {
+      actor.preparing=phase==0;
+      actor.warning_seconds=phase==1 ? .5F : 0;
+      actor.fire_recovery_seconds=phase==2 ? .4F : 0;
+      actor.aim_pose_seconds=phase==2 ? std::nullopt : std::optional<float>{.65F};
+      const auto frame=hr::product::scene(run,aspect,true);
+      require_near(instance(frame,bodies[k]).rotation.y,.7F,1e-6F,
+          "stopped preparation, locked warning and recovery keep physical body facing rather than ID yaw");
+    }
+    require(before.preparing && before.aim_pose_seconds==.23F && before.body_heading==actor.body_heading,
+        "presentation leaves the supplied preparation authority unchanged");
+  }
+}
 void small_phone_threat_cues_keep_weight_without_widening_projectiles() {
   for(const auto phone:std::array<hr::ui::Rect,2>{{{0,0,320,568},{0,0,390,844}}}) {
     hr::gameplay::Snapshot run;run.phase=hr::gameplay::Phase::active;run.stats.active_seconds=10;
@@ -270,5 +305,6 @@ int main() {
     semantic_up_projects_up(aspect);
     ahead_and_targeting_share_projection(aspect);
     infantry_source_and_launch_contract(aspect);
+    infantry_physical_facing_and_preparation(aspect);
   }
 }

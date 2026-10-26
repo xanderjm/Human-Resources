@@ -101,6 +101,10 @@ struct DeformedVertex final {
 // Requires the reviewed chest/socket_weapon/muzzle hierarchy. No allocation/I/O.
 [[nodiscard]] bool aim_infantry_pose(const Asset& asset, const Pose& base,
     const Pose& aim_reference, Vec3 target, Pose& output, float weight = 1);
+// Flat-ground, six-joint infantry articulation. Targets are actor-local rigid
+// ankle frames; only thigh/shin/foot rotations change. No allocation or root IK.
+[[nodiscard]] bool place_infantry_feet(const Asset& asset, const Pose& base,
+    const std::array<Matrix, 2>& targets, const std::array<Vec3, 2>& knee_poles, Pose& output, float weight = 1);
 // Product capture transport owns world motion. Remove only the source bone
 // named root's translation delta; preserve its rotation and every joint pose.
 [[nodiscard]] bool normalize_capture_root(const Asset& asset, const Pose& base, Pose& output);
@@ -119,6 +123,9 @@ public:
   [[nodiscard]] bool advance(float seconds, float playback_rate = 1);
   // Explicit spawn/replay positioning; ends any fade. Looping clips wrap.
   [[nodiscard]] bool seek(float seconds);
+  // Carry the last visible six leg joints into the next existing clip fade.
+  // Upper-body channels and playback clocks remain untouched.
+  [[nodiscard]] bool adopt_infantry_legs(const Pose& visible);
   [[nodiscard]] const Pose& pose() const {
     return pose_;
   }

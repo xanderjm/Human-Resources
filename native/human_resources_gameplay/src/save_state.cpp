@@ -5,9 +5,9 @@
 namespace human_resources::gameplay {
 namespace {
 constexpr std::uint32_t magic = 0x31535248U; // HRS1, explicit little-endian bytes.
-constexpr std::uint32_t schema = 2;
+constexpr std::uint32_t schema = 3;
 // Increment when authority semantics/field meaning change independently of tuning.
-constexpr std::uint32_t authority_revision = 9;
+constexpr std::uint32_t authority_revision = 10;
 constexpr std::size_t maximum_bytes = 48 * 1024;
 constexpr std::uint32_t maximum_actors = 128, maximum_projectiles = 96;
 
@@ -69,6 +69,8 @@ template <class IO> void actor_fields(IO& io, detail::Actor& a) {
   io(a.sweep_progress);
   if (detail::vehicle(v.kind)) {
     io(a.escape.phase); io(a.escape.turn_remaining); io(a.escape.forward_remaining);
+  } else if (v.kind == EntityKind::soldier) {
+    io(a.infantry_aim.preparing); io(a.infantry_aim.pose_seconds);
   }
 }
 template <class IO> void projectile_fields(IO& io, detail::Projectile& p) {
@@ -196,7 +198,7 @@ struct SaveStateCodec final {
         (v.phase == Phase::dead && v.hull != 0) ||
         (v.phase != Phase::ready && v.phase != Phase::dead && v.hull <= 0)) return false;
     std::array<unsigned, 5> counts{};
-    unsigned warnings = 0;
+    unsigned threat_slots = 0;
     std::vector<std::uint32_t> ids;
     ids.reserve(s.actors.size() + s.bullets.size());
     auto unique_id = [&](std::uint32_t id) {
@@ -244,10 +246,36 @@ struct SaveStateCodec final {
             ((escape.phase == VehicleEscapePhase::reverse_turn || escape.phase == VehicleEscapePhase::reverse_brake) && signed_speed > .001F))
           return false;
       }
+      if (a.view.kind == EntityKind::soldier) {
+        const auto& pose = a.infantry_aim;
+        const float facing_square = length_squared(a.locomotion_velocity);
+        const float speed_square = length_squared(a.view.velocity);
+        const float cross = a.view.velocity.x * a.locomotion_velocity.z - a.view.velocity.z * a.locomotion_velocity.x;
+        if (facing_square < .0001F || facing_square > tuning::military_movement_speed[0] * tuning::military_movement_speed[0] + .001F ||
+            speed_square > tuning::military_movement_speed[0] * tuning::military_movement_speed[0] + .001F ||
+            cross * cross > .000001F * facing_square * std::max(1.F, speed_square) ||
+            a.view.velocity.x * a.locomotion_velocity.x + a.view.velocity.z * a.locomotion_velocity.z < -.0001F ||
+            a.attack_timer < 0 || !std::isfinite(pose.pose_seconds) || pose.pose_seconds < 0 || pose.pose_seconds > a.age + .0001F)
+          return false;
+        const bool aiming = pose.preparing || a.view.warning_seconds > 0;
+        if ((!aiming && pose.pose_seconds != 0) ||
+            (aiming && (a.lifted || a.view.capture_progress > 0 || a.view.disabled_seconds > 0 || a.view.fire_recovery_seconds > 0 || speed_square != 0)) ||
+            (pose.preparing && (a.view.warning_seconds > 0 ||
+                a.attack_timer > 3.141593F / tuning::infantry_turn_radians_per_second + 1.F / static_cast<float>(tuning::fixed_hz) + .0001F))) return false;
+        if (aiming) {
+          const auto shot = infantry_shot(role, a.view.position, a.aim);
+          if (!shot.valid || distance_squared(a.aim, a.view.warning_aim) > .00000001F) return false;
+          if (!pose.preparing) {
+            const float yaw = std::atan2(shot.direction.x, -shot.direction.z) - infantry_attack(role).weapon_yaw_radians;
+            const auto forward = direction(a.locomotion_velocity);
+            if (std::abs(forward.x - std::sin(yaw)) > .00001F || std::abs(forward.z + std::cos(yaw)) > .00001F) return false;
+          }
+        }
+      }
       ++counts[a.view.kind < EntityKind::soldier ? 0 : military_index(a.view.kind) + 1];
-      if (a.view.warning_seconds > 0) ++warnings;
+      if (reserves_threat_slot(a)) ++threat_slots;
     }
-    if (counts[0] > tuning::biological_active_cap || warnings > tuning::warning_active_cap) return false;
+    if (counts[0] > tuning::biological_active_cap || threat_slots > tuning::warning_active_cap) return false;
     for (std::size_t i = 1; i < counts.size(); ++i)
       if (static_cast<float>(counts[i]) > tuning::enemy_active_cap[i - 1]) return false;
     for (const auto& p : s.bullets) {

@@ -59,27 +59,30 @@ void cone(StyleFrame& frame, Vec3 ground, Vec3 intake, float radius, float opaci
   // Ry*Rx maps +Y onto the exact ground-to-socket direction, including banking.
   add(frame, "beam", ground, {radius, length, radius}, {std::atan2(horizontal, dy), std::atan2(dx, dz), 0}, {.29F, .96F, .71F, opacity}, true);
 }
-void capture_guides(StyleFrame& frame, Vec3 ground, Vec3 intake, float radius, float active_seconds, bool reduced_motion) {
+void capture_guides(StyleFrame& frame, Vec3 ground, Vec3 intake, float radius, float active_seconds, bool reduced_motion, float pixel) {
   const float dx = intake.x - ground.x, dz = intake.z - ground.z;
   const float length = std::hypot(dx, dz);
   const Vec3 side = length > .01F ? Vec3{dz / length, 0, -dx / length} : Vec3{1, 0, 0};
   const auto point = [&](float u, float sign) {
     auto p = lerp(ground, intake, u);
-    const float width = radius * (1 - u) * (.7F + .3F * std::sin(u * std::numbers::pi_v<float>));
+    const float width = radius * (1 - u);
     p.x += side.x * width * sign;
     p.z += side.z * width * sign;
     return p;
   };
-  // Two short dotted rails read as lift direction, without filling the field
-  // with a particle cloud. At six beams this remains at most 84 simple quads.
-  constexpr unsigned count = 7;
+  // Fewer, longer paired dashes read as one upward pull. The quiet backing
+  // separates mint from scenery; hostile lanes remain heavier. Six active beams use
+  // at most72 guide segments, below the previous84. No target fill is added.
+  constexpr unsigned count = 3;
   const float phase = reduced_motion ? 0 : std::fmod(active_seconds * .7F, 1.F / static_cast<float>(count));
   for (float sign : {-1.F, 1.F})
     for (unsigned i = 0; i < count; ++i) {
       const float u = static_cast<float>(i) / static_cast<float>(count) + phase;
-      const float v = std::min(.96F, u + .045F);
-      if (u < .96F)
-        line(frame, point(u, sign), point(v, sign), .032F, {.46F, 1, .75F, .90F});
+      const float v = std::min(.96F, u + .18F);
+      if (u < .96F) {
+        line(frame, point(u, sign), point(v, sign), std::max(.032F, pixel * .9F), {.025F, .07F, .11F, .42F});
+        line(frame, point(u, sign), point(v, sign), std::max(.032F, pixel * .55F), {.46F, 1, .75F, .90F});
+      }
     }
 }
 // A cue is information, so the wider portrait camera must not reduce it to a
@@ -254,7 +257,8 @@ presentation::StyleFrame scene(const gameplay::Snapshot& run, const GameplayFram
     const auto attack = gameplay::infantry_attack(e.infantry_role);
     const bool planted = gear && (e.warning_seconds > 0 || e.fire_recovery_seconds > 0);
     float yaw = !organic ? gameplay::vehicle_body_yaw(e) : speed > .08F ? std::atan2(e.velocity.x, -e.velocity.z) : static_cast<float>(e.id) * 1.7F;
-    if (planted && shot.valid) yaw = std::atan2(shot.direction.x, -shot.direction.z) - attack.weapon_yaw_radians;
+    if (gear && e.body_heading) yaw = *e.body_heading;
+    else if (planted && shot.valid) yaw = std::atan2(shot.direction.x, -shot.direction.z) - attack.weapon_yaw_radians;
     Vec3 rotation{reduced_motion ? 0 : lift * (organic ? .92F : .32F),
         yaw + (reduced_motion || !organic ? 0 : lift * .65F),
         reduced_motion ? 0 : std::sin(t * 6 + static_cast<float>(e.id)) * lift * (organic ? .44F : .16F)};
@@ -274,7 +278,7 @@ presentation::StyleFrame scene(const gameplay::Snapshot& run, const GameplayFram
     if (finishing) {
       const Vec3 specimen{p.x, p.y + size * .3F, p.z};
       cone(frame, specimen, intake, size * .6F, .12F);
-      capture_guides(frame, specimen, intake, size * .6F, t, reduced_motion);
+      capture_guides(frame, specimen, intake, size * .6F, t, reduced_motion, threat_unit);
     }
     const auto body_index = frame.instances.size();
     if (e.kind == gameplay::EntityKind::cow || e.kind == gameplay::EntityKind::sheep || e.kind == gameplay::EntityKind::pig) {
@@ -333,6 +337,9 @@ presentation::StyleFrame scene(const gameplay::Snapshot& run, const GameplayFram
       body.animation.capture_progress = progress;
       body.animation.fleeing = e.kind < gameplay::EntityKind::soldier && !finishing && progress == 0 && speed > .04F;
       if (gear) {
+        body.animation.preparing = e.preparing;
+        body.animation.aim_pose_seconds = e.aim_pose_seconds;
+        body.animation.body_heading = e.body_heading;
         const auto aim = point(e.warning_aim, 2.5F);
         const float dx = aim.x - p.x, dz = aim.z - p.z;
         body.animation.aim_target = {std::cos(yaw)*dx-std::sin(yaw)*dz, aim.y-p.y, std::sin(yaw)*dx+std::cos(yaw)*dz};
@@ -378,16 +385,24 @@ presentation::StyleFrame scene(const gameplay::Snapshot& run, const GameplayFram
         warning(frame, point(e.position, .08F), point(e.warning_aim, .08F), t, reduced_motion, threat_unit);
     }
   }
+  // Soft volumes share one ambient-opacity budget; the actual paired paths
+  // carry each pull. Stacked cones must not wash out targets under the hull.
+  const float cone_budget = 1.F / std::max(1.F, static_cast<float>(run.beams.size()));
+  float intake_progress = 0;
   for (const auto& beam : run.beams) {
     const auto target = point(beam.target, .025F);
+    intake_progress = std::max(intake_progress, beam.progress);
     const bool overdrive = run.harvest_overdrive_seconds > 0;
-    cone(frame, target, intake, beam.vehicle ? 1.15F : .72F, (overdrive ? .19F : .12F) + .07F * beam.progress);
-    capture_guides(frame, target, intake, beam.vehicle ? 1.15F : .72F, t * (overdrive ? 1.7F : 1.F), reduced_motion);
+    cone(frame, target, intake, beam.vehicle ? 1.15F : .72F, ((overdrive ? .19F : .12F) + .07F * beam.progress) * cone_budget);
+    capture_guides(frame, target, intake, beam.vehicle ? 1.15F : .72F, t * (overdrive ? 1.7F : 1.F), reduced_motion, threat_unit);
     const bool sweep = !beam.vehicle && !overdrive && beam.sweep_fraction > 0;
     const bool qualified = sweep && beam.sweep_fraction >= 1;
     add(frame, "ring", target, {.85F, 1, .85F}, {},
         qualified ? std::array<float, 4>{.95F, 1, .57F, .98F} : std::array<float, 4>{.5F, 1, .76F, .82F}, true);
-    const float acquisition = .40F + .30F * (1 - beam.progress);
+  }
+  if (!run.beams.empty()) {
+    // One real intake, one response, even while several specimens approach.
+    const float acquisition = .40F + .30F * (1 - intake_progress);
     add(frame, "ring", intake, {acquisition, 1, acquisition}, {}, {.48F, 1, .76F, .7F}, true);
   }
   append_gear_shots(frame, run, ship_pose, static_cast<float>(distance), reduced_motion);
@@ -475,7 +490,7 @@ presentation::StyleFrame scene(const gameplay::Snapshot& run, const GameplayFram
   if (attract) {
     add(frame, "cow", {0, .65F, 4.1F}, {1.2F, 1.2F, 1.2F}, {.15F, 1.2F, .25F});
     cone(frame, {0, .04F, 4.1F}, intake, 1.1F, .15F);
-    capture_guides(frame, {0, .04F, 4.1F}, intake, 1.1F, t, true);
+    capture_guides(frame, {0, .04F, 4.1F}, intake, 1.1F, t, true, threat_unit);
     add(frame, "ring", {0, .04F, 4.1F}, {1.2F, 1, 1.2F}, {}, {.5F, 1, .76F, .8F}, true);
     add(frame, "sheep", {4, 0, -2.5F});
     add(frame, theme == presentation::SceneryTheme::suburbia ? "resident-body" : "farmer-body", {-5, 0, -6});

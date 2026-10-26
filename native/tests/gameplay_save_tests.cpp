@@ -11,12 +11,13 @@ namespace game = human_resources::gameplay;
 using test_support::require;
 namespace {
 using Bytes = std::vector<std::byte>;
-// HRS1 codec2/authority9 retains the run prefix. Only ordinary vehicle records
-// append the versioned nine-byte committed maneuver after their base body.
+// HRS1 codec3/authority10 retains the run prefix. Soldiers append the five-byte
+// aim preparation; ordinary vehicles retain their nine-byte committed maneuver.
 constexpr std::size_t phase_offset = 36, player_offset = 37, hull_offset = 57;
 constexpr std::size_t actor_count_offset = 374, base_actor_bytes = 101;
 std::size_t actor_bytes(game::EntityKind kind) {
-  return base_actor_bytes+(kind==game::EntityKind::jeep||kind==game::EntityKind::tank?9U:0U);
+  return base_actor_bytes+(kind==game::EntityKind::soldier?5U:
+      kind==game::EntityKind::jeep||kind==game::EntityKind::tank?9U:0U);
 }
 void put32(Bytes& bytes, std::size_t offset, std::uint32_t value) {
   require(offset + 4 <= bytes.size(), "mutation offset exists");
@@ -51,6 +52,16 @@ void same(const game::Game& a, const game::Game& b) {
   const auto first = a.save_state(), second = b.save_state();
   require(!first.empty(), "live authority has a valid save");
   require(first == second, "all future simulation authority is bit-exact after continuation");
+  for (const auto& old_actor : a.snapshot().entities) {
+    if (old_actor.kind != game::EntityKind::soldier) continue;
+    const auto restored = std::find_if(b.snapshot().entities.begin(), b.snapshot().entities.end(),
+        [&](const auto& actor) { return actor.id == old_actor.id; });
+    require(restored != b.snapshot().entities.end() && old_actor.body_heading.has_value() &&
+        old_actor.body_heading == restored->body_heading && old_actor.preparing == restored->preparing &&
+        old_actor.aim_pose_seconds == restored->aim_pose_seconds &&
+        old_actor.warning_aim.x == restored->warning_aim.x && old_actor.warning_aim.z == restored->warning_aim.z,
+        "cold first draw publishes the saved physical infantry facing and real preparation clock");
+  }
   const auto& old_boss = a.snapshot().boss_combat;
   const auto& restored_boss = b.snapshot().boss_combat;
   require(old_boss.has_value() == restored_boss.has_value(), "boss presence is exact on the first restored projection");
@@ -164,15 +175,19 @@ void corruption_and_rollback() {
   for (std::size_t length = 0; length < good.size(); ++length) reject(Bytes(good.begin(), good.begin() + static_cast<std::ptrdiff_t>(length)));
   auto bad = good; bad.push_back(std::byte{}); reject(bad);
   reject(Bytes(48 * 1024 + 1));
-  require(get32(good,4)==2,"committed maneuver fields explicitly own Game codec two");
-  bad = good; put32(bad, 4, 3); reject(bad, game::SaveStateIssue::unsupported_schema);
+  require(get32(good,4)==3,"durable infantry preparation explicitly owns Game codec three");
+  bad = good; put32(bad, 4, 4); reject(bad, game::SaveStateIssue::unsupported_schema);
   bad = good; put32(bad, 8, 0xffffffffU); reject(bad, game::SaveStateIssue::incompatible_rules);
   bad = good; put32(bad, 8, 7); bad.resize(28);
   reject(bad, game::SaveStateIssue::incompatible_rules); // Reject old authority before missing body/checksum.
-  require(get32(good, 8) == 9, "physical vehicle steering explicitly owns authority nine");
+  require(get32(good, 8) == 10, "physical infantry facing explicitly owns authority ten");
   bad = good; put32(bad, 8, 8); reject(bad, game::SaveStateIssue::incompatible_rules);
   bad.resize(28); reject(bad, game::SaveStateIssue::incompatible_rules);
-  for(unsigned previous:{7U,8U}) {bad=good;put32(bad,4,1);put32(bad,8,previous);bad.resize(28);reject(bad,game::SaveStateIssue::unsupported_schema);}
+  for(unsigned previous:{7U,8U,9U}) {
+    bad=good;put32(bad,4,previous==9?2U:1U);put32(bad,8,previous);
+    if(previous==9)put64(bad,12,13450486980726334161ULL);
+    bad.resize(28);reject(bad,game::SaveStateIssue::unsupported_schema);
+  }
   bad = good; bad[12] ^= std::byte{1}; reject(bad, game::SaveStateIssue::incompatible_rules);
   bad = good; bad[100] ^= std::byte{1}; reject(bad);
   bad = good; put32(bad, player_offset, 0x7fc00000U); seal(bad); reject(bad);
@@ -282,7 +297,7 @@ Bytes maximum_boss_population(const Bytes& actual_recovery) {
       put_float(actor, 9, 20.F + static_cast<float>(i / 5) * 3.5F);
       put_float(actor, 29, 10); put_float(actor, 33, 10);
       if (kind == game::EntityKind::soldier) actor[49] = static_cast<std::byte>(game::InfantryRole::rifleman);
-      if (kind == game::EntityKind::jeep || kind == game::EntityKind::tank) put_float(actor,91,-1);
+      if (kind == game::EntityKind::soldier || kind == game::EntityKind::jeep || kind == game::EntityKind::tank) put_float(actor,91,-1);
       bytes.insert(bytes.end(), actor.begin(), actor.end());
     }
   };
@@ -332,6 +347,20 @@ void malformed_boss_plans_preserve_live_run(const Bytes& warning) {
         live.restore_state(bad) == game::SaveStateIssue::malformed && live.save_state() == warning,
         "invalid boss plan is rejected without replacing an existing live continuation");
   };
+  // A physically legal, uncommitted preparation is still incompatible with
+  // the boss's already planted quiet window, even though no extra warning exists.
+  Bytes preparer(actor_bytes(game::EntityKind::soldier));
+  put32(preparer, 0, get32(warning, 245)); preparer[4] = static_cast<std::byte>(game::EntityKind::soldier);
+  put_float(preparer, 5, -5); put_float(preparer, 9, 8);
+  put_float(preparer, 29, 10); put_float(preparer, 33, 10);
+  preparer[49] = static_cast<std::byte>(game::InfantryRole::rifleman);
+  put_float(preparer, 55, 1); put_float(preparer, 91, -1);
+  preparer[101] = std::byte{1}; put_float(preparer, 102, .1F);
+  auto busy = warning;
+  busy.insert(busy.begin() + static_cast<std::ptrdiff_t>(projectiles), preparer.begin(), preparer.end());
+  put32(busy, actor_count_offset, get32(warning, actor_count_offset) + 1);
+  put32(busy, 245, get32(warning, 245) + 1);
+  reject(std::move(busy));
   auto byte = [&](std::size_t relative, std::byte value) { auto bad = warning; bad[boss + relative] = value; reject(std::move(bad)); };
   auto scalar = [&](std::size_t relative, float value) { auto bad = warning; put_float(bad, boss + relative, value); reject(std::move(bad)); };
   const auto boss_id = get32(warning, boss);
@@ -409,9 +438,15 @@ void area_damage_retires_owned_beam() {
   bytes[85 + static_cast<std::size_t>(game::Module::emp_ring)] = std::byte{3};
   const auto actor = actor_count_offset + 4;
   const auto target_id = get32(bytes, actor);
+  const auto original_record_bytes = actor_bytes(bytes, actor);
+  require(original_record_bytes == base_actor_bytes, "EMP fixture starts with a biological actor record");
+  bytes.insert(bytes.begin() + static_cast<std::ptrdiff_t>(actor + original_record_bytes),
+      actor_bytes(game::EntityKind::soldier) - original_record_bytes, std::byte{});
   bytes[actor + 4] = static_cast<std::byte>(game::EntityKind::soldier);
   bytes[actor + 49] = static_cast<std::byte>(game::InfantryRole::rifleman);
   put_float(bytes, actor + 5, 0); put_float(bytes, actor + 9, 0);
+  put_float(bytes, actor + 13, 0); put_float(bytes, actor + 17, 0);
+  put_float(bytes, actor + 87, 0); put_float(bytes, actor + 91, -1);
   bytes[actor + 95] = std::byte{1}; // Stable lifted authority, owned by the beam below.
   const auto beam_count = actors_end(bytes) + 4;
   put32(bytes, beam_count, 1);
@@ -454,7 +489,7 @@ void physical_vehicle_continuations() {
       const float gap=game::tuning::military_body_radius[1]+game::tuning::military_body_radius[0]+game::tuning::military_spacing_margin;
       for(unsigned side=0;side<4;++side) {
         const float angle=static_cast<float>(side)*1.57079632679F;
-        append_actor(101+side,game::EntityKind::soldier,{gap*std::cos(angle),10+gap*std::sin(angle)},{},5);
+        append_actor(101+side,game::EntityKind::soldier,{gap*std::cos(angle),10+gap*std::sin(angle)},{0,-1},5);
       }
     }
     bytes.insert(bytes.end(),starter.begin()+static_cast<std::ptrdiff_t>(old_end),starter.end());
@@ -556,8 +591,117 @@ void committed_vehicle_primitive_phase_continuations() {
     const float speed=(slot==0?.25F:-.25F)/std::hypot(x,z);put_float(bad,first+13,x*speed);put_float(bad,first+17,z*speed);reject(bad);
   }
 }
+void physical_infantry_preparation_continuations() {
+  for (const auto role : {game::InfantryRole::rifleman, game::InfantryRole::shotgunner, game::InfantryRole::rocketeer}) {
+    game::Game run; run.start({.seed=514});
+    const auto starter = run.save_state();
+    Bytes bytes(starter.begin(), starter.begin() + static_cast<std::ptrdiff_t>(actor_count_offset));
+    append32(bytes, 1);
+    Bytes actor(actor_bytes(game::EntityKind::soldier));
+    put32(actor, 0, 100); actor[4] = static_cast<std::byte>(game::EntityKind::soldier);
+    put_float(actor, 5, 2); put_float(actor, 9, 8);
+    put_float(actor, 29, 400); put_float(actor, 33, 400);
+    actor[49] = static_cast<std::byte>(role); put_float(actor, 91, 1);
+    bytes.insert(bytes.end(), actor.begin(), actor.end());
+    const auto old_end = actors_end(starter);
+    bytes.insert(bytes.end(), starter.begin() + static_cast<std::ptrdiff_t>(old_end), starter.end());
+    put32(bytes, 245, 200); seal(bytes);
+    require(run.restore_state(bytes) == game::SaveStateIssue::none,
+        "explicit rear-facing infantry wire fixture is legal before any physical preparation");
+    const auto first = actor_count_offset + 4;
+    std::array<Bytes, 4> checkpoints;
+    for (unsigned frame = 0; frame < 240 && std::any_of(checkpoints.begin(), checkpoints.end(), [](const auto& b) { return b.empty(); }); ++frame) {
+      if (run.snapshot().phase == game::Phase::choosing_upgrade) require(run.choose_upgrade(0), "preparation fixture resolves a real earned choice");
+      run.advance(1.F / 60);
+      const auto saved = run.save_state();
+      require(!saved.empty(), "every actual preparation, warning and release state remains checkpointable");
+      const auto entity = std::find_if(run.snapshot().entities.begin(), run.snapshot().entities.end(),
+          [](const auto& a) { return a.id == 100; });
+      require(entity != run.snapshot().entities.end(), "high-health codec fixture survives to expose its physical phases");
+      unsigned slot = 4;
+      if (entity->preparing) slot = entity->aim_pose_seconds && *entity->aim_pose_seconds > .05F ? 1U : 0U;
+      else if (entity->warning_seconds > 0) slot = 2;
+      else if (entity->fire_recovery_seconds > 0) slot = 3;
+      if (slot < 4 && checkpoints[slot].empty()) checkpoints[slot] = saved;
+    }
+    require(std::none_of(checkpoints.begin(), checkpoints.end(), [](const auto& b) { return b.empty(); }),
+        "each equipped role actually exposes entry/mid preparation, locked warning and post-fire recovery");
+    for (const auto& saved : checkpoints) {
+      game::Game live, cold;
+      require(live.restore_state(saved) == game::SaveStateIssue::none && cold.restore_state(saved) == game::SaveStateIssue::none,
+          "all actual infantry phase checkpoints cold restore");
+      same(live, cold);
+      live.pause(); const auto paused = live.save_state();
+      require(cold.restore_state(paused) == game::SaveStateIssue::none, "cold first paused draw retains actual infantry phase");
+      same(live, cold); live.advance(5, {{1, 1}, true});
+      require(live.save_state() == paused, "paused body facing and real preparation pose clock do not advance");
+      live.resume(); cold.resume();
+      for (unsigned future = 0; future < 180; ++future) {
+        for (auto* game : {&live, &cold}) if (game->snapshot().phase == game::Phase::choosing_upgrade)
+          require(game->choose_upgrade(0), "continued physical infantry accepts the same earned offer");
+        const game::Control control{{std::sin(static_cast<float>(future) * .04F), .2F}, future % 97 == 0};
+        live.advance(1.F / 60, control); cold.advance(1.F / 60, control); same(live, cold);
+      }
+    }
+    const auto protected_state = run.save_state();
+    const auto reject = [&](Bytes bad) {
+      seal(bad);
+      require(run.restore_state(bad) == game::SaveStateIssue::malformed &&
+          game::inspect_saved_state(bad).issue == game::SaveStateIssue::malformed,
+          "malformed infantry facing/preparation metadata rejects before replacing live authority");
+      require(run.save_state() == protected_state, "malformed infantry continuation is transactional");
+    };
+    auto bad = checkpoints[0]; bad[first + 101] = std::byte{2}; reject(bad);
+    bad = checkpoints[0]; put_float(bad, first + 102, std::numeric_limits<float>::quiet_NaN()); reject(bad);
+    bad = checkpoints[0]; put_float(bad, first + 102, 100); reject(bad);
+    bad = checkpoints[0]; put_float(bad, first + 87, 0); put_float(bad, first + 91, 0); reject(bad);
+    bad = checkpoints[0]; put_float(bad, first + 50, .1F); reject(bad);
+    bad = checkpoints[0]; put_float(bad, first + 13, .1F); reject(bad);
+    bad = checkpoints[2]; bad[first + 101] = std::byte{1}; reject(bad);
+    bad = checkpoints[2]; put_float(bad, first + 87, 1); put_float(bad, first + 91, 0); reject(bad);
+    bad = checkpoints[3]; put_float(bad, first + 102, .1F); reject(bad);
+  }
+}
+void preparation_reservation_union_capacity() {
+  game::Game starter; starter.start({.seed=514}); const auto original = starter.save_state();
+  const auto make = [&](unsigned count) {
+    Bytes bytes(original.begin(), original.begin() + static_cast<std::ptrdiff_t>(actor_count_offset)); append32(bytes, count);
+    for (unsigned i = 0; i < count; ++i) {
+      Bytes actor(actor_bytes(game::EntityKind::soldier));
+      put32(actor, 0, 100 + i); actor[4] = static_cast<std::byte>(game::EntityKind::soldier);
+      const game::Vec2 root{-4.5F + 3.F * static_cast<float>(i % 4), 8.F + 4.F * static_cast<float>(i / 4)};
+      put_float(actor, 5, root.x); put_float(actor, 9, root.z);
+      put_float(actor, 29, 90); put_float(actor, 33, 90); put_float(actor, 55, 2);
+      actor[49] = static_cast<std::byte>(game::InfantryRole::rifleman);
+      const auto shot = game::infantry_shot(game::InfantryRole::rifleman, root, {});
+      const float yaw = std::atan2(shot.direction.x, -shot.direction.z) - game::infantry_attack(game::InfantryRole::rifleman).weapon_yaw_radians;
+      put_float(actor, 87, std::sin(yaw)); put_float(actor, 91, -std::cos(yaw));
+      if (i < 2) {
+        put_float(actor, 41, .4F); put_float(actor, 59, game::infantry_attack(game::InfantryRole::rifleman).cooldown_seconds);
+      } else actor[101] = std::byte{1};
+      put_float(actor, 102, 1); // A real pose age is not artificially capped at half a second.
+      bytes.insert(bytes.end(), actor.begin(), actor.end());
+    }
+    bytes.insert(bytes.end(), original.begin() + static_cast<std::ptrdiff_t>(actors_end(original)), original.end());
+    put32(bytes, 245, 200); seal(bytes); return bytes;
+  };
+  // Explicit codec-capacity fixture, not a claim that the current two-slot
+  // build phase naturally admits eight owners in one frame.
+  const auto full = make(game::tuning::warning_active_cap);
+  game::Game live, cold;
+  require(live.restore_state(full) == game::SaveStateIssue::none && cold.restore_state(full) == game::SaveStateIssue::none,
+      "global eight-slot warning/preparation union remains legal independently of the smaller current phase cap");
+  require(live.save_state() == full && cold.save_state() == full && live.snapshot().entities.back().aim_pose_seconds == 1.F,
+      "cold first draw retains a real preparation age above half a second without inventing an age limit");
+  const auto overbooked = make(game::tuning::warning_active_cap + 1);
+  require(live.restore_state(overbooked) == game::SaveStateIssue::malformed &&
+      game::inspect_saved_state(overbooked).issue == game::SaveStateIssue::malformed && live.save_state() == full,
+      "a ninth preparation/warning owner rejects transactionally even with only two actual warnings");
+  for (unsigned frame = 0; frame < 120; ++frame) { tick(live, frame); tick(cold, frame); same(live, cold); }
+}
+
 } // namespace
 int main() {
-  phases_and_future(); corruption_and_rollback(); many_natural_checkpoints(); hidden_authority_fixtures(); boss_phase_continuations(); area_damage_retires_owned_beam(); physical_vehicle_continuations(); lifted_vehicle_keeps_facing_and_collected_removal_saves(); committed_vehicle_primitive_phase_continuations();
+  phases_and_future(); corruption_and_rollback(); many_natural_checkpoints(); hidden_authority_fixtures(); boss_phase_continuations(); area_damage_retires_owned_beam(); physical_vehicle_continuations(); lifted_vehicle_keeps_facing_and_collected_removal_saves(); committed_vehicle_primitive_phase_continuations(); physical_infantry_preparation_continuations(); preparation_reservation_union_capacity();
   std::cout << "Gameplay continuation codec contracts passed\n";
 }

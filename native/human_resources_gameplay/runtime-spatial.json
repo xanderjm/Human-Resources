@@ -265,5 +265,10 @@
     "bypass_margin": 0.15,
     "minimum_source_range": 5,
     "aim_lead_fraction": 0.5
+  },
+  "infantry_motion": {
+    "turn_radians_per_second": 10,
+    "acceleration": 16,
+    "braking": 24
   }
 }

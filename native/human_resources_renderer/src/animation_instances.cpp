@@ -2,6 +2,8 @@
 #include <cmath>
 #include <human_resources/renderer/animation_instances.h>
 #include <map>
+#include <limits>
+#include <numbers>
 #include <string>
 #include <vector>
 
@@ -56,9 +58,31 @@ float capture_clip_time(const animation::Asset& asset, float progress) {
   const float fraction = progress < lift ? progress / lift : (progress - lift) / (1 - lift);
   return fraction * asset.clips()[asset.find_clip(name)].seconds;
 }
+std::string_view aim_clip(const animation::Asset& asset, float seconds) {
+  return seconds < asset.clips()[asset.find_clip("aim_enter")].seconds ? "aim_enter" : "aim";
+}
+float aim_clip_time(const animation::Asset& asset, float seconds) {
+  const float enter = asset.clips()[asset.find_clip("aim_enter")].seconds;
+  return seconds < enter ? seconds : seconds - enter;
+}
+float foot_floor(const animation::Matrix& frame,const std::vector<animation::Vec3>& surface) {
+  float floor=std::numeric_limits<float>::max();
+  for(const auto& p:surface)floor=std::min(floor,frame[1]*p[0]+frame[5]*p[1]+frame[9]*p[2]+frame[13]);
+  return floor;
+}
+void rotate_foot(animation::Matrix& frame,float yaw) {
+  const float c=std::cos(yaw),s=std::sin(yaw);
+  for(std::size_t col=0;col<3;++col) {const auto at=col*4;const float x=frame[at],z=frame[at+2];frame[at]=c*x+s*z;frame[at+2]=-s*x+c*z;}
+}
 } // namespace
 struct AnimationInstances::State final {
   struct Loaded final {
+    struct Foot final {
+      std::size_t thigh{},shin{},node{};
+      animation::Matrix neutral{};
+      std::vector<animation::Vec3> surface;
+      float floor{},walk_floor{},length{};
+    };
     animation::Asset asset;
     std::vector<assets::PreviewVertex> vertices;
     animation::Matrix inverse_socket{identity};
@@ -67,16 +91,23 @@ struct AnimationInstances::State final {
     animation::Pose fire_reference;
     bool has_head{};
     bool has_weapon{};
+    std::array<Foot,2> feet;
   };
   struct Instance final {
     const Loaded* source{};
     animation::Player player;
+    animation::Player foot_player;
     std::vector<animation::DeformedVertex> skin;
     std::vector<assets::PreviewVertex> vertices;
     AnimatedActor output;
     animation::Pose aimed_pose;
     animation::Pose capture_pose;
     AnimationIntent previous;
+    std::array<animation::Matrix,2> visible_feet{};
+    std::array<animation::Vec3,2> foot_anchors{},visible_knees{};
+    std::array<float,2> foot_yaws{};
+    float foot_phase{},foot_weight{},last_gait_phase{};
+    bool feet_valid{};
     bool seen{};
   };
   std::map<std::string, Loaded, std::less<>> assets;
@@ -141,6 +172,24 @@ bool AnimationInstances::load(std::string_view id, std::span<const std::byte> hr
       const auto& w = source.aim_reference.world[weapon];
       if (!animation::aim_infantry_pose(source.asset, source.aim_reference, source.aim_reference,
               {w[12] + w[8] * 6, 2.5F, w[14] + w[10] * 6}, probe)) return false;
+      animation::Player walk;if(!walk.bind(source.asset,"walk"))return false;
+      for(std::size_t side=0;side<2;++side) {
+        auto& foot=source.feet[side];const auto suffix=side==0 ? ".L":".R";
+        foot.thigh=source.asset.find_node(std::string("thigh")+suffix);foot.shin=source.asset.find_node(std::string("shin")+suffix);
+        foot.node=source.asset.find_node(std::string("foot")+suffix);
+        if(foot.thigh>=nodes.size() || foot.shin>=nodes.size() || foot.node>=nodes.size())return false;
+        foot.neutral=source.aim_reference.world[foot.node];animation::Matrix inverse{};
+        if(!inverse_affine(world[foot.node],inverse))return false;
+        for(const auto& vertex:source.asset.vertices())for(std::size_t slot=0;slot<4;++slot)
+          if(vertex.weights[slot]>.99F && source.asset.joints()[vertex.joints[slot]].node==foot.node) {
+            const auto& p=vertex.position;foot.surface.push_back({inverse[0]*p[0]+inverse[4]*p[1]+inverse[8]*p[2]+inverse[12],
+                inverse[1]*p[0]+inverse[5]*p[1]+inverse[9]*p[2]+inverse[13],inverse[2]*p[0]+inverse[6]*p[1]+inverse[10]*p[2]+inverse[14]});
+          }
+        if(foot.surface.empty())return false;
+        foot.floor=foot_floor(foot.neutral,foot.surface);foot.walk_floor=foot_floor(walk.pose().world[foot.node],foot.surface);
+        const auto distance=[](const auto& a,const auto& b){return std::sqrt(std::pow(a[12]-b[12],2.F)+std::pow(a[13]-b[13],2.F)+std::pow(a[14]-b[14],2.F));};
+        foot.length=distance(source.aim_reference.world[foot.thigh],source.aim_reference.world[foot.shin])+distance(source.aim_reference.world[foot.shin],foot.neutral);
+      }
     }
   }
   state_->assets.emplace(std::string(id), std::move(source));
@@ -158,6 +207,9 @@ void AnimationInstances::begin_frame() {
 const AnimatedActor* AnimationInstances::update(std::uint64_t id, std::string_view name, const AnimationIntent& intent, float dt) {
   if (id == 0 || !std::isfinite(dt) || dt < 0 || dt > .25F || !std::isfinite(intent.speed) || intent.speed < 0 || intent.speed > 20 ||
       !std::isfinite(intent.capture_progress) || intent.capture_progress < 0 || intent.capture_progress > 1)
+    return nullptr;
+  if ((intent.aim_pose_seconds && (!std::isfinite(*intent.aim_pose_seconds) || *intent.aim_pose_seconds < 0)) ||
+      (intent.preparing && !intent.aim_pose_seconds) || (intent.body_heading && !std::isfinite(*intent.body_heading)))
     return nullptr;
   const auto source = state_->assets.find(name);
   if (source == state_->assets.end())
@@ -179,13 +231,16 @@ const AnimatedActor* AnimationInstances::update(std::uint64_t id, std::string_vi
     auto& a = found->second;
     a.source = &source->second;
     const bool firing = a.source->has_weapon && (intent.fire_sequence > 0 || intent.recovering) && intent.fire_age_seconds >= 0 && intent.fire_age_seconds < .6F;
+    const bool authored_aim = a.source->has_weapon && (intent.preparing || intent.warning) && intent.aim_pose_seconds.has_value();
     const auto initial = intent.capturing ? (intent.product_capture_transport ? capture_clip(intent.capture_progress) : "beam_lift") : firing       ? "fire"
+                                                                                                                                   : authored_aim ? aim_clip(a.source->asset, *intent.aim_pose_seconds)
                                                                                                                                    : intent.warning ? (a.source->has_weapon ? "aim_enter" : "startle")
                                                                                                                                                     : locomotion(intent);
     if (!a.player.bind(a.source->asset, initial)) {
       state_->actors.erase(found);
       return nullptr;
     }
+    if(a.source->has_weapon && !a.foot_player.bind(a.source->asset,"walk"))return nullptr;
     if (initial == std::string_view("walk") || initial == std::string_view("run") || initial == std::string_view("idle")) {
       const auto clip = a.source->asset.find_clip(initial);
       const float phase = static_cast<float>((id * 2654435761ULL) % 65536ULL) / 65536.F;
@@ -201,6 +256,8 @@ const AnimatedActor* AnimationInstances::update(std::uint64_t id, std::string_vi
     a.output.weapon_delta = identity;
     a.output.launch_weapon_delta = identity;
     if (firing && !intent.capturing && !a.player.seek(intent.fire_age_seconds)) return nullptr;
+    if (authored_aim && !firing && !intent.capturing && !a.player.seek(aim_clip_time(a.source->asset, *intent.aim_pose_seconds)))
+      return nullptr;
     if (intent.capturing && intent.product_capture_transport && !a.player.seek(capture_clip_time(a.source->asset, intent.capture_progress)))
       return nullptr;
   }
@@ -208,12 +265,14 @@ const AnimatedActor* AnimationInstances::update(std::uint64_t id, std::string_vi
   if (a.seen)
     return nullptr; // duplicate IDs are an error, never advance twice
   a.seen = true;
+  const auto previous=a.previous;
   bool changed = fresh;
   if (dt > 0) {
     const auto current = a.player.clip_name();
     std::string_view next = current;
     float fade = .18F;
     bool new_fire = false;
+    bool sample_aim = false;
     if (intent.capturing) {
       if (intent.product_capture_transport) {
         // Run captures can finish in a fraction of the authored clip's normal
@@ -237,6 +296,12 @@ const AnimatedActor* AnimationInstances::update(std::uint64_t id, std::string_vi
           intent.fire_age_seconds >= 0 && intent.fire_age_seconds < .6F) {
         next = "fire"; fade = 0; new_fire = true;
       } else if (current == "fire" && !a.player.finished()) {
+      } else if ((intent.preparing || intent.warning) && intent.aim_pose_seconds) {
+        next = aim_clip(a.source->asset, *intent.aim_pose_seconds);
+        // The authored enter already raises from its known carry pose. A fade
+        // from cache history would make live and restored preparation differ.
+        fade = 0;
+        sample_aim = true;
       } else if (intent.warning) {
         if (!a.previous.warning || (current != "aim_enter" && current != "aim")) {
           next = "aim_enter"; fade = .08F;
@@ -256,6 +321,7 @@ const AnimatedActor* AnimationInstances::update(std::uint64_t id, std::string_vi
     if ((next != current || new_fire) && !a.player.play(next, fade, new_fire))
       return nullptr;
     if (new_fire && !a.player.seek(intent.fire_age_seconds)) return nullptr;
+    if (sample_aim && !a.player.seek(aim_clip_time(a.source->asset, *intent.aim_pose_seconds))) return nullptr;
     float rate = 1;
     if (intent.capturing && intent.product_capture_transport) {
       const float target = capture_clip_time(a.source->asset, intent.capture_progress);
@@ -268,7 +334,7 @@ const AnimatedActor* AnimationInstances::update(std::uint64_t id, std::string_vi
     }
     // Advance the gait clock at stride-matched speed, but blend in active
     // seconds. One pose evaluation regardless of movement speed.
-    if (!new_fire && !a.player.advance(dt, rate))
+    if (!new_fire && !sample_aim && !a.player.advance(dt, rate))
       return nullptr;
     changed = true;
     a.previous = intent;
@@ -291,6 +357,90 @@ const AnimatedActor* AnimationInstances::update(std::uint64_t id, std::string_vi
       if (!animation::aim_infantry_pose(a.source->asset, a.player.pose(), a.source->aim_reference,
               intent.aim_target, a.aimed_pose, weight)) return nullptr;
       pose = &a.aimed_pose;
+    }
+    if(a.source->has_weapon) {
+      const bool ground=clip=="idle" || clip=="walk" || clip=="run" || clip=="aim_enter" || clip=="aim" || clip=="fire" || clip=="aim_exit";
+      const float angle=intent.body_heading && previous.body_heading ? std::remainder(*intent.body_heading-*previous.body_heading,2*std::numbers::pi_v<float>):0;
+      const bool turning=ground && !intent.capturing && intent.speed<=.04F && std::abs(angle)>.0001F;
+      const bool entry=ground && intent.aim_pose_seconds && (intent.preparing || intent.warning) &&
+          !(previous.aim_pose_seconds && (previous.preparing || previous.warning));
+      if(!ground || intent.capturing || intent.speed>.04F) {
+        a.foot_weight=0;
+        a.feet_valid=false;
+      }
+      if(ground && !intent.capturing && intent.speed<=.04F && dt>0 && a.feet_valid && intent.body_heading) {
+        bool seeded=false;
+        if(turning || entry) {
+          if(a.foot_weight<=0) {
+            seeded=true;
+            a.foot_phase=a.last_gait_phase;
+            for(std::size_t side=0;side<2;++side) {const auto& foot=a.visible_feet[side];a.foot_anchors[side]={foot[12],foot[13],foot[14]};a.foot_yaws[side]=0;}
+          }
+          a.foot_weight=1;
+        } else a.foot_weight=std::max(0.F,a.foot_weight-dt/.12F);
+        if(a.foot_weight>0) {
+          const float previous_phase=a.foot_phase;
+          if(!seeded)a.foot_phase+=turning ? std::abs(angle)/std::numbers::pi_v<float>:dt*4;
+          a.foot_phase=std::fmod(a.foot_phase,1.F);
+          const auto seconds=a.source->asset.clips()[a.source->asset.find_clip("walk")].seconds;
+          if(!a.foot_player.seek(a.foot_phase*seconds))return nullptr;
+          std::array<animation::Matrix,2> targets;
+          auto knee_poles=a.visible_knees;
+          for(std::size_t side=0;side<2;++side) {
+            const auto& foot=a.source->feet[side];auto& anchor=a.foot_anchors[side];
+            const float c=std::cos(-angle),s=std::sin(-angle),x=anchor[0],z=anchor[2];anchor[0]=c*x+s*z;anchor[2]=-s*x+c*z;
+            a.foot_yaws[side]-=angle;
+            auto target=a.foot_player.pose().world[foot.node];
+            const float lift=std::max(0.F,foot_floor(target,foot.surface)-foot.walk_floor);
+            // The existing infantry walk authors 60% stance, with the
+            // other foot half a cycle apart. Finish the replant throughout
+            // that swing, rather than snapping at a height threshold.
+            const auto swing=[side](float phase) {
+              const float u=std::clamp((std::fmod(phase+static_cast<float>(side)*.5F,1.F)-.6F)/.4F,0.F,1.F);
+              return u*u*(3-2*u);
+            };
+            const float from=swing(previous_phase),to=swing(a.foot_phase);
+            const float blend=seeded ? 0.F : !turning ? std::min(1.F,dt/.12F) :
+                to<from ? 1.F : std::clamp((to-from)/std::max(.000001F,1-from),0.F,1.F);
+            anchor[0]+=(foot.neutral[12]-anchor[0])*blend;anchor[2]+=(foot.neutral[14]-anchor[2])*blend;
+            a.foot_yaws[side]*=1-blend;
+            rotate_foot(target,a.foot_yaws[side]);target[12]=anchor[0];target[14]=anchor[2];target[13]=0;
+            target[13]=foot.floor+lift-foot_floor(target,foot.surface);
+            if(seeded) {
+              target=a.visible_feet[side];rotate_foot(target,-angle);target[12]=anchor[0];target[14]=anchor[2];
+            }
+            const auto& hip=pose->world[foot.thigh];
+            target[13]=std::max(target[13],hip[13]-foot.length*.999F);
+            const float vertical=target[13]-hip[13];
+            const float maximum=std::sqrt(std::max(.000001F,foot.length*foot.length*.998F-vertical*vertical));
+            const float dx=target[12]-hip[12],dz=target[14]-hip[14],horizontal=std::hypot(dx,dz);
+            if(horizontal>maximum) {target[12]=hip[12]+dx*maximum/horizontal;target[14]=hip[14]+dz*maximum/horizontal;}
+            const float kx=knee_poles[side][0],kz=knee_poles[side][2];
+            knee_poles[side][0]=c*kx+s*kz;knee_poles[side][2]=-s*kx+c*kz;
+            targets[side]=target;
+          }
+          if(!animation::place_infantry_feet(a.source->asset,*pose,targets,knee_poles,a.capture_pose,a.foot_weight))return nullptr;
+          // Interpolated joint arcs can sag below a rigid sole. Correct only
+          // the affected ankle target, never the pelvis/root/weapon frame.
+          bool floor_fix=false;
+          for(std::size_t side=0;side<2;++side) {
+            const auto& foot=a.source->feet[side];targets[side]=a.capture_pose.world[foot.node];
+            const float below=foot.floor-foot_floor(targets[side],foot.surface);
+            if(below>0) {targets[side][13]+=below;floor_fix=true;}
+          }
+          if(floor_fix && !animation::place_infantry_feet(a.source->asset,a.capture_pose,targets,knee_poles,a.capture_pose))return nullptr;
+          pose=&a.capture_pose;
+          if(!a.player.adopt_infantry_legs(*pose))return nullptr;
+        }
+      }
+      if(ground && !intent.capturing && (dt>0 || fresh)) {
+        for(std::size_t side=0;side<2;++side) {
+          a.visible_feet[side]=pose->world[a.source->feet[side].node];
+          const auto& knee=pose->world[a.source->feet[side].shin];a.visible_knees[side]={knee[12],knee[13],knee[14]};
+        }
+        a.feet_valid=true;
+        if(clip=="walk" || clip=="run")a.last_gait_phase=a.player.time()/a.source->asset.clips()[a.source->asset.find_clip(clip)].seconds;
+      }
     }
     if (!animation::skin_vertices(a.source->asset, *pose, a.skin))
       return nullptr;

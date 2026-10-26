@@ -20,7 +20,7 @@ gp::detail::Actor actor(gp::EntityKind kind, unsigned id, gp::Vec2 position) {
   if (kind == gp::EntityKind::soldier)
     a.view.infantry_role = gp::InfantryRole::rifleman;
   a.attack_timer = gp::detail::vehicle(kind)?tune::enemy_attack_period[gp::detail::military_index(kind)]*.5F:100;
-  if (gp::detail::vehicle(kind)) a.locomotion_velocity={0,-1};
+  if (kind == gp::EntityKind::soldier || gp::detail::vehicle(kind)) a.locomotion_velocity={0,-1};
   return a;
 }
 void bounded_approach_and_planted_sources() {
@@ -42,7 +42,7 @@ void bounded_approach_and_planted_sources() {
         auto& a = s.actors[1];
         const auto before = a.view.position;
         const auto wanted = gp::detail::scaled(gp::detail::direction({0 - before.x, 4 - before.z}), tune::military_movement_speed[static_cast<unsigned>(moving) - 4]);
-        if(gp::detail::vehicle(moving)) s.enemies(dt); // Real facing/translation commit before weapons.
+        if(moving == gp::EntityKind::soldier || gp::detail::vehicle(moving)) s.enemies(dt); // Real facing/translation commit before weapons.
         else {
           const auto velocity = s.military_velocity(a, wanted, dt);
           a.view.velocity = velocity;
@@ -123,6 +123,55 @@ float swept_distance(gp::Vec2 point,gp::Vec2 from,gp::Vec2 to) {
   const float square=gp::detail::length_squared(travel);
   const float t=square>0?std::clamp((offset.x*travel.x+offset.z*travel.z)/square,0.F,1.F):0;
   return distance(point,gp::detail::add(from,gp::detail::scaled(travel,t)));
+}
+void physical_infantry_pivots_and_clears_finite_obstructions() {
+  for (const auto role : {gp::InfantryRole::rifleman, gp::InfantryRole::shotgunner, gp::InfantryRole::rocketeer}) {
+    for (unsigned fixture = 0; fixture < 3; ++fixture) {
+      gp::Game::State state;
+      state.view.stats.active_seconds = tune::director_boss_first_second - .5;
+      const float radius = tune::military_body_radius[0], edge = tune::field_half_width - radius;
+      auto moving = actor(gp::EntityKind::soldier, 55, {fixture == 1 ? 0.F : edge, 14});
+      moving.view.infantry_role = role;
+      moving.locomotion_velocity = fixture == 1 ? gp::Vec2{0, 1} : gp::Vec2{1, 0};
+      state.actors = {moving};
+      const float gap = 2 * radius + tune::military_spacing_margin;
+      if (fixture == 2) {
+        auto fixed = actor(gp::EntityKind::soldier, 10, {edge - gap, 12});
+        fixed.view.disabled_seconds = 100;
+        state.actors.push_back(fixed);
+      }
+      bool pivoted_at_rest = false, escaped = false;
+      for (unsigned frame = 0; frame < 240; ++frame) {
+        const auto before = state.actors.front(); state.enemies(dt);
+        const auto& current = state.actors.front();
+        const auto forward = gp::detail::direction(current.locomotion_velocity);
+        const float speed = std::hypot(current.view.velocity.x, current.view.velocity.z);
+        const float turn = std::abs(std::remainder(std::atan2(forward.x, -forward.z) -
+            std::atan2(before.locomotion_velocity.x, -before.locomotion_velocity.z), 6.28318530718F));
+        require(turn <= tune::infantry_turn_radians_per_second * dt + .00001F,
+            "actual infantry pivots within the authoritative angular limit");
+        require(speed <= tune::military_movement_speed[0] + .00001F &&
+            distance(current.view.position, before.view.position) <= tune::military_movement_speed[0] * dt + .00001F,
+            "finite infantry escape uses ordinary bounded steps without root correction");
+        require(std::abs(current.view.velocity.x * forward.z - current.view.velocity.z * forward.x) < .00002F &&
+            current.view.velocity.x * forward.x + current.view.velocity.z * forward.z >= -.00001F,
+            "infantry steps forward in its physical frame without lateral skating or vehicle-style backing");
+        require(std::abs(current.view.position.x) <= edge + .0001F,
+            "physical infantry escape preserves the whole-body field boundary");
+        pivoted_at_rest = pivoted_at_rest || (speed < .0001F && turn > .0001F);
+        if (fixture == 2) require(swept_distance(state.actors[1].view.position, before.view.position, current.view.position) >= gap - .0002F,
+            "actual pivot and subsequent forward step preserve the fixed body's complete swept reservation");
+        escaped = fixture == 2 ? current.view.position.z < 11.F :
+            current.view.position.z < 13.F && (fixture == 1 || current.view.position.x < edge - 1.F);
+        if (escaped) break;
+      }
+      if (!escaped || !pivoted_at_rest) std::cerr << "infantry escape role=" << static_cast<unsigned>(role) << " fixture=" << fixture <<
+          " escaped=" << escaped << " pivoted=" << pivoted_at_rest << " final=" << state.actors.front().view.position.x << ',' << state.actors.front().view.position.z << '\n';
+      require(escaped && pivoted_at_rest,
+          "each equipped role pivots at rest from a rear-facing or edge obstruction and makes finite forward progress");
+    }
+  }
+  std::cout << "PASS actual infantry role pivots, edges and fixed-body escapes without backing or ghosting\n";
 }
 void physical_reverse_escape_and_reopened_cage() {
   unsigned failures=0;
@@ -321,6 +370,7 @@ int main() {
   locked_aim_and_recovery();
   capture_projection_and_edge_return();
   ingress_and_random_stream();
+  physical_infantry_pivots_and_clears_finite_obstructions();
   physical_reverse_escape_and_reopened_cage();
   moving_vehicle_crossings_keep_both_bodies_and_progress();
   public_reproduction_and_restore();

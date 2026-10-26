@@ -118,6 +118,67 @@ Vec2 Game::State::military_velocity(const Actor& actor, Vec2 preferred, float dt
   return best;
 }
 
+detail::InfantryMotion Game::State::infantry_motion(const Actor& actor, Vec2 destination, float dt) const {
+  auto facing = direction(actor.locomotion_velocity);
+  if (length_squared(facing) == 0) facing = {0, -1};
+  if (!(dt > 0)) return {{}, facing};
+  const float edge = std::max(tuning::field_half_width - radius(actor), std::abs(actor.view.position.x));
+  const Vec2 route{destination.x - actor.view.position.x, destination.z - actor.view.position.z};
+  const auto desired = length_squared(route) > .00000001F ? direction(route) : facing;
+  const float maximum = tuning::military_movement_speed[0] * (actor.slow_timer > 0 ? 1 - tuning::storm_slow : 1);
+  const float requested = maximum * std::min(1.F, std::sqrt(length_squared(route)) / tuning::tactics_arrival_radius);
+  const auto clear = [&](Vec2 travel) {
+    if (std::abs(actor.view.position.x + travel.x) > edge + .00001F) return false;
+    for (const auto& other : actors) {
+      if (&other == &actor || !obstacle(other)) continue;
+      const float gap = radius(actor) + radius(other) + tuning::military_spacing_margin;
+      const float before = distance_squared(actor.view.position, other.view.position);
+      if (segment_distance_squared(other.view.position, actor.view.position, travel) < std::min(gap * gap, before) - .00001F)
+        return false;
+    }
+    return true;
+  };
+  Vec2 guide = facing;
+  float best = -100000;
+  const auto consider = [&](Vec2 heading, bool positive_turn) {
+    if (!clear(scaled(heading, maximum * dt))) return;
+    float proximity = 0;
+    const auto forecast = scaled(heading, maximum * tuning::military_spacing_lookahead);
+    const float future_x = actor.view.position.x + forecast.x;
+    proximity += std::max(0.F, std::abs(future_x) - edge);
+    for (const auto& other : actors) {
+      if (&other == &actor || !obstacle(other)) continue;
+      const float gap = radius(actor) + radius(other) + tuning::military_spacing_margin;
+      proximity += std::max(0.F, gap + .35F - std::sqrt(segment_distance_squared(other.view.position, actor.view.position, forecast)));
+    }
+    const float score = heading.x * desired.x + heading.z * desired.z - 3 * proximity +
+        .4F * (heading.x * facing.x + heading.z * facing.z) + .001F * ((actor.view.id & 1U) == positive_turn);
+    if (score > best) { best = score; guide = heading; }
+  };
+  // Steering chooses a guide; it no longer becomes instantaneous translation
+  // or whole-root yaw. A stopped person can pivot toward a rear opening too.
+  for (unsigned i = 0; i < 16; ++i) {
+    const int offset = i == 0 ? 0 : static_cast<int>((i + 1) / 2) * (i & 1U ? 1 : -1);
+    consider(rotated(desired, static_cast<float>(offset) * .39269908F), offset > 0);
+  }
+  // A field/body tangent can be narrower than the desired-relative samples.
+  // Preserve exact boundary-parallel openings and a still-clear physical step;
+  // otherwise every sample can be blocked while a person has room to turn.
+  for (const auto heading : {Vec2{0, -1}, Vec2{0, 1}, facing})
+    consider(heading, desired.x * heading.z - desired.z * heading.x > 0);
+  if (best == -100000) return {{}, facing};
+  facing = infantry_turn(facing, guide, dt);
+  const float alignment = std::max(0.F, facing.x * guide.x + facing.z * guide.z);
+  const float goal = requested * alignment * alignment;
+  const float previous = std::sqrt(length_squared(actor.view.velocity));
+  const float change = (goal < previous ? tuning::infantry_braking : tuning::infantry_acceleration) * dt;
+  const float speed = previous + std::clamp(goal - previous, -change, change);
+  const auto velocity = scaled(facing, speed);
+  // A human may plant and keep pivoting; the circular ground reservation does
+  // not change with that turn. Actual accepted travel still owns the full sweep.
+  return {clear(scaled(velocity, dt)) ? velocity : Vec2{}, facing};
+}
+
 detail::VehicleMotion Game::State::vehicle_motion(const Actor& actor, Vec2 destination, float dt) const {
   auto facing = direction(actor.locomotion_velocity);
   if (length_squared(facing) == 0) facing = direction(actor.view.velocity);

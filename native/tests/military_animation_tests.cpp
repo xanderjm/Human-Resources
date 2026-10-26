@@ -181,6 +181,181 @@ void planted_aim_and_events(const std::filesystem::path& assets) {
     require(actor && actor->clip=="beam_lift","capture preempts authored fire recovery");cache.end_frame();
   }
 }
+void live_and_cold_preparation(const std::filesystem::path& assets) {
+  namespace renderer=human_resources::renderer;
+  namespace mesh=human_resources::assets;
+  for(const auto* id:{"infantry-rifleman-body","infantry-shotgunner-body","infantry-rocketeer-body"}) {
+    const auto bytes=read(assets/(std::string(id)+".hra"));
+    Asset asset; require(decode(bytes,asset).valid(),"preparation source decodes");
+    Player reference; require(reference.bind(asset,"aim"),"preparation target uses actual source frame");
+    const auto weapon=asset.find_node("socket_weapon");
+    const auto& axis=reference.pose().world[weapon];
+    mesh::PreviewMesh companion;
+    require(mesh::decode_preview_mesh(read(assets/(std::string(id)+".hrm")),companion),"preparation companion decodes");
+    renderer::AnimationInstances live,cold;
+    require(live.load(id,bytes,companion.vertices) && cold.load(id,bytes,companion.vertices),"live and cold equipped sources load");
+    renderer::AnimationIntent intent{.speed=3.2F,.enabled=true};
+    intent.aim_target={axis[12]+axis[8]*6,2.5F,axis[14]+axis[10]*6};
+    live.begin_frame();auto* actor=live.update(901,id,intent,.1F);
+    require(actor && actor->clip=="walk","live preparation begins after a real moving gait");live.end_frame();
+    intent.speed=0;intent.preparing=true;
+    for(unsigned tick=0;tick<=72;++tick) {
+      const float age=static_cast<float>(tick)/60;
+      intent.aim_pose_seconds=age;
+      intent.preparing=age<.5F;
+      intent.warning=!intent.preparing;
+      live.begin_frame();actor=live.update(901,id,intent,1.F/60);
+      require(actor && actor->clip==(age<.5F ? "aim_enter" : "aim"),"actual raise progresses into held aim without restarting on warning");
+      if(tick==0 || tick==1 || tick==15 || tick==29 || tick==30 || tick==31 || tick==54 || tick==72) {
+        cold.clear_actors();cold.begin_frame();const auto* restored=cold.update(901,id,intent,0);
+        require(restored && restored->clip==actor->clip && restored->clip_time==actor->clip_time,
+            "fresh cold phase samples the actual live preparation clock");
+        require(restored->head_delta==actor->head_delta && restored->weapon_delta==actor->weapon_delta,
+            "cold preparation reproduces live head and weapon sockets, including mid-enter");
+        require(restored->launch_sequence==0 && actor->launch_sequence==0,"preparation invents no firing event");
+        require(restored->vertices.size()==actor->vertices.size(),"cold and live skin topology agree");
+        for(std::size_t v=0;v<actor->vertices.size();++v) {
+          require(restored->vertices[v].position==actor->vertices[v].position && restored->vertices[v].normal==actor->vertices[v].normal,
+              "cold preparation reproduces every live skinned position and normal");
+        }
+        cold.end_frame();
+      }
+      live.end_frame();
+    }
+    const auto gun=actor->weapon_delta;
+    const float clock=actor->clip_time;
+    intent.aim_pose_seconds=2.F;
+    live.begin_frame();actor=live.update(901,id,intent,0);
+    require(actor && actor->weapon_delta==gun && actor->clip_time==clock,"zero active time freezes an existing authoritative aim pose");live.end_frame();
+    intent.preparing=false;intent.warning=false;intent.aim_pose_seconds.reset();
+    live.begin_frame();actor=live.update(901,id,intent,1.F/60);
+    require(actor && actor->clip=="aim_exit","cancelled preparation lowers the weapon using its existing authored exit");live.end_frame();
+    intent.preparing=true;intent.aim_pose_seconds=.2F;intent.capturing=true;
+    live.begin_frame();actor=live.update(901,id,intent,1.F/60);
+    require(actor && actor->clip=="beam_lift","capture still preempts an authoritative preparation pose");live.end_frame();
+    cold.clear_actors();intent.capturing=false;intent.preparing=false;intent.warning=true;intent.recovering=true;intent.fire_age_seconds=.4F;
+    cold.begin_frame();actor=cold.update(901,id,intent,0);
+    require(actor && actor->clip=="fire" && std::abs(actor->clip_time-.4F)<1e-6F,"real fire recovery takes priority over an aged aim intent");cold.end_frame();
+    cold.clear_actors();intent.recovering=false;intent.preparing=true;intent.aim_pose_seconds.reset();
+    cold.begin_frame();require(!cold.update(901,id,intent,0),"preparation without an actual phase age is rejected");cold.end_frame();
+  }
+}
+void physical_turn_feet(const std::filesystem::path& assets) {
+  namespace renderer=human_resources::renderer;
+  namespace mesh=human_resources::assets;
+  for(const char* id:{"infantry-rifleman-body","infantry-shotgunner-body","infantry-rocketeer-body"}) {
+    const auto bytes=read(assets/(std::string(id)+".hra"));Asset asset;
+    require(decode(bytes,asset).valid(),"turn source decodes");
+    Player source;require(source.bind(asset,"aim"),"leg-only solve reference binds");
+    std::array<Matrix,2> targets{source.pose().world[asset.find_node("foot.L")],source.pose().world[asset.find_node("foot.R")]};
+    targets[0][13]+=.08F;targets[0][14]+=.025F;
+    std::array<Vec3,2> knees;for(std::size_t side=0;side<2;++side) {const auto& k=source.pose().world[asset.find_node(side==0 ? "shin.L":"shin.R")];knees[side]={k[12],k[13],k[14]};}
+    Pose solved;require(place_infantry_feet(asset,source.pose(),targets,knees,solved),"reachable ankle solve succeeds");
+    for(std::size_t n=0;n<asset.nodes().size();++n) {
+      const auto& name=asset.nodes()[n].name;
+      const bool leg=name=="thigh.L" || name=="shin.L" || name=="foot.L" || name=="thigh.R" || name=="shin.R" || name=="foot.R";
+      if(!leg) {
+        require(solved.local[n].translation==source.pose().local[n].translation && solved.local[n].rotation==source.pose().local[n].rotation &&
+            solved.local[n].scale==source.pose().local[n].scale && solved.world[n]==source.pose().world[n],"all nonleg locals and world frames remain bit exact");
+      }
+    }
+    for(std::size_t side=0;side<2;++side)for(std::size_t k=0;k<3;++k)
+      require(std::abs(solved.world[asset.find_node(side==0 ? "foot.L":"foot.R")][12+k]-targets[side][12+k])<.0001F,"ankle reaches finite authored target");
+    auto unreachable=targets;unreachable[0][13]=100;
+    require(!place_infantry_feet(asset,source.pose(),unreachable,knees,solved),"unreachable solve rejected without root displacement");
+    mesh::PreviewMesh companion;require(mesh::decode_preview_mesh(read(assets/(std::string(id)+".hrm")),companion),"turn companion decodes");
+    renderer::AnimationInstances turning,canonical,cold;
+    require(turning.load(id,bytes,companion.vertices) && canonical.load(id,bytes,companion.vertices) && cold.load(id,bytes,companion.vertices),"turn caches load");
+    renderer::AnimationIntent intent{.speed=1.5F,.enabled=true,.body_heading=0.F};
+    std::vector<mesh::PreviewVertex> previous,previous_canonical;
+    float maximum_step{},maximum_leg_step{},maximum_contact_step{},maximum_foot_lift{};
+    bool previous_grounded=false;unsigned changed_foot_frames{},maximum_frame{},maximum_leg_frame{};std::size_t maximum_vertex{};
+    for(unsigned frame=0;frame<300;++frame) {
+      if(frame==20) {intent.speed=0;intent.preparing=true;intent.aim_pose_seconds=0.F;}
+      if(frame>=20 && frame<140) {
+        intent.aim_pose_seconds=static_cast<float>(frame-20)/60;
+        intent.body_heading=-static_cast<float>(frame-20)*.14F;
+      }
+      if(frame==140) {intent.preparing=false;intent.aim_pose_seconds.reset();intent.speed=2;}
+      if(frame==170)intent.speed=0;
+      // Nonattack stationary pivot covers the ordinary A142 failure class.
+      if(frame>=180 && frame<190)intent.body_heading=*intent.body_heading+.16F;
+      if(frame==190) {intent.capturing=true;intent.product_capture_transport=true;intent.capture_progress=.03F;}
+      if(frame>190 && frame<210)intent.capture_progress+=.01F;
+      if(frame==210)intent.capturing=false;
+      auto plain=intent;plain.body_heading.reset();
+      turning.begin_frame();canonical.begin_frame();
+      const auto* actor=turning.update(78,id,intent,1.F/60);const auto* ordinary=canonical.update(78,id,plain,1.F/60);
+      if(!actor || !ordinary)std::cout<<"TURN_EVALUATION_FAILURE "<<id<<" frame="<<frame<<" foot="<<(actor!=nullptr)<<" canonical="<<(ordinary!=nullptr)<<std::endl;
+      require(actor && ordinary,"walk/preparation/pivot/walk/capture/release remain evaluable");
+      require(actor->weapon_delta==ordinary->weapon_delta && actor->head_delta==ordinary->head_delta && actor->launch_weapon_delta==ordinary->launch_weapon_delta,
+          "transient feet never change live upper/head/weapon or actual launch frame");
+      const bool grounded=!intent.capturing && !actor->clip.starts_with("beam_");
+      if(intent.capturing)require(actor->clip=="beam_lift","capture preempts transient turn articulation immediately");
+      if(frame>=193 && frame<210)for(std::size_t v=0;v<actor->vertices.size();++v)
+        require(actor->vertices[v].position==ordinary->vertices[v].position && actor->vertices[v].normal==ordinary->vertices[v].normal,
+            "after existing .06 capture fade every vertex matches canonical airborne pose exactly");
+      float foot_difference{},capture_step{},canonical_capture_step{};
+      for(std::size_t v=0;v<actor->vertices.size();++v) {
+        if(!previous.empty()) {
+          float distance{};for(std::size_t k=0;k<3;++k)distance+=std::pow(actor->vertices[v].position[k]-previous[v].position[k],2.F);
+          if(std::sqrt(distance)>maximum_step){maximum_step=std::sqrt(distance);maximum_frame=frame;maximum_vertex=v;}
+          const auto& joint=asset.nodes()[asset.joints()[asset.vertices()[v].joints[0]].node].name;
+          if(joint=="thigh.L" || joint=="shin.L" || joint=="foot.L" || joint=="thigh.R" || joint=="shin.R" || joint=="foot.R") {
+            if(std::sqrt(distance)>maximum_leg_step){maximum_leg_step=std::sqrt(distance);maximum_leg_frame=frame;}
+            if(grounded && previous_grounded)maximum_contact_step=std::max(maximum_contact_step,std::sqrt(distance));
+          }
+          if(joint=="foot.R" && frame>=190 && frame<=193) {
+            capture_step=std::max(capture_step,std::sqrt(distance));float canonical_distance{};
+            for(std::size_t k=0;k<3;++k)canonical_distance+=std::pow(ordinary->vertices[v].position[k]-previous_canonical[v].position[k],2.F);
+            canonical_capture_step=std::max(canonical_capture_step,std::sqrt(canonical_distance));
+          }
+        }
+        for(std::size_t slot=0;slot<4;++slot)if(asset.vertices()[v].weights[slot]>.99F) {
+          const auto& name=asset.nodes()[asset.joints()[asset.vertices()[v].joints[slot]].node].name;
+          if(name=="foot.L" || name=="foot.R") {
+            foot_difference=std::max(foot_difference,std::abs(actor->vertices[v].position[1]-ordinary->vertices[v].position[1]));
+            if(frame>=21 && frame<140)maximum_foot_lift=std::max(maximum_foot_lift,foot_difference);
+            if(frame>=21 && frame<140)require(actor->vertices[v].position[1]>=-.001F,"turning rigid boots remain above flat authored ground");
+          }
+        }
+      }
+      if(foot_difference>.01F)++changed_foot_frames;
+      if(frame==80) {
+        cold.begin_frame();const auto* restored=cold.update(78,id,intent,0);
+        require(restored && restored->weapon_delta==actor->weapon_delta && restored->head_delta==actor->head_delta,"cold neutral feet retain exact live upper aim frame");cold.end_frame();
+        const auto revision=actor->revision;const auto frozen=std::vector<mesh::PreviewVertex>(actor->vertices.begin(),actor->vertices.end());
+        turning.end_frame();turning.begin_frame();actor=turning.update(78,id,intent,0);
+        require(actor && actor->revision==revision,"paused turn does not advance transient history");
+        for(std::size_t v=0;v<frozen.size();++v)require(actor->vertices[v].position==frozen[v].position,"paused visible turn feet freeze exactly");
+      }
+      if(frame>=190 && frame<=193)std::cout<<"CAPTURE_PAIRED "<<id<<" frame="<<frame<<" turned_foot_R="<<capture_step<<" canonical_foot_R="<<canonical_capture_step<<std::endl;
+      previous_grounded=grounded;previous.assign(actor->vertices.begin(),actor->vertices.end());previous_canonical.assign(ordinary->vertices.begin(),ordinary->vertices.end());
+      turning.end_frame();canonical.end_frame();
+    }
+    std::cout<<"TURN_FEET "<<id<<" max_vertex_step="<<maximum_step<<" max_frame="<<maximum_frame<<" vertex="<<maximum_vertex<<" joint="<<asset.nodes()[asset.joints()[asset.vertices()[maximum_vertex].joints[0]].node].name<<" max_leg_step="<<maximum_leg_step<<" max_leg_frame="<<maximum_leg_frame<<" grounded_contact_step="<<maximum_contact_step<<" foot_lift="<<maximum_foot_lift<<" changed_frames="<<changed_foot_frames<<'\n';
+    require(maximum_foot_lift>.025F && changed_foot_frames>20,"actual stationary rotation releases boots using existing gait lift");
+    require(maximum_contact_step<.25F,"adjacent grounded60Hz entry/movement/turn frames have bounded lower-body contact steps");
+    turning.clear_actors();canonical.clear_actors();previous.clear();
+    intent={.enabled=true,.body_heading=0.F};float settle_step{};
+    for(unsigned frame=0;frame<90;++frame) {
+      if(frame>0 && frame<=12)intent.body_heading=*intent.body_heading+.14F;
+      auto plain=intent;plain.body_heading.reset();turning.begin_frame();canonical.begin_frame();
+      const auto* actor=turning.update(91,id,intent,1.F/60);const auto* ordinary=canonical.update(91,id,plain,1.F/60);
+      require(actor && ordinary,"nonattack pivot and stationary settle remain evaluable");
+      require(actor->weapon_delta==ordinary->weapon_delta && actor->head_delta==ordinary->head_delta,"stationary settle preserves upper frame");
+      if(!previous.empty())for(std::size_t v=0;v<actor->vertices.size();++v) {
+        float step{};for(std::size_t k=0;k<3;++k)step+=std::pow(actor->vertices[v].position[k]-previous[v].position[k],2.F);
+        settle_step=std::max(settle_step,std::sqrt(step));
+      }
+      if(frame==89)for(std::size_t v=0;v<actor->vertices.size();++v)require(actor->vertices[v].position==ordinary->vertices[v].position,"settled stationary feet fully return to canonical pose");
+      previous.assign(actor->vertices.begin(),actor->vertices.end());turning.end_frame();canonical.end_frame();
+    }
+    std::cout<<"TURN_SETTLE "<<id<<" maximum_step="<<settle_step<<std::endl;
+    require(settle_step<.25F,"nonattack pivot retirement has no contact pop");
+  }
+}
+
 void product_capture_transport(const std::filesystem::path& assets) {
   namespace renderer=human_resources::renderer;
   namespace mesh=human_resources::assets;
@@ -263,6 +438,8 @@ int main(int argc, char** argv) {
   require(argc == 2 || argc == 3, "supply cooked infantry and optional independent source socket reference directory");
   if(argc==3) verify_sockets(argv[1], argv[2]);
   planted_aim_and_events(argv[1]);
+  live_and_cold_preparation(argv[1]);
+  physical_turn_feet(argv[1]);
   // Isolated three-pair parity directories intentionally omit the five other
   // product pairs. The shipping runtime exercises the complete transport set.
   if(std::filesystem::exists(std::filesystem::path(argv[1])/"cow.hra")) product_capture_transport(argv[1]);
