@@ -128,23 +128,29 @@ void commitment_and_budget() {
   require(a.view.minigun_barrel==previous_barrel && s.next_id==ids && s.next_presentation_sequence==before_rejection,"rejected close commitment consumes no barrel, ID or event");
 }
 void capture_readiness() {
-  for(const auto kind:{gp::EntityKind::jeep,gp::EntityKind::tank}) {
-  gp::Game::State s;s.actors={jeep()};s.view.player={0,0};s.view.capture_radius=4;s.view.beam_capacity=2;
-  s.view.modules[static_cast<std::size_t>(gp::Module::heavy_winch)]=3;
-  auto& a=s.actors.front();a.view.kind=kind;a.view.position={0,5};a.view.capture_progress=.9F;a.lifted=true;
-  s.view.beams.push_back({1,a.view.position,.9F,true});s.capture(dt);
-  require(a.view.capture_progress==0 && s.view.beams.empty() && a.view.fire_recovery_seconds==gp::capture_return_seconds(),
-      "actual range loss retains immediate reset and starts shared bounded mount return");
-  const auto before=a.view.position;s.enemies(dt);
-  require(a.view.position.z!=before.z && a.view.warning_seconds==0,"return readiness suppresses fire while preserving ground movement");
-  const float timer=a.view.fire_recovery_seconds;
-  a.view.disabled_seconds=.1F;s.enemies(dt);
-  require(a.view.fire_recovery_seconds<timer && a.view.warning_seconds==0,"disable cannot bypass or extend active return clock");
-  a.view.disabled_seconds=0;a.view.position={0,2};s.capture(dt);
-  require(a.view.capture_progress>0 && a.lifted,"reacquisition remains immediate without delaying capture");
-  s.enemies(dt);require(a.view.warning_seconds==0,"captured actor cannot fire");
-  a.view.position={0,5};s.capture(dt);
-  require(a.view.capture_progress==0 && a.view.fire_recovery_seconds==gp::capture_return_seconds(),"second cancellation restarts one honest bounded return");
+  for (const auto kind : {gp::EntityKind::jeep, gp::EntityKind::tank}) {
+    gp::Game::State s; s.actors = {jeep()}; s.view.player = {0, 0}; s.view.capture_radius = 4; s.view.beam_capacity = 2;
+    s.view.modules[static_cast<std::size_t>(gp::Module::heavy_winch)] = 3;
+    auto& a = s.actors.front(); a.view.kind = kind; a.view.position = {0, 5}; a.view.capture_progress = .5F; a.lifted = true;
+    a.age = 1000;
+    s.view.beams.push_back({1, a.view.position, .5F, true});
+    s.vehicle_capture_cooldown = 8;
+    s.view.runner_distance = 100;
+    s.enemies(dt); s.capture(dt);
+    require(a.view.capture_progress > .5F && a.lifted && !a.removed && s.view.beams.size() == 1,
+            "range, lifetime, retirement and another vehicle cooldown cannot cancel an active lift");
+    require(a.view.warning_seconds == 0 && gp::detail::length_squared(a.view.velocity) == 0,
+            "locked vehicles cannot move or fire");
+    const float hull = a.view.hull;
+    s.hit(a, 10000);
+    require(a.view.hull == hull && !a.removed, "own damage cannot destroy an abducting vehicle");
+    unsigned frames = 0;
+    while (!a.removed && frames++ < 600) s.capture(dt);
+    require(a.removed && s.view.stats.vehicle_captures == 1 && s.view.beams.empty(),
+            "locked vehicles finish once and free both slots");
+    s.actors = {jeep()}; s.actors.front().view.position = s.view.player;
+    s.capture(dt);
+    require(s.view.beams.empty(), "the vehicle cooldown still gates new pickups");
   }
 }
 void barrel_cycle_and_cancellation() {
@@ -173,30 +179,26 @@ void barrel_cycle_and_cancellation() {
   const auto id=s.next_id;const auto event=s.next_presentation_sequence;s.shoot(a);
   require(s.bullets.size()==96 && s.next_id==id && s.next_presentation_sequence==event,"full shared projectile capacity suppresses ID and shot event");
 }
-void durable_landing_and_pause() {
-  gp::Game run;run.start({.seed=774,.unlocked_blueprints=0xffff});auto& s=*run.state_;
-  s.actors={jeep()};s.next_id=2;
-  // Synthetic durable-capture fixture stays damage-eligible while surviving
-  // the real player lasers during the resumed-state comparison.
-  s.actors.front().view.hull=400;s.actors.front().view.maximum_hull=4000;
+void durable_locked_capture_and_pause() {
+  gp::Game run; run.start({.seed=774,.unlocked_blueprints=0xffff}); auto& s=*run.state_;
+  s.actors={jeep()}; s.next_id=2;
+  s.actors.front().view.hull=400; s.actors.front().view.maximum_hull=4000;
   s.view.modules[static_cast<std::size_t>(gp::Module::laser_array)]=1;
   s.view.modules[static_cast<std::size_t>(gp::Module::beam_splitter)]=2;
-  s.view.modules[static_cast<std::size_t>(gp::Module::heavy_winch)]=1;s.sync();
-  auto& a=s.actors.front();a.view.position={0,5};a.view.capture_progress=.7F;a.lifted=true;
-  s.view.beams.push_back({1,a.view.position,.7F,true});s.capture(dt);s.sync();
-  require(a.view.fire_recovery_seconds==gp::capture_return_seconds() && a.view.capture_progress==0,"real cancellation produces the durable landing fixture");
-  run.pause();const auto paused=run.save_state();require(!paused.empty(),"paused landing is a valid continuation");
-  run.advance(1000,{{1,1},true});require(run.save_state()==paused,"public pause freezes actual remaining landing, motion and attack clocks");
-  gp::Game copy;require(copy.restore_state(paused)==gp::SaveStateIssue::none && copy.save_state()==paused,"cold restore retains exact paused landing readiness");
-  require(copy.snapshot().entities.front().fire_recovery_seconds==gp::capture_return_seconds(),"cold actor cannot skip unfinished source return");
-  run.resume();copy.resume();
-  const float timer=run.snapshot().entities.front().fire_recovery_seconds;
-  run.advance(dt);copy.advance(dt);
-  require_near(run.snapshot().entities.front().fire_recovery_seconds,timer-dt,1e-6F,"resuming decrements landing by active time only");
+  s.view.modules[static_cast<std::size_t>(gp::Module::heavy_winch)]=1; s.sync();
+  auto& a=s.actors.front(); a.view.position={0,5}; a.view.capture_progress=.7F; a.lifted=true;
+  s.view.beams.push_back({1,a.view.position,.7F,true}); s.capture(dt); s.sync();
+  require(a.view.capture_progress>.7F && s.view.beams.size()==1,"out-of-range lock remains active before saving");
+  run.pause(); const auto paused=run.save_state(); require(!paused.empty(),"paused out-of-range lift is a valid continuation");
+  run.advance(1000,{{1,1},true}); require(run.save_state()==paused,"pause freezes locked capture and all clocks");
+  gp::Game copy; require(copy.restore_state(paused)==gp::SaveStateIssue::none && copy.save_state()==paused,
+                        "cold restore retains the exact out-of-range locked lift");
+  run.resume(); copy.resume();
   for(unsigned frame=0;frame<240;++frame) {
-    if(run.snapshot().phase==gp::Phase::choosing_upgrade) {require(run.choose_upgrade(0),"landing fixture earned draft");require(copy.choose_upgrade(0),"restored landing earned draft");}
-    run.advance(dt);copy.advance(dt);require(run.save_state()==copy.save_state(),"landing continuation remains exactly identical through resumed activity");
+    if(run.snapshot().phase==gp::Phase::choosing_upgrade) {require(run.choose_upgrade(0),"capture fixture earned draft");require(copy.choose_upgrade(0),"restored capture earned draft");}
+    run.advance(dt); copy.advance(dt); require(run.save_state()==copy.save_state(),"locked capture has an identical resumed future");
   }
+  require(run.snapshot().stats.vehicle_captures==1,"cold-restored locked vehicle completes once");
 }
 void codec_and_source_death() {
   gp::Game run;run.start({.seed=514});auto& s=*run.state_;
@@ -220,7 +222,9 @@ void malformed_vehicle_authority() {
   gp::Game run;run.start({.seed=775});auto& s=*run.state_;
   s.actors={jeep()};s.actors.front().view.minigun_barrel=3;s.next_id=2;s.shoot(s.actors.front());s.sync();
   const auto good=run.save_state();require(!good.empty(),"actual minigun wire fixture is valid");
-  constexpr std::size_t actor=378,projectile=actor+110+4;
+  // Codec6 prefix includes population state after laser burst, flight burst and flight bounds.
+  constexpr std::size_t actor=434,projectile=actor+123+4;
+  require(good[actor+4]==static_cast<std::byte>(gp::EntityKind::jeep),"versioned malformed fixture reaches its actual vehicle record");
   auto seal=[](auto& bytes) {
     std::uint64_t hash=14695981039346656037ULL;
     for(std::size_t i=0;i<bytes.size()-8;++i) hash=(hash^std::to_integer<std::uint8_t>(bytes[i]))*1099511628211ULL;
@@ -304,4 +308,4 @@ void cannon_geometry_and_typed_futures() {
   std::cout<<"CANNON source rays="<<rays<<'\n';
 }
 }
-int main() {source_geometry();commitment_and_budget();capture_readiness();barrel_cycle_and_cancellation();durable_landing_and_pause();codec_and_source_death();malformed_vehicle_authority();cannon_geometry_and_typed_futures();std::cout<<"Vehicle gameplay contracts passed: eight focused groups.\n";}
+int main() {source_geometry();commitment_and_budget();capture_readiness();barrel_cycle_and_cancellation();durable_locked_capture_and_pause();codec_and_source_death();malformed_vehicle_authority();cannon_geometry_and_typed_futures();std::cout<<"Vehicle gameplay contracts passed: eight focused groups.\n";}

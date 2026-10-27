@@ -1,0 +1,28 @@
+── Plan ──────────────────────────
+input: /Users/coral/Documents/App Development/Human Resources/assets/references/infantry-rocketeer-body/v1.png
+model: P1-20260311 — explicit --model
+steps:
+  1. image-to-model  POST /v3/generation/image-to-model — generate a 3D model from one image
+     model="P1-20260311" face_limit=5500 texture=true pbr=false texture_quality="standard" texture_alignment="original_image" export_uv=true
+  2. convert  POST /v3/models/convert — convert format / texture size / orientation
+     format="GLTF" texture_size=1024
+cost impact:
+  · non-default convert options bill as complex convert
+──────────────────────────────────
+model: P1-20260311 (explicit --model)
+task created c1f29a2d-26aa-499d-8475-3f5c4581d874 (@infantry-rocketeer-body)
+image_to_model · queued
+image_to_model · running 13% · c1f29a2d
+image_to_model · running 23% · c1f29a2d
+image_to_model · running 37% · c1f29a2d
+image_to_model · running 59% · c1f29a2d
+image_to_model · running 91% · c1f29a2d
+image_to_model · success 100% · c1f29a2d
+✓ image_to_model · c1f29a2d-26aa-499d-8475-3f5c4581d874 · 50 credits
+! non-default convert options use the "complex convert" price tier
+task created a551878c-12ca-4f0f-a0c3-318c4777410a (@infantry-rocketeer-body-convert)
+convert_model · queued
+✓ convert_model · a551878c-12ca-4f0f-a0c3-318c4777410a · 10 credits
+downloading artifacts…
+✓ artifacts saved to /Users/coral/Documents/App Development/Human Resources/assets/models/infantry-rocketeer-body/tripo-out/infantry-rocketeer-body-convert-a551878c
+{"task_id":"a551878c-12ca-4f0f-a0c3-318c4777410a","type":"convert_model","status":"success","credits_consumed":60,"output_dir":"/Users/coral/Documents/App Development/Human Resources/assets/models/infantry-rocketeer-body/tripo-out/infantry-rocketeer-body-convert-a551878c","files":["model.glb"],"model_file":"/Users/coral/Documents/App Development/Human Resources/assets/models/infantry-rocketeer-body/tripo-out/infantry-rocketeer-body-convert-a551878c/model.glb","chain":[{"task_id":"a551878c-12ca-4f0f-a0c3-318c4777410a","type":"convert_model","status":"success","credits_consumed":10,"output_dir":"/Users/coral/Documents/App Development/Human Resources/assets/models/infantry-rocketeer-body/tripo-out/infantry-rocketeer-body-convert-a551878c","files":["model.glb"],"model_file":"/Users/coral/Documents/App Development/Human Resources/assets/models/infantry-rocketeer-body/tripo-out/infantry-rocketeer-body-convert-a551878c/model.glb"}],"source_task_id":"c1f29a2d-26aa-499d-8475-3f5c4581d874","credits_breakdown":[{"task_id":"c1f29a2d-26aa-499d-8475-3f5c4581d874","type":"image_to_model","credits_consumed":50},{"task_id":"a551878c-12ca-4f0f-a0c3-318c4777410a","type":"convert_model","credits_consumed":10}]}

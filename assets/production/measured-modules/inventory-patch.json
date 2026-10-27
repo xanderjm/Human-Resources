@@ -1,0 +1,2610 @@
+{
+  "assets": [
+    {
+      "id": "fence-post",
+      "dimensions_m": [
+        0.16,
+        1.1,
+        0.16
+      ],
+      "orientation_variants": [],
+      "reference": {
+        "status": "approved",
+        "path": "assets/references/fence-post/v1.png",
+        "notes": "Native white-background render of actual measured mesh, reviewed in contact sheet."
+      },
+      "production": {
+        "status": "completed",
+        "model_file": "assets/models/fence-post/fence-post.glb",
+        "credits_consumed": 0,
+        "generator": "tools/build_measured_modules.py"
+      },
+      "qa": {
+        "status": "passed_authoring_review",
+        "model_audit": "assets/production/records/fence-post/model-audit.json",
+        "module_audit": "assets/production/records/fence-post/module-audit.json",
+        "notes": "Exact dimensions/units, decoded GLB indices/UVs/normals, final embedded periodic basecolour, uniform planar UVs in40 orientations, and joined-module QA passed. Native device review open."
+      }
+    },
+    {
+      "id": "fence-rail",
+      "dimensions_m": [
+        2.0,
+        0.12,
+        0.09
+      ],
+      "orientation_variants": [],
+      "reference": {
+        "status": "approved",
+        "path": "assets/references/fence-rail/v1.png",
+        "notes": "Native white-background render of actual measured mesh, reviewed in contact sheet."
+      },
+      "production": {
+        "status": "completed",
+        "model_file": "assets/models/fence-rail/fence-rail.glb",
+        "credits_consumed": 0,
+        "generator": "tools/build_measured_modules.py"
+      },
+      "qa": {
+        "status": "passed_authoring_review",
+        "model_audit": "assets/production/records/fence-rail/model-audit.json",
+        "module_audit": "assets/production/records/fence-rail/module-audit.json",
+        "notes": "Exact dimensions/units, decoded GLB indices/UVs/normals, final embedded periodic basecolour, uniform planar UVs in40 orientations, and joined-module QA passed. Native device review open."
+      }
+    },
+    {
+      "id": "ground-tile",
+      "dimensions_m": [
+        16.0,
+        0.0,
+        16.0
+      ],
+      "orientation_variants": [
+        {
+          "yaw_degrees": 90,
+          "model_file": "assets/models/ground-tile/ground-tile-yaw90.glb",
+          "ports": [
+            {
+              "name": "start",
+              "centre_m": [
+                0,
+                0,
+                0
+              ],
+              "outward": [
+                -1,
+                0,
+                0
+              ],
+              "edge_m": [
+                [
+                  0.0,
+                  0.0,
+                  8.0
+                ],
+                [
+                  0.0,
+                  0.0,
+                  -8.0
+                ]
+              ],
+              "edge_uv": [
+                [
+                  0.0,
+                  8.0
+                ],
+                [
+                  0.0,
+                  -8.0
+                ]
+              ]
+            },
+            {
+              "name": "end",
+              "centre_m": [
+                16,
+                0,
+                0
+              ],
+              "outward": [
+                1,
+                0,
+                0
+              ],
+              "edge_m": [
+                [
+                  16.0,
+                  0.0,
+                  8.0
+                ],
+                [
+                  16.0,
+                  0.0,
+                  -8.0
+                ]
+              ],
+              "edge_uv": [
+                [
+                  16.0,
+                  8.0
+                ],
+                [
+                  16.0,
+                  -8.0
+                ]
+              ]
+            }
+          ]
+        },
+        {
+          "yaw_degrees": 180,
+          "model_file": "assets/models/ground-tile/ground-tile-yaw180.glb",
+          "ports": [
+            {
+              "name": "start",
+              "centre_m": [
+                0,
+                0,
+                0
+              ],
+              "outward": [
+                0,
+                0,
+                1
+              ],
+              "edge_m": [
+                [
+                  8.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  -8.0,
+                  0.0,
+                  0.0
+                ]
+              ],
+              "edge_uv": [
+                [
+                  8.0,
+                  0.0
+                ],
+                [
+                  -8.0,
+                  0.0
+                ]
+              ]
+            },
+            {
+              "name": "end",
+              "centre_m": [
+                0,
+                0,
+                -16
+              ],
+              "outward": [
+                0,
+                0,
+                -1
+              ],
+              "edge_m": [
+                [
+                  8.0,
+                  0.0,
+                  -16.0
+                ],
+                [
+                  -8.0,
+                  0.0,
+                  -16.0
+                ]
+              ],
+              "edge_uv": [
+                [
+                  8.0,
+                  -16.0
+                ],
+                [
+                  -8.0,
+                  -16.0
+                ]
+              ]
+            }
+          ]
+        },
+        {
+          "yaw_degrees": 270,
+          "model_file": "assets/models/ground-tile/ground-tile-yaw270.glb",
+          "ports": [
+            {
+              "name": "start",
+              "centre_m": [
+                0,
+                0,
+                0
+              ],
+              "outward": [
+                1,
+                0,
+                0
+              ],
+              "edge_m": [
+                [
+                  0.0,
+                  0.0,
+                  -8.0
+                ],
+                [
+                  0.0,
+                  0.0,
+                  8.0
+                ]
+              ],
+              "edge_uv": [
+                [
+                  0.0,
+                  -8.0
+                ],
+                [
+                  0.0,
+                  8.0
+                ]
+              ]
+            },
+            {
+              "name": "end",
+              "centre_m": [
+                -16,
+                0,
+                0
+              ],
+              "outward": [
+                -1,
+                0,
+                0
+              ],
+              "edge_m": [
+                [
+                  -16.0,
+                  0.0,
+                  -8.0
+                ],
+                [
+                  -16.0,
+                  0.0,
+                  8.0
+                ]
+              ],
+              "edge_uv": [
+                [
+                  -16.0,
+                  -8.0
+                ],
+                [
+                  -16.0,
+                  8.0
+                ]
+              ]
+            }
+          ]
+        }
+      ],
+      "reference": {
+        "status": "approved",
+        "path": "assets/references/ground-tile/v1.png",
+        "notes": "Native white-background render of actual measured mesh, reviewed in contact sheet."
+      },
+      "production": {
+        "status": "completed",
+        "model_file": "assets/models/ground-tile/ground-tile.glb",
+        "credits_consumed": 0,
+        "generator": "tools/build_measured_modules.py"
+      },
+      "qa": {
+        "status": "passed_authoring_review",
+        "model_audit": "assets/production/records/ground-tile/model-audit.json",
+        "module_audit": "assets/production/records/ground-tile/module-audit.json",
+        "notes": "Exact dimensions/units, decoded GLB indices/UVs/normals, final embedded periodic basecolour, uniform planar UVs in40 orientations, and joined-module QA passed. Native device review open."
+      }
+    },
+    {
+      "id": "path-corner",
+      "dimensions_m": [
+        7.5,
+        0.0,
+        7.5
+      ],
+      "orientation_variants": [
+        {
+          "yaw_degrees": 90,
+          "model_file": "assets/models/path-corner/path-corner-yaw90.glb",
+          "ports": [
+            {
+              "name": "start",
+              "centre_m": [
+                0.0,
+                0.0,
+                -6.0
+              ],
+              "outward": [
+                -1,
+                0,
+                0
+              ],
+              "edge_m": [
+                [
+                  0.0,
+                  0.0,
+                  -4.5
+                ],
+                [
+                  0.0,
+                  0.0,
+                  -7.5
+                ]
+              ],
+              "edge_uv": [
+                [
+                  0.0,
+                  -4.5
+                ],
+                [
+                  0.0,
+                  -7.5
+                ]
+              ]
+            },
+            {
+              "name": "end",
+              "centre_m": [
+                6.0,
+                0.0,
+                0.0
+              ],
+              "outward": [
+                0,
+                0,
+                1
+              ],
+              "edge_m": [
+                [
+                  4.5,
+                  0.0,
+                  0.0
+                ],
+                [
+                  7.5,
+                  0.0,
+                  0.0
+                ]
+              ],
+              "edge_uv": [
+                [
+                  4.5,
+                  0.0
+                ],
+                [
+                  7.5,
+                  0.0
+                ]
+              ]
+            }
+          ]
+        },
+        {
+          "yaw_degrees": 180,
+          "model_file": "assets/models/path-corner/path-corner-yaw180.glb",
+          "ports": [
+            {
+              "name": "start",
+              "centre_m": [
+                -6.0,
+                0.0,
+                0.0
+              ],
+              "outward": [
+                0,
+                0,
+                1
+              ],
+              "edge_m": [
+                [
+                  -4.5,
+                  0.0,
+                  0.0
+                ],
+                [
+                  -7.5,
+                  0.0,
+                  0.0
+                ]
+              ],
+              "edge_uv": [
+                [
+                  -4.5,
+                  0.0
+                ],
+                [
+                  -7.5,
+                  0.0
+                ]
+              ]
+            },
+            {
+              "name": "end",
+              "centre_m": [
+                0.0,
+                0.0,
+                -6.0
+              ],
+              "outward": [
+                1,
+                0,
+                0
+              ],
+              "edge_m": [
+                [
+                  0.0,
+                  0.0,
+                  -4.5
+                ],
+                [
+                  0.0,
+                  0.0,
+                  -7.5
+                ]
+              ],
+              "edge_uv": [
+                [
+                  0.0,
+                  -4.5
+                ],
+                [
+                  0.0,
+                  -7.5
+                ]
+              ]
+            }
+          ]
+        },
+        {
+          "yaw_degrees": 270,
+          "model_file": "assets/models/path-corner/path-corner-yaw270.glb",
+          "ports": [
+            {
+              "name": "start",
+              "centre_m": [
+                0.0,
+                0.0,
+                6.0
+              ],
+              "outward": [
+                1,
+                0,
+                0
+              ],
+              "edge_m": [
+                [
+                  0.0,
+                  0.0,
+                  4.5
+                ],
+                [
+                  0.0,
+                  0.0,
+                  7.5
+                ]
+              ],
+              "edge_uv": [
+                [
+                  0.0,
+                  4.5
+                ],
+                [
+                  0.0,
+                  7.5
+                ]
+              ]
+            },
+            {
+              "name": "end",
+              "centre_m": [
+                -6.0,
+                0.0,
+                0.0
+              ],
+              "outward": [
+                0,
+                0,
+                -1
+              ],
+              "edge_m": [
+                [
+                  -4.5,
+                  0.0,
+                  0.0
+                ],
+                [
+                  -7.5,
+                  0.0,
+                  0.0
+                ]
+              ],
+              "edge_uv": [
+                [
+                  -4.5,
+                  0.0
+                ],
+                [
+                  -7.5,
+                  0.0
+                ]
+              ]
+            }
+          ]
+        }
+      ],
+      "reference": {
+        "status": "approved",
+        "path": "assets/references/path-corner/v1.png",
+        "notes": "Native white-background render of actual measured mesh, reviewed in contact sheet."
+      },
+      "production": {
+        "status": "completed",
+        "model_file": "assets/models/path-corner/path-corner.glb",
+        "credits_consumed": 0,
+        "generator": "tools/build_measured_modules.py"
+      },
+      "qa": {
+        "status": "passed_authoring_review",
+        "model_audit": "assets/production/records/path-corner/model-audit.json",
+        "module_audit": "assets/production/records/path-corner/module-audit.json",
+        "notes": "Exact dimensions/units, decoded GLB indices/UVs/normals, final embedded periodic basecolour, uniform planar UVs in40 orientations, and joined-module QA passed. Native device review open."
+      }
+    },
+    {
+      "id": "path-straight",
+      "dimensions_m": [
+        3.0,
+        0.0,
+        16.0
+      ],
+      "orientation_variants": [
+        {
+          "yaw_degrees": 90,
+          "model_file": "assets/models/path-straight/path-straight-yaw90.glb",
+          "ports": [
+            {
+              "name": "start",
+              "centre_m": [
+                0,
+                0,
+                0
+              ],
+              "outward": [
+                -1,
+                0,
+                0
+              ],
+              "edge_m": [
+                [
+                  0.0,
+                  0.0,
+                  1.5
+                ],
+                [
+                  0.0,
+                  0.0,
+                  -1.5
+                ]
+              ],
+              "edge_uv": [
+                [
+                  0.0,
+                  1.5
+                ],
+                [
+                  0.0,
+                  -1.5
+                ]
+              ]
+            },
+            {
+              "name": "end",
+              "centre_m": [
+                16,
+                0,
+                0
+              ],
+              "outward": [
+                1,
+                0,
+                0
+              ],
+              "edge_m": [
+                [
+                  16.0,
+                  0.0,
+                  1.5
+                ],
+                [
+                  16.0,
+                  0.0,
+                  -1.5
+                ]
+              ],
+              "edge_uv": [
+                [
+                  16.0,
+                  1.5
+                ],
+                [
+                  16.0,
+                  -1.5
+                ]
+              ]
+            }
+          ]
+        },
+        {
+          "yaw_degrees": 180,
+          "model_file": "assets/models/path-straight/path-straight-yaw180.glb",
+          "ports": [
+            {
+              "name": "start",
+              "centre_m": [
+                0,
+                0,
+                0
+              ],
+              "outward": [
+                0,
+                0,
+                1
+              ],
+              "edge_m": [
+                [
+                  1.5,
+                  0.0,
+                  0.0
+                ],
+                [
+                  -1.5,
+                  0.0,
+                  0.0
+                ]
+              ],
+              "edge_uv": [
+                [
+                  1.5,
+                  0.0
+                ],
+                [
+                  -1.5,
+                  0.0
+                ]
+              ]
+            },
+            {
+              "name": "end",
+              "centre_m": [
+                0,
+                0,
+                -16
+              ],
+              "outward": [
+                0,
+                0,
+                -1
+              ],
+              "edge_m": [
+                [
+                  1.5,
+                  0.0,
+                  -16.0
+                ],
+                [
+                  -1.5,
+                  0.0,
+                  -16.0
+                ]
+              ],
+              "edge_uv": [
+                [
+                  1.5,
+                  -16.0
+                ],
+                [
+                  -1.5,
+                  -16.0
+                ]
+              ]
+            }
+          ]
+        },
+        {
+          "yaw_degrees": 270,
+          "model_file": "assets/models/path-straight/path-straight-yaw270.glb",
+          "ports": [
+            {
+              "name": "start",
+              "centre_m": [
+                0,
+                0,
+                0
+              ],
+              "outward": [
+                1,
+                0,
+                0
+              ],
+              "edge_m": [
+                [
+                  0.0,
+                  0.0,
+                  -1.5
+                ],
+                [
+                  0.0,
+                  0.0,
+                  1.5
+                ]
+              ],
+              "edge_uv": [
+                [
+                  0.0,
+                  -1.5
+                ],
+                [
+                  0.0,
+                  1.5
+                ]
+              ]
+            },
+            {
+              "name": "end",
+              "centre_m": [
+                -16,
+                0,
+                0
+              ],
+              "outward": [
+                -1,
+                0,
+                0
+              ],
+              "edge_m": [
+                [
+                  -16.0,
+                  0.0,
+                  -1.5
+                ],
+                [
+                  -16.0,
+                  0.0,
+                  1.5
+                ]
+              ],
+              "edge_uv": [
+                [
+                  -16.0,
+                  -1.5
+                ],
+                [
+                  -16.0,
+                  1.5
+                ]
+              ]
+            }
+          ]
+        }
+      ],
+      "reference": {
+        "status": "approved",
+        "path": "assets/references/path-straight/v1.png",
+        "notes": "Native white-background render of actual measured mesh, reviewed in contact sheet."
+      },
+      "production": {
+        "status": "completed",
+        "model_file": "assets/models/path-straight/path-straight.glb",
+        "credits_consumed": 0,
+        "generator": "tools/build_measured_modules.py"
+      },
+      "qa": {
+        "status": "passed_authoring_review",
+        "model_audit": "assets/production/records/path-straight/model-audit.json",
+        "module_audit": "assets/production/records/path-straight/module-audit.json",
+        "notes": "Exact dimensions/units, decoded GLB indices/UVs/normals, final embedded periodic basecolour, uniform planar UVs in40 orientations, and joined-module QA passed. Native device review open."
+      }
+    },
+    {
+      "id": "pavement-corner",
+      "dimensions_m": [
+        13.5,
+        0.16,
+        13.5
+      ],
+      "orientation_variants": [
+        {
+          "yaw_degrees": 90,
+          "model_file": "assets/models/pavement-corner/pavement-corner-yaw90.glb",
+          "ports": [
+            {
+              "name": "start",
+              "centre_m": [
+                0.0,
+                0.0,
+                -12.75
+              ],
+              "outward": [
+                -1,
+                0,
+                0
+              ],
+              "edge_m": [
+                [
+                  0.0,
+                  0.11,
+                  -12.0
+                ],
+                [
+                  0.0,
+                  0.11,
+                  -13.5
+                ]
+              ],
+              "edge_uv": [
+                [
+                  0.0,
+                  -12.0
+                ],
+                [
+                  0.0,
+                  -13.5
+                ]
+              ]
+            },
+            {
+              "name": "end",
+              "centre_m": [
+                12.75,
+                0.0,
+                0.0
+              ],
+              "outward": [
+                0,
+                0,
+                1
+              ],
+              "edge_m": [
+                [
+                  12.0,
+                  0.11,
+                  0.0
+                ],
+                [
+                  13.5,
+                  0.11,
+                  0.0
+                ]
+              ],
+              "edge_uv": [
+                [
+                  12.0,
+                  0.0
+                ],
+                [
+                  13.5,
+                  0.0
+                ]
+              ]
+            }
+          ]
+        },
+        {
+          "yaw_degrees": 180,
+          "model_file": "assets/models/pavement-corner/pavement-corner-yaw180.glb",
+          "ports": [
+            {
+              "name": "start",
+              "centre_m": [
+                -12.75,
+                0.0,
+                0.0
+              ],
+              "outward": [
+                0,
+                0,
+                1
+              ],
+              "edge_m": [
+                [
+                  -12.0,
+                  0.11,
+                  0.0
+                ],
+                [
+                  -13.5,
+                  0.11,
+                  0.0
+                ]
+              ],
+              "edge_uv": [
+                [
+                  -12.0,
+                  0.0
+                ],
+                [
+                  -13.5,
+                  0.0
+                ]
+              ]
+            },
+            {
+              "name": "end",
+              "centre_m": [
+                0.0,
+                0.0,
+                -12.75
+              ],
+              "outward": [
+                1,
+                0,
+                0
+              ],
+              "edge_m": [
+                [
+                  0.0,
+                  0.11,
+                  -12.0
+                ],
+                [
+                  0.0,
+                  0.11,
+                  -13.5
+                ]
+              ],
+              "edge_uv": [
+                [
+                  0.0,
+                  -12.0
+                ],
+                [
+                  0.0,
+                  -13.5
+                ]
+              ]
+            }
+          ]
+        },
+        {
+          "yaw_degrees": 270,
+          "model_file": "assets/models/pavement-corner/pavement-corner-yaw270.glb",
+          "ports": [
+            {
+              "name": "start",
+              "centre_m": [
+                0.0,
+                0.0,
+                12.75
+              ],
+              "outward": [
+                1,
+                0,
+                0
+              ],
+              "edge_m": [
+                [
+                  0.0,
+                  0.11,
+                  12.0
+                ],
+                [
+                  0.0,
+                  0.11,
+                  13.5
+                ]
+              ],
+              "edge_uv": [
+                [
+                  0.0,
+                  12.0
+                ],
+                [
+                  0.0,
+                  13.5
+                ]
+              ]
+            },
+            {
+              "name": "end",
+              "centre_m": [
+                -12.75,
+                0.0,
+                0.0
+              ],
+              "outward": [
+                0,
+                0,
+                -1
+              ],
+              "edge_m": [
+                [
+                  -12.0,
+                  0.11,
+                  0.0
+                ],
+                [
+                  -13.5,
+                  0.11,
+                  0.0
+                ]
+              ],
+              "edge_uv": [
+                [
+                  -12.0,
+                  0.0
+                ],
+                [
+                  -13.5,
+                  0.0
+                ]
+              ]
+            }
+          ]
+        }
+      ],
+      "reference": {
+        "status": "approved",
+        "path": "assets/references/pavement-corner/v1.png",
+        "notes": "Native white-background render of actual measured mesh, reviewed in contact sheet."
+      },
+      "production": {
+        "status": "completed",
+        "model_file": "assets/models/pavement-corner/pavement-corner.glb",
+        "credits_consumed": 0,
+        "generator": "tools/build_measured_modules.py"
+      },
+      "qa": {
+        "status": "passed_authoring_review",
+        "model_audit": "assets/production/records/pavement-corner/model-audit.json",
+        "module_audit": "assets/production/records/pavement-corner/module-audit.json",
+        "notes": "Exact dimensions/units, decoded GLB indices/UVs/normals, final embedded periodic basecolour, uniform planar UVs in40 orientations, and joined-module QA passed. Native device review open."
+      }
+    },
+    {
+      "id": "pavement-end",
+      "dimensions_m": [
+        1.5,
+        0.16,
+        0.4
+      ],
+      "orientation_variants": [
+        {
+          "yaw_degrees": 90,
+          "model_file": "assets/models/pavement-end/pavement-end-yaw90.glb",
+          "ports": [
+            {
+              "name": "join",
+              "centre_m": [
+                0.0,
+                0.0,
+                -0.75
+              ],
+              "outward": [
+                -1,
+                0,
+                0
+              ],
+              "edge_m": [
+                [
+                  0.0,
+                  0.11,
+                  0.0
+                ],
+                [
+                  0.0,
+                  0.11,
+                  -1.5
+                ]
+              ],
+              "edge_uv": [
+                [
+                  0.0,
+                  0.0
+                ],
+                [
+                  0.0,
+                  -1.5
+                ]
+              ]
+            }
+          ]
+        },
+        {
+          "yaw_degrees": 180,
+          "model_file": "assets/models/pavement-end/pavement-end-yaw180.glb",
+          "ports": [
+            {
+              "name": "join",
+              "centre_m": [
+                -0.75,
+                0.0,
+                0.0
+              ],
+              "outward": [
+                0,
+                0,
+                1
+              ],
+              "edge_m": [
+                [
+                  0.0,
+                  0.11,
+                  0.0
+                ],
+                [
+                  -1.5,
+                  0.11,
+                  0.0
+                ]
+              ],
+              "edge_uv": [
+                [
+                  0.0,
+                  0.0
+                ],
+                [
+                  -1.5,
+                  0.0
+                ]
+              ]
+            }
+          ]
+        },
+        {
+          "yaw_degrees": 270,
+          "model_file": "assets/models/pavement-end/pavement-end-yaw270.glb",
+          "ports": [
+            {
+              "name": "join",
+              "centre_m": [
+                0.0,
+                0.0,
+                0.75
+              ],
+              "outward": [
+                1,
+                0,
+                0
+              ],
+              "edge_m": [
+                [
+                  0.0,
+                  0.11,
+                  0.0
+                ],
+                [
+                  0.0,
+                  0.11,
+                  1.5
+                ]
+              ],
+              "edge_uv": [
+                [
+                  0.0,
+                  0.0
+                ],
+                [
+                  0.0,
+                  1.5
+                ]
+              ]
+            }
+          ]
+        }
+      ],
+      "reference": {
+        "status": "approved",
+        "path": "assets/references/pavement-end/v1.png",
+        "notes": "Native white-background render of actual measured mesh, reviewed in contact sheet."
+      },
+      "production": {
+        "status": "completed",
+        "model_file": "assets/models/pavement-end/pavement-end.glb",
+        "credits_consumed": 0,
+        "generator": "tools/build_measured_modules.py"
+      },
+      "qa": {
+        "status": "passed_authoring_review",
+        "model_audit": "assets/production/records/pavement-end/model-audit.json",
+        "module_audit": "assets/production/records/pavement-end/module-audit.json",
+        "notes": "Exact dimensions/units, decoded GLB indices/UVs/normals, final embedded periodic basecolour, uniform planar UVs in40 orientations, and joined-module QA passed. Native device review open."
+      }
+    },
+    {
+      "id": "pavement-straight",
+      "dimensions_m": [
+        1.5,
+        0.16,
+        16.0
+      ],
+      "orientation_variants": [
+        {
+          "yaw_degrees": 90,
+          "model_file": "assets/models/pavement-straight/pavement-straight-yaw90.glb",
+          "ports": [
+            {
+              "name": "start",
+              "centre_m": [
+                0.0,
+                0.0,
+                -0.75
+              ],
+              "outward": [
+                -1,
+                0,
+                0
+              ],
+              "edge_m": [
+                [
+                  0.0,
+                  0.11,
+                  0.0
+                ],
+                [
+                  0.0,
+                  0.11,
+                  -1.5
+                ]
+              ],
+              "edge_uv": [
+                [
+                  0.0,
+                  0.0
+                ],
+                [
+                  0.0,
+                  -1.5
+                ]
+              ]
+            },
+            {
+              "name": "end",
+              "centre_m": [
+                16.0,
+                0.0,
+                -0.75
+              ],
+              "outward": [
+                1,
+                0,
+                0
+              ],
+              "edge_m": [
+                [
+                  16.0,
+                  0.11,
+                  0.0
+                ],
+                [
+                  16.0,
+                  0.11,
+                  -1.5
+                ]
+              ],
+              "edge_uv": [
+                [
+                  16.0,
+                  0.0
+                ],
+                [
+                  16.0,
+                  -1.5
+                ]
+              ]
+            }
+          ]
+        },
+        {
+          "yaw_degrees": 180,
+          "model_file": "assets/models/pavement-straight/pavement-straight-yaw180.glb",
+          "ports": [
+            {
+              "name": "start",
+              "centre_m": [
+                -0.75,
+                0.0,
+                0.0
+              ],
+              "outward": [
+                0,
+                0,
+                1
+              ],
+              "edge_m": [
+                [
+                  0.0,
+                  0.11,
+                  0.0
+                ],
+                [
+                  -1.5,
+                  0.11,
+                  0.0
+                ]
+              ],
+              "edge_uv": [
+                [
+                  0.0,
+                  0.0
+                ],
+                [
+                  -1.5,
+                  0.0
+                ]
+              ]
+            },
+            {
+              "name": "end",
+              "centre_m": [
+                -0.75,
+                0.0,
+                -16.0
+              ],
+              "outward": [
+                0,
+                0,
+                -1
+              ],
+              "edge_m": [
+                [
+                  0.0,
+                  0.11,
+                  -16.0
+                ],
+                [
+                  -1.5,
+                  0.11,
+                  -16.0
+                ]
+              ],
+              "edge_uv": [
+                [
+                  0.0,
+                  -16.0
+                ],
+                [
+                  -1.5,
+                  -16.0
+                ]
+              ]
+            }
+          ]
+        },
+        {
+          "yaw_degrees": 270,
+          "model_file": "assets/models/pavement-straight/pavement-straight-yaw270.glb",
+          "ports": [
+            {
+              "name": "start",
+              "centre_m": [
+                0.0,
+                0.0,
+                0.75
+              ],
+              "outward": [
+                1,
+                0,
+                0
+              ],
+              "edge_m": [
+                [
+                  0.0,
+                  0.11,
+                  0.0
+                ],
+                [
+                  0.0,
+                  0.11,
+                  1.5
+                ]
+              ],
+              "edge_uv": [
+                [
+                  0.0,
+                  0.0
+                ],
+                [
+                  0.0,
+                  1.5
+                ]
+              ]
+            },
+            {
+              "name": "end",
+              "centre_m": [
+                -16.0,
+                0.0,
+                0.75
+              ],
+              "outward": [
+                -1,
+                0,
+                0
+              ],
+              "edge_m": [
+                [
+                  -16.0,
+                  0.11,
+                  0.0
+                ],
+                [
+                  -16.0,
+                  0.11,
+                  1.5
+                ]
+              ],
+              "edge_uv": [
+                [
+                  -16.0,
+                  0.0
+                ],
+                [
+                  -16.0,
+                  1.5
+                ]
+              ]
+            }
+          ]
+        }
+      ],
+      "reference": {
+        "status": "approved",
+        "path": "assets/references/pavement-straight/v1.png",
+        "notes": "Native white-background render of actual measured mesh, reviewed in contact sheet."
+      },
+      "production": {
+        "status": "completed",
+        "model_file": "assets/models/pavement-straight/pavement-straight.glb",
+        "credits_consumed": 0,
+        "generator": "tools/build_measured_modules.py"
+      },
+      "qa": {
+        "status": "passed_authoring_review",
+        "model_audit": "assets/production/records/pavement-straight/model-audit.json",
+        "module_audit": "assets/production/records/pavement-straight/module-audit.json",
+        "notes": "Exact dimensions/units, decoded GLB indices/UVs/normals, final embedded periodic basecolour, uniform planar UVs in40 orientations, and joined-module QA passed. Native device review open."
+      }
+    },
+    {
+      "id": "road-corner",
+      "dimensions_m": [
+        12.0,
+        0.0,
+        12.0
+      ],
+      "orientation_variants": [
+        {
+          "yaw_degrees": 90,
+          "model_file": "assets/models/road-corner/road-corner-yaw90.glb",
+          "ports": [
+            {
+              "name": "start",
+              "centre_m": [
+                0.0,
+                0.0,
+                -9.0
+              ],
+              "outward": [
+                -1,
+                0,
+                0
+              ],
+              "edge_m": [
+                [
+                  0,
+                  0,
+                  -6
+                ],
+                [
+                  0,
+                  0,
+                  -12
+                ]
+              ],
+              "edge_uv": [
+                [
+                  0,
+                  -6
+                ],
+                [
+                  0,
+                  -12
+                ]
+              ]
+            },
+            {
+              "name": "end",
+              "centre_m": [
+                9.0,
+                0.0,
+                0.0
+              ],
+              "outward": [
+                0,
+                0,
+                1
+              ],
+              "edge_m": [
+                [
+                  6,
+                  0,
+                  0
+                ],
+                [
+                  12,
+                  0,
+                  0
+                ]
+              ],
+              "edge_uv": [
+                [
+                  6,
+                  0
+                ],
+                [
+                  12,
+                  0
+                ]
+              ]
+            }
+          ]
+        },
+        {
+          "yaw_degrees": 180,
+          "model_file": "assets/models/road-corner/road-corner-yaw180.glb",
+          "ports": [
+            {
+              "name": "start",
+              "centre_m": [
+                -9.0,
+                0.0,
+                0.0
+              ],
+              "outward": [
+                0,
+                0,
+                1
+              ],
+              "edge_m": [
+                [
+                  -6,
+                  0,
+                  0
+                ],
+                [
+                  -12,
+                  0,
+                  0
+                ]
+              ],
+              "edge_uv": [
+                [
+                  -6,
+                  0
+                ],
+                [
+                  -12,
+                  0
+                ]
+              ]
+            },
+            {
+              "name": "end",
+              "centre_m": [
+                0.0,
+                0.0,
+                -9.0
+              ],
+              "outward": [
+                1,
+                0,
+                0
+              ],
+              "edge_m": [
+                [
+                  0,
+                  0,
+                  -6
+                ],
+                [
+                  0,
+                  0,
+                  -12
+                ]
+              ],
+              "edge_uv": [
+                [
+                  0,
+                  -6
+                ],
+                [
+                  0,
+                  -12
+                ]
+              ]
+            }
+          ]
+        },
+        {
+          "yaw_degrees": 270,
+          "model_file": "assets/models/road-corner/road-corner-yaw270.glb",
+          "ports": [
+            {
+              "name": "start",
+              "centre_m": [
+                0.0,
+                0.0,
+                9.0
+              ],
+              "outward": [
+                1,
+                0,
+                0
+              ],
+              "edge_m": [
+                [
+                  0,
+                  0,
+                  6
+                ],
+                [
+                  0,
+                  0,
+                  12
+                ]
+              ],
+              "edge_uv": [
+                [
+                  0,
+                  6
+                ],
+                [
+                  0,
+                  12
+                ]
+              ]
+            },
+            {
+              "name": "end",
+              "centre_m": [
+                -9.0,
+                0.0,
+                0.0
+              ],
+              "outward": [
+                0,
+                0,
+                -1
+              ],
+              "edge_m": [
+                [
+                  -6,
+                  0,
+                  0
+                ],
+                [
+                  -12,
+                  0,
+                  0
+                ]
+              ],
+              "edge_uv": [
+                [
+                  -6,
+                  0
+                ],
+                [
+                  -12,
+                  0
+                ]
+              ]
+            }
+          ]
+        }
+      ],
+      "reference": {
+        "status": "approved",
+        "path": "assets/references/road-corner/v1.png",
+        "notes": "Native white-background render of actual measured mesh, reviewed in contact sheet."
+      },
+      "production": {
+        "status": "completed",
+        "model_file": "assets/models/road-corner/road-corner.glb",
+        "credits_consumed": 0,
+        "generator": "tools/build_measured_modules.py"
+      },
+      "qa": {
+        "status": "passed_authoring_review",
+        "model_audit": "assets/production/records/road-corner/model-audit.json",
+        "module_audit": "assets/production/records/road-corner/module-audit.json",
+        "notes": "Exact dimensions/units, decoded GLB indices/UVs/normals, final embedded periodic basecolour, uniform planar UVs in40 orientations, and joined-module QA passed. Native device review open."
+      }
+    },
+    {
+      "id": "road-junction",
+      "dimensions_m": [
+        16.0,
+        0.0,
+        11.0
+      ],
+      "orientation_variants": [
+        {
+          "yaw_degrees": 90,
+          "model_file": "assets/models/road-junction/road-junction-yaw90.glb",
+          "ports": [
+            {
+              "name": "west",
+              "centre_m": [
+                0,
+                0,
+                8
+              ],
+              "outward": [
+                0,
+                0,
+                1
+              ],
+              "edge_m": [
+                [
+                  3,
+                  0,
+                  8
+                ],
+                [
+                  -3,
+                  0,
+                  8
+                ]
+              ],
+              "edge_uv": [
+                [
+                  3,
+                  8
+                ],
+                [
+                  -3,
+                  8
+                ]
+              ]
+            },
+            {
+              "name": "east",
+              "centre_m": [
+                0,
+                0,
+                -8
+              ],
+              "outward": [
+                0,
+                0,
+                -1
+              ],
+              "edge_m": [
+                [
+                  3,
+                  0,
+                  -8
+                ],
+                [
+                  -3,
+                  0,
+                  -8
+                ]
+              ],
+              "edge_uv": [
+                [
+                  3,
+                  -8
+                ],
+                [
+                  -3,
+                  -8
+                ]
+              ]
+            },
+            {
+              "name": "north",
+              "centre_m": [
+                8,
+                0,
+                0
+              ],
+              "outward": [
+                1,
+                0,
+                0
+              ],
+              "edge_m": [
+                [
+                  8,
+                  0,
+                  3
+                ],
+                [
+                  8,
+                  0,
+                  -3
+                ]
+              ],
+              "edge_uv": [
+                [
+                  8,
+                  3
+                ],
+                [
+                  8,
+                  -3
+                ]
+              ]
+            }
+          ]
+        },
+        {
+          "yaw_degrees": 180,
+          "model_file": "assets/models/road-junction/road-junction-yaw180.glb",
+          "ports": [
+            {
+              "name": "west",
+              "centre_m": [
+                8,
+                0,
+                0
+              ],
+              "outward": [
+                1,
+                0,
+                0
+              ],
+              "edge_m": [
+                [
+                  8,
+                  0,
+                  -3
+                ],
+                [
+                  8,
+                  0,
+                  3
+                ]
+              ],
+              "edge_uv": [
+                [
+                  8,
+                  -3
+                ],
+                [
+                  8,
+                  3
+                ]
+              ]
+            },
+            {
+              "name": "east",
+              "centre_m": [
+                -8,
+                0,
+                0
+              ],
+              "outward": [
+                -1,
+                0,
+                0
+              ],
+              "edge_m": [
+                [
+                  -8,
+                  0,
+                  -3
+                ],
+                [
+                  -8,
+                  0,
+                  3
+                ]
+              ],
+              "edge_uv": [
+                [
+                  -8,
+                  -3
+                ],
+                [
+                  -8,
+                  3
+                ]
+              ]
+            },
+            {
+              "name": "north",
+              "centre_m": [
+                0,
+                0,
+                -8
+              ],
+              "outward": [
+                0,
+                0,
+                -1
+              ],
+              "edge_m": [
+                [
+                  3,
+                  0,
+                  -8
+                ],
+                [
+                  -3,
+                  0,
+                  -8
+                ]
+              ],
+              "edge_uv": [
+                [
+                  3,
+                  -8
+                ],
+                [
+                  -3,
+                  -8
+                ]
+              ]
+            }
+          ]
+        },
+        {
+          "yaw_degrees": 270,
+          "model_file": "assets/models/road-junction/road-junction-yaw270.glb",
+          "ports": [
+            {
+              "name": "west",
+              "centre_m": [
+                0,
+                0,
+                -8
+              ],
+              "outward": [
+                0,
+                0,
+                -1
+              ],
+              "edge_m": [
+                [
+                  -3,
+                  0,
+                  -8
+                ],
+                [
+                  3,
+                  0,
+                  -8
+                ]
+              ],
+              "edge_uv": [
+                [
+                  -3,
+                  -8
+                ],
+                [
+                  3,
+                  -8
+                ]
+              ]
+            },
+            {
+              "name": "east",
+              "centre_m": [
+                0,
+                0,
+                8
+              ],
+              "outward": [
+                0,
+                0,
+                1
+              ],
+              "edge_m": [
+                [
+                  -3,
+                  0,
+                  8
+                ],
+                [
+                  3,
+                  0,
+                  8
+                ]
+              ],
+              "edge_uv": [
+                [
+                  -3,
+                  8
+                ],
+                [
+                  3,
+                  8
+                ]
+              ]
+            },
+            {
+              "name": "north",
+              "centre_m": [
+                -8,
+                0,
+                0
+              ],
+              "outward": [
+                -1,
+                0,
+                0
+              ],
+              "edge_m": [
+                [
+                  -8,
+                  0,
+                  -3
+                ],
+                [
+                  -8,
+                  0,
+                  3
+                ]
+              ],
+              "edge_uv": [
+                [
+                  -8,
+                  -3
+                ],
+                [
+                  -8,
+                  3
+                ]
+              ]
+            }
+          ]
+        }
+      ],
+      "reference": {
+        "status": "approved",
+        "path": "assets/references/road-junction/v1.png",
+        "notes": "Native white-background render of actual measured mesh, reviewed in contact sheet."
+      },
+      "production": {
+        "status": "completed",
+        "model_file": "assets/models/road-junction/road-junction.glb",
+        "credits_consumed": 0,
+        "generator": "tools/build_measured_modules.py"
+      },
+      "qa": {
+        "status": "passed_authoring_review",
+        "model_audit": "assets/production/records/road-junction/model-audit.json",
+        "module_audit": "assets/production/records/road-junction/module-audit.json",
+        "notes": "Exact dimensions/units, decoded GLB indices/UVs/normals, final embedded periodic basecolour, uniform planar UVs in40 orientations, and joined-module QA passed. Native device review open."
+      },
+      "placement_footprint_m": [
+        16,
+        16
+      ]
+    },
+    {
+      "id": "road-straight",
+      "dimensions_m": [
+        6.0,
+        0.0,
+        16.0
+      ],
+      "orientation_variants": [
+        {
+          "yaw_degrees": 90,
+          "model_file": "assets/models/road-straight/road-straight-yaw90.glb",
+          "ports": [
+            {
+              "name": "start",
+              "centre_m": [
+                0,
+                0,
+                0
+              ],
+              "outward": [
+                -1,
+                0,
+                0
+              ],
+              "edge_m": [
+                [
+                  0.0,
+                  0.0,
+                  3.0
+                ],
+                [
+                  0.0,
+                  0.0,
+                  -3.0
+                ]
+              ],
+              "edge_uv": [
+                [
+                  0.0,
+                  3.0
+                ],
+                [
+                  0.0,
+                  -3.0
+                ]
+              ]
+            },
+            {
+              "name": "end",
+              "centre_m": [
+                16,
+                0,
+                0
+              ],
+              "outward": [
+                1,
+                0,
+                0
+              ],
+              "edge_m": [
+                [
+                  16.0,
+                  0.0,
+                  3.0
+                ],
+                [
+                  16.0,
+                  0.0,
+                  -3.0
+                ]
+              ],
+              "edge_uv": [
+                [
+                  16.0,
+                  3.0
+                ],
+                [
+                  16.0,
+                  -3.0
+                ]
+              ]
+            }
+          ]
+        },
+        {
+          "yaw_degrees": 180,
+          "model_file": "assets/models/road-straight/road-straight-yaw180.glb",
+          "ports": [
+            {
+              "name": "start",
+              "centre_m": [
+                0,
+                0,
+                0
+              ],
+              "outward": [
+                0,
+                0,
+                1
+              ],
+              "edge_m": [
+                [
+                  3.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  -3.0,
+                  0.0,
+                  0.0
+                ]
+              ],
+              "edge_uv": [
+                [
+                  3.0,
+                  0.0
+                ],
+                [
+                  -3.0,
+                  0.0
+                ]
+              ]
+            },
+            {
+              "name": "end",
+              "centre_m": [
+                0,
+                0,
+                -16
+              ],
+              "outward": [
+                0,
+                0,
+                -1
+              ],
+              "edge_m": [
+                [
+                  3.0,
+                  0.0,
+                  -16.0
+                ],
+                [
+                  -3.0,
+                  0.0,
+                  -16.0
+                ]
+              ],
+              "edge_uv": [
+                [
+                  3.0,
+                  -16.0
+                ],
+                [
+                  -3.0,
+                  -16.0
+                ]
+              ]
+            }
+          ]
+        },
+        {
+          "yaw_degrees": 270,
+          "model_file": "assets/models/road-straight/road-straight-yaw270.glb",
+          "ports": [
+            {
+              "name": "start",
+              "centre_m": [
+                0,
+                0,
+                0
+              ],
+              "outward": [
+                1,
+                0,
+                0
+              ],
+              "edge_m": [
+                [
+                  0.0,
+                  0.0,
+                  -3.0
+                ],
+                [
+                  0.0,
+                  0.0,
+                  3.0
+                ]
+              ],
+              "edge_uv": [
+                [
+                  0.0,
+                  -3.0
+                ],
+                [
+                  0.0,
+                  3.0
+                ]
+              ]
+            },
+            {
+              "name": "end",
+              "centre_m": [
+                -16,
+                0,
+                0
+              ],
+              "outward": [
+                -1,
+                0,
+                0
+              ],
+              "edge_m": [
+                [
+                  -16.0,
+                  0.0,
+                  -3.0
+                ],
+                [
+                  -16.0,
+                  0.0,
+                  3.0
+                ]
+              ],
+              "edge_uv": [
+                [
+                  -16.0,
+                  -3.0
+                ],
+                [
+                  -16.0,
+                  3.0
+                ]
+              ]
+            }
+          ]
+        }
+      ],
+      "reference": {
+        "status": "approved",
+        "path": "assets/references/road-straight/v1.png",
+        "notes": "Native white-background render of actual measured mesh, reviewed in contact sheet."
+      },
+      "production": {
+        "status": "completed",
+        "model_file": "assets/models/road-straight/road-straight.glb",
+        "credits_consumed": 0,
+        "generator": "tools/build_measured_modules.py"
+      },
+      "qa": {
+        "status": "passed_authoring_review",
+        "model_audit": "assets/production/records/road-straight/model-audit.json",
+        "module_audit": "assets/production/records/road-straight/module-audit.json",
+        "notes": "Exact dimensions/units, decoded GLB indices/UVs/normals, final embedded periodic basecolour, uniform planar UVs in40 orientations, and joined-module QA passed. Native device review open."
+      }
+    },
+    {
+      "id": "soil-bed",
+      "dimensions_m": [
+        1.0,
+        0.0,
+        4.0
+      ],
+      "orientation_variants": [
+        {
+          "yaw_degrees": 90,
+          "model_file": "assets/models/soil-bed/soil-bed-yaw90.glb",
+          "ports": [
+            {
+              "name": "start",
+              "centre_m": [
+                0,
+                0,
+                0
+              ],
+              "outward": [
+                -1,
+                0,
+                0
+              ],
+              "edge_m": [
+                [
+                  0.0,
+                  0.0,
+                  0.5
+                ],
+                [
+                  0.0,
+                  0.0,
+                  -0.5
+                ]
+              ],
+              "edge_uv": [
+                [
+                  0.0,
+                  0.5
+                ],
+                [
+                  0.0,
+                  -0.5
+                ]
+              ]
+            },
+            {
+              "name": "end",
+              "centre_m": [
+                4,
+                0,
+                0
+              ],
+              "outward": [
+                1,
+                0,
+                0
+              ],
+              "edge_m": [
+                [
+                  4.0,
+                  0.0,
+                  0.5
+                ],
+                [
+                  4.0,
+                  0.0,
+                  -0.5
+                ]
+              ],
+              "edge_uv": [
+                [
+                  4.0,
+                  0.5
+                ],
+                [
+                  4.0,
+                  -0.5
+                ]
+              ]
+            }
+          ]
+        },
+        {
+          "yaw_degrees": 180,
+          "model_file": "assets/models/soil-bed/soil-bed-yaw180.glb",
+          "ports": [
+            {
+              "name": "start",
+              "centre_m": [
+                0,
+                0,
+                0
+              ],
+              "outward": [
+                0,
+                0,
+                1
+              ],
+              "edge_m": [
+                [
+                  0.5,
+                  0.0,
+                  0.0
+                ],
+                [
+                  -0.5,
+                  0.0,
+                  0.0
+                ]
+              ],
+              "edge_uv": [
+                [
+                  0.5,
+                  0.0
+                ],
+                [
+                  -0.5,
+                  0.0
+                ]
+              ]
+            },
+            {
+              "name": "end",
+              "centre_m": [
+                0,
+                0,
+                -4
+              ],
+              "outward": [
+                0,
+                0,
+                -1
+              ],
+              "edge_m": [
+                [
+                  0.5,
+                  0.0,
+                  -4.0
+                ],
+                [
+                  -0.5,
+                  0.0,
+                  -4.0
+                ]
+              ],
+              "edge_uv": [
+                [
+                  0.5,
+                  -4.0
+                ],
+                [
+                  -0.5,
+                  -4.0
+                ]
+              ]
+            }
+          ]
+        },
+        {
+          "yaw_degrees": 270,
+          "model_file": "assets/models/soil-bed/soil-bed-yaw270.glb",
+          "ports": [
+            {
+              "name": "start",
+              "centre_m": [
+                0,
+                0,
+                0
+              ],
+              "outward": [
+                1,
+                0,
+                0
+              ],
+              "edge_m": [
+                [
+                  0.0,
+                  0.0,
+                  -0.5
+                ],
+                [
+                  0.0,
+                  0.0,
+                  0.5
+                ]
+              ],
+              "edge_uv": [
+                [
+                  0.0,
+                  -0.5
+                ],
+                [
+                  0.0,
+                  0.5
+                ]
+              ]
+            },
+            {
+              "name": "end",
+              "centre_m": [
+                -4,
+                0,
+                0
+              ],
+              "outward": [
+                -1,
+                0,
+                0
+              ],
+              "edge_m": [
+                [
+                  -4.0,
+                  0.0,
+                  -0.5
+                ],
+                [
+                  -4.0,
+                  0.0,
+                  0.5
+                ]
+              ],
+              "edge_uv": [
+                [
+                  -4.0,
+                  -0.5
+                ],
+                [
+                  -4.0,
+                  0.5
+                ]
+              ]
+            }
+          ]
+        }
+      ],
+      "reference": {
+        "status": "approved",
+        "path": "assets/references/soil-bed/v1.png",
+        "notes": "Native white-background render of actual measured mesh, reviewed in contact sheet."
+      },
+      "production": {
+        "status": "completed",
+        "model_file": "assets/models/soil-bed/soil-bed.glb",
+        "credits_consumed": 0,
+        "generator": "tools/build_measured_modules.py"
+      },
+      "qa": {
+        "status": "passed_authoring_review",
+        "model_audit": "assets/production/records/soil-bed/model-audit.json",
+        "module_audit": "assets/production/records/soil-bed/module-audit.json",
+        "notes": "Exact dimensions/units, decoded GLB indices/UVs/normals, final embedded periodic basecolour, uniform planar UVs in40 orientations, and joined-module QA passed. Native device review open."
+      }
+    }
+  ]
+}

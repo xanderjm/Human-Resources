@@ -1,0 +1,101 @@
+{
+  "triangles": 4463,
+  "vertices": 2994,
+  "mesh_primitives": 1,
+  "uv_present": true,
+  "textures": [
+    {
+      "size": [
+        1024,
+        1024
+      ],
+      "mode": "RGB"
+    }
+  ],
+  "raw_accessor_bounds": [
+    {
+      "min": [
+        -0.2822265625,
+        -0.2763671875,
+        -0.4990234375
+      ],
+      "max": [
+        0.2822265625,
+        0.2763671875,
+        0.4990234375
+      ]
+    }
+  ],
+  "extensions": [],
+  "bytes": 269280,
+  "asset": "pig",
+  "model_file": "assets/models/pig/pig.glb",
+  "requested_face_limit": 4500,
+  "source_task_id": "9c4afa95-1332-4a00-8eaf-aa3e315c692d",
+  "convert_task_id": "b76706c6-8740-445b-8275-8c4115cc174c",
+  "credits_consumed": 60,
+  "preview": null,
+  "triangle_budget_review": {
+    "requested_target": 4500,
+    "actual_triangles": 4463,
+    "target_met": true,
+    "category_ceiling": 8000,
+    "status": "passed"
+  },
+  "structural_review": {
+    "status": "passed",
+    "notes": "Triangle mode, valid GLB length, UVs and embedded 1024px base colour checked. Requested targets are approximate; actual triangle count and target deviations are reported separately, within the user-specified 3000-prop / 8000-character ceilings. Scale, pivot, topology and visual quality require separate review."
+  },
+  "visual_review": {
+    "status": "accepted",
+    "notes": "One clean salmon pig, four proper feet, two ears and one central curled tail. Coral face and darker hoof separation preserved; fine gouache detail is softer than reference. Facing +Z already; normalized height 0.65m and ground-centre pivot.",
+    "views": [
+      "three-quarter",
+      "front",
+      "rear"
+    ]
+  },
+  "import_review": {
+    "status": "passed",
+    "units": "metres",
+    "up": "+Y",
+    "forward": "+Z",
+    "yaw_degrees": 0.0,
+    "uniform_scale": 1.1759717314487632,
+    "bounds_m": [
+      [
+        -0.3318904593639576,
+        0.0,
+        -0.5868374558303887
+      ],
+      [
+        0.3318904593639576,
+        0.65,
+        0.5868374558303887
+      ]
+    ],
+    "dimensions_m": [
+      0.6637809187279152,
+      0.65,
+      1.1736749116607774
+    ],
+    "vertex_checks": [
+      {
+        "triangles": 4463,
+        "degenerate_triangles": 0,
+        "uv_bounds": [
+          [
+            0.0,
+            0.0
+          ],
+          [
+            1.0,
+            1.0
+          ]
+        ]
+      }
+    ],
+    "notes": "Real scene vertices and indices decoded; finite positions/UVs; retained embedded 1024px base colour. Uniform root transform; raw file preserved."
+  },
+  "raw_model_file": "assets/models/pig/tripo-out/pig-convert-b76706c6/model.glb"
+}

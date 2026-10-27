@@ -1,0 +1,58 @@
+{
+  "schema_version": 1,
+  "id": "fx-blob-shadow",
+  "status": "art-review-passed",
+  "production": {
+    "status": "generated",
+    "file": "assets/graphics/fx-blob-shadow/fx-blob-shadow.png",
+    "source": "assets/graphics/fx-blob-shadow/fx-blob-shadow.svg",
+    "metadata": "assets/graphics/fx-blob-shadow/asset.json"
+  },
+  "reference": {
+    "status": "approved",
+    "path": "assets/references/fx-blob-shadow/v1.png",
+    "sha256": "da9da7712881cfa95407b345d22bd0aa637e303de78cdac9cdf9bddad16ab366"
+  },
+  "qa": {
+    "status": "art-review-passed",
+    "visual_review": "Soft charcoal ellipse with transparent falloff and no hard edges; correctly subtle on dark review background.",
+    "review_evidence": "assets/production/reviews/native-graphics-contact-sheet.png",
+    "reviewed_against": "art/style-guide/ufo-asset-style-guide.png",
+    "runtime_qualified": false
+  },
+  "alpha_audit": {
+    "dimensions_px": [
+      512,
+      256
+    ],
+    "rgba": true,
+    "alpha_range": [
+      0,
+      107
+    ],
+    "alpha_nonzero_bbox": [
+      26,
+      24,
+      486,
+      232
+    ],
+    "transparent_margin_px": [
+      26,
+      24,
+      26,
+      24
+    ],
+    "border_alpha_max": 0,
+    "visible_pixels": 74774,
+    "repeat_axis_check": null,
+    "sha256": "5939ff6e1a26b3feab73947cc65a10a44cba3d852028c2b655f7b76863c57a9e"
+  },
+  "variants": [],
+  "svg": {
+    "self_contained": true,
+    "text_baked": false,
+    "external_dependencies": false
+  },
+  "usage": "Reusable soft ground ellipse; multiply or alpha blend. Scale/tint per actor. Clamp both axes.",
+  "limitations": "Art production asset. Native runtime upload, blend, depth/occlusion and device readability are not qualified."
+}

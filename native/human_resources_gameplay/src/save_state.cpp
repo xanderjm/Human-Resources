@@ -5,9 +5,9 @@
 namespace human_resources::gameplay {
 namespace {
 constexpr std::uint32_t magic = 0x31535248U; // HRS1, explicit little-endian bytes.
-constexpr std::uint32_t schema = 3;
+constexpr std::uint32_t schema = 6;
 // Increment when authority semantics/field meaning change independently of tuning.
-constexpr std::uint32_t authority_revision = 10;
+constexpr std::uint32_t authority_revision = 19;
 constexpr std::size_t maximum_bytes = 48 * 1024;
 constexpr std::uint32_t maximum_actors = 128, maximum_projectiles = 96;
 
@@ -72,6 +72,13 @@ template <class IO> void actor_fields(IO& io, detail::Actor& a) {
   } else if (v.kind == EntityKind::soldier) {
     io(a.infantry_aim.preparing); io(a.infantry_aim.pose_seconds);
   }
+  io(a.group_id);
+  if (v.kind < EntityKind::soldier) {
+    io(a.civilian_escape.alert_seconds); io(a.civilian_escape.remaining_seconds);
+    vector2(io, a.civilian_escape.heading);
+  } else if (v.kind != EntityKind::boss) {
+    vector2(io, a.formation.slot); io(a.formation.active);
+  }
 }
 template <class IO> void projectile_fields(IO& io, detail::Projectile& p) {
   io(p.view.id); vector2(io, p.view.position); vector2(io, p.view.velocity);
@@ -118,6 +125,11 @@ struct SaveStateCodec final {
     io(s.vehicle_capture_cooldown); io(s.disable_cooldown); io(s.intercept_cooldown);
     io(s.capture_shield_budget); io(s.shield_budget_clock); vector2(io, s.last_direction);
     io(v.harvest_chain); io(v.harvest_chain_seconds); io(v.harvest_overdrive_seconds);
+    io(s.next_laser);
+    for (auto& target : s.laser_targets) io(target);
+    vector2(io, s.dash_direction); io(s.dash_remaining); io(s.dash_distance);
+    io(s.flight_bounds.left); io(s.flight_bounds.right); io(s.flight_bounds.backward); io(s.flight_bounds.forward);
+    io(s.next_group); io(s.pockets_since_easy); io(s.revealed_threats); io(s.cattle_introduced);
   }
   template <class IO> static bool populations(IO& io, Game::State& s) {
     auto actors = static_cast<std::uint32_t>(s.actors.size()); io(actors);
@@ -153,12 +165,13 @@ struct SaveStateCodec final {
   }
   static bool valid(Game::State& s) {
     auto& v = s.view;
+    if (s.next_group == 0 || s.pockets_since_easy >= tuning::population_easy_pocket_interval || s.revealed_threats > 31) return false;
     if (v.phase > Phase::dead || s.next_id == 0 || s.random_state == 0 ||
         v.stats.active_seconds < 0 || v.stats.active_seconds > 1.0e9 ||
         s.score < 0 || s.score >= 18446744073709551616.0 ||
         s.next_boss < 0 || s.next_boss > 1.0e12 || v.stats.level == 0 || v.stats.level > 10000000 ||
         s.picks > v.stats.level - 1 || s.revive_count > tuning::revive_maximum ||
-        v.rerolls_remaining > tuning::rerolls || (s.setup.unlocked_blueprints >> module_count) != 0 ||
+        v.rerolls_remaining > tuning::rerolls || (s.setup.unlocked_blueprints & ~tuning::available_blueprints) != 0 ||
         v.hull < 0 || v.shield < 0 || v.xp < 0 || v.runner_distance < 0 ||
         v.movement_speed < 0 || v.dash_cooldown_seconds < 0 || v.invulnerability_seconds < 0 ||
         s.accumulator < 0 || s.accumulator > tuning::maximum_catchup_seconds ||
@@ -173,16 +186,29 @@ struct SaveStateCodec final {
       return false;
     for (std::size_t i = 0; i < s.setup.permanent_ranks.size(); ++i)
       if (s.setup.permanent_ranks[i] > tuning::permanent_maximum_ranks[i]) return false;
+    if (s.dash_remaining < 0 || s.dash_remaining > tuning::flight_dash_seconds ||
+        s.dash_distance < 0 || s.dash_distance > tuning::dash_distance) return false;
+    if (s.dash_remaining > 0) {
+      // A real level-up can install Phase Drive during a starter burst. Keep
+      // its already committed distance instead of changing travel on Resume.
+      const bool valid_distance = s.dash_distance == tuning::starter_dash_distance ||
+          (s.rank(Module::phase_drive) && s.dash_distance == tuning::dash_distance);
+      if (std::abs(detail::length_squared(s.dash_direction) - 1) > .0001F ||
+          !valid_distance || v.dash_cooldown_seconds <= 0) return false;
+    } else if (detail::length_squared(s.dash_direction) != 0 || s.dash_distance != 0) return false;
+    const auto area = s.flight_bounds;
+    if (!(area.left < 0 && area.right > 0 && area.backward < 0 && area.forward > 0) ||
+        area.left < -256 || area.right > 256 || area.backward < -256 || area.forward > 256) return false;
     unsigned installed = 0;
     for (std::size_t i = 0; i < v.modules.size(); ++i) {
-      if (v.modules[i] > 3 || (v.modules[i] && (s.setup.unlocked_blueprints & (1U << i)) == 0)) return false;
+      if (v.modules[i] > 3 || (v.modules[i] && (tuning::available_blueprints & (1U << i)) == 0) || (v.modules[i] && (s.setup.unlocked_blueprints & (1U << i)) == 0)) return false;
       if (v.modules[i]) {
         ++installed;
         for (std::size_t j = 0; j < v.modules.size(); ++j)
           if (v.modules[j] < tuning::prerequisites[i][j]) return false;
       }
     }
-    if (installed > tuning::hardware_slots || (v.evolution_bits >> tuning::evolution_ingredients.size()) != 0 ||
+    if (installed > tuning::hardware_slots || (v.evolution_bits & ~tuning::available_evolutions) != 0 ||
         std::popcount(v.evolution_bits) > static_cast<int>(tuning::maximum_evolutions) ||
         v.stats.evolutions != static_cast<std::uint32_t>(std::popcount(v.evolution_bits))) return false;
     for (std::size_t i = 0; i < tuning::evolution_ingredients.size(); ++i) {
@@ -194,6 +220,9 @@ struct SaveStateCodec final {
     // Do not sync untrusted score/time until conversion bounds have been checked.
     if (v.stats.score != static_cast<std::uint64_t>(s.score)) return false;
     s.sync();
+    if (s.next_laser >= v.laser_count) return false;
+    for (std::size_t i = 0; i < s.laser_targets.size(); ++i)
+      if (s.laser_targets[i] >= s.next_id || (i >= s.next_laser && s.laser_targets[i] != 0)) return false;
     if (v.hull > v.maximum_hull || v.shield > v.maximum_shield ||
         (v.phase == Phase::dead && v.hull != 0) ||
         (v.phase != Phase::ready && v.phase != Phase::dead && v.hull <= 0)) return false;
@@ -206,6 +235,20 @@ struct SaveStateCodec final {
       ids.push_back(id); return true;
     };
     for (const auto& a : s.actors) {
+      if (a.group_id >= s.next_group) return false;
+      if (a.view.kind < EntityKind::soldier) {
+        const auto index = static_cast<std::size_t>(a.view.kind);
+        const auto& escape = a.civilian_escape;
+        const float heading = length_squared(escape.heading);
+        if (!std::isfinite(escape.alert_seconds) || escape.alert_seconds < 0 || escape.alert_seconds > 16 ||
+            !std::isfinite(escape.remaining_seconds) || escape.remaining_seconds < 0 ||
+            escape.remaining_seconds > tuning::civilian_hold_seconds[index] || !std::isfinite(heading) ||
+            (heading != 0 && std::abs(heading - 1) > .0001F) || (escape.remaining_seconds > 0 && heading == 0)) return false;
+      } else if (a.view.kind != EntityKind::boss) {
+        if (!std::isfinite(a.formation.slot.x) || !std::isfinite(a.formation.slot.z) ||
+            std::abs(a.formation.slot.x) > tuning::field_half_width || a.formation.slot.z < 0 ||
+            a.formation.slot.z > 32 || (a.formation.active && a.group_id == 0)) return false;
+      }
       if (!unique_id(a.view.id) || a.view.kind > EntityKind::boss || a.removed ||
           a.view.hull <= 0 || a.view.maximum_hull <= 0 || a.view.hull > a.view.maximum_hull ||
           a.view.capture_progress < 0 || a.view.capture_progress >= 1 || a.view.warning_seconds < 0 ||
@@ -250,11 +293,8 @@ struct SaveStateCodec final {
         const auto& pose = a.infantry_aim;
         const float facing_square = length_squared(a.locomotion_velocity);
         const float speed_square = length_squared(a.view.velocity);
-        const float cross = a.view.velocity.x * a.locomotion_velocity.z - a.view.velocity.z * a.locomotion_velocity.x;
         if (facing_square < .0001F || facing_square > tuning::military_movement_speed[0] * tuning::military_movement_speed[0] + .001F ||
             speed_square > tuning::military_movement_speed[0] * tuning::military_movement_speed[0] + .001F ||
-            cross * cross > .000001F * facing_square * std::max(1.F, speed_square) ||
-            a.view.velocity.x * a.locomotion_velocity.x + a.view.velocity.z * a.locomotion_velocity.z < -.0001F ||
             a.attack_timer < 0 || !std::isfinite(pose.pose_seconds) || pose.pose_seconds < 0 || pose.pose_seconds > a.age + .0001F)
           return false;
         const bool aiming = pose.preparing || a.view.warning_seconds > 0;

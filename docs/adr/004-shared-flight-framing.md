@@ -3,6 +3,11 @@
 Date: 25 October 2026. Status: accepted product presentation decision; physical
 device qualification remains separate.
 
+26 October: [ADR007](007-thumbstick-flight-and-visible-edges.md) supersedes the
+portrait-only world stage and whole-rig/HUD exclusion after the owner explicitly
+requests all-device edge reach with partial ship clipping. Shared projection,
+safe HUD layout and the capped world target remain.
+
 The expanded legal flight range can leave the camera on wide windows and pass
 under controls on tablets. Two phone-only projection regressions did not cover
 the selected iPad and desktop surfaces. Fix this through one disposable,

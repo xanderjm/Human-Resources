@@ -47,7 +47,7 @@ animation::Matrix rest_matrix(const animation::Transform& t) {
       t.translation[0], t.translation[1], t.translation[2], 1};
 }
 std::string_view locomotion(const AnimationIntent& i) {
-  return i.speed > .04F ? (i.warning || i.fleeing ? "run" : "walk") : "idle";
+  return i.speed > .04F ? (i.warning || i.fleeing || i.speed > 3.2F ? "run" : "walk") : "idle";
 }
 std::string_view capture_clip(float progress) {
   return progress < presentation::capture_lift_fraction ? "beam_lift" : "beam_struggle";
@@ -331,6 +331,7 @@ const AnimatedActor* AnimationInstances::update(std::uint64_t id, std::string_vi
       if (clip.stride_m <= 0 || clip.seconds <= 0)
         return nullptr;
       rate = intent.speed / (clip.stride_m / clip.seconds);
+      if (intent.backward) rate = -rate;
     }
     // Advance the gait clock at stride-matched speed, but blend in active
     // seconds. One pose evaluation regardless of movement speed.
@@ -360,6 +361,14 @@ const AnimatedActor* AnimationInstances::update(std::uint64_t id, std::string_vi
     }
     if(a.source->has_weapon) {
       const bool ground=clip=="idle" || clip=="walk" || clip=="run" || clip=="aim_enter" || clip=="aim" || clip=="fire" || clip=="aim_exit";
+      if (ground && !intent.capturing && intent.speed > .04F && clip != "walk" && clip != "run") {
+        const auto gait = intent.speed > 3.2F ? "run" : "walk";
+        if (!a.foot_player.play(gait, 0)) return nullptr;
+        const auto& track = a.source->asset.clips()[a.source->asset.find_clip(gait)];
+        const float rate = intent.speed / (track.stride_m / track.seconds) * (intent.backward ? -1.F : 1.F);
+        if (!a.foot_player.advance(dt, rate) || !animation::apply_infantry_gait(a.source->asset, *pose, a.foot_player.pose(), a.capture_pose)) return nullptr;
+        pose = &a.capture_pose;
+      }
       const float angle=intent.body_heading && previous.body_heading ? std::remainder(*intent.body_heading-*previous.body_heading,2*std::numbers::pi_v<float>):0;
       const bool turning=ground && !intent.capturing && intent.speed<=.04F && std::abs(angle)>.0001F;
       const bool entry=ground && intent.aim_pose_seconds && (intent.preparing || intent.warning) &&
@@ -383,7 +392,7 @@ const AnimatedActor* AnimationInstances::update(std::uint64_t id, std::string_vi
           if(!seeded)a.foot_phase+=turning ? std::abs(angle)/std::numbers::pi_v<float>:dt*4;
           a.foot_phase=std::fmod(a.foot_phase,1.F);
           const auto seconds=a.source->asset.clips()[a.source->asset.find_clip("walk")].seconds;
-          if(!a.foot_player.seek(a.foot_phase*seconds))return nullptr;
+          if(!a.foot_player.play("walk",0) || !a.foot_player.seek(a.foot_phase*seconds))return nullptr;
           std::array<animation::Matrix,2> targets;
           auto knee_poles=a.visible_knees;
           for(std::size_t side=0;side<2;++side) {

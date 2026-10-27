@@ -1,0 +1,30 @@
+── Plan ──────────────────────────
+input: /Users/coral/Documents/App Development/Human Resources/assets/references/crop-seedling/v1.png
+model: P1-20260311 — explicit --model
+steps:
+  1. image-to-model  POST /v3/generation/image-to-model — generate a 3D model from one image
+     model="P1-20260311" face_limit=1800 texture=true pbr=false texture_quality="standard" texture_alignment="original_image" export_uv=true
+  2. convert  POST /v3/models/convert — convert format / texture size / orientation
+     format="GLTF" texture_size=1024
+cost impact:
+  · non-default convert options bill as complex convert
+──────────────────────────────────
+model: P1-20260311 (explicit --model)
+task created 2399295c-41b0-485b-b32b-d26438d9a0c1 (@crop-seedling)
+image_to_model · queued
+image_to_model · running 12% · 2399295c
+image_to_model · running 21% · 2399295c
+image_to_model · running 35% · 2399295c
+image_to_model · running 55% · 2399295c
+image_to_model · running 84% · 2399295c
+image_to_model · success 100% · 2399295c
+✓ image_to_model · 2399295c-41b0-485b-b32b-d26438d9a0c1 · 50 credits
+! non-default convert options use the "complex convert" price tier
+task created 703b99f5-f6e5-40c6-9579-d08a9879381f (@crop-seedling-convert)
+convert_model · queued
+convert_model · queued 0% · 703b99f5
+convert_model · success 100% · 703b99f5
+✓ convert_model · 703b99f5-f6e5-40c6-9579-d08a9879381f · 10 credits
+downloading artifacts…
+✓ artifacts saved to /Users/coral/Documents/App Development/Human Resources/assets/models/crop-seedling/tripo-out/crop-seedling-convert-703b99f5
+{"task_id":"703b99f5-f6e5-40c6-9579-d08a9879381f","type":"convert_model","status":"success","credits_consumed":60,"output_dir":"/Users/coral/Documents/App Development/Human Resources/assets/models/crop-seedling/tripo-out/crop-seedling-convert-703b99f5","files":["model.glb"],"model_file":"/Users/coral/Documents/App Development/Human Resources/assets/models/crop-seedling/tripo-out/crop-seedling-convert-703b99f5/model.glb","chain":[{"task_id":"703b99f5-f6e5-40c6-9579-d08a9879381f","type":"convert_model","status":"success","credits_consumed":10,"output_dir":"/Users/coral/Documents/App Development/Human Resources/assets/models/crop-seedling/tripo-out/crop-seedling-convert-703b99f5","files":["model.glb"],"model_file":"/Users/coral/Documents/App Development/Human Resources/assets/models/crop-seedling/tripo-out/crop-seedling-convert-703b99f5/model.glb"}],"source_task_id":"2399295c-41b0-485b-b32b-d26438d9a0c1","credits_breakdown":[{"task_id":"2399295c-41b0-485b-b32b-d26438d9a0c1","type":"image_to_model","credits_consumed":50},{"task_id":"703b99f5-f6e5-40c6-9579-d08a9879381f","type":"convert_model","credits_consumed":10}]}

@@ -1,0 +1,39 @@
+[
+  {
+    "task_id": "ebbf06bd-2acd-4907-8c0e-632f2fbcfea1",
+    "type": "convert_model",
+    "status": "success",
+    "credits_consumed": 60,
+    "output_dir": "/Users/coral/Documents/App Development/Human Resources/assets/models/field-rock-b/tripo-out/field-rock-b-convert-ebbf06bd",
+    "files": [
+      "model.glb"
+    ],
+    "model_file": "/Users/coral/Documents/App Development/Human Resources/assets/models/field-rock-b/tripo-out/field-rock-b-convert-ebbf06bd/model.glb",
+    "chain": [
+      {
+        "task_id": "ebbf06bd-2acd-4907-8c0e-632f2fbcfea1",
+        "type": "convert_model",
+        "status": "success",
+        "credits_consumed": 10,
+        "output_dir": "/Users/coral/Documents/App Development/Human Resources/assets/models/field-rock-b/tripo-out/field-rock-b-convert-ebbf06bd",
+        "files": [
+          "model.glb"
+        ],
+        "model_file": "/Users/coral/Documents/App Development/Human Resources/assets/models/field-rock-b/tripo-out/field-rock-b-convert-ebbf06bd/model.glb"
+      }
+    ],
+    "source_task_id": "5b5d4ad3-988d-4778-b658-a99c08a4fcad",
+    "credits_breakdown": [
+      {
+        "task_id": "5b5d4ad3-988d-4778-b658-a99c08a4fcad",
+        "type": "image_to_model",
+        "credits_consumed": 50
+      },
+      {
+        "task_id": "ebbf06bd-2acd-4907-8c0e-632f2fbcfea1",
+        "type": "convert_model",
+        "credits_consumed": 10
+      }
+    ]
+  }
+]

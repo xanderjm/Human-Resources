@@ -1,0 +1,52 @@
+{
+  "asset": "windmill-rotor",
+  "description": "Added eight narrow supported radial spokes to close the visible hub-to-vane gaps.",
+  "source": "assets/models/windmill-rotor/tripo-out/windmill-rotor-convert-3f7e1b16/model.glb",
+  "source_sha256": "260ddb246368bceaf7f8e8d0e7c11cc3599a982c980fc71a6a16b0e8e61302ba",
+  "repaired_source": "assets/models/windmill-rotor/windmill-rotor-repaired-source.glb",
+  "repaired_source_sha256": "9d487242b914566cc712f1de9813a59ed943204b47e374d232d5c56fb7e291b2",
+  "details": {
+    "added_triangles": 96,
+    "measured_radial_directions_yz": [
+      [
+        0.9976586699485779,
+        0.06838919967412949
+      ],
+      [
+        0.6783004403114319,
+        0.734784722328186
+      ],
+      [
+        -0.07790633291006088,
+        0.9969606995582581
+      ],
+      [
+        -0.7751299142837524,
+        0.6318019032478333
+      ],
+      [
+        -0.9975345730781555,
+        -0.07017646729946136
+      ],
+      [
+        -0.7067210674285889,
+        -0.7074921727180481
+      ],
+      [
+        -0.08017206192016602,
+        -0.996781051158905
+      ],
+      [
+        0.7040290832519531,
+        -0.710171103477478
+      ]
+    ],
+    "raw_radial_span": [
+      0.075,
+      0.325
+    ],
+    "raw_spoke_width": 0.036,
+    "raw_thickness": 0.045
+  },
+  "material_policy": "Original embedded base-colour and material retained; no PBR maps, no retexture."
+}

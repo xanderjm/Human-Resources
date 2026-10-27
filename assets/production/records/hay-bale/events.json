@@ -1,0 +1,39 @@
+[
+  {
+    "task_id": "9545fdc9-e1be-48f3-af5c-254afb65464a",
+    "type": "convert_model",
+    "status": "success",
+    "credits_consumed": 60,
+    "output_dir": "/Users/coral/Documents/App Development/Human Resources/assets/models/hay-bale/tripo-out/hay-bale-convert-2-9545fdc9",
+    "files": [
+      "model.glb"
+    ],
+    "model_file": "/Users/coral/Documents/App Development/Human Resources/assets/models/hay-bale/tripo-out/hay-bale-convert-2-9545fdc9/model.glb",
+    "chain": [
+      {
+        "task_id": "9545fdc9-e1be-48f3-af5c-254afb65464a",
+        "type": "convert_model",
+        "status": "success",
+        "credits_consumed": 10,
+        "output_dir": "/Users/coral/Documents/App Development/Human Resources/assets/models/hay-bale/tripo-out/hay-bale-convert-2-9545fdc9",
+        "files": [
+          "model.glb"
+        ],
+        "model_file": "/Users/coral/Documents/App Development/Human Resources/assets/models/hay-bale/tripo-out/hay-bale-convert-2-9545fdc9/model.glb"
+      }
+    ],
+    "source_task_id": "62a8ae43-2045-4825-b7f4-045bbdb7749d",
+    "credits_breakdown": [
+      {
+        "task_id": "62a8ae43-2045-4825-b7f4-045bbdb7749d",
+        "type": "image_to_model",
+        "credits_consumed": 50
+      },
+      {
+        "task_id": "9545fdc9-e1be-48f3-af5c-254afb65464a",
+        "type": "convert_model",
+        "credits_consumed": 10
+      }
+    ]
+  }
+]

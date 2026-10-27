@@ -1,0 +1,60 @@
+{
+  "triangles": 2450,
+  "vertices": 3800,
+  "mesh_primitives": 1,
+  "uv_present": true,
+  "textures": [
+    {
+      "size": [
+        1024,
+        1024
+      ],
+      "mode": "RGB"
+    }
+  ],
+  "raw_accessor_bounds": [
+    {
+      "min": [
+        -0.4501953125,
+        -0.3779297173023224,
+        -0.4990234375
+      ],
+      "max": [
+        0.4501953125,
+        0.3779296875,
+        0.4990234375
+      ]
+    }
+  ],
+  "extensions": [],
+  "bytes": 375724,
+  "asset": "barn",
+  "model_file": "assets/models/barn/tripo-out/barn-convert-9b7eb27d/model.glb",
+  "requested_face_limit": 2800,
+  "source_task_id": "56ab1fa4-294e-4c2b-a299-2a6963aba224",
+  "convert_task_id": "9b7eb27d-4170-4fde-9881-9e4578f948f6",
+  "credits_consumed": 60,
+  "preview": null,
+  "triangle_budget_review": {
+    "requested_target": 2800,
+    "actual_triangles": 2450,
+    "target_met": true,
+    "category_ceiling": 3000,
+    "status": "passed"
+  },
+  "structural_review": {
+    "status": "passed",
+    "notes": "Triangle mode, valid GLB length, UVs and embedded 1024px base colour checked. Requested targets are approximate; actual triangle count and target deviations are reported separately, within the user-specified 3000-prop / 8000-character ceilings. Scale, pivot, topology and visual quality require separate review."
+  },
+  "visual_review": {
+    "status": "rejected",
+    "notes": "Front reads correctly but hidden rear wall has a large broken dark projection/interior patch. Regenerate a simpler shallow dark doorway reference with unambiguous solid cream walls.",
+    "views": [
+      "three-quarter",
+      "opposite"
+    ]
+  },
+  "import_review": {
+    "status": "pending"
+  }
+}

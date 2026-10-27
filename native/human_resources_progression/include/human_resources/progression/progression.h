@@ -154,7 +154,7 @@ public:
   [[nodiscard]] bool credit_bonus_available() const noexcept;
   [[nodiscard]] bool revive_available(const RunReceipt& receipt) const noexcept;
   [[nodiscard]] std::array<TrackView, 4> hangar() const;
-  [[nodiscard]] std::array<BlueprintView, 6> blueprints() const;
+  [[nodiscard]] std::array<BlueprintView, 3> blueprints() const;
   // Explicit recovery preserves and verifies the original before resetting.
   [[nodiscard]] MutationResult preserve_and_reset(const storage::RelativePath& backup);
   [[nodiscard]] MutationResult preserve_and_bank_checkpoint(const storage::RelativePath& backup);

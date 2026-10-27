@@ -1,0 +1,39 @@
+[
+  {
+    "task_id": "c40380aa-4544-4ddd-b4c2-deb191ff8e65",
+    "type": "convert_model",
+    "status": "success",
+    "credits_consumed": 60,
+    "output_dir": "/Users/coral/Documents/App Development/Human Resources/assets/models/mailbox-teal/tripo-out/mailbox-teal-convert-c40380aa",
+    "files": [
+      "model.glb"
+    ],
+    "model_file": "/Users/coral/Documents/App Development/Human Resources/assets/models/mailbox-teal/tripo-out/mailbox-teal-convert-c40380aa/model.glb",
+    "chain": [
+      {
+        "task_id": "c40380aa-4544-4ddd-b4c2-deb191ff8e65",
+        "type": "convert_model",
+        "status": "success",
+        "credits_consumed": 10,
+        "output_dir": "/Users/coral/Documents/App Development/Human Resources/assets/models/mailbox-teal/tripo-out/mailbox-teal-convert-c40380aa",
+        "files": [
+          "model.glb"
+        ],
+        "model_file": "/Users/coral/Documents/App Development/Human Resources/assets/models/mailbox-teal/tripo-out/mailbox-teal-convert-c40380aa/model.glb"
+      }
+    ],
+    "source_task_id": "558835da-2fa6-44e2-9de6-9bb39201398a",
+    "credits_breakdown": [
+      {
+        "task_id": "558835da-2fa6-44e2-9de6-9bb39201398a",
+        "type": "image_to_model",
+        "credits_consumed": 50
+      },
+      {
+        "task_id": "c40380aa-4544-4ddd-b4c2-deb191ff8e65",
+        "type": "convert_model",
+        "credits_consumed": 10
+      }
+    ]
+  }
+]

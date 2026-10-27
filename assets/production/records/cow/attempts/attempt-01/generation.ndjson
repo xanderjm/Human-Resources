@@ -1,0 +1,29 @@
+── Plan ──────────────────────────
+input: /Users/coral/Documents/App Development/Human Resources/assets/references/cow/v1.png
+model: P1-20260311 — explicit --model
+steps:
+  1. image-to-model  POST /v3/generation/image-to-model — generate a 3D model from one image
+     model="P1-20260311" face_limit=6000 texture=true pbr=false texture_quality="standard" texture_alignment="original_image" export_uv=true
+  2. convert  POST /v3/models/convert — convert format / texture size / orientation
+     format="GLTF" texture_size=1024
+cost impact:
+  · non-default convert options bill as complex convert
+──────────────────────────────────
+model: P1-20260311 (explicit --model)
+task created 51b15a38-c12b-40ce-becf-6860cff3a2b7 (@cow)
+image_to_model · queued
+image_to_model · running 7% · 51b15a38
+image_to_model · running 13% · 51b15a38
+image_to_model · running 22% · 51b15a38
+image_to_model · running 34% · 51b15a38
+image_to_model · running 52% · 51b15a38
+image_to_model · success 100% · 51b15a38
+✓ image_to_model · 51b15a38-c12b-40ce-becf-6860cff3a2b7 · 50 credits
+! non-default convert options use the "complex convert" price tier
+task created 6baf9f04-f49e-4d99-b7cd-f90880d6603b (@cow-convert)
+convert_model · queued
+convert_model · success 100% · 6baf9f04
+✓ convert_model · 6baf9f04-f49e-4d99-b7cd-f90880d6603b · 10 credits
+downloading artifacts…
+✓ artifacts saved to /Users/coral/Documents/App Development/Human Resources/assets/models/cow/tripo-out/cow-convert-6baf9f04
+{"task_id":"6baf9f04-f49e-4d99-b7cd-f90880d6603b","type":"convert_model","status":"success","credits_consumed":60,"output_dir":"/Users/coral/Documents/App Development/Human Resources/assets/models/cow/tripo-out/cow-convert-6baf9f04","files":["model.glb"],"model_file":"/Users/coral/Documents/App Development/Human Resources/assets/models/cow/tripo-out/cow-convert-6baf9f04/model.glb","chain":[{"task_id":"6baf9f04-f49e-4d99-b7cd-f90880d6603b","type":"convert_model","status":"success","credits_consumed":10,"output_dir":"/Users/coral/Documents/App Development/Human Resources/assets/models/cow/tripo-out/cow-convert-6baf9f04","files":["model.glb"],"model_file":"/Users/coral/Documents/App Development/Human Resources/assets/models/cow/tripo-out/cow-convert-6baf9f04/model.glb"}],"source_task_id":"51b15a38-c12b-40ce-becf-6860cff3a2b7","credits_breakdown":[{"task_id":"51b15a38-c12b-40ce-becf-6860cff3a2b7","type":"image_to_model","credits_consumed":50},{"task_id":"6baf9f04-f49e-4d99-b7cd-f90880d6603b","type":"convert_model","credits_consumed":10}]}

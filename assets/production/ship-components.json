@@ -1,0 +1,66 @@
+{
+  "schema": 1,
+  "kind": "human-resources-ship-components",
+  "source": "assets/models/ufo-modular/ufo-modular.glb",
+  "authoring_tool": "tools/build_ufo_modular.py",
+  "models": [
+    "ship-dome",
+    "ship-collar",
+    "ship-rotor-0",
+    "ship-rotor-1",
+    "ship-rotor-2",
+    "ship-rotor-3",
+    "ship-capture-port",
+    "ship-capture-manifold",
+    "ship-winch-housing",
+    "ship-winch-jaw",
+    "ship-winch-jaw-right",
+    "ship-winch-pivot",
+    "ship-pylon",
+    "ship-laser-barrel-1",
+    "ship-laser-barrel-2",
+    "ship-laser-barrel-3",
+    "ship-electrode-1",
+    "ship-electrode-2",
+    "ship-electrode-3",
+    "ship-maintenance-bay",
+    "ship-repair-unit",
+    "ship-engine-pod",
+    "ship-engine-nozzle",
+    "ship-shield-base",
+    "ship-shield-crystal",
+    "ship-drone",
+    "ship-drone-elite",
+    "ship-dome-phase-1",
+    "ship-dome-phase-2",
+    "ship-dome-phase-3"
+  ],
+  "ring_inner_radius_m": 0.604,
+  "ring_outer_radius_m": 1.3,
+  "ring_growth_per_rank": 0.18,
+  "maximum_ring_growth": 0.6,
+  "top_socket_m": [
+    0,
+    1.012,
+    0
+  ],
+  "beam_socket_m": [
+    0,
+    0.04,
+    0
+  ],
+  "canopy_base_y_m": 0.615,
+  "rotor_pivot_m": [
+    0,
+    0.35,
+    0
+  ],
+  "drone_scale": 0.27,
+  "drone_ship_gap_width_fraction": 0.5,
+  "drone_neighbor_gap_width_fraction": 1,
+  "notes": [
+    "Source GLB and all original meshes/paint remain unchanged.",
+    "Variants are cooked offline; original painted parts retain their UVs and embedded source textures.",
+    "Weapon/intake/mast geometry composes independently; no deck glyph geometry."
+  ]
+}

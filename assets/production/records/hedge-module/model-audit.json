@@ -1,0 +1,102 @@
+{
+  "triangles": 1788,
+  "vertices": 1355,
+  "mesh_primitives": 1,
+  "uv_present": true,
+  "textures": [
+    {
+      "size": [
+        1024,
+        1024
+      ],
+      "mode": "RGB"
+    }
+  ],
+  "raw_accessor_bounds": [
+    {
+      "min": [
+        -0.4990234375,
+        -0.1669921875,
+        -0.1767578125
+      ],
+      "max": [
+        0.4990234375,
+        0.1669921875,
+        0.1767578125
+      ]
+    }
+  ],
+  "extensions": [],
+  "bytes": 223292,
+  "asset": "hedge-module",
+  "model_file": "assets/models/hedge-module/hedge-module.glb",
+  "requested_face_limit": 1800,
+  "source_task_id": "b67ac8fb-d2c5-4c4b-b2cf-16773515fd42",
+  "convert_task_id": "017999d7-2f07-43ab-b09d-b0608bb10528",
+  "credits_consumed": 60,
+  "preview": null,
+  "triangle_budget_review": {
+    "requested_target": 1800,
+    "actual_triangles": 1788,
+    "target_met": true,
+    "category_ceiling": 3000,
+    "status": "passed"
+  },
+  "structural_review": {
+    "status": "passed",
+    "notes": "Triangle mode, valid GLB length, UVs and embedded 1024px base colour checked. Requested targets are approximate; actual triangle count and target deviations are reported separately, within the user-specified 3000-prop / 8000-character ceilings. Scale, pivot, topology and visual quality require separate review."
+  },
+  "visual_review": {
+    "status": "accepted",
+    "notes": "Continuous leafy hedge with no visible through-gaps or soil; consistent sage palette. Length 2m along X; overlap leafy ends when joining modules.",
+    "views": [
+      "three-quarter",
+      "opposite"
+    ]
+  },
+  "import_review": {
+    "status": "passed",
+    "units": "metres",
+    "up": "+Y",
+    "forward": "+Z",
+    "yaw_degrees": 0.0,
+    "pivot": "ground-centre",
+    "double_sided": false,
+    "uniform_scale": 2.003913894324853,
+    "bounds_m": [
+      [
+        -1.0,
+        0.0,
+        -0.3542074363992172
+      ],
+      [
+        1.0,
+        0.6692759295499021,
+        0.3542074363992172
+      ]
+    ],
+    "dimensions_m": [
+      2.0,
+      0.6692759295499021,
+      0.7084148727984344
+    ],
+    "vertex_checks": [
+      {
+        "triangles": 1788,
+        "degenerate_triangles": 0,
+        "uv_bounds": [
+          [
+            0.0,
+            0.0
+          ],
+          [
+            1.0,
+            1.0
+          ]
+        ]
+      }
+    ],
+    "notes": "Real scene vertices and indices decoded; finite positions/UVs; retained embedded 1024px base colour. Uniform root transform; raw file preserved."
+  },
+  "raw_model_file": "assets/models/hedge-module/tripo-out/hedge-module-convert-017999d7/model.glb"
+}

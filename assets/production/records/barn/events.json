@@ -1,0 +1,39 @@
+[
+  {
+    "task_id": "ca86e56c-c080-408d-957f-d0eb0e756dc3",
+    "type": "convert_model",
+    "status": "success",
+    "credits_consumed": 60,
+    "output_dir": "/Users/coral/Documents/App Development/Human Resources/assets/models/barn/tripo-out/barn-convert-2-ca86e56c",
+    "files": [
+      "model.glb"
+    ],
+    "model_file": "/Users/coral/Documents/App Development/Human Resources/assets/models/barn/tripo-out/barn-convert-2-ca86e56c/model.glb",
+    "chain": [
+      {
+        "task_id": "ca86e56c-c080-408d-957f-d0eb0e756dc3",
+        "type": "convert_model",
+        "status": "success",
+        "credits_consumed": 10,
+        "output_dir": "/Users/coral/Documents/App Development/Human Resources/assets/models/barn/tripo-out/barn-convert-2-ca86e56c",
+        "files": [
+          "model.glb"
+        ],
+        "model_file": "/Users/coral/Documents/App Development/Human Resources/assets/models/barn/tripo-out/barn-convert-2-ca86e56c/model.glb"
+      }
+    ],
+    "source_task_id": "3dcbbb31-5d17-44e8-8e2f-cbfe380a9d15",
+    "credits_breakdown": [
+      {
+        "task_id": "3dcbbb31-5d17-44e8-8e2f-cbfe380a9d15",
+        "type": "image_to_model",
+        "credits_consumed": 50
+      },
+      {
+        "task_id": "ca86e56c-c080-408d-957f-d0eb0e756dc3",
+        "type": "convert_model",
+        "credits_consumed": 10
+      }
+    ]
+  }
+]

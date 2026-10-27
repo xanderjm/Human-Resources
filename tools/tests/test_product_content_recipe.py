@@ -34,8 +34,8 @@ class ProductContentRecipeTests(unittest.TestCase):
     def test_product_starter_is_not_the_upgraded_preview_assembly(self):
         self.assertEqual(self.options('ufo-modular'), {
             'source_path':'assets/models/ufo-modular/ufo-modular.glb',
-            'exclude_nodes':('Antenna_Module',)})
-        for part in ('antenna','beam','laser','shield','rim-lens'):
+            'exclude_nodes':('Antenna_Module','Dome','Dome_Collar','Outer_Ring_Pivot')})
+        for part in ('antenna','beam','laser','rim-lens'):
             self.assertEqual(self.options('ufo-'+part), {
                 'source_path':'assets/models/ufo-modular/part-'+part+'.glb'})
             self.assertIn('ufo-'+part, self.recipe['models'])

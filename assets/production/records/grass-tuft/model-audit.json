@@ -1,0 +1,102 @@
+{
+  "triangles": 1814,
+  "vertices": 2103,
+  "mesh_primitives": 1,
+  "uv_present": true,
+  "textures": [
+    {
+      "size": [
+        1024,
+        1024
+      ],
+      "mode": "RGB"
+    }
+  ],
+  "raw_accessor_bounds": [
+    {
+      "min": [
+        -0.4150390625,
+        -0.4931640625,
+        -0.4990234375
+      ],
+      "max": [
+        0.4150390625,
+        0.4931640923023224,
+        0.4990234375
+      ]
+    }
+  ],
+  "extensions": [],
+  "bytes": 233864,
+  "asset": "grass-tuft",
+  "model_file": "assets/models/grass-tuft/grass-tuft.glb",
+  "requested_face_limit": 1800,
+  "source_task_id": "9ef23a15-869b-42a1-bea1-bf23a1cf2d44",
+  "convert_task_id": "80d7bffb-bbcb-4cd7-9230-5eca0fe9de49",
+  "credits_consumed": 60,
+  "preview": null,
+  "triangle_budget_review": {
+    "requested_target": 1800,
+    "actual_triangles": 1814,
+    "target_met": false,
+    "category_ceiling": 3000,
+    "status": "passed"
+  },
+  "structural_review": {
+    "status": "passed",
+    "notes": "Triangle mode, valid GLB length, UVs and embedded 1024px base colour checked. Requested targets are approximate; actual triangle count and target deviations are reported separately, within the user-specified 3000-prop / 8000-character ceilings. Scale, pivot, topology and visual quality require separate review."
+  },
+  "visual_review": {
+    "status": "accepted",
+    "notes": "Four broad connected sage blades, no soil slab or disconnected extras; matches restrained painterly ground dressing. 0.3m high grounded pivot.",
+    "views": [
+      "three-quarter",
+      "opposite"
+    ]
+  },
+  "import_review": {
+    "status": "passed",
+    "units": "metres",
+    "up": "+Y",
+    "forward": "+Z",
+    "yaw_degrees": 0.0,
+    "pivot": "ground-centre",
+    "double_sided": false,
+    "uniform_scale": 0.30415840665130894,
+    "bounds_m": [
+      [
+        -0.12623761994805302,
+        0.0,
+        -0.15178217363165905
+      ],
+      [
+        0.12623761994805302,
+        0.3,
+        0.15178217363165905
+      ]
+    ],
+    "dimensions_m": [
+      0.25247523989610604,
+      0.3,
+      0.3035643472633181
+    ],
+    "vertex_checks": [
+      {
+        "triangles": 1814,
+        "degenerate_triangles": 0,
+        "uv_bounds": [
+          [
+            0.0007308517233468592,
+            0.0005308985710144043
+          ],
+          [
+            0.9900844097137451,
+            0.9993956685066223
+          ]
+        ]
+      }
+    ],
+    "notes": "Real scene vertices and indices decoded; finite positions/UVs; retained embedded 1024px base colour. Uniform root transform; raw file preserved."
+  },
+  "raw_model_file": "assets/models/grass-tuft/tripo-out/grass-tuft-convert-80d7bffb/model.glb"
+}

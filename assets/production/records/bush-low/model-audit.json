@@ -1,0 +1,102 @@
+{
+  "triangles": 1904,
+  "vertices": 3302,
+  "mesh_primitives": 1,
+  "uv_present": true,
+  "textures": [
+    {
+      "size": [
+        1024,
+        1024
+      ],
+      "mode": "RGB"
+    }
+  ],
+  "raw_accessor_bounds": [
+    {
+      "min": [
+        -0.4990234375,
+        -0.2373046875,
+        -0.4677734375
+      ],
+      "max": [
+        0.4990234375,
+        0.2373046725988388,
+        0.4677734375
+      ]
+    }
+  ],
+  "extensions": [],
+  "bytes": 343428,
+  "asset": "bush-low",
+  "model_file": "assets/models/bush-low/bush-low.glb",
+  "requested_face_limit": 1800,
+  "source_task_id": "ff0719d2-c4b9-4892-8731-65fdc7091572",
+  "convert_task_id": "cd9b5e3a-b012-4a12-a521-870b982e7897",
+  "credits_consumed": 60,
+  "preview": null,
+  "triangle_budget_review": {
+    "requested_target": 1800,
+    "actual_triangles": 1904,
+    "target_met": false,
+    "category_ceiling": 3000,
+    "status": "passed"
+  },
+  "structural_review": {
+    "status": "passed",
+    "notes": "Triangle mode, valid GLB length, UVs and embedded 1024px base colour checked. Requested targets are approximate; actual triangle count and target deviations are reported separately, within the user-specified 3000-prop / 8000-character ceilings. Scale, pivot, topology and visual quality require separate review."
+  },
+  "visual_review": {
+    "status": "accepted",
+    "notes": "Low spreading connected foliage mass, simple sage/olive silhouette; no props or ground. Height 0.5m.",
+    "views": [
+      "three-quarter",
+      "opposite"
+    ]
+  },
+  "import_review": {
+    "status": "passed",
+    "units": "metres",
+    "up": "+Y",
+    "forward": "+Z",
+    "yaw_degrees": 0.0,
+    "pivot": "ground-centre",
+    "double_sided": false,
+    "uniform_scale": 1.0534979754631757,
+    "bounds_m": [
+      [
+        -0.5257201811149246,
+        0.0,
+        -0.49279836938170035
+      ],
+      [
+        0.5257201811149246,
+        0.5,
+        0.49279836938170035
+      ]
+    ],
+    "dimensions_m": [
+      1.0514403622298492,
+      0.5,
+      0.9855967387634007
+    ],
+    "vertex_checks": [
+      {
+        "triangles": 1904,
+        "degenerate_triangles": 0,
+        "uv_bounds": [
+          [
+            0.001687338575720787,
+            0.001182258129119873
+          ],
+          [
+            0.9972299337387085,
+            0.9988115429878235
+          ]
+        ]
+      }
+    ],
+    "notes": "Real scene vertices and indices decoded; finite positions/UVs; retained embedded 1024px base colour. Uniform root transform; raw file preserved."
+  },
+  "raw_model_file": "assets/models/bush-low/tripo-out/bush-low-convert-cd9b5e3a/model.glb"
+}

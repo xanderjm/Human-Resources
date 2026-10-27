@@ -1,0 +1,63 @@
+{
+  "schema_version": 1,
+  "id": "fx-laser",
+  "status": "art-review-passed",
+  "production": {
+    "status": "generated",
+    "file": "assets/graphics/fx-laser/fx-laser.png",
+    "source": "assets/graphics/fx-laser/fx-laser.svg",
+    "metadata": "assets/graphics/fx-laser/asset.json"
+  },
+  "reference": {
+    "status": "approved",
+    "path": "assets/references/fx-laser/v1.png",
+    "sha256": "37671b37108702e6543fbf14bd4701ba619fc3483d49a2ba556c83e464ad57ce"
+  },
+  "qa": {
+    "status": "art-review-passed",
+    "visual_review": "Continuous thin ivory/mint core and soft transparent falloff; 8-copy longitudinal repeat proof has no visible junctions.",
+    "review_evidence": "assets/production/reviews/native-graphics-contact-sheet.png",
+    "reviewed_against": "art/style-guide/ufo-asset-style-guide.png",
+    "runtime_qualified": false
+  },
+  "alpha_audit": {
+    "dimensions_px": [
+      512,
+      128
+    ],
+    "rgba": true,
+    "alpha_range": [
+      0,
+      240
+    ],
+    "alpha_nonzero_bbox": [
+      0,
+      1,
+      512,
+      127
+    ],
+    "transparent_margin_px": [
+      0,
+      1,
+      0,
+      1
+    ],
+    "border_alpha_max": 240,
+    "visible_pixels": 64512,
+    "repeat_axis_check": {
+      "axis": "u",
+      "max_rgba_edge_difference": 0,
+      "max_derivative_difference": 0,
+      "passed": true
+    },
+    "sha256": "e98f54204ff576e810264c4bf03663b1dd145ddb393e3a90f026572491a1c28c"
+  },
+  "variants": [],
+  "svg": {
+    "self_contained": true,
+    "text_baked": false,
+    "external_dependencies": false
+  },
+  "usage": "Repeat U (longitudinal X), clamp V. Stretch/instance strip between endpoints. Ends need separately authored runtime caps only if desired.",
+  "limitations": "Art production asset. Native runtime upload, blend, depth/occlusion and device readability are not qualified."
+}

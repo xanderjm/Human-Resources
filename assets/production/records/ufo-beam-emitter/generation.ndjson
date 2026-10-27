@@ -1,0 +1,28 @@
+── Plan ──────────────────────────
+input: /Users/coral/Documents/App Development/Human Resources/assets/references/ufo-beam-emitter/v1.png
+model: P1-20260311 — explicit --model
+steps:
+  1. image-to-model  POST /v3/generation/image-to-model — generate a 3D model from one image
+     model="P1-20260311" face_limit=1200 texture=true pbr=false texture_quality="standard" texture_alignment="original_image" export_uv=true
+  2. convert  POST /v3/models/convert — convert format / texture size / orientation
+     format="GLTF" texture_size=1024
+cost impact:
+  · non-default convert options bill as complex convert
+──────────────────────────────────
+model: P1-20260311 (explicit --model)
+task created e42911c0-84bf-422e-90f6-092a1b70cbd8 (@ufo-beam-emitter)
+image_to_model · queued
+image_to_model · running 7% · e42911c0
+image_to_model · running 13% · e42911c0
+image_to_model · running 20% · e42911c0
+image_to_model · running 32% · e42911c0
+image_to_model · running 48% · e42911c0
+image_to_model · success 100% · e42911c0
+✓ image_to_model · e42911c0-84bf-422e-90f6-092a1b70cbd8 · 50 credits
+! non-default convert options use the "complex convert" price tier
+task created 497b830f-d059-4fb7-a400-1bc042618824 (@ufo-beam-emitter-convert)
+convert_model · queued
+✓ convert_model · 497b830f-d059-4fb7-a400-1bc042618824 · 10 credits
+downloading artifacts…
+✓ artifacts saved to /Users/coral/Documents/App Development/Human Resources/assets/models/ufo-beam-emitter/tripo-out/ufo-beam-emitter-convert-497b830f
+{"task_id":"497b830f-d059-4fb7-a400-1bc042618824","type":"convert_model","status":"success","credits_consumed":60,"output_dir":"/Users/coral/Documents/App Development/Human Resources/assets/models/ufo-beam-emitter/tripo-out/ufo-beam-emitter-convert-497b830f","files":["model.glb"],"model_file":"/Users/coral/Documents/App Development/Human Resources/assets/models/ufo-beam-emitter/tripo-out/ufo-beam-emitter-convert-497b830f/model.glb","chain":[{"task_id":"497b830f-d059-4fb7-a400-1bc042618824","type":"convert_model","status":"success","credits_consumed":10,"output_dir":"/Users/coral/Documents/App Development/Human Resources/assets/models/ufo-beam-emitter/tripo-out/ufo-beam-emitter-convert-497b830f","files":["model.glb"],"model_file":"/Users/coral/Documents/App Development/Human Resources/assets/models/ufo-beam-emitter/tripo-out/ufo-beam-emitter-convert-497b830f/model.glb"}],"source_task_id":"e42911c0-84bf-422e-90f6-092a1b70cbd8","credits_breakdown":[{"task_id":"e42911c0-84bf-422e-90f6-092a1b70cbd8","type":"image_to_model","credits_consumed":50},{"task_id":"497b830f-d059-4fb7-a400-1bc042618824","type":"convert_model","credits_consumed":10}]}

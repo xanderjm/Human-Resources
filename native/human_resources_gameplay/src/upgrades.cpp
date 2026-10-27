@@ -24,7 +24,7 @@ struct Candidate final {
 };
 } // namespace
 bool Game::State::module_eligible(std::size_t index) const {
-  if (view.modules[index] >= 3 || (setup.unlocked_blueprints & (1U << index)) == 0) {
+  if ((tuning::available_blueprints & (1U << index)) == 0 || view.modules[index] >= 3 || (setup.unlocked_blueprints & (1U << index)) == 0) {
     return false;
   }
   if (view.modules[index] == 0 && static_cast<unsigned>(std::count_if(view.modules.begin(), view.modules.end(), [](std::uint8_t r) { return r > 0; })) >= tuning::hardware_slots) {
@@ -244,7 +244,7 @@ UpgradeChoice Game::State::make_choice(bool hardware, std::size_t index, std::si
     choice.after = projected.view.capture_radius;
     label = "Capture radius";
     unit = "m";
-    extra = "Beams hold " + number(after * tuning::lens_grace_step) + "s out of range.";
+    extra = "Pickup range only; active beams stay locked until capture.";
     if (after == 3) {
       extra += " Pulls specimens from 15% beyond the ring.";
     }
@@ -259,20 +259,6 @@ UpgradeChoice Game::State::make_choice(bool hardware, std::size_t index, std::si
       extra += " Tanks <=" + number((projected.evolved(Evolution::hostile_acquisition) ? tuning::evolution_tank_threshold : tuning::tank_capture_threshold) * 100) + "% hull. Vehicle kills: +40% bio speed, 5s.";
     }
     break;
-  case Module::overtime_reactor:
-    choice.before = before == 0 ? 0 : (tuning::overtime_base + (before - 1) * tuning::overtime_step) * 100;
-    choice.after = (tuning::overtime_base + (after - 1) * tuning::overtime_step) * 100;
-    label = "Firing rate per active beam";
-    unit = "% of base";
-    extra = "Cap +" + number(choice.after * 3) + "%; a vehicle counts as one beam.";
-    break;
-  case Module::reserve_battery:
-    choice.before = before == 0 ? 0 : (tuning::reserve_base + (before - 1) * tuning::reserve_step) * 100;
-    choice.after = (tuning::reserve_base + (after - 1) * tuning::reserve_step) * 100;
-    label = "Weapon damage per idle beam";
-    unit = "% of base";
-    extra = "Cap +" + number(choice.after * 2) + "%; occupied vehicle slots excluded.";
-    break;
   case Module::shield_generator:
     choice.before = view.maximum_shield;
     choice.after = projected.view.maximum_shield;
@@ -286,12 +272,6 @@ UpgradeChoice Game::State::make_choice(bool hardware, std::size_t index, std::si
     if (after >= 2) {
       extra = "Restore " + number(after - 1) + " shield per biological capture, capped at 4/s.";
     }
-    break;
-  case Module::mirror_plating:
-    choice.before = before * tuning::reflect_step * 100;
-    choice.after = after * tuning::reflect_step * 100;
-    label = "Projectile reflection chance";
-    unit = "% while shield remains";
     break;
   case Module::vector_thrusters:
     choice.before = std::min(tuning::movement_maximum_base_multiplier, 1 + before * tuning::movement_step) * tuning::base_movement_metres_per_second;
@@ -310,19 +290,16 @@ UpgradeChoice Game::State::make_choice(bool hardware, std::size_t index, std::si
     unit = "s";
     extra = "Activate a 3m dash; cooldown " + number(tuning::dash_cooldown - (after - 1) * tuning::dash_cooldown_step) + "s.";
     break;
+  case Module::overtime_reactor:
+  case Module::reserve_battery:
+  case Module::mirror_plating:
   case Module::bounty_scanner:
-    choice.before = before * tuning::bounty_step * 100 + research(Research::specimen_value);
-    choice.after = choice.before + tuning::bounty_step * 100;
-    label = "Biological score bonus";
-    unit = "%";
-    extra = "Streak adds score; hull damage resets it. XP unchanged.";
-    break;
   case Module::count:
     break;
   }
   choice.effect_label = label;
-  choice.effect_unit = choice.module == Module::mirror_plating ? "%" : unit;
-  choice.conditions = choice.module == Module::mirror_plating ? "While shield remains." : extra;
+  choice.effect_unit = unit;
+  choice.conditions = extra;
   choice.description = change(label, choice.before, choice.after, unit) + (extra.empty() ? "" : " " + extra);
 
   return choice;
@@ -350,6 +327,7 @@ void Game::State::apply(const UpgradeChoice& choice) {
 }
 void Game::State::evolve() {
   for (std::size_t i = 0; i < tuning::evolution_ingredients.size() && view.stats.evolutions < tuning::maximum_evolutions; ++i) {
+    if ((tuning::available_evolutions & (1U << i)) == 0) continue;
     const auto recipe = tuning::evolution_ingredients[i];
     if ((view.evolution_bits & (1U << i)) == 0 && view.modules[recipe[0]] == 3 && view.modules[recipe[1]] == 3) {
       view.evolution_bits |= 1U << i;

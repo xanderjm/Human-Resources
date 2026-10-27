@@ -1,0 +1,46 @@
+{
+  "dry_run": true,
+  "valid": true,
+  "input": "/Users/coral/Documents/App Development/Human Resources/assets/references/resident-body/v1.png",
+  "model": "P1-20260311",
+  "model_reason": "explicit --model",
+  "steps": [
+    {
+      "name": "image-to-model",
+      "endpoint": "/v3/generation/image-to-model",
+      "task_type": "image_to_model",
+      "payload": {
+        "input": "<upload:/Users/coral/Documents/App Development/Human Resources/assets/references/resident-body/v1.png>",
+        "model": "P1-20260311",
+        "face_limit": 6000,
+        "texture": true,
+        "pbr": false,
+        "texture_quality": "standard",
+        "texture_alignment": "original_image",
+        "export_uv": true
+      }
+    },
+    {
+      "name": "convert",
+      "endpoint": "/v3/models/convert",
+      "task_type": "convert_model",
+      "payload": {
+        "input": "<upstream>",
+        "format": "GLTF",
+        "texture_size": 1024
+      }
+    }
+  ],
+  "pending_uploads": [
+    "/Users/coral/Documents/App Development/Human Resources/assets/references/resident-body/v1.png"
+  ],
+  "deliverables": [],
+  "candidates": 1,
+  "warnings": [
+    "non-default convert options use the \"complex convert\" price tier"
+  ],
+  "errors": [],
+  "cost_notes": [
+    "non-default convert options bill as complex convert"
+  ]
+}

@@ -1,0 +1,90 @@
+{
+  "schema_version": 1,
+  "id": "ui-xp-track",
+  "status": "art-review-passed",
+  "production": {
+    "status": "generated",
+    "file": "assets/graphics/ui-xp-track/ui-xp-track.png",
+    "source": "assets/graphics/ui-xp-track/ui-xp-track.svg",
+    "metadata": "assets/graphics/ui-xp-track/asset.json"
+  },
+  "reference": {
+    "status": "approved",
+    "path": "assets/references/ui-xp-track/v1.png",
+    "sha256": "322964d5e26b543002c235beb17bf87194ec577137da367597c65484035b0ff3"
+  },
+  "qa": {
+    "status": "art-review-passed",
+    "visual_review": "Empty navy trough and independent full mint fill are both present, correctly aligned and separately exported; reference previews a partial fill.",
+    "review_evidence": "assets/production/reviews/native-graphics-contact-sheet.png",
+    "reviewed_against": "art/style-guide/ufo-asset-style-guide.png",
+    "runtime_qualified": false
+  },
+  "alpha_audit": {
+    "dimensions_px": [
+      768,
+      128
+    ],
+    "rgba": true,
+    "alpha_range": [
+      0,
+      255
+    ],
+    "alpha_nonzero_bbox": [
+      16,
+      24,
+      752,
+      104
+    ],
+    "transparent_margin_px": [
+      16,
+      24,
+      16,
+      24
+    ],
+    "border_alpha_max": 0,
+    "visible_pixels": 57643,
+    "repeat_axis_check": null,
+    "sha256": "763e9324bab0ca653b5c43342c46cf19666beabf8d14cafadabbd65edea5473c"
+  },
+  "variants": [
+    {
+      "role": "independently usable XP fill",
+      "path": "assets/graphics/ui-xp-track/fill.png",
+      "audit": {
+        "dimensions_px": [
+          768,
+          128
+        ],
+        "rgba": true,
+        "alpha_range": [
+          0,
+          255
+        ],
+        "alpha_nonzero_bbox": [
+          30,
+          38,
+          738,
+          90
+        ],
+        "transparent_margin_px": [
+          30,
+          38,
+          30,
+          38
+        ],
+        "border_alpha_max": 0,
+        "visible_pixels": 36313,
+        "repeat_axis_check": null,
+        "sha256": "e197d7c69276baf3a35cbce5fc5e3f1e52fe12719d20017dc3019c72a90e3056"
+      }
+    }
+  ],
+  "svg": {
+    "self_contained": true,
+    "text_baked": false,
+    "external_dependencies": false
+  },
+  "usage": "Track only. Independent fill.svg/fill.png uses same canvas and inner rect; clip fill horizontally by progress. Do not stretch end caps.",
+  "limitations": "Art production asset. Native runtime upload, blend, depth/occlusion and device readability are not qualified."
+}

@@ -2,6 +2,7 @@
 #include <array>
 #include <cmath>
 #include <human_resources/product/visibility.h>
+#include <human_resources/presentation/rotor_geometry.h>
 #include <limits>
 #include <product_mesh_bounds.generated.h>
 namespace human_resources::product {
@@ -96,8 +97,10 @@ void preserve_play_visibility(presentation::StyleFrame& frame, std::size_t scene
         continue;
       shield_added = true;
     }
-    if (const auto box = visibility_mesh_bounds(instance.mesh))
+    if (auto box = visibility_mesh_bounds(instance.mesh)) {
+      presentation::expand_rotor_bounds(box->minimum, box->maximum, instance.rotor_style[0]);
       critical.add(project_region(presentation::multiply(frame.camera, presentation::model_matrix(instance)), *box));
+    }
   }
   if (run) {
     const auto point = [&](gameplay::Vec2 p, float height) { return Vec3{p.x, height, run->runner_distance - p.z + 2.3F}; };

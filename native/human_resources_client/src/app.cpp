@@ -1,6 +1,7 @@
 #define SDL_MAIN_USE_CALLBACKS 1
 #include "resume_qa.h"
 #include "interruption_policy.h"
+#include "portrait_window.h"
 
 #include <SDL3/SDL.h>
 #include <SDL3/SDL_main.h>
@@ -96,6 +97,7 @@ struct App final {
   Command pressed{Command::none};
   std::uint64_t pressed_contact{}, pressed_device{}, run_id{}, previous_ticks{};
   unsigned frames{}, smoke_mask{};
+  unsigned smoke_build_pages{}, smoke_build_tabs{}, smoke_privacy_pages{}, smoke_recipe_pages{}, smoke_recipe_count{};
   unsigned qa_frames{};
   unsigned qa_capture_skip{};
   float qa_step{1.F / 60};
@@ -358,6 +360,17 @@ void dispatch(App& app, Command command) {
     return;
   app.audio.play(hr::feedback::Cue::ui);
   switch (command) {
+  case Command::build_hardware:
+  case Command::build_research:
+  case Command::build_hangar:
+    if(app.screen==Screen::pause && app.show_build)
+      for(const auto& button:app.ui.buttons)if(button.command==command && button.enabled) {
+        app.ui_page=static_cast<unsigned>(command)-static_cast<unsigned>(Command::build_hardware);
+        app.controls.clear();app.pressed=Command::none;
+        app.focus=0;app.keyboard_focus=false;app.focus_x=app.focus_y=0;
+        break;
+      }
+    break;
   case Command::preview0:
   case Command::preview1:
   case Command::preview2:
@@ -398,8 +411,9 @@ void dispatch(App& app, Command command) {
     }
     break;
   case Command::location_next:
+  case Command::location_previous:
     if (app.screen == Screen::title)
-      app.selected_theme = hr::product::next_location(app.selected_theme);
+      app.selected_theme = command == Command::location_previous ? hr::product::previous_location(app.selected_theme) : hr::product::next_location(app.selected_theme);
     break;
   case Command::start:
   case Command::retry:
@@ -441,10 +455,10 @@ void dispatch(App& app, Command command) {
     app.ui_page = 0;
     break;
   case Command::recipe_next:
-    app.recipe_page = (app.recipe_page + 1) % 3;
+    app.recipe_page = (app.recipe_page + 1) % std::max(1U,app.ui.recipe_page_count);
     break;
   case Command::recipe_previous:
-    app.recipe_page = (app.recipe_page + 2) % 3;
+    app.recipe_page = (app.recipe_page + std::max(1U,app.ui.recipe_page_count) - 1) % std::max(1U,app.ui.recipe_page_count);
     break;
   case Command::recipe0:
   case Command::recipe1:
@@ -702,7 +716,7 @@ void semantic(App& app, const hr::input::Action& a) {
         // Enter/controller accept activates the visible section, never a hidden
         // first offer on a later choice page. Reading-only pages advance.
         for (const auto& item : app.ui.buttons)
-          if (item.enabled && item.command != Command::page_next && item.command != Command::page_previous && item.command != Command::home && !(item.command >= Command::preview0 && item.command <= Command::preview2) && !(app.show_build && item.command == Command::current_build) && !(app.show_privacy && item.command == Command::privacy)) {
+          if (item.enabled && item.command != Command::page_next && item.command != Command::page_previous && item.command != Command::home && !(item.command >= Command::preview0 && item.command <= Command::preview2) && !(item.command>=Command::build_hardware && item.command<=Command::build_hangar) && !(app.show_build && item.command == Command::current_build) && !(app.show_privacy && item.command == Command::privacy)) {
             dispatch(app, item.command);
             return;
           }
@@ -725,6 +739,13 @@ void semantic(App& app, const hr::input::Action& a) {
   }
 }
 void smoke_input(App& app) {
+  if(app.show_build && app.ui.page<32)app.smoke_build_pages|=1U<<app.ui.page;
+  if(app.show_privacy && app.ui.page<32)app.smoke_privacy_pages|=1U<<app.ui.page;
+  if(app.screen==Screen::blueprints && app.show_recipes && app.recipe_page<32) {
+    const auto count=std::max(1U,app.ui.recipe_page_count);
+    app.smoke_recipe_count=std::max(app.smoke_recipe_count,count);
+    app.smoke_recipe_pages|=1U<<(app.recipe_page%count);
+  }
   const auto click = [&](Command command) {
     for (const auto& button : app.ui.buttons)
       if (button.command == command && button.enabled) {
@@ -741,6 +762,8 @@ void smoke_input(App& app) {
         a.phase = hr::input::ActionPhase::completed;
         a.value = 0;
         semantic(app, a);
+        if(command>=Command::build_hardware && command<=Command::build_hangar)
+          app.smoke_build_tabs|=1U<<(static_cast<unsigned>(command)-static_cast<unsigned>(Command::build_hardware));
         return;
       }
   };
@@ -750,10 +773,22 @@ void smoke_input(App& app) {
   if (app.frames == 24)
     click(Command::pause);
   if (app.frames == 26)
-    click(Command::settings);
+    click(Command::current_build);
+  if(app.frames==27)click(Command::build_hangar);
   if (app.frames == 28)
-    click(Command::home);
+    click(Command::page_previous);
+  if(app.frames==29)click(Command::build_research);
   if (app.frames == 30)
+    click(Command::page_next);
+  if(app.frames==31)click(Command::build_hardware);
+  if(app.frames==32)click(Command::current_build);
+  if(app.frames==34)click(Command::settings);
+  if(app.frames==36)click(Command::privacy);
+  if(app.frames>=38 && app.frames<=46 && app.frames%2==0)click(Command::page_next);
+  if(app.frames==48)click(Command::page_previous);
+  if(app.frames==50)click(Command::privacy);
+  if(app.frames==52)click(Command::home);
+  if (app.frames == 54)
     click(Command::resume);
   if (app.screen == Screen::upgrade && app.frames % 5 == 0)
     click(Command::pick0);
@@ -777,8 +812,15 @@ void smoke_input(App& app) {
       }
   }
   if (app.frames == 250)
+    click(Command::blueprints);
+  if(app.frames==252)click(Command::recipes);
+  if(app.frames>=254 && app.frames<=262 && app.frames%2==0)click(Command::recipe_next);
+  if(app.frames==264)click(Command::recipe_previous);
+  if(app.frames==266)click(Command::recipes);
+  if(app.frames==268)click(Command::home);
+  if (app.frames == 270)
     click(Command::home);
-  if (app.frames == 255)
+  if (app.frames == 274)
     click(Command::start);
   if (app.screen == Screen::run) {
     hr::input::Action a;
@@ -903,9 +945,17 @@ SDL_AppResult SDL_AppInit(void** state, int argc, char** argv) {
     }
   }
   const bool mobile = std::string_view(SDL_GetPlatform()) == "Android" || std::string_view(SDL_GetPlatform()) == "iOS";
+  const auto portrait = hr::client::portrait_window_extent({app->window_w, app->window_h});
+  app->window_w = portrait.width;
+  app->window_h = portrait.height;
   app->window = SDL_CreateWindow("Human Resources", static_cast<int>(app->window_w), static_cast<int>(app->window_h), SDL_WINDOW_HIGH_PIXEL_DENSITY | (mobile ? SDL_WINDOW_FULLSCREEN : SDL_WINDOW_RESIZABLE));
   if (!app->window)
     return SDL_APP_FAILURE;
+  if (!mobile && (!SDL_SetWindowMinimumSize(app->window, 320, 568) ||
+      !SDL_SetWindowAspectRatio(app->window, 0, hr::client::maximum_portrait_window_aspect))) {
+    SDL_Log("Cannot configure the portrait game window: %s", SDL_GetError());
+    return SDL_APP_FAILURE;
+  }
   if (!app->capture_pixels.empty()) {
     int width{}, height{};
     if (!SDL_GetWindowSize(app->window, &width, &height) || width <= 0 || height <= 0 ||
@@ -916,7 +966,6 @@ SDL_AppResult SDL_AppInit(void** state, int argc, char** argv) {
   }
   (void)app->audio.initialize();
   app->native_accessibility = hr::platform::create_native_accessibility(app->accessibility);
-  SDL_SetWindowMinimumSize(app->window, 320, 320);
   int initial_w{}, initial_h{};
   SDL_GetWindowSizeInPixels(app->window, &initial_w, &initial_h);
   const float initial_factor = std::min(1.F, 1280.F / static_cast<float>(std::max(initial_w, initial_h)));
@@ -970,6 +1019,8 @@ SDL_AppResult SDL_AppInit(void** state, int argc, char** argv) {
   rebuild(*app);
   app->previous_ticks = SDL_GetTicksNS();
   app->smoke_mask |= 1U << static_cast<unsigned>(app->screen);
+  SDL_Log("product-portrait-window logical=%.0fx%.0f mobile=%u", static_cast<double>(app->metrics.viewport.width),
+      static_cast<double>(app->metrics.viewport.height), static_cast<unsigned>(mobile));
   SDL_Log("human-resources initialized backend=%s render=%ux%u content=%s save=%u", app->renderer->backend(), app->render_w, app->render_h, root.string().c_str(), static_cast<unsigned>(loaded.issue));
   if (app->capture)
     SDL_Log("human-resources capture=%ux%u mode=%s world=%ux%u", app->capture_pixels.empty() ? app->render_w : app->capture_pixels.width, app->capture_pixels.empty() ? app->render_h : app->capture_pixels.height, app->capture_pixels.empty() ? "world-sized-composite" : "explicit-pixel-composite", app->render_w, app->render_h);
@@ -1085,7 +1136,8 @@ SDL_AppResult SDL_AppIterate(void* state) {
     smoke_input(app);
   if (app.screen == Screen::run && !app.save_error && !app.promotion.holds_combat()) {
     const auto previous_phase = app.game.snapshot().phase;
-    const auto control = app.controls.sample();
+    auto control = app.controls.sample();
+    control.flight_bounds = app.framing.flight_bounds;
     for (unsigned i = 0; i < (app.playthrough ? 12U : 1U); ++i)
       app.game.advance(app.qa ? app.qa_step : (app.playthrough ? 1.F / 60 : elapsed), control);
     if(!retain_qa_vehicle_checkpoint(app)) {
@@ -1154,11 +1206,13 @@ SDL_AppResult SDL_AppIterate(void* state) {
   ++app.frames;
   if (app.qa && app.qa_frames && app.frames >= app.qa_frames)
     return SDL_APP_SUCCESS;
-  if ((app.playthrough && app.frames >= 280) || (app.smoke && !app.playthrough && app.frames >= 3)) {
+  if ((app.playthrough && app.frames >= 320) || (app.smoke && !app.playthrough && app.frames >= 3)) {
     if (app.playthrough) {
-      constexpr unsigned required = (1U << static_cast<unsigned>(Screen::title)) | (1U << static_cast<unsigned>(Screen::run)) | (1U << static_cast<unsigned>(Screen::pause)) | (1U << static_cast<unsigned>(Screen::settings)) | (1U << static_cast<unsigned>(Screen::results)) | (1U << static_cast<unsigned>(Screen::hangar)) | (1U << static_cast<unsigned>(Screen::upgrade));
-      SDL_Log("playthrough-smoke frames=%u screen_mask=%u required=%u score=%llu captures=%llu result=%s", app.frames, app.smoke_mask, required, static_cast<unsigned long long>(app.game.snapshot().stats.score), static_cast<unsigned long long>(app.game.snapshot().stats.captures), (app.smoke_mask & required) == required ? "pass" : "fail");
-      if ((app.smoke_mask & required) != required)
+      constexpr unsigned required = (1U << static_cast<unsigned>(Screen::title)) | (1U << static_cast<unsigned>(Screen::run)) | (1U << static_cast<unsigned>(Screen::pause)) | (1U << static_cast<unsigned>(Screen::settings)) | (1U << static_cast<unsigned>(Screen::results)) | (1U << static_cast<unsigned>(Screen::hangar)) | (1U << static_cast<unsigned>(Screen::upgrade)) | (1U << static_cast<unsigned>(Screen::blueprints));
+      const unsigned recipes=app.smoke_recipe_count>0 && app.smoke_recipe_count<32?(1U<<app.smoke_recipe_count)-1:0;
+      const bool passed=(app.smoke_mask&required)==required && app.smoke_build_pages==7 && app.smoke_build_tabs==7 && app.smoke_privacy_pages==63 && recipes && (app.smoke_recipe_pages&recipes)==recipes;
+      SDL_Log("playthrough-smoke frames=%u screen_mask=%u required=%u build_pages=%u build_tabs=%u privacy_pages=%u recipe_pages=%u required_recipe_pages=%u score=%llu captures=%llu result=%s", app.frames,app.smoke_mask,required,app.smoke_build_pages,app.smoke_build_tabs,app.smoke_privacy_pages,app.smoke_recipe_pages,recipes,static_cast<unsigned long long>(app.game.snapshot().stats.score),static_cast<unsigned long long>(app.game.snapshot().stats.captures),passed?"pass":"fail");
+      if (!passed)
         return SDL_APP_FAILURE;
     }
     return SDL_APP_SUCCESS;

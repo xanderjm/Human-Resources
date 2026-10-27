@@ -1,0 +1,7 @@
+{
+  "id": "cow",
+  "version": 3,
+  "source": "/Users/coral/.codex/generated_images/01a16e3b-5221-78b2-bd33-9830eab86a7f/exec-91c68aaa-0ee7-420e-8150-70b695402c0e.png",
+  "prompt": "Use case: precise-object-edit. Reference image 1 is the cow reference to correct. Reference image 2 is the approved low-poly hand-painted style guide. Preserve the cow's body, ivory/indigo palette, broad gouache brush texture, coral muzzle, ears, tiny horns and exactly FOUR distinct separated downward standing legs. Preserve the single three-quarter front view and pure white background. Change only the visible tail: REMOVE the tiny black tail nub from the upper rear silhouette completely. The rump silhouette must be a smooth uninterrupted oval with NO nubs, stalks, extra black knobs, tails, udders or accessory geometry anywhere on the rear. This neutral modelling pose conceals its tail completely behind the body; show no tail at all from this view. One whole cow only, no ground/shadow/text or other views. Clear white margins.",
+  "review": "Approved v3: four clear standing feet, continuous smooth rump silhouette with tail occluded, same painterly ivory/indigo/coral design. Removes side nub that Tripo mirrored."
+}

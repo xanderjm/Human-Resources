@@ -1,0 +1,112 @@
+{
+  "triangles": 2584,
+  "vertices": 3970,
+  "mesh_primitives": 1,
+  "uv_present": true,
+  "textures": [
+    {
+      "size": [
+        1024,
+        1024
+      ],
+      "mode": "RGB"
+    }
+  ],
+  "raw_accessor_bounds": [
+    {
+      "min": [
+        -0.2666015625,
+        -0.2060546875,
+        -0.4990234375
+      ],
+      "max": [
+        0.2666015625,
+        0.2060546875,
+        0.4990234375
+      ]
+    }
+  ],
+  "extensions": [],
+  "bytes": 409724,
+  "asset": "jeep-chassis",
+  "model_file": "assets/models/jeep-chassis/jeep-chassis.glb",
+  "requested_face_limit": 2800,
+  "source_task_id": "613855fe-1d70-438a-8cd6-1ccf1f2438b8",
+  "convert_task_id": "e8dd1da5-7011-4196-b9dd-0ca60245d2a5",
+  "credits_consumed": 60,
+  "preview": null,
+  "triangle_budget_review": {
+    "requested_target": 2800,
+    "actual_triangles": 2584,
+    "target_met": true,
+    "category_ceiling": 3000,
+    "status": "passed"
+  },
+  "structural_review": {
+    "status": "passed",
+    "notes": "Triangle mode, valid GLB length, UVs and embedded 1024px base colour checked. Requested targets are approximate; actual triangle count and target deviations are reported separately, within the user-specified 3000-prop / 8000-character ceilings. Scale, pivot, topology and visual quality require separate review."
+  },
+  "visual_review": {
+    "status": "accepted",
+    "notes": "Empty open-top body with clear wheel arches, no fused tyres/crew, clean seats and windshield frame. Correct navy/coral palette. Ground pivot, +Z forward, 3.1m long; wheel/crew fit remains for collection assembly review.",
+    "views": [
+      "three-quarter",
+      "top"
+    ]
+  },
+  "import_review": {
+    "status": "passed",
+    "units": "metres",
+    "up": "+Y",
+    "forward": "+Z",
+    "yaw_degrees": 180.0,
+    "pivot": "ground-centre",
+    "double_sided": false,
+    "uniform_scale": 3.1060665362035227,
+    "bounds_m": [
+      [
+        -0.8280821917808219,
+        0.0,
+        -1.5500000000000003
+      ],
+      [
+        0.8280821917808221,
+        1.2800391389432486,
+        1.5500000000000003
+      ]
+    ],
+    "dimensions_m": [
+      1.656164383561644,
+      1.2800391389432486,
+      3.1000000000000005
+    ],
+    "vertex_checks": [
+      {
+        "triangles": 2584,
+        "degenerate_triangles": 0,
+        "uv_bounds": [
+          [
+            0.0008918439853005111,
+            0.0008890628814697266
+          ],
+          [
+            0.9960970878601074,
+            0.9990833401679993
+          ]
+        ]
+      }
+    ],
+    "notes": "Real scene vertices and indices decoded; finite positions/UVs; retained embedded 1024px base colour. Uniform root transform; raw file preserved."
+  },
+  "raw_model_file": "assets/models/jeep-chassis/tripo-out/jeep-chassis-convert-e8dd1da5/model.glb",
+  "assembly_review": {
+    "status": "passed",
+    "assemblies": [
+      "jeep-four-wheels"
+    ],
+    "definition": "assets/production/assemblies.json",
+    "evidence": "assets/production/reviews/assemblies-final.png",
+    "notes": "Static actual-geometry fit checked from front, rear/opposite, side, three-quarter and high angles. Socket frames use metres/+Y up/+Z forward. No reflections or nonuniform scale.",
+    "runtime_qualified": false
+  }
+}

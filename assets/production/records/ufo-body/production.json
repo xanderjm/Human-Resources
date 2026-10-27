@@ -1,0 +1,43 @@
+{
+  "asset": "ufo-body",
+  "status": "cli_succeeded_pending_model_audit",
+  "task_ids": [
+    "b6c7aefe-c86d-441c-8dd2-4d3f1c740fea",
+    "e9a6bc76-2154-43f8-a71a-92c294026b32"
+  ],
+  "started_at": "2026-10-24T18:53:22.759439+00:00",
+  "reference": "/Users/coral/Documents/App Development/Human Resources/assets/references/ufo-body/v1.png",
+  "local_pid": 96599,
+  "command": [
+    "tripo",
+    "make",
+    "/Users/coral/Documents/App Development/Human Resources/assets/references/ufo-body/v1.png",
+    "--model",
+    "tripo-p1",
+    "-p",
+    "face_limit=3000",
+    "-p",
+    "texture=true",
+    "-p",
+    "pbr=false",
+    "-p",
+    "texture_quality=standard",
+    "-p",
+    "texture_alignment=original_image",
+    "-p",
+    "export_uv=true",
+    "--then",
+    "convert:format=GLTF,texture_size=1024",
+    "--out",
+    "/Users/coral/Documents/App Development/Human Resources/assets/models/ufo-body",
+    "--name",
+    "ufo-body",
+    "--json",
+    "--yes",
+    "--no-open",
+    "--timeout",
+    "600"
+  ],
+  "return_code": 0,
+  "finished_at": "2026-10-24T18:54:43.379036+00:00"
+}

@@ -13,12 +13,13 @@
   },
   "run": {
     "hardware_slots": 6,
-    "active_blueprints": 16,
-    "next_level_base_xp": 16,
-    "next_level_per_current_level_xp": 3,
+    "active_blueprints": 12,
+    "next_level_base_xp": 12,
+    "next_level_per_current_level_xp": 2,
     "ordinary_owned_upgrades": true,
     "rerolls": 2,
     "research_bundle_every_levels": 15,
+    "capture_speed_per_level": 0.08,
     "reset": [
       "run XP",
       "level",
@@ -86,8 +87,7 @@
     "tractor_lens",
     "shield_generator",
     "repair_swarm",
-    "vector_thrusters",
-    "bounty_scanner"
+    "vector_thrusters"
   ],
   "unlocks": [
     {
@@ -96,24 +96,9 @@
       "threshold": 300
     },
     {
-      "id": "overtime_reactor",
-      "counter": "captures",
-      "threshold": 700
-    },
-    {
-      "id": "reserve_battery",
-      "counter": "base_credits",
-      "threshold": 800
-    },
-    {
       "id": "arc_coil",
       "counter": "military_kills",
       "threshold": 60
-    },
-    {
-      "id": "mirror_plating",
-      "counter": "active_seconds",
-      "threshold": 1800
     },
     {
       "id": "phase_drive",
@@ -121,7 +106,7 @@
       "threshold": 3600
     }
   ],
-  "loadout": "No manual blueprint loadout. Ten starter blueprints are initially eligible; all six achievement unlocks automatically join the pool from the next attempt. All sixteen concepts are built for the first playable. Six installed-module slots remain the initial candidate; already installed modules can receive further ranks without another slot. The study compares this with all sixteen families installable.",
+  "loadout": "No manual blueprint loadout. Nine starter blueprints, including Beam Splitter, are eligible at a fresh account. Heavy Winch, Arc Coil and Phase Drive join through their existing achievements. Twelve hardware families remain, with six installed slots and three ranks. Every choice remains random; no guaranteed or preinstalled Beam Splitter.",
   "revive": {
     "maximum_per_run": 1,
     "minimum_run_seconds": 90,
@@ -232,8 +217,8 @@
       "capture_per_rank": 0.02
     },
     "hangar_25": {
-      "xp_base": 16,
-      "xp_slope": 3,
+      "xp_base": 12,
+      "xp_slope": 2,
       "module_limit": 6,
       "damage_per_rank": 0.05,
       "hull_per_rank": 6,
@@ -259,18 +244,9 @@
       "beam_splitter": 2,
       "laser_array": 1
     },
-    "overtime_reactor": {
-      "beam_splitter": 2
-    },
-    "reserve_battery": {
-      "beam_splitter": 2
-    },
     "arc_coil": {
       "laser_array": 1
-    },
-    "mirror_plating": {
-      "shield_generator": 1
     }
   },
-  "eligibility_rule": "Unlocked blueprints join the automatic pool, subject to these visible run prerequisites. Heavy Winch waits for three biological beam slots and one added laser; Overtime/Reserve wait for three beam slots; Arc Coil waits for one added laser; Mirror Plating waits for Shield Generator I. Requirements override the older catalogue prerequisites only in this Archero adaptation. Show requirements on the unlock summary and ingredient previews."
+  "eligibility_rule": "Unlocked blueprints join the automatic pool, subject to visible run prerequisites. Heavy Winch waits for Beam Splitter II and Laser Array I; Arc Coil waits for Laser Array I. Beam Splitter has no achievement or run prerequisite. Phase Drive retains its achievement. Removed hardware does not enter offers or achievement lists."
 }

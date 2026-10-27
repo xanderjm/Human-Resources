@@ -433,6 +433,42 @@ void product_capture_transport(const std::filesystem::path& assets) {
     }
   }
 }
+void retreat_gait_preserves_aim(const std::filesystem::path& assets) {
+  namespace renderer = human_resources::renderer;
+  namespace mesh = human_resources::assets;
+  constexpr std::array<std::string_view, 6> legs{"thigh.L", "shin.L", "foot.L", "thigh.R", "shin.R", "foot.R"};
+  for (const auto* id : {"infantry-rifleman-body", "infantry-shotgunner-body", "infantry-rocketeer-body"}) {
+    const auto bytes = read(assets / (std::string(id) + ".hra"));
+    Asset asset; require(decode(bytes, asset).valid(), "retreat uses the original cooked infantry asset");
+    Player aim, gait;
+    require(aim.bind(asset, "aim") && gait.bind(asset, "run") && gait.advance(.2F, -2), "authored aim and reverse running gait sample");
+    Pose combined;
+    require(apply_infantry_gait(asset, aim.pose(), gait.pose(), combined), "running feet combine with the aimed upper body");
+    bool changed = false;
+    for (std::size_t node = 0; node < asset.nodes().size(); ++node) {
+      const bool leg = std::find(legs.begin(), legs.end(), asset.nodes()[node].name) != legs.end();
+      if (leg) changed = changed || combined.local[node].rotation != aim.pose().local[node].rotation;
+      else require(combined.local[node].rotation == aim.pose().local[node].rotation &&
+          combined.local[node].translation == aim.pose().local[node].translation &&
+          combined.local[node].scale == aim.pose().local[node].scale, "gait changes only the six lower-body joints");
+    }
+    require(changed && combined.world[asset.find_node("socket_weapon")] == aim.pose().world[asset.find_node("socket_weapon")],
+        "reverse steps visibly articulate without changing the physical weapon socket");
+    renderer::AnimationInstances live;
+    mesh::PreviewMesh companion;
+    require(mesh::decode_preview_mesh(read(assets / (std::string(id) + ".hrm")), companion), "retreat companion mesh decodes");
+    require(live.load(id, bytes, companion.vertices), "retreat renderer loads original geometry");
+    renderer::AnimationIntent intent;
+    intent.speed = 6.8F; intent.backward = true; intent.warning = true; intent.aim_pose_seconds = .8F; intent.body_heading = 0;
+    intent.aim_target = {0, 2.5F, 8};
+    for (unsigned frame = 0; frame < 90; ++frame) {
+      live.begin_frame();
+      const auto* actor = live.update(902, id, intent, 1.F / 60);
+      require(actor && actor->clip == "aim", "moving warning retains its actual aimed upper clip while feet run");
+      live.end_frame();
+    }
+  }
+}
 } // namespace
 int main(int argc, char** argv) {
   require(argc == 2 || argc == 3, "supply cooked infantry and optional independent source socket reference directory");
@@ -440,6 +476,7 @@ int main(int argc, char** argv) {
   planted_aim_and_events(argv[1]);
   live_and_cold_preparation(argv[1]);
   physical_turn_feet(argv[1]);
+  retreat_gait_preserves_aim(argv[1]);
   // Isolated three-pair parity directories intentionally omit the five other
   // product pairs. The shipping runtime exercises the complete transport set.
   if(std::filesystem::exists(std::filesystem::path(argv[1])/"cow.hra")) product_capture_transport(argv[1]);

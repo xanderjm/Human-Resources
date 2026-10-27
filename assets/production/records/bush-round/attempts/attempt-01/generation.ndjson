@@ -1,0 +1,32 @@
+── Plan ──────────────────────────
+input: /Users/coral/Documents/App Development/Human Resources/assets/references/bush-round/v1.png
+model: P1-20260311 — explicit --model
+steps:
+  1. image-to-model  POST /v3/generation/image-to-model — generate a 3D model from one image
+     model="P1-20260311" face_limit=1800 texture=true pbr=false texture_quality="standard" texture_alignment="original_image" export_uv=true
+  2. convert  POST /v3/models/convert — convert format / texture size / orientation
+     format="GLTF" texture_size=1024
+cost impact:
+  · non-default convert options bill as complex convert
+──────────────────────────────────
+model: P1-20260311 (explicit --model)
+task created 9a83b4a3-a1b4-4b98-9468-64726d29c05a (@bush-round)
+image_to_model · queued
+image_to_model · running 8% · 9a83b4a3
+image_to_model · running 15% · 9a83b4a3
+image_to_model · running 24% · 9a83b4a3
+image_to_model · running 38% · 9a83b4a3
+image_to_model · success 100% · 9a83b4a3
+✓ image_to_model · 9a83b4a3-a1b4-4b98-9468-64726d29c05a · 50 credits
+! non-default convert options use the "complex convert" price tier
+task created 4d45b452-25ca-4335-9fbd-1429a3b5de92 (@bush-round-convert)
+convert_model · queued
+✓ convert_model · 4d45b452-25ca-4335-9fbd-1429a3b5de92 · 10 credits
+downloading artifacts…
+✗ artifact download failed (the task itself succeeded)
+! fetch failed
+! retry with: tripo task get 4d45b452-25ca-4335-9fbd-1429a3b5de92 --download
+{"task_id":"4d45b452-25ca-4335-9fbd-1429a3b5de92","type":"convert_model","status":"success","credits_consumed":60,"chain":[{"task_id":"4d45b452-25ca-4335-9fbd-1429a3b5de92","type":"convert_model","status":"success","credits_consumed":10}],"source_task_id":"9a83b4a3-a1b4-4b98-9468-64726d29c05a","credits_breakdown":[{"task_id":"9a83b4a3-a1b4-4b98-9468-64726d29c05a","type":"image_to_model","credits_consumed":50},{"task_id":"4d45b452-25ca-4335-9fbd-1429a3b5de92","type":"convert_model","credits_consumed":10}]}
+{"event":"progress","task_id":"4d45b452-25ca-4335-9fbd-1429a3b5de92","status":"success","progress":100}
+downloading artifacts…
+{"type":"convert_model","status":"success","progress":100,"input":{"format":"GLTF","texture_size":1024,"original_model_id":"9a83b4a3-a1b4-4b98-9468-64726d29c05a"},"output":{"model_url":"https://tripo-data.rg1.data.tripo3d.com/tcli_3cfb1e2beb5848098033af224a01fda8/20261024/4d45b452-25ca-4335-9fbd-1429a3b5de92/tripo_convert_4d45b452-25ca-4335-9fbd-1429a3b5de92.glb?Policy=eyJTdGF0ZW1lbnQiOlt7IlJlc291cmNlIjoiaHR0cHM6Ly90cmlwby1kYXRhLnJnMS5kYXRhLnRyaXBvM2QuY29tL3RjbGlfM2NmYjFlMmJlYjU4NDgwOTgwMzNhZjIyNGEwMWZkYTgvMjAyNjEwMjQvNGQ0NWI0NTItMjVjYS00MzM1LTlmYmQtMTQyOWEzYjVkZTkyL3RyaXBvX2NvbnZlcnRfNGQ0NWI0NTItMjVjYS00MzM1LTlmYmQtMTQyOWEzYjVkZTkyLmdsYiIsIkNvbmRpdGlvbiI6eyJEYXRlTGVzc1RoYW4iOnsiQVdTOkVwb2NoVGltZSI6MTc5Mjk2MDc1Nn19fV19&Signature=SqAUgJsL0ZlI9KpetLr1i5AX2j-Dj1oM8fBb4f-Fn2zN5cqdzsgKQ4Hxv~~EHwzxC9UT7OQvnoNyJLClBi8HFiHlgHUVMTrU8cDB2nXrAD2WhYhbdrQV~t9pEsxf2crU~M2hPpKOnq1Txia5swn6NJDJWH2VNB8BG9vE2dRmBd08ofevnQj6WlMjVtM79OravU-5zFd90OM34W~U7bGktW9HlxeAAfbrJQARoWo5RG1oJKJpND2W0yd~odR6XVg~BLO1ZBnqFJ5c0vy2-6EJnJrfidTxwGcMD~vV5nRA2hVUOtmMHiRwTPVJnuG~Q7udVspclpZFk5VaCu3uM8BHHw__&Key-Pair-Id=K1676C64NMVM2J"},"task_id":"4d45b452-25ca-4335-9fbd-1429a3b5de92","created_at":"2026-10-24T20:10:52.981694Z","completed_at":"2026-10-24T20:10:55.081252Z","credits_consumed":10,"output_dir":"/Users/coral/Documents/App Development/Human Resources/assets/models/bush-round","files":["/Users/coral/Documents/App Development/Human Resources/assets/models/bush-round/model.glb"],"model_file":"/Users/coral/Documents/App Development/Human Resources/assets/models/bush-round/model.glb"}

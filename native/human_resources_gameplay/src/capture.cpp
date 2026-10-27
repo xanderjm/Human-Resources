@@ -3,6 +3,18 @@
 namespace human_resources::gameplay {
 using namespace detail;
 
+AbductionProfile abduction_profile(EntityKind kind, InfantryRole role) {
+  if (kind >= EntityKind::boss || (kind == EntityKind::soldier &&
+      (role < InfantryRole::rifleman || role > InfantryRole::rocketeer))) return {};
+  const auto index = kind == EntityKind::soldier ? 3 + static_cast<std::size_t>(role) :
+      kind == EntityKind::jeep ? 7U : kind == EntityKind::tank ? 8U : static_cast<std::size_t>(kind);
+  return {tuning::abduction_lift_load[index], tuning::abduction_score[index]};
+}
+
+float level_capture_speed_bonus(unsigned level) {
+  return static_cast<float>(level > 1 ? level - 1 : 0) * tuning::capture_speed_per_level;
+}
+
 unsigned Game::State::used_beam_slots() const {
   unsigned used = 0;
   for (const auto& beam : view.beams) {
@@ -28,15 +40,15 @@ bool Game::State::capture_eligible(const Actor& target) const {
   return winch == 3 && fraction <= (evolved(Evolution::hostile_acquisition) ? tuning::evolution_tank_threshold : tuning::tank_capture_threshold);
 }
 float Game::State::capture_seconds(const Actor& target) const {
+  const float base = tuning::base_capture_seconds * abduction_profile(target.view.kind, target.view.infantry_role).lift_load;
   if (vehicle(target.view.kind)) {
-    const float bonus = static_cast<float>(rank(Module::heavy_winch) - 1) * tuning::vehicle_capture_speed_step;
-    const float seconds = tuning::vehicle_capture_seconds / (1 + bonus);
+    const float bonus = level_capture_speed_bonus(view.stats.level) + static_cast<float>(rank(Module::heavy_winch) - 1) * tuning::vehicle_capture_speed_step;
+    const float seconds = base / (1 + bonus);
     return target.view.kind == EntityKind::tank ? std::max(seconds, tuning::tank_capture_minimum) : seconds;
   }
-  const float bonus = permanent(3) + research(Research::capture_speed) / 100 +
+  const float bonus = level_capture_speed_bonus(view.stats.level) + permanent(3) + research(Research::capture_speed) / 100 +
                       (capture_burst > 0 ? tuning::splitter_burst : 0) + (vehicle_burst > 0 ? tuning::vehicle_bio_burst : 0);
-  const float soldier = target.view.kind == EntityKind::soldier ? tuning::soldier_capture_seconds_multiplier : 1;
-  const float seconds = std::max(tuning::capture_minimum_seconds, tuning::base_capture_seconds * soldier / (1 + bonus));
+  const float seconds = std::max(tuning::capture_minimum_seconds, base / (1 + bonus));
   return seconds / (view.harvest_overdrive_seconds > 0 ? tuning::harvest_overdrive_multiplier : 1.F);
 }
 bool Game::State::sweep_eligible(const Actor& target) const {
@@ -56,31 +68,24 @@ void Game::State::capture(float dt) {
         const float normal_speed = a.view.kind == EntityKind::soldier ? tuning::military_movement_speed[0] : tuning::biological_movement_speed[static_cast<std::size_t>(a.view.kind)];
         const float pull = std::min(tuning::lens_pull_speed, normal_speed * tuning::lens_pull_movement_cap);
         a.view.position = add(a.view.position, scaled(direction({view.player.x - a.view.position.x, view.player.z - a.view.position.z}), pull * dt));
+        // A physical tractor pull moves the committed source. Cancel its old
+        // firing pose rather than retaining a warning from a displaced muzzle.
+        if (a.view.kind == EntityKind::soldier && (a.infantry_aim.preparing || a.view.warning_seconds > 0)) {
+          a.infantry_aim = {};
+          a.view.warning_seconds = 0;
+          a.view.velocity = {};
+        }
       }
     }
   }
   for (auto& beam : view.beams) {
     auto* target = actor(beam.target_id);
-    if (!target || !capture_eligible(*target)) {
-      if (target && vehicle(target->view.kind) && target->view.capture_progress > 0) {
-        target->view.capture_progress = 0;
-        target->sweep_progress = 0;
-        target->view.fire_recovery_seconds = tuning::capture_return_seconds;
-      }
+    if (!target) {
       beam.target_id = 0;
       continue;
     }
-    if (distance_squared(view.player, target->view.position) > radius2) {
-      target->grace += dt;
-      if (target->grace > static_cast<float>(rank(Module::tractor_lens)) * tuning::lens_grace_step) {
-        if (vehicle(target->view.kind) && target->view.capture_progress > 0)
-          target->view.fire_recovery_seconds = tuning::capture_return_seconds;
-        target->view.capture_progress = 0;
-        target->sweep_progress = 0;
-        beam.target_id = 0;
-      }
-      continue;
-    }
+    // Range, hull thresholds and cooldown gate acquisition only. An occupied
+    // beam keeps its slot and advances at the ordinary rate until completion.
     target->grace = 0;
     target->lifted = true;
   }
@@ -93,10 +98,6 @@ void Game::State::capture(float dt) {
         continue;
       }
       if (vehicle(a.view.kind) && used_beam_slots() + 2 > view.beam_capacity) {
-        continue;
-      }
-      // An out-of-range retained beam still owns its target and slots.
-      if (std::any_of(view.beams.begin(), view.beams.end(), [&a](const BeamView& b) { return b.target_id == a.view.id; })) {
         continue;
       }
       const float distance = distance_squared(view.player, a.view.position);
@@ -118,18 +119,7 @@ void Game::State::capture(float dt) {
       beam.target_id = 0;
       continue;
     }
-    if (beam.vehicle && vehicle_capture_cooldown > 0) {
-      if (vehicle(target->view.kind) && target->view.capture_progress > 0)
-        target->view.fire_recovery_seconds = tuning::capture_return_seconds;
-      target->view.capture_progress = 0;
-      target->lifted = false;
-      beam.target_id = 0;
-      continue;
-    }
     beam.target = target->view.position;
-    if (!target->lifted) {
-      continue;
-    }
     const bool sweep = sweep_eligible(*target);
     const float progress = dt / capture_seconds(*target) * (sweep ? tuning::harvest_sweep_multiplier : 1.F);
     // Qualification follows actual participation, so faster earned builds
@@ -150,7 +140,7 @@ void Game::State::captured(Actor& target) {
   if (vehicle(target.view.kind)) {
     ++view.stats.vehicle_captures;
     view.xp += target.view.kind == EntityKind::tank ? tuning::tank_kill_or_capture_xp : tuning::jeep_kill_or_capture_xp;
-    score += tuning::vehicle_score;
+    score += abduction_profile(target.view.kind).base_score;
     vehicle_capture_cooldown = tuning::vehicle_capture_cooldown;
     return;
   }
@@ -170,13 +160,9 @@ void Game::State::captured(Actor& target) {
       }
     }
   }
-  ++streak;
   view.xp += tuning::biological_capture_xp;
-  const auto bounty = rank(Module::bounty_scanner);
-  const float steps = std::floor(static_cast<float>(streak) / tuning::bounty_streak_interval);
-  const float streak_bonus = bounty == 0 ? 0 : std::min(tuning::bounty_streak_cap + static_cast<float>(bounty - 1) * 0.05F, steps * (tuning::bounty_streak_base + static_cast<float>(bounty - 1) * 0.01F));
-  const float base_score = target.view.kind == EntityKind::soldier ? tuning::biological_score[0] : tuning::biological_score[static_cast<std::size_t>(target.view.kind)];
-  score += base_score * (1 + research(Research::specimen_value) / 100 + static_cast<float>(bounty) * tuning::bounty_step + streak_bonus);
+  const float base_score = abduction_profile(target.view.kind, target.view.infantry_role).base_score;
+  score += base_score * (1 + research(Research::specimen_value) / 100);
   if (rank(Module::beam_splitter) == 3) {
     capture_burst = tuning::splitter_burst_seconds;
   }

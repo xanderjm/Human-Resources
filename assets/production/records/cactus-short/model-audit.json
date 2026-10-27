@@ -1,0 +1,102 @@
+{
+  "triangles": 1703,
+  "vertices": 1728,
+  "mesh_primitives": 1,
+  "uv_present": true,
+  "textures": [
+    {
+      "size": [
+        1024,
+        1024
+      ],
+      "mode": "RGB"
+    }
+  ],
+  "raw_accessor_bounds": [
+    {
+      "min": [
+        -0.1767578125,
+        -0.4990234375,
+        -0.2919921875
+      ],
+      "max": [
+        0.1767578125,
+        0.4990234375,
+        0.2919921875
+      ]
+    }
+  ],
+  "extensions": [],
+  "bytes": 202948,
+  "asset": "cactus-short",
+  "model_file": "assets/models/cactus-short/cactus-short.glb",
+  "requested_face_limit": 1800,
+  "source_task_id": "f408c929-b3ca-4ff7-9f93-eb2ede877364",
+  "convert_task_id": "52c6ef4e-ded5-4650-a8be-d9499c715ced",
+  "credits_consumed": 60,
+  "preview": null,
+  "triangle_budget_review": {
+    "requested_target": 1800,
+    "actual_triangles": 1703,
+    "target_met": true,
+    "category_ceiling": 3000,
+    "status": "passed"
+  },
+  "structural_review": {
+    "status": "passed",
+    "notes": "Triangle mode, valid GLB length, UVs and embedded 1024px base colour checked. Requested targets are approximate; actual triangle count and target deviations are reported separately, within the user-specified 3000-prop / 8000-character ceilings. Scale, pivot, topology and visual quality require separate review."
+  },
+  "visual_review": {
+    "status": "accepted",
+    "notes": "Continuous smaller one-arm cactus, distinct from two-arm version, no scene elements. Height 1.25m.",
+    "views": [
+      "three-quarter",
+      "opposite"
+    ]
+  },
+  "import_review": {
+    "status": "passed",
+    "units": "metres",
+    "up": "+Y",
+    "forward": "+Z",
+    "yaw_degrees": 90.0,
+    "pivot": "ground-centre",
+    "double_sided": false,
+    "uniform_scale": 1.2524461839530332,
+    "bounds_m": [
+      [
+        -0.36570450097847357,
+        0.0,
+        -0.22137964774951074
+      ],
+      [
+        0.36570450097847357,
+        1.25,
+        0.22137964774951074
+      ]
+    ],
+    "dimensions_m": [
+      0.7314090019569471,
+      1.25,
+      0.4427592954990215
+    ],
+    "vertex_checks": [
+      {
+        "triangles": 1703,
+        "degenerate_triangles": 0,
+        "uv_bounds": [
+          [
+            0.00046291114995256066,
+            0.0003250241279602051
+          ],
+          [
+            0.9844710230827332,
+            0.9996676445007324
+          ]
+        ]
+      }
+    ],
+    "notes": "Real scene vertices and indices decoded; finite positions/UVs; retained embedded 1024px base colour. Uniform root transform; raw file preserved."
+  },
+  "raw_model_file": "assets/models/cactus-short/tripo-out/cactus-short-convert-52c6ef4e/model.glb"
+}

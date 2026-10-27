@@ -1,0 +1,39 @@
+[
+  {
+    "task_id": "845c9cd0-e59b-42a7-84e9-00daa1fbb3e6",
+    "type": "convert_model",
+    "status": "success",
+    "credits_consumed": 60,
+    "output_dir": "/Users/coral/Documents/App Development/Human Resources/assets/models/wheelie-bin/tripo-out/wheelie-bin-convert-845c9cd0",
+    "files": [
+      "model.glb"
+    ],
+    "model_file": "/Users/coral/Documents/App Development/Human Resources/assets/models/wheelie-bin/tripo-out/wheelie-bin-convert-845c9cd0/model.glb",
+    "chain": [
+      {
+        "task_id": "845c9cd0-e59b-42a7-84e9-00daa1fbb3e6",
+        "type": "convert_model",
+        "status": "success",
+        "credits_consumed": 10,
+        "output_dir": "/Users/coral/Documents/App Development/Human Resources/assets/models/wheelie-bin/tripo-out/wheelie-bin-convert-845c9cd0",
+        "files": [
+          "model.glb"
+        ],
+        "model_file": "/Users/coral/Documents/App Development/Human Resources/assets/models/wheelie-bin/tripo-out/wheelie-bin-convert-845c9cd0/model.glb"
+      }
+    ],
+    "source_task_id": "f283cfa0-9f7b-498c-9aa4-be7be39bd04d",
+    "credits_breakdown": [
+      {
+        "task_id": "f283cfa0-9f7b-498c-9aa4-be7be39bd04d",
+        "type": "image_to_model",
+        "credits_consumed": 50
+      },
+      {
+        "task_id": "845c9cd0-e59b-42a7-84e9-00daa1fbb3e6",
+        "type": "convert_model",
+        "credits_consumed": 10
+      }
+    ]
+  }
+]

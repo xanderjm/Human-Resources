@@ -1,0 +1,39 @@
+[
+  {
+    "task_id": "017999d7-2f07-43ab-b09d-b0608bb10528",
+    "type": "convert_model",
+    "status": "success",
+    "credits_consumed": 60,
+    "output_dir": "/Users/coral/Documents/App Development/Human Resources/assets/models/hedge-module/tripo-out/hedge-module-convert-017999d7",
+    "files": [
+      "model.glb"
+    ],
+    "model_file": "/Users/coral/Documents/App Development/Human Resources/assets/models/hedge-module/tripo-out/hedge-module-convert-017999d7/model.glb",
+    "chain": [
+      {
+        "task_id": "017999d7-2f07-43ab-b09d-b0608bb10528",
+        "type": "convert_model",
+        "status": "success",
+        "credits_consumed": 10,
+        "output_dir": "/Users/coral/Documents/App Development/Human Resources/assets/models/hedge-module/tripo-out/hedge-module-convert-017999d7",
+        "files": [
+          "model.glb"
+        ],
+        "model_file": "/Users/coral/Documents/App Development/Human Resources/assets/models/hedge-module/tripo-out/hedge-module-convert-017999d7/model.glb"
+      }
+    ],
+    "source_task_id": "b67ac8fb-d2c5-4c4b-b2cf-16773515fd42",
+    "credits_breakdown": [
+      {
+        "task_id": "b67ac8fb-d2c5-4c4b-b2cf-16773515fd42",
+        "type": "image_to_model",
+        "credits_consumed": 50
+      },
+      {
+        "task_id": "017999d7-2f07-43ab-b09d-b0608bb10528",
+        "type": "convert_model",
+        "credits_consumed": 10
+      }
+    ]
+  }
+]

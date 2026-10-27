@@ -1,0 +1,159 @@
+{
+  "asset": "fence-rail",
+  "model_file": "assets/models/fence-rail/fence-rail.glb",
+  "generator": "tools/build_measured_modules.py",
+  "orientation_variants": [],
+  "texture": "assets/textures/texture-wood/texture-wood.png",
+  "texture_sha256": "eda1074005f39ad2f739b6b457e43bb3a344a57b827bdaec47579094fec10eae",
+  "bounds_m": [
+    [
+      0.0,
+      0.0,
+      -0.04500000178813934
+    ],
+    [
+      2.0,
+      0.11999999731779099,
+      0.04500000178813934
+    ]
+  ],
+  "dimensions_m": [
+    2.0,
+    0.11999999731779099,
+    0.09000000357627869
+  ],
+  "ports": [
+    {
+      "name": "start",
+      "centre_m": [
+        0,
+        0.06,
+        0
+      ],
+      "outward": [
+        -1,
+        0,
+        0
+      ],
+      "edge_m": [
+        [
+          0,
+          0,
+          -0.045
+        ],
+        [
+          0,
+          0.12,
+          0.045
+        ]
+      ],
+      "edge_uv": [
+        [
+          0,
+          0
+        ],
+        [
+          0,
+          0.12
+        ]
+      ]
+    },
+    {
+      "name": "end",
+      "centre_m": [
+        2,
+        0.06,
+        0
+      ],
+      "outward": [
+        1,
+        0,
+        0
+      ],
+      "edge_m": [
+        [
+          2,
+          0,
+          -0.045
+        ],
+        [
+          2,
+          0.12,
+          0.045
+        ]
+      ],
+      "edge_uv": [
+        [
+          2,
+          0
+        ],
+        [
+          2,
+          0.12
+        ]
+      ]
+    }
+  ],
+  "uv_mode": "world-aligned planar top UV; integer-metre translation; select baked orientation variants",
+  "notes": [],
+  "seam_checks": [],
+  "structural_review": {
+    "status": "passed"
+  },
+  "visual_review": {
+    "status": "passed_authoring_review",
+    "notes": "Reviewed isolated 3/4 render, twelve-item contact sheet, assembled tangent road/path joins, and 3x3 scrolling-ground preview. No scenery baked into references; native-device material scale review remains open."
+  },
+  "import_review": {
+    "status": "passed",
+    "units": "metres",
+    "up": "+Y",
+    "pivot": "local origin; see ports",
+    "bounds_m": [
+      [
+        0.0,
+        0.0,
+        -0.04500000178813934
+      ],
+      [
+        2.0,
+        0.11999999731779099,
+        0.04500000178813934
+      ]
+    ],
+    "dimensions_m": [
+      2.0,
+      0.11999999731779099,
+      0.09000000357627869
+    ]
+  },
+  "triangles": 12,
+  "vertices": 36,
+  "mesh_primitives": 1,
+  "uv_present": true,
+  "textures": [
+    {
+      "size": [
+        1024,
+        1024
+      ],
+      "mode": "RGB"
+    }
+  ],
+  "raw_accessor_bounds": [
+    {
+      "min": [
+        0.0,
+        0.0,
+        -0.04500000178813934
+      ],
+      "max": [
+        2.0,
+        0.11999999731779099,
+        0.04500000178813934
+      ]
+    }
+  ],
+  "extensions": [],
+  "bytes": 908748
+}

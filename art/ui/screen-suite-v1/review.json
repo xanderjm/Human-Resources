@@ -1,0 +1,133 @@
+{
+  "date": "2026-10-26",
+  "status": "Twelve requested screen/state mockups and one shared component sheet complete; art concepts only.",
+  "visual_review": [
+    {
+      "id": "01-flight-hud",
+      "reviewed": true,
+      "checks": [
+        "World/palette and enamel component-family consistency",
+        "Screen-specific controls and legible primary hierarchy",
+        "Required state/content represented"
+      ]
+    },
+    {
+      "id": "02-promotion",
+      "reviewed": true,
+      "checks": [
+        "World/palette and enamel component-family consistency",
+        "Screen-specific controls and legible primary hierarchy",
+        "Required state/content represented"
+      ]
+    },
+    {
+      "id": "03-pause",
+      "reviewed": true,
+      "checks": [
+        "World/palette and enamel component-family consistency",
+        "Screen-specific controls and legible primary hierarchy",
+        "Required state/content represented"
+      ]
+    },
+    {
+      "id": "04-current-build",
+      "reviewed": true,
+      "checks": [
+        "World/palette and enamel component-family consistency",
+        "Screen-specific controls and legible primary hierarchy",
+        "Required state/content represented"
+      ]
+    },
+    {
+      "id": "05-flight-report",
+      "reviewed": true,
+      "checks": [
+        "World/palette and enamel component-family consistency",
+        "Screen-specific controls and legible primary hierarchy",
+        "Required state/content represented"
+      ],
+      "correction": "Precise local UI correction. In this otherwise finished flight results mockup, remove ONLY the three circular hardware-rank pips on the far right of each of the two lower progression cards: NEXT BLUEPRINT / HEAVY WINCH and NEXT HANGAR UPGRADE / WEAPON CALIBRATION. Those are milestone/account progress summaries, not equipped hardware ranks. Leave the vacated far-right area as clean matching cream card background. Keep both existing labelled horizontal progress bars, texts, values, icons and all other layout and styling exactly unchanged. Do not remove rivets or alter any other screen area. Deliver the same full portrait screen, same dimensions."
+    },
+    {
+      "id": "06-hangar",
+      "reviewed": true,
+      "checks": [
+        "World/palette and enamel component-family consistency",
+        "Screen-specific controls and legible primary hierarchy",
+        "Required state/content represented"
+      ]
+    },
+    {
+      "id": "07-blueprints",
+      "reviewed": true,
+      "checks": [
+        "World/palette and enamel component-family consistency",
+        "Screen-specific controls and legible primary hierarchy",
+        "Required state/content represented"
+      ],
+      "correction": "Precise local UI correction. In this finished Blueprint Library mockup, remove ONLY the vertical three-dot hardware-rank indicators at the far right of ALL SIX blueprint cards. Blueprint account unlocks are not hardware ranks. Keep each existing bottom-right LOCK or mint CHECK badge exactly in place, and keep every horizontal progress bar, label, text, number, icon, border, card size and location. The area above each lock/check should simply be clean cream card background after removing the three little dots. Do not change any other part of this full portrait image. Same dimensions, layout, six cards and footer."
+    },
+    {
+      "id": "08-evolutions",
+      "reviewed": true,
+      "checks": [
+        "World/palette and enamel component-family consistency",
+        "Screen-specific controls and legible primary hierarchy",
+        "Required state/content represented"
+      ],
+      "correction": "Precise local UI correction. Remove ONLY the 1,240 RESEARCH CREDITS badge in the upper-left farm background of this evolution-recipe mockup, restoring the low-poly farm scene behind that area. This reference view has no currency transaction; a credit badge is unnecessary. Preserve the EARNED EVOLUTIONS title sign, instruction copy, both entire recipe cards with their ingredient ranks/effects/progress bars, the navigation footer and every other element exactly. No other layout, typography, content or colour changes. Same full portrait image dimensions."
+    },
+    {
+      "id": "09-settings",
+      "reviewed": true,
+      "checks": [
+        "World/palette and enamel component-family consistency",
+        "Screen-specific controls and legible primary hierarchy",
+        "Required state/content represented"
+      ]
+    },
+    {
+      "id": "10-privacy",
+      "reviewed": true,
+      "checks": [
+        "World/palette and enamel component-family consistency",
+        "Screen-specific controls and legible primary hierarchy",
+        "Required state/content represented"
+      ]
+    },
+    {
+      "id": "11-saved-run",
+      "reviewed": true,
+      "checks": [
+        "World/palette and enamel component-family consistency",
+        "Screen-specific controls and legible primary hierarchy",
+        "Required state/content represented"
+      ]
+    },
+    {
+      "id": "12-progress-protected",
+      "reviewed": true,
+      "checks": [
+        "World/palette and enamel component-family consistency",
+        "Screen-specific controls and legible primary hierarchy",
+        "Required state/content represented"
+      ]
+    }
+  ],
+  "repaired_issues": [
+    "Component specimen's save-error copy corrected to avoid implying that a failed save succeeded.",
+    "Removed hardware-rank pips from results progression cards and blueprint milestone cards.",
+    "Removed an inherited credit counter from the read-only evolution reference."
+  ],
+  "generation_note": "The first Hangar call failed with a network error; a built-in imagegen retry succeeded. Two early correction attempts could not read results from a still-running orchestration cell and made no image requests; corrected calls used returned image paths.",
+  "limitations": [
+    "Illustrative account/run data, not user save data or a separate tuning authority.",
+    "Raster visual mockups, not native screens or reusable runtime sprite exports.",
+    "Current Build, Evolutions and Privacy show one representative page each.",
+    "The protected-save mockup shows Retry + Back Up & Reset; ordinary retry and incompatible-run Back Up & Bank share conditional component variants.",
+    "Individual illustration framing and tiny pictograms are concept art, not evidence of exact existing native meshes or pixel geometry.",
+    "No device text scaling, hit targets, screen-reader flow, font metrics or computed contrast qualification is claimed."
+  ],
+  "runtime_changes": false,
+  "native_dimensions_note": "Eleven screen PNGs are 850x1850; Current Build is native imagegen 851x1849. Preserved without resampling. Dimensions in the component spec are nominal reference dimensions; exact outputs are recorded in manifest.json. An initial exact-dimension checker exposed this one-pixel tool variation; it is retained as an art-file fact, not a runtime layout pass."
+}

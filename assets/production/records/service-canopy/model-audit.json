@@ -1,0 +1,153 @@
+{
+  "triangles": 2606,
+  "vertices": 3123,
+  "mesh_primitives": 2,
+  "uv_present": true,
+  "textures": [
+    {
+      "size": [
+        1024,
+        1024
+      ],
+      "mode": "RGB"
+    }
+  ],
+  "raw_accessor_bounds": [
+    {
+      "min": [
+        -0.3505859375,
+        -0.2548828423023224,
+        -0.4990234375
+      ],
+      "max": [
+        0.3505859375,
+        0.2548828423023224,
+        0.4990234375
+      ]
+    },
+    {
+      "min": [
+        -0.32499998807907104,
+        0.16500000655651093,
+        -0.4749999940395355
+      ],
+      "max": [
+        0.32499998807907104,
+        0.1770000010728836,
+        0.4749999940395355
+      ]
+    }
+  ],
+  "extensions": [],
+  "bytes": 293428,
+  "asset": "service-canopy",
+  "model_file": "assets/models/service-canopy/service-canopy.glb",
+  "requested_face_limit": 2600,
+  "source_task_id": "de16f733-78f4-4c50-b0ac-6f1ff5274004",
+  "convert_task_id": "65881859-5ec8-4a5a-95ee-ea4f3bbe1815",
+  "credits_consumed": 60,
+  "preview": null,
+  "triangle_budget_review": {
+    "requested_target": 2600,
+    "actual_triangles": 2606,
+    "target_met": false,
+    "category_ceiling": 3000,
+    "status": "passed"
+  },
+  "structural_review": {
+    "status": "passed",
+    "notes": "Triangle mode, valid GLB length, UVs and embedded 1024px base colour checked. Requested targets are approximate; actual triangle count and target deviations are reported separately, within the user-specified 3000-prop / 8000-character ceilings. Scale, pivot, topology and visual quality require separate review."
+  },
+  "visual_review": {
+    "status": "accepted",
+    "reviewer": "seamless_materials agent",
+    "notes": "Accepted after thin continuous backing closes generated panel through-gaps: four posts/feet, open empty space beneath roof, no pumps or platform. Opposite three-quarter views and underside checked on actual repaired GLB. Long width X is 6m, canonical open long edge faces +Z.",
+    "model_sha256": "bf6cf9eade6ebc8cff41294c0cb1c123bc4bdbf7b8f1b57ef0c8653411b7c714",
+    "reviewed_at": "2026-10-24T22:05:11.182056+00:00",
+    "qualification": "Authoring/import QA only; native engine rendering, collisions and device performance not qualified."
+  },
+  "import_review": {
+    "status": "passed",
+    "units": "metres",
+    "up": "+Y",
+    "forward": "+Z",
+    "yaw_degrees": 90.0,
+    "pivot": "ground-centre",
+    "double_sided": false,
+    "uniform_scale": 6.011741682974559,
+    "bounds_m": [
+      [
+        -3.0,
+        0.0,
+        -2.107632093933464
+      ],
+      [
+        3.0,
+        3.0645796146878057,
+        2.107632093933464
+      ]
+    ],
+    "dimensions_m": [
+      6.0,
+      3.0645796146878057,
+      4.215264187866928
+    ],
+    "vertex_checks": [
+      {
+        "triangles": 2594,
+        "degenerate_triangles": 0,
+        "uv_bounds": [
+          [
+            0.0007553410832770169,
+            0.0006071925163269043
+          ],
+          [
+            0.9953575730323792,
+            0.9991644620895386
+          ]
+        ]
+      },
+      {
+        "triangles": 12,
+        "degenerate_triangles": 0,
+        "uv_bounds": [
+          [
+            0.6789132356643677,
+            0.6035261154174805
+          ],
+          [
+            0.6827206611633301,
+            0.7227030992507935
+          ]
+        ]
+      }
+    ],
+    "notes": "Real scene vertices and indices decoded; finite positions/UVs; retained embedded 1024px base colour. Uniform root transform; raw file preserved. Semantic forward and repaired geometry checked in actual rendered views."
+  },
+  "raw_model_file": "assets/models/service-canopy/service-canopy-repaired-source.glb",
+  "generation_raw_model_file": "assets/models/service-canopy/tripo-out/service-canopy-convert-65881859/model.glb",
+  "geometry_repair": {
+    "asset": "service-canopy",
+    "description": "Added a thin continuous cream roof backing under the existing red panels to close tiny through-gaps; four supports and open space beneath retained.",
+    "source": "assets/models/service-canopy/tripo-out/service-canopy-convert-65881859/model.glb",
+    "source_sha256": "cc5f111cfa513200f2a2694366e937b8a269fd349e56cd1299fa7c8f827376dc",
+    "repaired_source": "assets/models/service-canopy/service-canopy-repaired-source.glb",
+    "repaired_source_sha256": "ebd64043e30218a5326fea16941b0b9bf22c0cde9e06d9f3e06b9fa40c613d5c",
+    "details": {
+      "added_triangles": 12,
+      "raw_backing_bounds": [
+        [
+          -0.325,
+          0.165,
+          -0.475
+        ],
+        [
+          0.325,
+          0.177,
+          0.475
+        ]
+      ]
+    },
+    "material_policy": "Original embedded base-colour and material retained; no PBR maps, no retexture."
+  }
+}

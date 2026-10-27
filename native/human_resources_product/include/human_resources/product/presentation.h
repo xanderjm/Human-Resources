@@ -66,7 +66,11 @@ enum class Command { none,
   preview0,
   preview1,
   preview2,
-  privacy };
+  privacy,
+  location_previous,
+  build_hardware,
+  build_research,
+  build_hangar };
 struct Button final {
   ui::Rect bounds;
   Command command{};
@@ -81,6 +85,8 @@ struct Interface final {
   std::string page_text;
   bool text_overflow{}; // Internal fit result; the product selects its measured layout.
   float damage_hud_bottom{}; // Absolute viewport bottom of a wrapped hit HUD; zero otherwise.
+  float hud_bottom{}; // Actual occupied top HUD boundary for receipts and attached vitality.
+  unsigned recipe_page_count{3}; // Composition spreads; independent of measured text continuation pages.
 };
 struct View final {
   Screen screen{Screen::title};
@@ -130,6 +136,13 @@ struct View final {
     return presentation::SceneryTheme::desert;
   default:
     return presentation::SceneryTheme::farmland;
+  }
+}
+[[nodiscard]] constexpr presentation::SceneryTheme previous_location(presentation::SceneryTheme theme) {
+  switch (theme) {
+  case presentation::SceneryTheme::farmland: return presentation::SceneryTheme::desert;
+  case presentation::SceneryTheme::desert: return presentation::SceneryTheme::suburbia;
+  default: return presentation::SceneryTheme::farmland;
   }
 }
 [[nodiscard]] Interface interface(const View& view);

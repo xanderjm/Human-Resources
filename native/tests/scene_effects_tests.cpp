@@ -1,4 +1,3 @@
-#include "../../tools/playable_qa/capture_cancel_trace.h"
 #include "test_support.h"
 #include <algorithm>
 #include <cmath>
@@ -192,7 +191,7 @@ void actual_damage_is_local_typed_and_pause_safe() {
   effects.update(run);
   require(!effects.damage_feedback().hull && effects.damage_feedback().age == 0 && effects.damage_feedback().cause == hr::gameplay::DamageCause::unknown, "actual legacy shield event selects typed unknown feedback");
   auto frame = hr::product::scene(run, 390.F / 844.F, false, false, &effects);
-  require(frame.damage_flash < 0 && mesh(frame, "ufo-modular").damage_reactive, "shield hit uses local cyan craft material response");
+  require(frame.damage_flash < 0 && mesh(frame, "ufo-modular").hit_flash[3] == 1, "shield hit uses a bright local craft impact while retaining shield identity");
   const auto paused = hr::presentation::model_matrix(mesh(frame, "ufo-modular"));
   frame = hr::product::scene(run, 390.F / 844.F, false, false, &effects);
   require(hr::presentation::model_matrix(mesh(frame, "ufo-modular")) == paused && effects.damage_feedback().age == 0, "paused damage has no wall-clock motion");
@@ -201,9 +200,13 @@ void actual_damage_is_local_typed_and_pause_safe() {
   effects.update(run);
   require(effects.damage_feedback().hull && effects.damage_feedback().cause == hr::gameplay::DamageCause::projectile, "hull takes precedence and retains actual cause for simultaneous layer hits");
   frame = hr::product::scene(run, 390.F / 844.F, false, false, &effects);
-  require(frame.damage_flash > 0, "hull hit uses distinct coral craft material response");
+  require(frame.damage_flash > 0 && mesh(frame, "ufo-modular").hit_flash[1] == 1, "hull hit starts white-hot while retaining hull identity");
+  for (const auto& part : frame.instances)
+    if (part.damage_reactive) require(part.hit_flash == mesh(frame, "ufo-modular").hit_flash, "every mounted player part shares one committed flash");
+    else require(part.hit_flash[3] == 0, "player hit never flashes scenery, projectiles or separate drones");
   frame = hr::product::scene(run, 390.F / 844.F, true, false, &effects);
   require(frame.damage_flash == 0 && effects.damage_feedback().hull && effects.damage_feedback().cause == hr::gameplay::DamageCause::projectile, "reduced motion retains real layer and cause without flashing the craft");
+  for (const auto& part : frame.instances) require(part.hit_flash[3] == 0, "reduced motion suppresses every bright material pulse");
   run.stats.active_seconds = .8;
   effects.update(run);
   require(effects.damage_feedback().age < 0, "damage feedback expires in bounded active time");
@@ -471,8 +474,8 @@ void flight_attitude_and_capture_payoff() {
     for (unsigned i = 1; i <= frequency / 2; ++i) {
       run.stats.active_seconds = static_cast<double>(i) / frequency;
       effects.update(run);
-      require(effects.flight_velocity().x > 0 && effects.flight_velocity().x <= 6,
-          "flight lean approaches actual motion without overshoot");
+      require(effects.flight_velocity().x > 0 && effects.flight_velocity().x < 6.3F,
+          "flight spring stays within five percent overshoot");
     }
     const auto velocity = effects.flight_velocity();
     require(velocity.x > 5.9F && velocity.z > 3.9F, "lean settles promptly, without lagging behind flight");
@@ -588,36 +591,45 @@ void capture_loss_continuity_and_lifecycle() {
   run.entities[0].kind=hr::gameplay::EntityKind::farmer;run.entities[0].capture_progress=0;run.stats.active_seconds=4;effects.begin_capture_frame(run);
   require(effects.capture_pose(run.entities[0],ground,ground,4,0).position.y==0,"retyped ID cannot inherit capture history");
 }
-void real_game_range_loss_is_continuous() {
-  const auto trace=hrqa::actual_capture_cancel_trace();
-  require(trace.cancelled_at>0 && trace.samples[trace.cancelled_at-1].actor.capture_progress>.9F &&
-      trace.samples[trace.cancelled_at].actor.capture_progress==0 && !trace.samples[trace.cancelled_at].beam,
-      "public Game retains immediate range-loss reset and beam removal");
+void real_game_range_loss_keeps_lifting() {
+  hr::gameplay::Game game; game.start({.seed = 514});
   hr::product::SceneEffects effects;
-  hr::presentation::StyleInstance before;
-  const auto& source = trace.samples.front().actor;
-  const std::string_view source_mesh = source.kind == hr::gameplay::EntityKind::cow ? "cow" : source.kind == hr::gameplay::EntityKind::sheep               ? "sheep"
-                                                                                          : source.kind == hr::gameplay::EntityKind::pig                   ? "pig"
-                                                                                          : source.kind == hr::gameplay::EntityKind::farmer                ? "farmer-body"
-                                                                                          : source.infantry_role == hr::gameplay::InfantryRole::shotgunner ? "infantry-shotgunner-body"
-                                                                                          : source.infantry_role == hr::gameplay::InfantryRole::rocketeer  ? "infantry-rocketeer-body"
-                                                                                                                                                           : "infantry-rifleman-body";
-  for(std::size_t i=0;i<trace.samples.size();++i) {
-    const auto& sample=trace.samples[i];
-    hr::gameplay::Snapshot run;
-    run.stats.active_seconds=sample.seconds;run.runner_distance=sample.runner_distance;
-    run.player=sample.player;run.entities.push_back(sample.actor);
-    const auto frame=hr::product::scene(run,390.F/844.F,false,false,&effects);
-    const auto after = mesh(frame, source_mesh);
-    if(i==trace.cancelled_at) {
-      require_near(after.position.x, before.position.x, 1e-6F, "actual range-loss frame preserves displayed X");
-      require_near(after.position.y, before.position.y, 1e-6F, "actual range-loss frame preserves displayed height");
-      require_near(after.position.z, before.position.z + sample.runner_distance - trace.samples[i - 1].runner_distance, 1e-6F, "actual reset preserves actor world station");
-      require(after.scale.x == before.scale.x, "actual reset cannot instantaneously regrow the actor");
+  std::uint32_t selected{};
+  float previous_progress{}, side = 1;
+  bool escaped = false, completed = false, dashed = false;
+  for (unsigned tick = 0; tick < 900 && !completed; ++tick) {
+    const auto& before = game.snapshot();
+    if (before.phase == hr::gameplay::Phase::choosing_upgrade)
+      require(game.choose_upgrade(0), "earned choice resumes the actual lift");
+    hr::gameplay::Control control;
+    if (selected) { control = {{side, -1}, !dashed}; dashed = true; }
+    game.advance(1.F / 60, control);
+    const auto& run = game.snapshot();
+    if (!selected && !run.beams.empty()) {
+      selected = run.beams.front().target_id;
+      side = run.player.x >= run.beams.front().target.x ? 1.F : -1.F;
     }
-    before=after;
+    effects.update(run);
+    const auto frame = hr::product::scene(run, 390.F / 844.F, false, false, &effects);
+    if (!selected) continue;
+    for (const auto& event : run.presentation_events)
+      if (event.sequence && event.kind == hr::gameplay::PresentationEventKind::capture && event.actor_id == selected)
+        completed = true;
+    if (completed) break;
+    const auto actor = std::find_if(run.entities.begin(), run.entities.end(), [&](const auto& a) { return a.id == selected; });
+    require(actor != run.entities.end(), "the selected public-Game target cannot vanish before capture");
+    require(actor->capture_progress >= previous_progress && actor->capture_progress > 0,
+            "actual range loss cannot reset or reverse capture progress");
+    previous_progress = actor->capture_progress;
+    require(std::any_of(run.beams.begin(), run.beams.end(), [&](const auto& b) { return b.target_id == selected; }),
+            "the same real beam remains attached throughout the lift");
+    const float distance = std::hypot(run.player.x - actor->position.x, run.player.z - actor->position.z);
+    escaped = escaped || distance > run.capture_radius;
+    const auto body = std::find_if(frame.instances.begin(), frame.instances.end(), [&](const auto& part) { return part.stable_id == selected; });
+    require(body != frame.instances.end() && std::isfinite(body->position.y) && body->position.y > 0,
+            "the real out-of-range target remains visibly airborne instead of releasing to ground");
   }
-  require(before.scale.x==1 && before.position.y==0,"actual trace reaches current authoritative ground pose after release");
+  require(escaped && completed, "ordinary public input leaves pickup range and still completes the original abduction");
 }
 void confirmed_fast_capture_keeps_one_readable_source_body() {
   for (bool reduced : {false, true}) {
@@ -730,7 +742,7 @@ int main() {
   capture_intake_and_soft_opacity_are_shared();
   flight_attitude_and_capture_payoff();
   capture_loss_continuity_and_lifecycle();
-  real_game_range_loss_is_continuous();
+  real_game_range_loss_keeps_lifting();
   confirmed_fast_capture_keeps_one_readable_source_body();
   only_confirmed_collection_can_retain_a_source_body();
 }

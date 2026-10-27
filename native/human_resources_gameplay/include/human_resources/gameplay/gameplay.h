@@ -15,7 +15,8 @@ namespace human_resources::gameplay {
 struct Vec2 final {
   float x{}, z{};
 };
-// Bit order is stable and independent of catalogue display order.
+// Bit order is durable. Overtime Reactor, Reserve Battery, Mirror Plating and
+// Bounty Scanner identifiers below are retired reserved slots, never live hardware.
 enum class Module : std::uint8_t {
   laser_array,
   rail_lens,
@@ -59,6 +60,13 @@ enum class EntityKind : std::uint8_t { farmer,
   tank,
   boss };
 enum class InfantryRole : std::uint8_t { none, rifleman, shotgunner, rocketeer };
+struct AbductionProfile final {
+  float lift_load{}, base_score{};
+};
+// Load is relative to a sheep. Bosses/invalid types return a zero profile.
+[[nodiscard]] AbductionProfile abduction_profile(EntityKind kind, InfantryRole role = InfantryRole::none);
+// Additive base-rate bonus earned by levels this run; level one has no bonus.
+[[nodiscard]] float level_capture_speed_bonus(unsigned level);
 enum class EnemyProjectileKind : std::uint8_t { vehicle_missile, infantry_round, infantry_rocket, jeep_minigun, boss_missile };
 struct InfantryAttack final {
   unsigned pellets{};
@@ -83,7 +91,7 @@ enum class Evolution : std::uint8_t {
   great_vacuum,
   office_shredder,
   hostile_acquisition,
-  mirrorball,
+  mirrorball, // retired reserved evolution bit
   employee_benefits,
   storm_drain
 };
@@ -97,11 +105,19 @@ struct RunSetup final {
   std::uint64_t seed{1};
   // damage, hull, shield, biological capture; clamped to configured limits.
   std::array<std::uint8_t, 4> permanent_ranks{};
-  std::uint32_t unlocked_blueprints{}; // zero selects the ten starter blueprints
+  std::uint32_t unlocked_blueprints{}; // zero selects the nine starter blueprints
+};
+// World-space ship-centre limits; stations are relative to runner_distance.
+// The display adapter supplies its visible plane. Gameplay owns clamping and
+// saves the accepted area so a cold continuation has an exact default future.
+struct FlightBounds final {
+  float left{}, right{}, backward{}, forward{};
 };
 struct Control final {
   Vec2 movement; // normalized by gameplay; x right, z forward, metres world axes
   bool dash{};   // rising semantic press, not a held button
+  Vec2 dash_direction{}; // Explicit flick direction; zero uses movement/last heading.
+  std::optional<FlightBounds> flight_bounds{}; // Absent retains the accepted area.
 };
 struct RunStats final {
   double active_seconds{};
@@ -123,7 +139,7 @@ namespace detail { struct SaveStateCodec; }
 struct EntityView final {
   std::uint32_t id{};
   EntityKind kind{};
-  Vec2 position, velocity, warning_aim;
+  Vec2 position, velocity, warning_aim; // Military velocity is arena-relative; civilians use world travel.
   float hull{}, maximum_hull{}, capture_progress{}, warning_seconds{}, disabled_seconds{};
   InfantryRole infantry_role{InfantryRole::none};
   float fire_recovery_seconds{};
@@ -186,7 +202,7 @@ struct BossCombatView final {
 };
 struct ProjectileView final {
   std::uint32_t id{};
-  Vec2 position, velocity;
+  Vec2 position, velocity; // Enemy projectiles travel within the same scrolling combat frame.
   float radius{}, damage{};
   std::uint32_t source_id{};
   InfantryRole infantry_role{InfantryRole::none};
@@ -263,6 +279,7 @@ struct Snapshot final {
   float hull{}, maximum_hull{}, shield{}, maximum_shield{};
   float xp{}, next_level_xp{}, capture_radius{}, movement_speed{}, weapon_damage{};
   float dash_cooldown_seconds{}, invulnerability_seconds{};
+  float dash_remaining_seconds{}; // Derived active burst; does not include ordinary cruise velocity.
   std::uint32_t beam_capacity{}, laser_count{}, rerolls_remaining{}, sector{1};
   std::array<std::uint8_t, static_cast<std::size_t>(Module::count)> modules{};
   std::array<float, static_cast<std::size_t>(Research::count)> research{};

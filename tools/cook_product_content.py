@@ -7,13 +7,16 @@ import argparse, json, hashlib, shutil, subprocess, sys, struct
 from PIL import Image, ImageDraw, ImageFont
 from cook_style_preview import cook_glb, primitives, write_mesh
 from cook_vehicle_content import split_mount, write_vehicle_header
+from cook_ship_components import cook_components, write_component_header
+from cook_ui_components import cook_ui_components, source_paths as ui_source_paths
 from static_mesh_optimizations import checked_recipe, provenance as mesh_provenance, validate_cooked
 ROOT=Path(__file__).resolve().parents[1]
-MODELS=['ufo-modular', 'ufo-antenna', 'ufo-beam', 'ufo-laser', 'ufo-shield', 'ufo-rim-lens', 'shield-shell', 'cow', 'sheep', 'pig', 'farmer-body', 'straw-hat', 'infantry-rifleman-body', 'infantry-shotgunner-body', 'infantry-rocketeer-body', 'weapon-carbine', 'weapon-shotgun', 'weapon-rocket-launcher', 'jeep-chassis', 'jeep-wheel', 'jeep-minigun-head', 'jeep-minigun-fixed-post', 'jeep-minigun-yaw-cap', 'tank-hull', 'tank-turret', 'missile', 'tree-round-large', 'tree-round-small', 'bush-low', 'field-rock-a', 'field-rock-b', 'grass-tuft', 'crop-seedling', 'barn', 'silo', 'hay-bale', 'windmill-mast', 'windmill-rotor', 'resident-body', 'nightcap', 'house-coral', 'house-teal', 'streetlamp', 'mailbox-red', 'mailbox-teal', 'wheelie-bin', 'hedge-module', 'cactus-tall', 'cactus-short', 'cliff-module-a', 'cliff-module-b', 'desert-boulder-a', 'desert-boulder-b', 'desert-scrub', 'service-canopy', 'fuel-pump-red', 'fuel-pump-blue', 'road-bollard']
+MODELS=['ufo-modular', 'ufo-antenna', 'ufo-beam', 'ufo-laser', 'ufo-rim-lens', 'shield-shell', 'cow', 'sheep', 'pig', 'farmer-body', 'straw-hat', 'infantry-rifleman-body', 'infantry-shotgunner-body', 'infantry-rocketeer-body', 'weapon-carbine', 'weapon-shotgun', 'weapon-rocket-launcher', 'jeep-chassis', 'jeep-wheel', 'jeep-minigun-head', 'jeep-minigun-fixed-post', 'jeep-minigun-yaw-cap', 'tank-hull', 'tank-turret', 'missile', 'tree-round-large', 'tree-round-small', 'bush-low', 'field-rock-a', 'field-rock-b', 'grass-tuft', 'crop-seedling', 'barn', 'silo', 'hay-bale', 'windmill-mast', 'windmill-rotor', 'resident-body', 'nightcap', 'house-coral', 'house-teal', 'streetlamp', 'mailbox-red', 'mailbox-teal', 'wheelie-bin', 'hedge-module', 'cactus-tall', 'cactus-short', 'cliff-module-a', 'cliff-module-b', 'desert-boulder-a', 'desert-boulder-b', 'desert-scrub', 'service-canopy', 'fuel-pump-red', 'fuel-pump-blue', 'road-bollard', 'ship-dome', 'ship-collar', 'ship-rotor-0', 'ship-rotor-1', 'ship-rotor-2', 'ship-rotor-3', 'ship-capture-port', 'ship-capture-manifold', 'ship-winch-housing', 'ship-winch-jaw', 'ship-winch-jaw-right', 'ship-winch-pivot', 'ship-pylon', 'ship-laser-barrel-1', 'ship-laser-barrel-2', 'ship-laser-barrel-3', 'ship-electrode-1', 'ship-electrode-2', 'ship-electrode-3', 'ship-maintenance-bay', 'ship-repair-unit', 'ship-engine-pod', 'ship-engine-nozzle', 'ship-shield-base', 'ship-shield-crystal', 'ship-drone', 'ship-drone-elite', 'ship-dome-phase-1', 'ship-dome-phase-2', 'ship-dome-phase-3']
 MATERIALS=['grass', 'dirt', 'soil', 'asphalt', 'pavement', 'sand']
 ANIMATED_MODELS=['cow', 'pig', 'sheep', 'farmer-body', 'resident-body', 'infantry-rifleman-body', 'infantry-shotgunner-body', 'infantry-rocketeer-body']
 LOCATIONS=['farmland', 'suburbia', 'desert']
-FONTS=['HR-Beam-UI-SemiBold.ttf','HR-Abduction-Compact-Black-Italic.ttf']
+FONTS=['HR-Beam-UI-SemiBold.ttf','HR-Abduction-Compact-Black-Italic.ttf',
+       'HR-Abduction-Logo-Black-Italic.ttf']
 # Graphic regions must remain disjoint, including their transparent margins:
 # alpha compositing cannot erase a previously drawn neighbour through transparency.
 ATLAS_GRAPHICS=[('ui-hud-panel',(0,1152),(768,192)),
@@ -39,7 +42,7 @@ def model_options(asset):
         return {'source_path':f'assets/models/{asset}/{asset}-runtime.glb'}
     if asset == 'ufo-modular':
         return {'source_path':'assets/models/ufo-modular/ufo-modular.glb',
-                'exclude_nodes':('Antenna_Module',)}
+                'exclude_nodes':('Antenna_Module','Dome','Dome_Collar','Outer_Ring_Pivot')}
     if asset in ('ufo-antenna','ufo-beam','ufo-laser','ufo-shield','ufo-rim-lens'):
         return {'source_path':'assets/models/ufo-modular/part-'+asset[4:]+'.glb'}
     if asset == 'shield-shell':
@@ -98,6 +101,7 @@ def cook(output, header):
     write_vehicle_header(header.parent/'vehicle_assembly.generated.h')
     records=[]
     for asset in MODELS:
+        if asset.startswith('ship-'): continue
         options=model_options(asset)
         if asset in vehicle_sources: options['source_path']=str(vehicle_sources[asset])
         record=cook_glb(asset,output,inventory,**options)
@@ -112,6 +116,9 @@ def cook(output, header):
             record['source_sha256']=hashlib.sha256((ROOT/record['source']).read_bytes()).hexdigest()
             record['source_subset']=asset
         records.append(record)
+    ship_records=cook_components(output)
+    records.extend(ship_records)
+    write_component_header(header.parent/'ship_components.generated.h',ship_records)
     cook_animation_content(output,header)
     primitives(output)
     # Wood is not used by any of the three consumed scenery kits.
@@ -136,10 +143,12 @@ def cook(output, header):
     # One white texel is the solid rectangle source, isolated from glyph filtering.
     draw.rectangle((1000,1000,1023,1023),fill='white')
     write_mesh(output/'ui-atlas.hrm',[[0,0,0,0,1,0,0,0,1,1,1,1,0,0]],[0,0,0],image)
+    cook_ui_components(output, header.with_name('ui_components.generated.h'))
     write_visibility_bounds(output,header.with_name('product_mesh_bounds.generated.h'))
     recipes=json.loads((ROOT/'design/balance/endless-upgrade-system.json').read_text())['evolutions']
-    header.write_text('#pragma once\n#include <array>\n#include <string_view>\nnamespace human_resources::product {\ninline constexpr std::array<float,190> glyph_advances{'+','.join(f'{n:.5f}F' for n in metrics)+'};\ninline constexpr std::array<std::string_view,6> recipe_effects{'+','.join(json.dumps(row['effect']) for row in recipes)+'};\n}\n')
+    effects = {row['slot']: row['effect'] for row in recipes}
+    header.write_text('#pragma once\n#include <array>\n#include <string_view>\nnamespace human_resources::product {\ninline constexpr std::array<float,190> glyph_advances{'+','.join(f'{n:.5f}F' for n in metrics)+'};\ninline constexpr std::array<std::string_view,6> recipe_effects{'+','.join(json.dumps(effects.get(slot, '')) for slot in range(6))+'};\n}\n')
     shutil.copyfile(ROOT/'assets/fonts/human-resources-v3/LICENSE.txt',output/'FONT-LICENSE.txt')
-    (output/'content-provenance.json').write_text(json.dumps({'schema':1,'models':records,'vehicle_contract_sha256':hashlib.sha256((ROOT/'assets/production/vehicle-weapons.json').read_bytes()).hexdigest(),'vehicle_split_tool_sha256':hashlib.sha256((ROOT/'tools/cook_vehicle_content.py').read_bytes()).hexdigest(),'font_source':'assets/fonts/human-resources-v3/ttf','locations':LOCATIONS,'materials':MATERIALS,'purpose':'Human Resources consumed three-location playable content; source art retained; device review pending'},indent=2)+'\n')
+    (output/'content-provenance.json').write_text(json.dumps({'schema':1,'models':records,'ui_sources':ui_source_paths(),'ship_component_sources':['assets/production/ship-components.json','tools/cook_ship_components.py','tools/build_ufo_modular.py'],'vehicle_contract_sha256':hashlib.sha256((ROOT/'assets/production/vehicle-weapons.json').read_bytes()).hexdigest(),'vehicle_split_tool_sha256':hashlib.sha256((ROOT/'tools/cook_vehicle_content.py').read_bytes()).hexdigest(),'font_source':'assets/fonts/human-resources-v3/ttf','locations':LOCATIONS,'materials':MATERIALS,'purpose':'Human Resources consumed three-location playable content; source art retained; device review pending'},indent=2)+'\n')
 if __name__=='__main__':
     p=argparse.ArgumentParser();p.add_argument('--output',type=Path,required=True);p.add_argument('--header',type=Path,required=True);a=p.parse_args();cook(a.output,a.header)

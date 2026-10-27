@@ -21,7 +21,63 @@ Vec2 rotated(Vec2 value, float angle) {
   const float c = std::cos(angle), s = std::sin(angle);
   return {value.x * c - value.z * s, value.x * s + value.z * c};
 }
+struct ArenaBounds final { float left, right, back, front; };
+ArenaBounds arena_bounds(const Actor& actor, FlightBounds flight, float runner) {
+  const float edge = tuning::field_half_width - radius(actor);
+  const float back = runner + std::min(0.F, flight.backward + radius(actor));
+  const float front = runner + std::max(0.F, flight.forward - radius(actor));
+  // Ingress may start ahead of the arena. Only inward motion is admitted there;
+  // capture releases outside an edge likewise return through ordinary travel.
+  return {std::min(-edge, actor.view.position.x), std::max(edge, actor.view.position.x),
+      std::min(back, actor.view.position.z), std::max(front, actor.view.position.z)};
+}
 } // namespace
+
+void Game::State::scroll_military(float distance) {
+  // Combat owns an arena-relative frame. Apply its common translation before
+  // local swept motion so planted attacks and disabled bodies keep pace with
+  // the scenery. Relative spacing and committed warning rays stay exact.
+  for (auto& actor : actors) {
+    if (actor.removed || !military(actor.view.kind)) continue;
+    actor.view.position.z += distance;
+    actor.aim.z += distance;
+    actor.view.warning_aim.z += distance;
+    if (actor.view.kind == EntityKind::soldier && actor.view.warning_seconds > 0) {
+      const auto shot = infantry_shot(actor.view.infantry_role, actor.view.position, actor.aim);
+      if (shot.valid) {
+        // Reconstruct after world-float rounding, rather than slowly letting
+        // the planted body and its physical muzzle disagree at large distances.
+        const float yaw = std::atan2(shot.direction.x, -shot.direction.z) - infantry_attack(actor.view.infantry_role).weapon_yaw_radians;
+        actor.locomotion_velocity = {std::sin(yaw), -std::cos(yaw)};
+        actor.view.body_heading = yaw;
+      }
+    }
+  }
+  for (auto& bullet : bullets) {
+    bullet.view.position.z += distance;
+    bullet.view.launch_position.z += distance;
+  }
+  if (boss && boss->plan) {
+    auto& plan = *boss->plan;
+    plan.locked_root.z += distance;
+    const Vec2 centre{plan.shells[1].aim.x, plan.shells[1].aim.z + distance};
+    EntityView locked;
+    locked.kind = EntityKind::boss; locked.id = boss->actor_id;
+    locked.position = plan.locked_root; locked.body_heading = plan.locked_body_heading;
+    if (auto translated = boss_attack_plan(locked, centre, {}, plan.kind)) {
+      // Re-solving float geometry must not choose a new sweep order. The
+      // original lateral target/movement already made that decision at lock.
+      if (plan.kind == BossAttackKind::rake &&
+          std::abs(translated->shells[0].aim.x - plan.shells[0].aim.x) >
+              std::abs(translated->shells[2].aim.x - plan.shells[0].aim.x))
+        std::swap(translated->shells[0], translated->shells[2]);
+      for (unsigned i = 0; i < plan.shells.size(); ++i)
+        translated->shells[i].release_offset = plan.shells[i].release_offset;
+      translated->initial_turret_yaw = plan.initial_turret_yaw;
+      plan = *translated;
+    }
+  }
+}
 
 void Game::State::place_military(Actor& target) {
   const float edge = tuning::field_half_width - radius(target);
@@ -61,6 +117,7 @@ Vec2 Game::State::military_velocity(const Actor& actor, Vec2 preferred, float dt
     return {};
   const float own_radius = radius(actor);
   const float edge = tuning::field_half_width - own_radius;
+  const auto bounds = arena_bounds(actor, flight_bounds, view.runner_distance);
   // A tiny bounded heading search supplies local obstacle avoidance. Fixed actor
   // order and ID tie-breaking consume neither encounter RNG nor saved state.
   constexpr std::array<float, 9> turns{0, .39269908F, -.39269908F, .78539816F, -.78539816F,
@@ -80,6 +137,7 @@ Vec2 Game::State::military_velocity(const Actor& actor, Vec2 preferred, float dt
     // ordinary inward travel, never increase that pre-existing excursion.
     if (std::abs(position.x) > std::max(edge, std::abs(actor.view.position.x)) + .00001F)
       continue;
+    if (position.z < bounds.back - .00001F || position.z > bounds.front + .00001F) continue;
     float proximity = 0;
     bool clear = true;
     for (const auto& other : actors) {
@@ -123,12 +181,19 @@ detail::InfantryMotion Game::State::infantry_motion(const Actor& actor, Vec2 des
   if (length_squared(facing) == 0) facing = {0, -1};
   if (!(dt > 0)) return {{}, facing};
   const float edge = std::max(tuning::field_half_width - radius(actor), std::abs(actor.view.position.x));
+  const auto bounds = arena_bounds(actor, flight_bounds, view.runner_distance);
   const Vec2 route{destination.x - actor.view.position.x, destination.z - actor.view.position.z};
   const auto desired = length_squared(route) > .00000001F ? direction(route) : facing;
+  const auto shot = infantry_shot(actor.view.infantry_role, actor.view.position, view.player);
+  const float yaw = shot.valid ? std::atan2(shot.direction.x, -shot.direction.z) - infantry_attack(actor.view.infantry_role).weapon_yaw_radians :
+      std::atan2(view.player.x - actor.view.position.x, -(view.player.z - actor.view.position.z));
+  const Vec2 toward_player{std::sin(yaw), -std::cos(yaw)};
+  const auto previous_heading = direction(actor.view.velocity);
   const float maximum = tuning::military_movement_speed[0] * (actor.slow_timer > 0 ? 1 - tuning::storm_slow : 1);
   const float requested = maximum * std::min(1.F, std::sqrt(length_squared(route)) / tuning::tactics_arrival_radius);
   const auto clear = [&](Vec2 travel) {
     if (std::abs(actor.view.position.x + travel.x) > edge + .00001F) return false;
+    if (actor.view.position.z + travel.z < bounds.back - .00001F || actor.view.position.z + travel.z > bounds.front + .00001F) return false;
     for (const auto& other : actors) {
       if (&other == &actor || !obstacle(other)) continue;
       const float gap = radius(actor) + radius(other) + tuning::military_spacing_margin;
@@ -152,7 +217,7 @@ detail::InfantryMotion Game::State::infantry_motion(const Actor& actor, Vec2 des
       proximity += std::max(0.F, gap + .35F - std::sqrt(segment_distance_squared(other.view.position, actor.view.position, forecast)));
     }
     const float score = heading.x * desired.x + heading.z * desired.z - 3 * proximity +
-        .4F * (heading.x * facing.x + heading.z * facing.z) + .001F * ((actor.view.id & 1U) == positive_turn);
+        .4F * (heading.x * previous_heading.x + heading.z * previous_heading.z) + .001F * ((actor.view.id & 1U) == positive_turn);
     if (score > best) { best = score; guide = heading; }
   };
   // Steering chooses a guide; it no longer becomes instantaneous translation
@@ -166,14 +231,16 @@ detail::InfantryMotion Game::State::infantry_motion(const Actor& actor, Vec2 des
   // otherwise every sample can be blocked while a person has room to turn.
   for (const auto heading : {Vec2{0, -1}, Vec2{0, 1}, facing})
     consider(heading, desired.x * heading.z - desired.z * heading.x > 0);
+  facing = infantry_turn(facing, toward_player, dt);
   if (best == -100000) return {{}, facing};
-  facing = infantry_turn(facing, guide, dt);
-  const float alignment = std::max(0.F, facing.x * guide.x + facing.z * guide.z);
-  const float goal = requested * alignment * alignment;
-  const float previous = std::sqrt(length_squared(actor.view.velocity));
-  const float change = (goal < previous ? tuning::infantry_braking : tuning::infantry_acceleration) * dt;
-  const float speed = previous + std::clamp(goal - previous, -change, change);
-  const auto velocity = scaled(facing, speed);
+  // Facing belongs to engagement, travel belongs to the admitted route. This
+  // permits retreat/strafe without turning a soldier's back on the saucer.
+  const float alignment = std::max(0.F, facing.x * toward_player.x + facing.z * toward_player.z);
+  const auto goal = scaled(guide, alignment < .70710678F ? 0.F : requested);
+  const Vec2 delta{goal.x - actor.view.velocity.x, goal.z - actor.view.velocity.z};
+  const float change = (length_squared(goal) < length_squared(actor.view.velocity) ? tuning::infantry_braking : tuning::infantry_acceleration) * dt;
+  const float length = std::sqrt(length_squared(delta));
+  const auto velocity = add(actor.view.velocity, scaled(delta, length > change ? change / length : 1.F));
   // A human may plant and keep pivoting; the circular ground reservation does
   // not change with that turn. Actual accepted travel still owns the full sweep.
   return {clear(scaled(velocity, dt)) ? velocity : Vec2{}, facing};
@@ -198,10 +265,13 @@ detail::VehicleMotion Game::State::vehicle_motion(const Actor& actor, Vec2 desti
   const float horizon = std::max(tuning::vehicle_recovery_clearance_metres,
       nominal * tuning::military_spacing_lookahead + nominal * nominal / (2 * tuning::vehicle_braking));
   const float allowed = std::max(tuning::field_half_width - radius(actor), std::abs(actor.view.position.x));
+  const auto bounds = arena_bounds(actor, flight_bounds, view.runner_distance);
   const auto clearance = [&](Vec2 origin, Vec2 heading) {
     float clear = horizon;
     if (heading.x > .00001F) clear = std::min(clear, (allowed - origin.x) / heading.x);
     if (heading.x < -.00001F) clear = std::min(clear, (-allowed - origin.x) / heading.x);
+    if (heading.z > .00001F) clear = std::min(clear, (bounds.front - origin.z) / heading.z);
+    if (heading.z < -.00001F) clear = std::min(clear, (bounds.back - origin.z) / heading.z);
     for (const auto& other : actors) {
       if (&actor == &other || !obstacle(other)) continue;
       const Vec2 offset{other.view.position.x - origin.x, other.view.position.z - origin.z};

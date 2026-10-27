@@ -265,6 +265,7 @@ if(HUMAN_RESOURCES_BUILD_CLIENT)
     "${CMAKE_CURRENT_SOURCE_DIR}/assets/models/*.glb"
     "${CMAKE_CURRENT_SOURCE_DIR}/assets/textures/*.png"
     "${CMAKE_CURRENT_SOURCE_DIR}/assets/graphics/*.png"
+    "${CMAKE_CURRENT_SOURCE_DIR}/assets/graphics/atomic-ui/v1/recipe.json"
     "${CMAKE_CURRENT_SOURCE_DIR}/assets/graphics/fx-shield-shell/unit-sphere.glb"
     "${CMAKE_CURRENT_SOURCE_DIR}/assets/animation/*.json"
     "${CMAKE_CURRENT_SOURCE_DIR}/design/balance/endless-upgrade-system.json"
@@ -288,7 +289,7 @@ if(HUMAN_RESOURCES_BUILD_CLIENT)
       string(JSON model_name GET "${product_content_recipe}" models ${model_index})
       list(APPEND game_runtime_package_files "${GAME_GENERATED_RUNTIME_DIR}/game/${model_name}.hrm")
     endforeach()
-    foreach(product_primitive plane cube ring beam ground-grass ground-dirt ground-soil ground-asphalt ground-pavement ground-sand ui-atlas)
+    foreach(product_primitive plane cube ring beam ground-grass ground-dirt ground-soil ground-asphalt ground-pavement ground-sand ui-atlas ui-components)
       list(APPEND game_runtime_package_files "${GAME_GENERATED_RUNTIME_DIR}/game/${product_primitive}.hrm")
     endforeach()
     string(JSON product_animation_count LENGTH "${product_content_recipe}" animated_models)
@@ -313,15 +314,21 @@ if(HUMAN_RESOURCES_BUILD_CLIENT)
       "${GAME_GENERATED_ROOT}/product/include/product_mesh_bounds.generated.h"
       "${GAME_GENERATED_ROOT}/product/include/infantry_equipment.generated.h"
       "${GAME_GENERATED_ROOT}/product/include/vehicle_assembly.generated.h"
+      "${GAME_GENERATED_ROOT}/product/include/ship_components.generated.h"
+      "${GAME_GENERATED_ROOT}/product/include/ui_components.generated.h"
     COMMAND "${Python3_EXECUTABLE}" "${CMAKE_CURRENT_SOURCE_DIR}/tools/generators/cook_runtime_assets.py"
             --source-root "${CMAKE_CURRENT_SOURCE_DIR}/assets/runtime"
             --output-root "${GAME_GENERATED_RUNTIME_DIR}"
             --project "${CMAKE_CURRENT_SOURCE_DIR}/project.json"
     DEPENDS ${game_runtime_source_files} ${game_product_authoring_sources}
             "${CMAKE_CURRENT_SOURCE_DIR}/tools/cook_product_content.py"
+            "${CMAKE_CURRENT_SOURCE_DIR}/tools/cook_ui_components.py"
             "${CMAKE_CURRENT_SOURCE_DIR}/tools/static_mesh_optimizations.py"
             "${CMAKE_CURRENT_SOURCE_DIR}/tools/build_static_mesh_optimizations.py"
             "${CMAKE_CURRENT_SOURCE_DIR}/assets/production/static-mesh-optimizations.json"
+            "${CMAKE_CURRENT_SOURCE_DIR}/tools/cook_ship_components.py"
+            "${CMAKE_CURRENT_SOURCE_DIR}/tools/build_ufo_modular.py"
+            "${CMAKE_CURRENT_SOURCE_DIR}/assets/production/ship-components.json"
             "${CMAKE_CURRENT_SOURCE_DIR}/tools/cook_vehicle_content.py"
             "${CMAKE_CURRENT_SOURCE_DIR}/tools/glb_geometry_repair.py"
             "${CMAKE_CURRENT_SOURCE_DIR}/tools/audit_glb.py"
@@ -523,6 +530,12 @@ if(HUMAN_RESOURCES_BUILD_CLIENT)
       DEPENDS human_resources_runtime_assets human_resources_shaders
       VERBATIM)
     add_dependencies(${game_client_target} human_resources_stage_runtime_assets)
+    if(HUMAN_RESOURCES_BUILD_TESTS AND NOT IOS)
+      add_executable(human_resources_ui_review EXCLUDE_FROM_ALL native/tests/product_ui_native_review.cpp)
+      target_link_libraries(human_resources_ui_review PRIVATE human_resources_product human_resources_game_renderer SDL3::SDL3)
+      add_dependencies(human_resources_ui_review human_resources_stage_runtime_assets)
+      game_apply_cpp_defaults(human_resources_ui_review)
+    endif()
   endif()
 endif()
 

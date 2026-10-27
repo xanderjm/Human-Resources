@@ -9,6 +9,7 @@
 #include <human_resources/gameplay/tuning.h>
 #include <human_resources/product/presentation.h>
 #include <human_resources/product/visibility.h>
+#include <human_resources/presentation/rotor_geometry.h>
 #include <map>
 namespace {
 namespace hr = human_resources;
@@ -37,6 +38,11 @@ const hr::assets::PreviewMesh& mesh(std::string_view id) {
 std::array<float, 2> vertex_screen(const StyleFrame& f, const StyleInstance& i, hr::assets::PreviewVertex vertex, float width, float height) {
   auto p = vertex.position;
   if (vertex.rotor > .5F) {
+    const float radius = std::hypot(p[0], p[2]);
+    if (radius > .00001F) {
+      const float scale = hr::presentation::rotor_radius(radius, i.rotor_style[0]) / radius;
+      p[0] *= scale; p[2] *= scale;
+    }
     const float c = std::cos(f.ring_angle), s = std::sin(f.ring_angle), x = p[0], z = p[2];
     p[0] = c * x + s * z;
     p[2] = -s * x + c * z;
@@ -46,30 +52,32 @@ std::array<float, 2> vertex_screen(const StyleFrame& f, const StyleInstance& i, 
   return {(1 + (m[0] * p[0] + m[1] * p[1] + m[2] * p[2] + m[3]) / w) * width * .5F, (1 - (m[4] * p[0] + m[5] * p[1] + m[6] * p[2] + m[7]) / w) * height * .5F};
 }
 bool player_mesh(std::string_view id) {
-  return id == "ufo-modular" || id == "ufo-laser" || id == "ufo-beam" || id == "ufo-shield" || id == "ufo-rim-lens" || id == "shield-shell";
+  return id.starts_with("ufo-") || id.starts_with("ship-") || id == "shield-shell";
 }
-std::array<float, 2> hud_vertical_limits(std::array<float, 2> size) {
-  static std::map<unsigned, std::array<float, 2>> cache;
-  const auto key = static_cast<unsigned>(size[0]);
-  if (cache.contains(key))
-    return cache.at(key);
-  progression_tests::MemoryBackend backend;
-  hr::progression::AccountStore store(backend);
-  (void)store.load();
-  hr::gameplay::Snapshot run;
-  run.phase = hr::gameplay::Phase::active;
-  std::array<float,2> limits{0,size[1]};
-  for(float scale:{1.F,1.3F,2.F,3.2F}) {
-    hr::product::View view{.screen=hr::product::Screen::run,.run=&run,.store=&store,.viewport={0,0,size[0],size[1]},.safe_area={0,size[0]==320?20.F:59.F,0,size[0]==320?0.F:34.F}};
-    view.text_scale=scale;
-    const auto ui=hr::product::interface(view);
-    const auto pause=std::find_if(ui.buttons.begin(),ui.buttons.end(),[](const auto& b){return b.command==hr::product::Command::pause;});
-    const auto dash=std::find_if(ui.buttons.begin(),ui.buttons.end(),[](const auto& b){return b.command==hr::product::Command::dash;});
-    require(pause!=ui.buttons.end() && dash!=ui.buttons.end(),"actual HUD and control boundaries exist at every supported text size");
-    limits[0]=std::max(limits[0],pause->bounds.bottom()+12);
-    limits[1]=std::min(limits[1],dash->bounds.y-10);
+void consumed_hull_can_straddle_every_visible_edge() {
+  for (const auto size : {std::array<float,2>{320,568},{390,844},{768,1024},{844,390}}) {
+    const auto framing = hr::product::gameplay_framing({0,0,size[0],size[1]});
+    const auto area = framing.flight_bounds;
+    for(float side : {area.left,area.right}) for(float station : {area.backward,area.forward}) {
+      hr::gameplay::Snapshot run;run.player={side,station};
+      const auto frame=hr::product::scene(run,framing,true);
+      float left=10000,right=-10000,top=10000,bottom=-10000;
+      // The original consumed saucer is now assembled from its four physical
+      // surfaces. Keep the same whole-saucer edge contract after that split.
+      for(const auto& part:frame.instances)
+        if(part.mesh=="ufo-modular"||part.mesh=="ship-dome"||part.mesh=="ship-collar"||part.mesh=="ship-rotor-0")
+          for(const auto vertex:mesh(part.mesh).vertices) {
+            const auto p=vertex_screen(frame,part,vertex,size[0],size[1]);
+            left=std::min(left,p[0]);right=std::max(right,p[0]);top=std::min(top,p[1]);bottom=std::max(bottom,p[1]);
+          }
+      const float x=side<0?0:size[0], y=station==area.forward?0:size[1];
+      require(left<x && right>x && top<y && bottom>y,
+          "actual cooked saucer straddles both requested camera edges at every device corner");
+      const float visible_x=side<0?right-x:x-left, visible_y=station==area.forward?bottom-y:y-top;
+      require(visible_x/(right-left)>.3F && visible_x/(right-left)<.7F && visible_y/(bottom-top)>.3F && visible_y/(bottom-top)<.7F,
+          "edge reach leaves roughly half the real saucer visible in each axis");
+    }
   }
-  return cache[key]=limits;
 }
 void full_gear_has_real_phone_margins() {
   float worst_clearance = 10000, top_clearance = 10000, bottom_clearance = 10000;
@@ -86,7 +94,13 @@ void full_gear_has_real_phone_margins() {
               for (unsigned phase = 0; phase < 32; ++phase) {
                 hr::gameplay::Snapshot run;
                 run.runner_distance = 100;
-                run.player = {side * 7.5F, 100 + along};
+                // Full-rig visibility is an interior composition check. The
+                // separate corner contract above checks the owner's full-edge
+                // centre reach, where protruding machinery/drones may leave
+                // the output. Expanded hardware needs an actual interior
+                // anchor rather than the former fixed 7.5m boundary.
+                const auto area=hr::product::gameplay_framing(size[0]/size[1]).flight_bounds;
+                run.player = {side * std::min(7.5F,(area.right-area.left)*.25F), 100 + along};
                 run.velocity = {bank, vertical};
                 run.stats.active_seconds = static_cast<double>(phase) * 7.3919827 / 32;
                 run.shield = run.maximum_shield = 100;
@@ -101,11 +115,14 @@ void full_gear_has_real_phone_margins() {
                   run.shots.push_back({run.player, {(i & 1) ? -5.65F : 5.65F, 100 + ((i & 2) ? -6.F : 6.F)}, .1F, true, hr::gameplay::ShotKind::drone, static_cast<std::uint8_t>(i)});
                 const auto frame = hr::product::scene(run, size[0] / size[1], false, false, nullptr, theme);
                 for (const auto& instance : frame.instances)
-                  if (player_mesh(instance.mesh))
+                  if (player_mesh(instance.mesh) || instance.damage_reactive) {
+                    const auto region = hr::product::project_region(hr::presentation::multiply(frame.camera,hr::presentation::model_matrix(instance)),*hr::product::visibility_mesh_bounds(instance.mesh));
+                    const float half_width = (region.right-region.left)*size[0]*.25F;
                     for (auto vertex : mesh(instance.mesh).vertices) {
                       const auto p = vertex_screen(frame, instance, vertex, size[0], size[1]);
-                      require(p[0] >= 6 && p[0] <= size[0] - 6, "actual banked/aimed maximum gear retains six real phone pixels at both sides");
-                      const auto limits = hud_vertical_limits(size);
+                      require(p[0] >= -half_width && p[0] <= size[0]+half_width,
+                          "maximum gear permits at most half its projected width outside the output");
+                      const std::array<float,2> limits{0,size[1]};
                       const float clearance = std::min(p[1] - limits[0], limits[1] - p[1]);
                       top_clearance = std::min(top_clearance, p[1] - limits[0]);
                       bottom_clearance = std::min(bottom_clearance, limits[1] - p[1]);
@@ -114,9 +131,10 @@ void full_gear_has_real_phone_margins() {
                         std::cout << "PLAYER_MARGIN phone=" << size[0] << " along=" << along << " mesh=" << instance.mesh << " y=" << p[1] << " required=" << limits[0] << ".." << limits[1] << " clearance=" << clearance << '\n';
                       }
                     }
+                  }
               }
   std::cout << "PLAYER_EXTREMES top_clearance=" << top_clearance << " bottom_clearance=" << bottom_clearance << "\n";
-  require(worst_clearance >= 0, "complete maximum gear clears the real HUD by twelve pixels and control by ten");
+  require(worst_clearance >= 0, "complete inner-corridor gear remains in the output while safe HUD overlays flight");
 }
 void supported_stages_keep_real_flight_and_readable_controls() {
   struct Display { unsigned width, height; hr::ui::Insets insets; float x{}, y{}; };
@@ -160,10 +178,11 @@ void supported_stages_keep_real_flight_and_readable_controls() {
       require(button.bounds.x>=framing.safe.x && button.bounds.y>=framing.safe.y && button.bounds.right()<=framing.safe.right()+.01F && button.bounds.bottom()<=framing.safe.bottom()+.01F,"all targets lie within actual safe area");
       if(framing.compact && !framing.banded) {
         const auto overlap=hr::ui::intersect(button.bounds,framing.stage);
-        require(overlap.width<.01F || overlap.height<.01F,"entire compact control target stays outside world stage");
+        require(overlap.width>=button.bounds.width-.01F && overlap.height>=button.bounds.height-.01F,
+            "compact safe control overlays the full-output flight field");
       } else {
-        if(button.command==hr::product::Command::pause) top=button.bounds.bottom()+12;
-        if(button.command==hr::product::Command::dash) bottom=button.bounds.y-10;
+        if(button.command==hr::product::Command::pause) require(button.bounds.bottom()<=framing.safe.bottom(),"Pause stays inside safe bounds");
+        if(button.command==hr::product::Command::dash) require(button.bounds.y>=framing.safe.y,"Dash stays inside safe bounds");
       }
     }
     for(const auto& quad:ui.quads)
@@ -179,7 +198,8 @@ void supported_stages_keep_real_flight_and_readable_controls() {
     }
     float clearance=10000;
     for(float side:{-1.F,1.F}) for(float along:{-17.F,16.5F}) for(float bank:{-12.F,12.F}) for(float vertical:{-12.F,12.F}) for(unsigned phase=0;phase<32;++phase) {
-      run.player={side*7.5F,100+along};run.velocity={bank,vertical};run.stats.active_seconds=30+static_cast<double>(phase)*7.3919827/32;
+      const auto area=framing.flight_bounds;
+      run.player={side*std::min(7.5F,(area.right-area.left)*.25F),100+along};run.velocity={bank,vertical};run.stats.active_seconds=30+static_cast<double>(phase)*7.3919827/32;
       run.shots.clear();
       for(unsigned i=0;i<4;++i)run.shots.push_back({run.player,{(i&1)?-5.65F:5.65F,100+((i&2)?-6.F:6.F)},.1F,false,hr::gameplay::ShotKind::laser,static_cast<std::uint8_t>(i)});
       for(unsigned i=0;i<3;++i)run.shots.push_back({run.player,{(i&1)?-5.65F:5.65F,100+((i&2)?-6.F:6.F)},.1F,true,hr::gameplay::ShotKind::drone,static_cast<std::uint8_t>(i)});
@@ -190,7 +210,7 @@ void supported_stages_keep_real_flight_and_readable_controls() {
         const float margin=std::min({point[0]-framing.stage.x,framing.stage.right()-point[0],point[1]-top,bottom-point[1]});
         clearance=std::min(clearance,margin);
         if(margin<0)std::cerr<<"STAGE_FAIL "<<display.width<<'x'<<display.height<<" text="<<text_scale<<" mesh="<<instance.mesh<<" point="<<point[0]<<','<<point[1]<<" band="<<top<<".."<<bottom<<'\n';
-        require(margin>=0,"real banked maximum gear clears actual stage and all relevant controls across full movement");
+        require(margin>=0,"inner-corridor banked gear stays within the full-output world");
       }
     }
     std::cout<<"SUPPORTED_STAGE "<<display.width<<'x'<<display.height<<" text="<<text_scale<<" rect="<<framing.stage.x<<','<<framing.stage.y<<','<<framing.stage.width<<','<<framing.stage.height<<" clearance="<<clearance<<'\n';
@@ -232,6 +252,7 @@ void threat_attack_entry_and_retirement_clear_real_controls() {
     const auto pause = std::find_if(ui.buttons.begin(), ui.buttons.end(), [](const auto& b) { return b.command == hr::product::Command::pause; });
     const auto phase = std::find_if(ui.buttons.begin(), ui.buttons.end(), [](const auto& b) { return b.command == hr::product::Command::dash; });
     require(pause != ui.buttons.end() && phase != ui.buttons.end(), "real run controls define protected HUD boundaries");
+    const float hud_bottom=std::max(pause->bounds.bottom(),ui.hud_bottom);
     for (auto theme : {hr::presentation::SceneryTheme::farmland, hr::presentation::SceneryTheme::suburbia, hr::presentation::SceneryTheme::desert})
       for (float station : {hr::gameplay::tuning::encounter_warning_entry_ahead, -hr::gameplay::tuning::encounter_warning_retire_behind})
         for (float side : {-1.F, 1.F})
@@ -250,11 +271,11 @@ void threat_attack_entry_and_retirement_clear_real_controls() {
                 if (instance.mesh == "tank-hull" || instance.mesh == "tank-turret" || instance.mesh == "missile")
                   for (auto vertex : mesh(instance.mesh).vertices) {
                     const auto p = vertex_screen(frame, instance, vertex, size[0], size[1]);
-                    if(p[1]<pause->bounds.bottom()+12 || p[1]>phase->bounds.y-10)
+                    if(p[1]<hud_bottom+12 || p[1]>phase->bounds.y-10)
                       std::cerr<<"threat-phone-clearance mesh="<<instance.mesh<<" phone="<<size[0]<<'x'<<size[1]
                           <<" station="<<station<<" side="<<side<<" heading="<<heading<<" vertexY="<<p[1]
-                          <<" required="<<pause->bounds.bottom()+12<<".."<<phase->bounds.y-10<<'\n';
-                    require(p[1] >= pause->bounds.bottom() + 12, "actual boss and missile first attack clears the top HUD by twelve phone pixels");
+                          <<" required="<<hud_bottom+12<<".."<<phase->bounds.y-10<<'\n';
+                    require(p[1] >= hud_bottom + 12, "actual boss and missile first attack clears the complete top HUD by twelve phone pixels");
                     require(p[1] <= phase->bounds.y - 10, "actual boss and missile retirement clears the bottom control by ten phone pixels");
                   }
             }
@@ -272,6 +293,7 @@ void horizon_approach_is_continuous_before_attacks() {
     const auto ui = hr::product::interface({.screen = hr::product::Screen::run, .run = &run, .store = &store, .viewport = {0, 0, size[0], size[1]}, .safe_area = {0, size[0] == 320 ? 20.F : 59.F, 0, size[0] == 320 ? 0.F : 34.F}});
     const auto pause = std::find_if(ui.buttons.begin(), ui.buttons.end(), [](const auto& b) { return b.command == hr::product::Command::pause; });
     require(pause != ui.buttons.end(), "actual run HUD defines the approach reference");
+    const float hud_bottom=std::max(pause->bounds.bottom(),ui.hud_bottom);
     float previous_center = -10000;
     for (float station : {hr::gameplay::tuning::enemy_spawn_ahead, 21.F, 17.F, hr::gameplay::tuning::encounter_warning_entry_ahead}) {
       run.entities = {{.id = 1, .kind = hr::gameplay::EntityKind::boss, .position = {0, 100 + station}, .velocity = {0, -1}}};
@@ -294,8 +316,8 @@ void horizon_approach_is_continuous_before_attacks() {
         require(top < pause->bounds.bottom(), "approach begins above the playable HUD boundary instead of popping into midfield");
         require(root[1] < size[1] * .15F, "the real ground projection places horizon delivery in the upper fifteen percent");
       } else if (station == hr::gameplay::tuning::encounter_warning_entry_ahead) {
-        require(top >= pause->bounds.bottom() + 12, "entire source boss becomes readable before any attack may commit");
-        require(root[1] > pause->bounds.bottom() + 12, "actual first-commit ground projection is inside the readable field");
+        require(top >= hud_bottom + 12, "entire source boss becomes readable below the full HUD before any attack may commit");
+        require(root[1] > hud_bottom + 12, "actual first-commit ground projection is inside the readable field");
       }
       std::cout << "APPROACH phone=" << size[0] << 'x' << size[1] << " ahead=" << station
                 << " bodyY=" << top << ".." << bottom << " groundY=" << root[1] << '\n';
@@ -424,6 +446,7 @@ void rake_visibility_removes_released_paths() {
 int main(int argc, char** argv) {
   require(argc == 2, "cooked fixture root is explicit");
   content = argv[1];
+  consumed_hull_can_straddle_every_visible_edge();
   full_gear_has_real_phone_margins();
   supported_stages_keep_real_flight_and_readable_controls();
   threat_attack_entry_and_retirement_clear_real_controls();

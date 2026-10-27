@@ -1,0 +1,38 @@
+{
+  "asset": "barn",
+  "description": "Removed only the failed roof-zone triangles and rebuilt a regular relief tile roof over two closed pitched backing slabs; original cream walls, door and footprint preserved. Reused existing terracotta paint atlas; one material primitive.",
+  "source": "assets/models/barn/tripo-out/barn-convert-2-ca86e56c/model.glb",
+  "source_sha256": "3a96a193ad031170ff645190a362ac6c62c92bd8d3a1390fdc32f407160e8148",
+  "repaired_source": "assets/models/barn/barn-repaired-source.glb",
+  "repaired_source_sha256": "7ea8725a3d8211192fc8c1ff151621ed9f49ef9f420be73004bad62257e28c19",
+  "details": {
+    "removed_damaged_roof_triangles": 2302,
+    "added_triangles": 528,
+    "raw_ridge_yz": [
+      0.371,
+      -0.028
+    ],
+    "raw_eave_y": 0.007,
+    "raw_half_width_x": 0.465,
+    "raw_eave_z": [
+      -0.485,
+      0.485
+    ],
+    "raw_backing_thickness": 0.018,
+    "existing_terracotta_uv_patch": [
+      [
+        0.703125,
+        0.0771484375
+      ],
+      [
+        0.72265625,
+        0.0771484375
+      ],
+      [
+        0.712890625,
+        0.0966796875
+      ]
+    ]
+  },
+  "material_policy": "Original embedded base-colour and material retained; no PBR maps, no retexture."
+}

@@ -23,7 +23,7 @@ struct Fixture final {
     game.start();
   }
   View view(Screen screen = Screen::title) {
-    return {screen, &game.snapshot(), &store, {0, 0, 844, 390}, {}};
+    return {screen, &game.snapshot(), &store, {0, 0, 390, 844}, {}};
   }
 };
 const hr::ui::AccessibilityNode& named(const std::vector<hr::ui::AccessibilityNode>& nodes, std::string_view label) {
@@ -96,6 +96,9 @@ void replaced_offer_and_purchase_reject_stale_actions() {
   view.run = &run;
   auto interface = hr::product::interface(view);
   auto nodes = accessibility_snapshot(view, interface);
+  const auto& heading = named(nodes, "Promotion");
+  require(heading.value.find("Abduction speed +8% / level") != std::string::npos,
+      "automatic level reward is spoken independently of the selected hardware");
   const auto old = named(nodes, "Choose Laser Array");
   require(old.value.find("automatic laser") != std::string::npos, "upgrade effect is spoken with choice name");
   require(old.value.starts_with("Rank 2."), "hardware rank remains spoken after removing the duplicate title suffix");
@@ -136,10 +139,10 @@ void blueprint_semantics_name_account_milestones_and_run_requirements() {
   const auto& summary = named(nodes, "Blueprint library").value;
   require(summary.find("Heavy Winch. Account milestone: 0 / 300 captures") != std::string::npos,
       "library speaks readable blueprint title and account unlock unit");
-  require(summary.find("Required in this run before it can appear: Beam Splitter") != std::string::npos,
+  require(summary.find("Required in this run before it can appear: " + f.store.blueprints()[0].requirement) != std::string::npos,
       "library distinguishes contextual draw requirements from account unlocks");
-  require(summary.find("800 base credits") != std::string::npos && summary.find("60 military defeats") != std::string::npos &&
-      summary.find("1800 active seconds") != std::string::npos,
+  require(summary.find("60 military defeats") != std::string::npos &&
+      summary.find("3600 active seconds") != std::string::npos && summary.find("Reserve Battery") == std::string::npos,
       "library speaks all account milestone units");
 }
 void page_changes_invalidate_queued_actions_without_reindexing_offers() {

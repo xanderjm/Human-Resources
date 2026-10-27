@@ -1,0 +1,39 @@
+[
+  {
+    "task_id": "65881859-5ec8-4a5a-95ee-ea4f3bbe1815",
+    "type": "convert_model",
+    "status": "success",
+    "credits_consumed": 60,
+    "output_dir": "/Users/coral/Documents/App Development/Human Resources/assets/models/service-canopy/tripo-out/service-canopy-convert-65881859",
+    "files": [
+      "model.glb"
+    ],
+    "model_file": "/Users/coral/Documents/App Development/Human Resources/assets/models/service-canopy/tripo-out/service-canopy-convert-65881859/model.glb",
+    "chain": [
+      {
+        "task_id": "65881859-5ec8-4a5a-95ee-ea4f3bbe1815",
+        "type": "convert_model",
+        "status": "success",
+        "credits_consumed": 10,
+        "output_dir": "/Users/coral/Documents/App Development/Human Resources/assets/models/service-canopy/tripo-out/service-canopy-convert-65881859",
+        "files": [
+          "model.glb"
+        ],
+        "model_file": "/Users/coral/Documents/App Development/Human Resources/assets/models/service-canopy/tripo-out/service-canopy-convert-65881859/model.glb"
+      }
+    ],
+    "source_task_id": "de16f733-78f4-4c50-b0ac-6f1ff5274004",
+    "credits_breakdown": [
+      {
+        "task_id": "de16f733-78f4-4c50-b0ac-6f1ff5274004",
+        "type": "image_to_model",
+        "credits_consumed": 50
+      },
+      {
+        "task_id": "65881859-5ec8-4a5a-95ee-ea4f3bbe1815",
+        "type": "convert_model",
+        "credits_consumed": 10
+      }
+    ]
+  }
+]

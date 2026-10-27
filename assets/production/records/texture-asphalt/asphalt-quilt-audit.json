@@ -1,0 +1,58 @@
+{
+  "candidate_sha256": "1b1821bf91bdddb363680813ca37feac7d5c0a2dfe7fc8bd955e819b7d443017",
+  "previous_sha256": "67f3b0d600fd2fd207ed3b2b244208b8ba20744e8ba84311f24898b5f06d95b2",
+  "method": {
+    "donor_centre_row": 448,
+    "top_cut_range": [
+      336,
+      430
+    ],
+    "bottom_cut_range": [
+      592,
+      684
+    ],
+    "feather_width_px": 28,
+    "closed_minimum_error_score": 47757.600000000384,
+    "method": "Periodic full-width interior brush-strip quilt; two closed minimum-error seams; local28px smooth feather; final2-texel exact periodic projection. No mirroring or whole-image contrast change."
+  },
+  "old_seams": {
+    "edge_value_x": {
+      "max_abs_8bit": 0.0,
+      "rms_8bit": 0.0
+    },
+    "edge_value_y": {
+      "max_abs_8bit": 0.0,
+      "rms_8bit": 0.0
+    },
+    "first_difference_x": {
+      "max_abs_8bit": 0.0,
+      "rms_8bit": 0.0
+    },
+    "first_difference_y": {
+      "max_abs_8bit": 0.0,
+      "rms_8bit": 0.0
+    },
+    "interior_adjacent_rms_8bit": 3.5388014954637588
+  },
+  "new_seams": {
+    "edge_value_x": {
+      "max_abs_8bit": 0.0,
+      "rms_8bit": 0.0
+    },
+    "edge_value_y": {
+      "max_abs_8bit": 0.0,
+      "rms_8bit": 0.0
+    },
+    "first_difference_x": {
+      "max_abs_8bit": 0.0,
+      "rms_8bit": 0.0
+    },
+    "first_difference_y": {
+      "max_abs_8bit": 0.0,
+      "rms_8bit": 0.0
+    },
+    "interior_adjacent_rms_8bit": 3.5081439664073453
+  },
+  "old_mean_row_gradient_near_wrap": -5.008138020833333,
+  "new_mean_row_gradient_near_wrap": -0.03125
+}

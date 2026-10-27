@@ -1,0 +1,102 @@
+{
+  "triangles": 1873,
+  "vertices": 1739,
+  "mesh_primitives": 1,
+  "uv_present": true,
+  "textures": [
+    {
+      "size": [
+        1024,
+        1024
+      ],
+      "mode": "RGB"
+    }
+  ],
+  "raw_accessor_bounds": [
+    {
+      "min": [
+        -0.2744140625,
+        -0.4990234375,
+        -0.2724609375
+      ],
+      "max": [
+        0.2744140625,
+        0.4990234375,
+        0.2724609375
+      ]
+    }
+  ],
+  "extensions": [],
+  "bytes": 261632,
+  "asset": "silo",
+  "model_file": "assets/models/silo/silo.glb",
+  "requested_face_limit": 2200,
+  "source_task_id": "616b2049-13ab-406e-a545-f18fa1d6e4d1",
+  "convert_task_id": "2977de85-2420-4d26-b15d-7f18096f1140",
+  "credits_consumed": 60,
+  "preview": null,
+  "triangle_budget_review": {
+    "requested_target": 2200,
+    "actual_triangles": 1873,
+    "target_met": true,
+    "category_ceiling": 3000,
+    "status": "passed"
+  },
+  "structural_review": {
+    "status": "passed",
+    "notes": "Triangle mode, valid GLB length, UVs and embedded 1024px base colour checked. Requested targets are approximate; actual triangle count and target deviations are reported separately, within the user-specified 3000-prop / 8000-character ceilings. Scale, pivot, topology and visual quality require separate review."
+  },
+  "visual_review": {
+    "status": "accepted",
+    "notes": "Solid blue-grey cylinder, faceted cap, quiet painted panel seams and flat base; no attached ground or props. Four metres high; broad paint is softer than source reference.",
+    "views": [
+      "three-quarter",
+      "opposite"
+    ]
+  },
+  "import_review": {
+    "status": "passed",
+    "units": "metres",
+    "up": "+Y",
+    "forward": "+Z",
+    "yaw_degrees": 0.0,
+    "pivot": "ground-centre",
+    "double_sided": false,
+    "uniform_scale": 4.007827788649706,
+    "bounds_m": [
+      [
+        -1.0998043052837572,
+        0.0,
+        -1.091976516634051
+      ],
+      [
+        1.0998043052837572,
+        4.0,
+        1.091976516634051
+      ]
+    ],
+    "dimensions_m": [
+      2.1996086105675143,
+      4.0,
+      2.183953033268102
+    ],
+    "vertex_checks": [
+      {
+        "triangles": 1873,
+        "degenerate_triangles": 0,
+        "uv_bounds": [
+          [
+            0.0,
+            0.0
+          ],
+          [
+            1.0,
+            1.0
+          ]
+        ]
+      }
+    ],
+    "notes": "Real scene vertices and indices decoded; finite positions/UVs; retained embedded 1024px base colour. Uniform root transform; raw file preserved."
+  },
+  "raw_model_file": "assets/models/silo/tripo-out/silo-convert-2977de85/model.glb"
+}

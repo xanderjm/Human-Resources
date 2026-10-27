@@ -239,7 +239,6 @@ void completed_revive_commits_the_actual_live_continuation() {
         if(choice.hardware) {
           if(choice.module==gp::Module::repair_swarm)score=100;
           else if(choice.module==gp::Module::shield_generator)score=90;
-          else if(choice.module==gp::Module::mirror_plating)score=70;
           else if(choice.module==gp::Module::phase_drive)score=60;
           else if(choice.module==gp::Module::laser_array)score=30;
         } else if(choice.research==gp::Research::emergency_repairs)score=game.snapshot().hull<game.snapshot().maximum_hull*.7F?110.F:20.F;
@@ -332,7 +331,7 @@ void incompatible_run_backs_up_before_recorded_settlement(unsigned old_revision)
     // account envelope. It cannot be reinterpreted with newly added actor fields.
     account.continuation.game_state[8] = static_cast<std::byte>(old_revision);
     for (std::size_t i = 9; i < 12; ++i) account.continuation.game_state[i] = std::byte{};
-    account.continuation.game_state[4] = static_cast<std::byte>(old_revision == 9 ? 2 : 1);
+    account.continuation.game_state[4] = static_cast<std::byte>(old_revision >= 10 ? 6 : old_revision == 9 ? 2 : 1);
     for (std::size_t i = 5; i < 8; ++i) account.continuation.game_state[i] = std::byte{};
     if (old_revision == 9) {
       constexpr std::uint64_t game9_fingerprint = 13450486980726334161ULL;
@@ -435,6 +434,7 @@ int main() {
   incompatible_run_backs_up_before_recorded_settlement(7);
   incompatible_run_backs_up_before_recorded_settlement(8);
   incompatible_run_backs_up_before_recorded_settlement(9);
+  incompatible_run_backs_up_before_recorded_settlement(18);
   completed_revive_commits_the_actual_live_continuation();
   historical_results_do_not_recompute_current_reward();
   maximum_continuation_fits_account_envelope();

@@ -1,0 +1,72 @@
+[
+  {
+    "file": "01-atomic-pulp.png",
+    "width": 850,
+    "height": 1850,
+    "bytes": 1984153,
+    "sha256": "bc68f17448636179eee567284a9d4d449f3c67cda419050cf424f7f88c196333"
+  },
+  {
+    "file": "02-analog-signal.png",
+    "width": 850,
+    "height": 1850,
+    "bytes": 1791929,
+    "sha256": "69f243aced86f1c87b5766ca90cf2bb79fa8a2fcecfb7200b84f049aeb7001a8"
+  },
+  {
+    "file": "03-invasion-comic.png",
+    "width": 850,
+    "height": 1850,
+    "bytes": 1926523,
+    "sha256": "1c5255ae4ac015947b1733054ac900770e121612581b17a098ccd2d48fef0c89"
+  },
+  {
+    "file": "04-classified-dossier.png",
+    "width": 850,
+    "height": 1850,
+    "bytes": 2073061,
+    "sha256": "50feeead4eca1c016e9d43895bcd040b681f7ca9eccf49e20f4d9fdb058a9033"
+  },
+  {
+    "file": "05-living-biotech.png",
+    "width": 850,
+    "height": 1850,
+    "bytes": 1866244,
+    "sha256": "27a8f83c0f183e34e44cf88022f3b3c9c653f1bec48b31d82403b8dd25788d2e"
+  },
+  {
+    "file": "06-cosmic-ligne-claire.png",
+    "width": 850,
+    "height": 1850,
+    "bytes": 1654213,
+    "sha256": "fa0d2d5d3ab4fb90e43ecbdebffadf40aad353c098a1a658ed37c561edbefe77"
+  },
+  {
+    "file": "07-space-toy-console.png",
+    "width": 850,
+    "height": 1850,
+    "bytes": 1848941,
+    "sha256": "34f26a1f682d5f2db232c6269c888c5ca30316a5d9b8565ed115df9934ce0c2a"
+  },
+  {
+    "file": "08-mission-patches.png",
+    "width": 850,
+    "height": 1850,
+    "bytes": 1838208,
+    "sha256": "b28744e53c43faf9815fa955f0790989349b0cfd39a7935a08fc5cbde429a510"
+  },
+  {
+    "file": "09-weekly-world-weird.png",
+    "width": 850,
+    "height": 1850,
+    "bytes": 2080479,
+    "sha256": "825eb76116b0e3aedd983cc3f3e2d82ced71715eb00b5ed33f32bb1de776e8e5"
+  },
+  {
+    "file": "10-department-of-abductions.png",
+    "width": 850,
+    "height": 1850,
+    "bytes": 1776188,
+    "sha256": "8661c58f61131047e12d67ca24daa3d3f67e20e388e8611dfe52a3d2952019a8"
+  }
+]

@@ -5,6 +5,7 @@
 #include <human_resources/platform/sdl_platform.h>
 #include "progression_test_backend.h"
 #include "test_support.h"
+#include <human_resources/product/accessibility.h>
 #include "../human_resources_platform/src/product_haptics_backend.h"
 
 namespace death_flow_haptics {
@@ -54,11 +55,52 @@ public:
 
 namespace {
 using test_support::require;
+void portrait_window_policy() {
+  for (const auto requested : {hr::presentation::PixelExtent{320,568}, {390,844}, {430,932}, {768,1024}}) {
+    const auto fitted=hr::client::portrait_window_extent(requested);
+    require(fitted.width==requested.width && fitted.height==requested.height,
+        "supported portrait phone and tablet windows keep their requested dimensions");
+  }
+  const auto rotated=hr::client::portrait_window_extent({844,390});
+  require(rotated.width==390 && rotated.height==844,"landscape preview request opens in portrait");
+  const auto short_window=hr::client::portrait_window_extent({320,320});
+  require(short_window.width==320 && short_window.height==568,"short desktop preview retains the minimum portrait height");
+  const auto square=hr::client::portrait_window_extent({1024,1024});
+  require(square.width==768 && square.height==1024,"square preview becomes a portrait tablet surface");
+}
 void begin(App& app) {
   require(app.store.load().playable(), "memory-only actual App account loads");
   app.qa = true; app.qa_seed = 21;
   start(app);
   require(app.screen == Screen::run && app.run_id && !app.save_error, "actual App durable start publishes fresh run");
+}
+void build_tabs_keep_the_run_and_saves_paused() {
+  App app;begin(app);dispatch(app,Command::pause);dispatch(app,Command::current_build);
+  const auto durable=app.backend.memory.files;
+  const auto writes=app.backend.memory.writes;
+  const auto run_before=app.game.save_state();
+  const auto present=[&]() {
+    hr::product::View view{.screen=app.screen,.run=&app.game.snapshot(),.store=&app.store.store(),
+        .viewport={0,0,390,844},.ui_page=app.ui_page,.show_build=app.show_build};
+    app.ui=hr::product::interface(view);
+    const auto nodes=hr::product::accessibility_snapshot(view,app.ui);
+    unsigned selected=0;
+    for(const auto& node:nodes)if(node.selected)++selected;
+    require(selected==1,"Current Build exposes exactly one selected tab");
+  };
+  present();
+  for(const auto command:{Command::build_hangar,Command::build_hardware,Command::build_research}) {
+    dispatch(app,command);
+    require(app.ui_page==static_cast<unsigned>(command)-static_cast<unsigned>(Command::build_hardware),
+        "the actual App directly selects each visible build tab");
+    present();
+  }
+  require(app.game.save_state()==run_before && app.backend.memory.files==durable && app.backend.memory.writes==writes,
+      "tab navigation never advances the paused run or rewrites durable progress");
+  app.save_error=true;dispatch(app,Command::build_hangar);
+  require(app.ui_page==1,"save protection blocks build tab commands");
+  app.save_error=false;dispatch(app,Command::current_build);dispatch(app,Command::build_hangar);
+  require(!app.show_build && app.ui_page==0,"a departed build tab cannot change another view");
 }
 void natural_death_before_routing(App& app) {
   begin(app);
@@ -195,6 +237,8 @@ void natural_report_haptic_queue_lifetime_and_cancellation() {
 }
 #undef main
 int main() {
+  portrait_window_policy();
+  build_tabs_keep_the_run_and_saves_paused();
   saved_once_and_next_flight();
   checkpoint_failure_keeps_loss_context_and_retry_banks_once();
   settlement_failure_retains_receipt_for_retry();

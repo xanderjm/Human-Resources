@@ -1,0 +1,58 @@
+{
+  "schema_version": 1,
+  "id": "fx-crop-circle",
+  "status": "art-review-passed",
+  "production": {
+    "status": "generated",
+    "file": "assets/graphics/fx-crop-circle/fx-crop-circle.png",
+    "source": "assets/graphics/fx-crop-circle/fx-crop-circle.svg",
+    "metadata": "assets/graphics/fx-crop-circle/asset.json"
+  },
+  "reference": {
+    "status": "approved",
+    "path": "assets/references/fx-crop-circle/v1.png",
+    "sha256": "37b78b995182c0adf45f2debd016ab2132f9e34b484df8b0973caabf4dbc47b0"
+  },
+  "qa": {
+    "status": "art-review-passed",
+    "visual_review": "Concentric broken ring mask is isolated; white alpha-only source displays olive only in white reference.",
+    "review_evidence": "assets/production/reviews/native-graphics-contact-sheet.png",
+    "reviewed_against": "art/style-guide/ufo-asset-style-guide.png",
+    "runtime_qualified": false
+  },
+  "alpha_audit": {
+    "dimensions_px": [
+      512,
+      512
+    ],
+    "rgba": true,
+    "alpha_range": [
+      0,
+      255
+    ],
+    "alpha_nonzero_bbox": [
+      32,
+      32,
+      480,
+      480
+    ],
+    "transparent_margin_px": [
+      32,
+      32,
+      32,
+      32
+    ],
+    "border_alpha_max": 0,
+    "visible_pixels": 65522,
+    "repeat_axis_check": null,
+    "sha256": "846264656a6ff9d800225b30a3174f5c12c502583964a1ce4d0173ab0d23010c"
+  },
+  "variants": [],
+  "svg": {
+    "self_contained": true,
+    "text_baked": false,
+    "external_dependencies": false
+  },
+  "usage": "Linear alpha mask tinted by the ground material; individual clamp decal, not a terrain tile.",
+  "limitations": "Art production asset. Native runtime upload, blend, depth/occlusion and device readability are not qualified."
+}

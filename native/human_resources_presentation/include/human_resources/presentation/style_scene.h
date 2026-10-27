@@ -24,6 +24,8 @@ struct StyleInstance final {
   bool damage_reactive{}; // Actual player hull/modules only; not drones or afterimages.
   bool casts_shadow{true};
   float texture_detail{1};
+  // Rotor vertices only: radial growth, then linear RGB paint multipliers.
+  std::array<float, 4> rotor_style{0, 1, 1, 1};
   std::uint64_t stable_id{};
   ActorAnimation animation{};
   std::uint64_t attachment_parent_id{};
@@ -35,6 +37,7 @@ struct StyleInstance final {
   std::uint64_t launch_id{};
   Vec3 launch_local{}, launch_origin{};
   float launch_bridge{}, launch_elevation{};
+  std::array<float, 4> hit_flash{}; // Linear RGB replacement + blend, committed local impact only.
 };
 struct SurfaceVertex final {
   Vec3 position;
@@ -51,7 +54,12 @@ struct ScreenQuad final {
   std::array<float, 4> rect; // normalized x,y,width,height
   std::array<float, 4> uv{0, 0, 1, 1};
   std::array<float, 4> color{1, 1, 1, 1};
+  // Texture page (0 legacy glyphs, 1 enamel), normalized x/y affine edge
+  // offsets and owned-button-surface marker. Default zeros preserve existing
+  // axis-aligned callers. Text/icons never carry the surface marker.
+  std::array<float, 4> presentation{};
 };
+static_assert(sizeof(ScreenQuad) == 64);
 struct StyleFrame final {
   // Available normalized output rectangle. The shared integer fit supplies the
   // actual destination; native UI and semantic input still use the full output.

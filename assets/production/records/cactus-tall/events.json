@@ -1,0 +1,39 @@
+[
+  {
+    "task_id": "6cef484f-0f65-42aa-8ba0-330c42a71484",
+    "type": "convert_model",
+    "status": "success",
+    "credits_consumed": 60,
+    "output_dir": "/Users/coral/Documents/App Development/Human Resources/assets/models/cactus-tall/tripo-out/cactus-tall-convert-6cef484f",
+    "files": [
+      "model.glb"
+    ],
+    "model_file": "/Users/coral/Documents/App Development/Human Resources/assets/models/cactus-tall/tripo-out/cactus-tall-convert-6cef484f/model.glb",
+    "chain": [
+      {
+        "task_id": "6cef484f-0f65-42aa-8ba0-330c42a71484",
+        "type": "convert_model",
+        "status": "success",
+        "credits_consumed": 10,
+        "output_dir": "/Users/coral/Documents/App Development/Human Resources/assets/models/cactus-tall/tripo-out/cactus-tall-convert-6cef484f",
+        "files": [
+          "model.glb"
+        ],
+        "model_file": "/Users/coral/Documents/App Development/Human Resources/assets/models/cactus-tall/tripo-out/cactus-tall-convert-6cef484f/model.glb"
+      }
+    ],
+    "source_task_id": "8db07c69-7a80-42c4-9d43-6c1cfa320e11",
+    "credits_breakdown": [
+      {
+        "task_id": "8db07c69-7a80-42c4-9d43-6c1cfa320e11",
+        "type": "image_to_model",
+        "credits_consumed": 50
+      },
+      {
+        "task_id": "6cef484f-0f65-42aa-8ba0-330c42a71484",
+        "type": "convert_model",
+        "credits_consumed": 10
+      }
+    ]
+  }
+]

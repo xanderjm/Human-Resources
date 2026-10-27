@@ -1,0 +1,58 @@
+{
+  "schema_version": 1,
+  "id": "road-centre-dash",
+  "status": "art-review-passed",
+  "production": {
+    "status": "generated",
+    "file": "assets/graphics/road-centre-dash/road-centre-dash.png",
+    "source": "assets/graphics/road-centre-dash/road-centre-dash.svg",
+    "metadata": "assets/graphics/road-centre-dash/asset.json"
+  },
+  "reference": {
+    "status": "approved",
+    "path": "assets/references/road-centre-dash/v1.png",
+    "sha256": "2b88c5e0f556ae289b342bd7e6daaa4c3db057f666cfd70b4c64a299704c0533"
+  },
+  "qa": {
+    "status": "art-review-passed",
+    "visual_review": "Single ivory lightly painted road marking with delicate uneven edges, correct long-thin silhouette and transparent surrounding area; no asphalt.",
+    "review_evidence": "assets/production/reviews/native-graphics-contact-sheet.png",
+    "reviewed_against": "art/style-guide/ufo-asset-style-guide.png",
+    "runtime_qualified": false
+  },
+  "alpha_audit": {
+    "dimensions_px": [
+      1024,
+      256
+    ],
+    "rgba": true,
+    "alpha_range": [
+      0,
+      255
+    ],
+    "alpha_nonzero_bbox": [
+      78,
+      77,
+      944,
+      175
+    ],
+    "transparent_margin_px": [
+      78,
+      77,
+      80,
+      81
+    ],
+    "border_alpha_max": 0,
+    "visible_pixels": 81507,
+    "repeat_axis_check": null,
+    "sha256": "9e5d2d2af1c406468842a99fc74afde658356597932fb7725a7eabdd95c401dd"
+  },
+  "variants": [],
+  "svg": {
+    "self_contained": true,
+    "text_baked": false,
+    "external_dependencies": false
+  },
+  "usage": "Individual isolated painted ivory road marking: visible footprint about 1m long ×0.12m wide. Instance at regular road centre intervals with transparent gaps. Clamp both axes; no asphalt baked in.",
+  "limitations": "Art production asset. Native runtime upload, blend, depth/occlusion and device readability are not qualified."
+}

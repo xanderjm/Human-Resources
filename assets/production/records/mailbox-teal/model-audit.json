@@ -1,0 +1,104 @@
+{
+  "triangles": 1209,
+  "vertices": 1118,
+  "mesh_primitives": 1,
+  "uv_present": true,
+  "textures": [
+    {
+      "size": [
+        1024,
+        1024
+      ],
+      "mode": "RGB"
+    }
+  ],
+  "raw_accessor_bounds": [
+    {
+      "min": [
+        -0.2041015625,
+        -0.4990234375,
+        -0.2705078125
+      ],
+      "max": [
+        0.2041015625,
+        0.4990234375,
+        0.2705078125
+      ]
+    }
+  ],
+  "extensions": [],
+  "bytes": 248760,
+  "asset": "mailbox-teal",
+  "model_file": "assets/models/mailbox-teal/mailbox-teal.glb",
+  "requested_face_limit": 1200,
+  "source_task_id": "558835da-2fa6-44e2-9de6-9bb39201398a",
+  "convert_task_id": "c40380aa-4544-4ddd-b4c2-deb191ff8e65",
+  "credits_consumed": 60,
+  "preview": null,
+  "triangle_budget_review": {
+    "requested_target": 1200,
+    "actual_triangles": 1209,
+    "target_met": false,
+    "category_ceiling": 3000,
+    "status": "passed"
+  },
+  "structural_review": {
+    "status": "passed",
+    "notes": "Triangle mode, valid GLB length, UVs and embedded 1024px base colour checked. Requested targets are approximate; actual triangle count and target deviations are reported separately, within the user-specified 3000-prop / 8000-character ceilings. Scale, pivot, topology and visual quality require separate review."
+  },
+  "visual_review": {
+    "status": "accepted",
+    "notes": "Petrol-teal companion mailbox retains peaked cap, dark slot and brass lock on a narrow post. Painterly wear stays readable on all four inspected angles; no surrounding props. Main slot face now +Z.",
+    "views": [
+      "front",
+      "opposite",
+      "three-quarter",
+      "right"
+    ]
+  },
+  "import_review": {
+    "status": "passed",
+    "units": "metres",
+    "up": "+Y",
+    "forward": "+Z",
+    "yaw_degrees": -90.0,
+    "pivot": "ground-centre",
+    "double_sided": false,
+    "uniform_scale": 1.1021526418786693,
+    "bounds_m": [
+      [
+        -0.2981409001956947,
+        0.0,
+        -0.22495107632093936
+      ],
+      [
+        0.2981409001956947,
+        1.1,
+        0.22495107632093936
+      ]
+    ],
+    "dimensions_m": [
+      0.5962818003913894,
+      1.1,
+      0.4499021526418787
+    ],
+    "vertex_checks": [
+      {
+        "triangles": 1209,
+        "degenerate_triangles": 0,
+        "uv_bounds": [
+          [
+            0.0,
+            0.0
+          ],
+          [
+            1.0,
+            1.0
+          ]
+        ]
+      }
+    ],
+    "notes": "Real scene vertices and indices decoded; finite positions/UVs; retained embedded 1024px base colour. Uniform root transform; raw file preserved."
+  },
+  "raw_model_file": "assets/models/mailbox-teal/tripo-out/mailbox-teal-convert-c40380aa/model.glb"
+}

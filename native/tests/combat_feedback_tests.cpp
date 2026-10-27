@@ -61,7 +61,8 @@ void compact_stage_keeps_true_boss_progress_attached() {
       body_bottom=std::max(body_bottom,framing.stage.y+(region.bottom+1)*.5F*framing.stage.height);
     }
     require(std::abs(bar.bounds.y-body_bottom-4)<.01F || std::abs(bar.bounds.bottom()-body_top+4)<.01F,"compact feedback attaches through the exact scene camera and integer blit stage");
-    if(viewport.width==320 && text_scale==2)require(bar.stacked,"short enlarged boss label wraps while preserving percentage");
+    if(viewport.width==320 && text_scale==2)require(bar.bounds.height >= 14*text_scale,
+        "enlarged boss label retains its physical text height on the expanded field");
   }
 }
 void attachment_boundaries_and_caps() {
@@ -115,9 +116,20 @@ void confirmed_hits_and_reduced_motion() {
   const auto normal = hr::product::scene(run, 390.F / 844.F, false);
   const auto reduced = hr::product::scene(run, 390.F / 844.F, true);
   for (const auto& part : normal.instances)
-    if (part.mesh == "tank-hull") require(part.tint[0] > 1, "actual enemy body consumes the committed hit response");
+    if (part.mesh == "tank-hull") require(part.hit_flash[3] == 1 && part.hit_flash[1] == 1 && part.hit_flash[2] == 1, "actual enemy body consumes a white-hot committed impact");
   for (const auto& part : reduced.instances)
-    if (part.mesh == "tank-hull") require(part.tint[0] == 1, "reduced-motion enemy retains its authored material");
+    if (part.mesh == "tank-hull") require(part.hit_flash[3] == 0 && part.tint[0] == 1, "reduced-motion enemy retains its authored material");
+  for (const auto& part : normal.instances)
+    if (part.mesh == "tank-turret") require(part.hit_flash[3] == 1, "enemy attachments flash with the body");
+  run.stats.active_seconds = 3.06;
+  auto warm = hr::product::scene(run, 390.F / 844.F, false);
+  for (const auto& part : warm.instances)
+    if (part.mesh == "tank-hull") require(part.hit_flash[1] > .7F && part.hit_flash[2] < .1F, "white impact decays into bright yellow");
+  run.stats.active_seconds = 3.13;
+  warm = hr::product::scene(run, 390.F / 844.F, false);
+  for (const auto& part : warm.instances)
+    if (part.mesh == "tank-hull") require(part.hit_flash[0] == 1 && part.hit_flash[1] < .1F && part.hit_flash[3] > 0, "yellow impact finishes with a red fade");
+  run.stats.active_seconds = 3;
   const auto before = hr::product::enemy_vitality(run, {0, 0, 390, 844}, {8, 80, 374, 650}, 14);
   const auto paused = hr::product::enemy_vitality(run, {0, 0, 390, 844}, {8, 80, 374, 650}, 14);
   require(before.size() == 1 && paused.size() == before.size() && paused[0].fraction == before[0].fraction,

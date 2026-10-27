@@ -1,0 +1,5 @@
+{
+  "grass": "assets/models/ground-tile/ground-tile.glb",
+  "sand": "assets/models/ground-tile/ground-tile-sand.glb",
+  "notes": "Identical measured geometry and UVs, embedded approved base-colour only; both use REPEAT. Sand is not a separate inventory asset."
+}

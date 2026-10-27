@@ -1,0 +1,82 @@
+{
+  "name": "Human Resources / Atomic Enamel",
+  "version": 1,
+  "date": "2026-10-26",
+  "authority": "Owner-selected dynamic Atomic Pulp hybrid hero",
+  "tool": "built-in image_gen",
+  "palette": {
+    "navy": "#08243D",
+    "cobalt": "#165BC1",
+    "cream": "#FFF1D0",
+    "coral": "#FF624C",
+    "mint": "#58EDC7",
+    "gold": "#FFD45F"
+  },
+  "canvas": {
+    "width": 850,
+    "height": 1850,
+    "horizontal_margin": 40,
+    "top_safe_space": 52,
+    "bottom_safe_space": 64,
+    "spacing_unit": 8,
+    "nominal_reference_dimensions": true
+  },
+  "typography": {
+    "display": "Hero-inspired tall angular forward-slanted uppercase, cream face, slim coral offset and navy extrusion; headings only",
+    "body": "Upright condensed bold sans, generously spaced, cream-on-navy or navy-on-cream",
+    "numbers": "Upright bold tabular; at least as readable as labels",
+    "minimum_body_px": 32
+  },
+  "components": [
+    {
+      "id": "heading-sign",
+      "use": "Compact upward-tilted navy enamel plaque, rounded asymmetric corners, cream/coral trim, corner rivets, one optional yellow star; same form across screens."
+    },
+    {
+      "id": "panel",
+      "use": "Navy enamel well, thin cream inset edge, coral outer accent, subtle directional extrusion. Content baseline horizontal."
+    },
+    {
+      "id": "primary",
+      "use": "One dominant cobalt saucer action; mint luminous lower rim, cream italic label. Compact oval version when space is limited."
+    },
+    {
+      "id": "secondary",
+      "use": "Cream-faced rounded trapezoid, navy upright label and pictogram, coral trim; back arrow on left for navigation."
+    },
+    {
+      "id": "card",
+      "use": "Navy header + cream body, pictogram tile, structured benefit, rank pips; mint selection outline plus check; muted navy disabled state."
+    },
+    {
+      "id": "progress",
+      "use": "Inset navy trough, cream keyline, mint fill; clear numeric label. Gold only for rarity/earned evolution and XP."
+    },
+    {
+      "id": "tabs",
+      "use": "Shared cream three-part segmented enamel strip; selected navy/mint plus underline/check; legible upright names."
+    },
+    {
+      "id": "toggle",
+      "use": "Cream track with navy rim; mint filled checked ON, muted empty OFF; text label alongside."
+    },
+    {
+      "id": "modal",
+      "use": "Same navy enamel panel over darkened/desaturated farm; upright explanatory text and same action buttons. No competing controls under blocking dialog."
+    },
+    {
+      "id": "icons",
+      "use": "Consistent simple cream/navy/mint saucer, beam, shield, bolt, wrench, folder, speaker, gear and arrow silhouettes; same optical weight."
+    }
+  ],
+  "rules": [
+    "Preserve low-poly sage farmland/cobalt saucer as world context.",
+    "No huge Human Resources logo on every secondary screen; compact screen title uses heading-sign.",
+    "Only headings and decorative sign perimeters tilt; body copy, rows and hit surfaces remain orderly.",
+    "Do not invent shops, ad offers, currencies, energy, social features or extra screen functions.",
+    "At most one dominant primary action, consistent back/footer positions.",
+    "Values are illustrative mockup data; runtime implementation and device qualification are separate.",
+    "Use paginated layouts for current build, recipes and privacy rather than squeezing every page into one image.",
+    "Rank pips belong to hardware or ingredient ranks, and five-pip permanent tracks. Milestone/account summary cards show progress bars plus lock/check status without rank pips."
+  ]
+}

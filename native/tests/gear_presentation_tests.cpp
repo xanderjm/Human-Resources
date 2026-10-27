@@ -22,8 +22,8 @@ void equipment_matches_installed_state() {
   hr::product::append_ship_gear(f, run, pose, false);
   require(count(f, "ufo-antenna") == 1 && count(f, "ufo-shield") == 0, "starter has one antenna, no shield hardware");
   require(count(f, "ufo-laser") == 1 && count(f, "ufo-beam") == 1, "starter has its actual single laser and beam");
-  require(count(f, "ufo-modular") == 0 && count(f, "shield-shell") == 0, "starter does not pretend to have orbit drones or upgraded shield");
-  const auto& antenna = f.instances.front();
+  require(count(f, "ufo-modular") == 1 && count(f, "ship-drone") == 0 && count(f, "shield-shell") == 0, "starter does not pretend to have orbit drones or upgraded shield");
+  const auto& antenna = *std::find_if(f.instances.begin(),f.instances.end(),[](const auto& p){return p.mesh=="ufo-antenna";});
   require_near(antenna.position.x, 2 - 1.12F * 1.012F * std::sin(.18F), 1e-5F, "top socket follows banked fixed hull");
   require_near(antenna.position.y, 2.5F + 1.12F * 1.012F * std::cos(.18F), 1e-5F, "top socket retains source height");
   run.modules[static_cast<unsigned>(hr::gameplay::Module::shield_generator)] = 3;
@@ -32,8 +32,8 @@ void equipment_matches_installed_state() {
   run.laser_count = 4;
   f.instances.clear();
   hr::product::append_ship_gear(f, run, pose, false);
-  require(count(f, "ufo-antenna") == 0 && count(f, "ufo-shield") == 1, "shield replaces antenna at the same socket");
-  require(count(f, "ufo-modular") == 3 && count(f, "ufo-laser") == 7, "four hull lasers plus exactly three armed orbit drones");
+  require(count(f, "ufo-antenna") == 0 && count(f, "ship-shield-base") == 1 && count(f, "ship-shield-crystal") == 3, "shield replaces antenna at the same socket");
+  require(count(f, "ufo-modular") == 1 && count(f, "ship-drone") == 3 && count(f, "ufo-laser") == 4, "four hull lasers plus exactly three miniature craft with embedded real weapons");
   require(count(f, "shield-shell") == 1, "charged shield generator has one rim sphere");
   for (const auto& i : f.instances)
     if (i.mesh == "shield-shell")
@@ -162,6 +162,7 @@ void real_skill_payoff_state_has_bounded_world_motion() {
   effects.update(run);
   run.stats.active_seconds = 1.1;
   run.player = {2, 1};
+  run.dash_remaining_seconds = .1F;
   run.presentation_events[0] = {1, 1.1, hr::gameplay::PresentationEventKind::phase_dash, 0, {}};
   effects.update(run);
   const auto impulse = effects.dash_response();
@@ -169,23 +170,31 @@ void real_skill_payoff_state_has_bounded_world_motion() {
   hr::presentation::StyleFrame frame;
   const hr::product::ShipPose pose{{2, 2.5F, 1.3F}, 1.12F, -.2F, -.1F};
   hr::product::append_gear_effects(frame, run, &effects, pose, 0, false);
-  require(count(frame, "ufo-modular") == 2 && frame.instances.size() == 4, "actual dash has two short hull afterimages and two finite wake rails");
+  require(count(frame, "ufo-modular") == 2 && count(frame,"ship-dome")==2 && count(frame,"ship-rotor-0")==2 && count(frame,"ufo-rim-lens")==12, "actual dash carries two complete physical hull assemblies and two finite wake rails");
   run.stats.active_seconds = 1.13;
   run.player = {5, 8};
   effects.update(run);
-  require(effects.beats()[0].destination.x == 2 && effects.beats()[0].destination.z == 1,
-      "subsequent movement cannot stretch the completed dash into an imaginary path");
+  require(effects.beats()[0].destination.x == 5 && effects.beats()[0].destination.z == 8,
+      "live burst wake follows the actual observed endpoint during its travel");
+  run.dash_remaining_seconds = 0;
+  run.stats.active_seconds = 1.26;
+  effects.update(run);
+  const auto completed = effects.beats()[0].destination;
+  run.player = {8, 9}; run.stats.active_seconds = 1.27;
+  effects.update(run);
+  require(effects.beats()[0].destination.x == completed.x && effects.beats()[0].destination.z == completed.z,
+      "ordinary movement after the catch cannot stretch the finished dash path");
   frame.instances.clear();
   hr::product::append_gear_effects(frame, run, &effects, pose, 0, true);
   require(count(frame, "ufo-modular") == 0 && frame.instances.size() == 2, "reduced motion preserves brief dash direction without moving afterimages");
-  run.presentation_events[1] = {2, 1.13, hr::gameplay::PresentationEventKind::sweep_capture, 7, {}};
-  run.presentation_events[2] = {3, 1.13, hr::gameplay::PresentationEventKind::harvest_overdrive, 0, run.player};
+  run.presentation_events[1] = {2, 1.27, hr::gameplay::PresentationEventKind::sweep_capture, 7, {}};
+  run.presentation_events[2] = {3, 1.27, hr::gameplay::PresentationEventKind::harvest_overdrive, 0, run.player};
   run.harvest_overdrive_seconds = 6;
-  run.stats.active_seconds = 1.14;
+  run.stats.active_seconds = 1.28;
   effects.update(run);
   frame.instances.clear();
   hr::product::append_gear_effects(frame, run, &effects, pose, 0, false);
-  require(frame.instances.size() == 16, "dash, sweep zip and live overdrive stay within16 simple world accents");
+  require(frame.instances.size() == 40, "dash retains two complete13part assemblies alongside14 finite skill accents");
   const auto overdrive_angle = effects.rotor_angle();
   effects.update(run);
   require(effects.rotor_angle() == overdrive_angle, "paused overdrive freezes rotor acceleration and all effect clocks");

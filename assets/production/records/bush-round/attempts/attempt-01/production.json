@@ -1,0 +1,27 @@
+{
+  "asset": "bush-round",
+  "status": "cli_succeeded_pending_model_audit",
+  "task_ids": [
+    "9a83b4a3-a1b4-4b98-9468-64726d29c05a",
+    "4d45b452-25ca-4335-9fbd-1429a3b5de92"
+  ],
+  "started_at": "2026-10-24T20:09:26.948581+00:00",
+  "reference": "/Users/coral/Documents/App Development/Human Resources/assets/references/bush-round/v1.png",
+  "reference_version": 1,
+  "local_pid": 9538,
+  "command": [
+    "tripo",
+    "task",
+    "watch",
+    "4d45b452-25ca-4335-9fbd-1429a3b5de92",
+    "--download",
+    "--out",
+    "/Users/coral/Documents/App Development/Human Resources/assets/models/bush-round",
+    "--timeout",
+    "600",
+    "--json",
+    "--no-open"
+  ],
+  "return_code": 0,
+  "finished_at": "2026-10-24T20:39:18.632455+00:00"
+}

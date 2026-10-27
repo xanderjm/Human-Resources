@@ -1,0 +1,39 @@
+[
+  {
+    "task_id": "e4dab917-841b-4d3e-839e-7509d03d6229",
+    "type": "convert_model",
+    "status": "success",
+    "credits_consumed": 60,
+    "output_dir": "/Users/coral/Documents/App Development/Human Resources/assets/models/streetlamp/tripo-out/streetlamp-convert-e4dab917",
+    "files": [
+      "model.glb"
+    ],
+    "model_file": "/Users/coral/Documents/App Development/Human Resources/assets/models/streetlamp/tripo-out/streetlamp-convert-e4dab917/model.glb",
+    "chain": [
+      {
+        "task_id": "e4dab917-841b-4d3e-839e-7509d03d6229",
+        "type": "convert_model",
+        "status": "success",
+        "credits_consumed": 10,
+        "output_dir": "/Users/coral/Documents/App Development/Human Resources/assets/models/streetlamp/tripo-out/streetlamp-convert-e4dab917",
+        "files": [
+          "model.glb"
+        ],
+        "model_file": "/Users/coral/Documents/App Development/Human Resources/assets/models/streetlamp/tripo-out/streetlamp-convert-e4dab917/model.glb"
+      }
+    ],
+    "source_task_id": "1c96be53-5dc5-47cd-b930-c1b4c981b650",
+    "credits_breakdown": [
+      {
+        "task_id": "1c96be53-5dc5-47cd-b930-c1b4c981b650",
+        "type": "image_to_model",
+        "credits_consumed": 50
+      },
+      {
+        "task_id": "e4dab917-841b-4d3e-839e-7509d03d6229",
+        "type": "convert_model",
+        "credits_consumed": 10
+      }
+    ]
+  }
+]

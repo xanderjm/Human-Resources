@@ -1,0 +1,27 @@
+── Plan ──────────────────────────
+input: /Users/coral/Documents/App Development/Human Resources/assets/references/grass-tuft/v1.png
+model: P1-20260311 — explicit --model
+steps:
+  1. image-to-model  POST /v3/generation/image-to-model — generate a 3D model from one image
+     model="P1-20260311" face_limit=1800 texture=true pbr=false texture_quality="standard" texture_alignment="original_image" export_uv=true
+  2. convert  POST /v3/models/convert — convert format / texture size / orientation
+     format="GLTF" texture_size=1024
+cost impact:
+  · non-default convert options bill as complex convert
+──────────────────────────────────
+model: P1-20260311 (explicit --model)
+task created 9ef23a15-869b-42a1-bea1-bf23a1cf2d44 (@grass-tuft)
+image_to_model · queued
+image_to_model · running 11% · 9ef23a15
+image_to_model · running 30% · 9ef23a15
+image_to_model · running 47% · 9ef23a15
+image_to_model · running 72% · 9ef23a15
+image_to_model · success 100% · 9ef23a15
+✓ image_to_model · 9ef23a15-869b-42a1-bea1-bf23a1cf2d44 · 50 credits
+! non-default convert options use the "complex convert" price tier
+task created 80d7bffb-bbcb-4cd7-9230-5eca0fe9de49 (@grass-tuft-convert)
+convert_model · queued
+✓ convert_model · 80d7bffb-bbcb-4cd7-9230-5eca0fe9de49 · 10 credits
+downloading artifacts…
+✓ artifacts saved to /Users/coral/Documents/App Development/Human Resources/assets/models/grass-tuft/tripo-out/grass-tuft-convert-80d7bffb
+{"task_id":"80d7bffb-bbcb-4cd7-9230-5eca0fe9de49","type":"convert_model","status":"success","credits_consumed":60,"output_dir":"/Users/coral/Documents/App Development/Human Resources/assets/models/grass-tuft/tripo-out/grass-tuft-convert-80d7bffb","files":["model.glb"],"model_file":"/Users/coral/Documents/App Development/Human Resources/assets/models/grass-tuft/tripo-out/grass-tuft-convert-80d7bffb/model.glb","chain":[{"task_id":"80d7bffb-bbcb-4cd7-9230-5eca0fe9de49","type":"convert_model","status":"success","credits_consumed":10,"output_dir":"/Users/coral/Documents/App Development/Human Resources/assets/models/grass-tuft/tripo-out/grass-tuft-convert-80d7bffb","files":["model.glb"],"model_file":"/Users/coral/Documents/App Development/Human Resources/assets/models/grass-tuft/tripo-out/grass-tuft-convert-80d7bffb/model.glb"}],"source_task_id":"9ef23a15-869b-42a1-bea1-bf23a1cf2d44","credits_breakdown":[{"task_id":"9ef23a15-869b-42a1-bea1-bf23a1cf2d44","type":"image_to_model","credits_consumed":50},{"task_id":"80d7bffb-bbcb-4cd7-9230-5eca0fe9de49","type":"convert_model","credits_consumed":10}]}

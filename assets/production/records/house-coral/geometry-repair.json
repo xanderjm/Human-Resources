@@ -1,0 +1,38 @@
+{
+  "asset": "house-coral",
+  "description": "Added two thin continuous closed roof underlays behind existing healthy tile and ridge joins. Original tile/body geometry and original embedded paint atlas retained unchanged.",
+  "source": "assets/models/house-coral/tripo-out/house-coral-convert-76e46352/model.glb",
+  "source_sha256": "095eee60439fc11c1c43b0d201c017830b556b0260902468301b89e8c96be895",
+  "repaired_source": "assets/models/house-coral/house-coral-repaired-source.glb",
+  "repaired_source_sha256": "05c0900492054bd5694a65eddd4e6fc6b0cb2b3ef6adc0d471b2710de82db44c",
+  "details": {
+    "added_triangles": 24,
+    "raw_ridge_y": 0.38,
+    "raw_eave_y": 0.045,
+    "raw_x_bounds": [
+      -0.465,
+      0.465
+    ],
+    "raw_z_bounds": [
+      -0.47,
+      0.47
+    ],
+    "raw_thickness": 0.012,
+    "source_paint_uv_patch": [
+      [
+        0.849609375,
+        0.4013671875
+      ],
+      [
+        0.857421875,
+        0.4013671875
+      ],
+      [
+        0.853515625,
+        0.4091796875
+      ]
+    ],
+    "large_teal_light_patch": "Existing baked albedo on intact tile, confirmed by unlit and wireframe overhead review; preserved."
+  },
+  "material_policy": "Original embedded base-colour and material retained; no PBR maps, no retexture."
+}

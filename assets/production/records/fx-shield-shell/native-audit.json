@@ -1,0 +1,75 @@
+{
+  "schema_version": 1,
+  "id": "fx-shield-shell",
+  "status": "art-review-passed",
+  "production": {
+    "status": "generated",
+    "file": "assets/graphics/fx-shield-shell/fx-shield-shell.png",
+    "source": "assets/graphics/fx-shield-shell/fx-shield-shell.svg",
+    "metadata": "assets/graphics/fx-shield-shell/asset.json"
+  },
+  "reference": {
+    "status": "approved",
+    "path": "assets/references/fx-shield-shell/v1.png",
+    "sha256": "c6ec5e8b48bd7dfaeb256f888a1aceb06f8a603652712f41b718222dea3cc2df"
+  },
+  "qa": {
+    "status": "art-review-passed",
+    "visual_review": "Subtle mint spherical rim in billboard fallback with no saucer; supplemental sphere geometry is valid, actual view-dependent HLSL integration pending.",
+    "review_evidence": "assets/production/reviews/native-graphics-contact-sheet.png",
+    "reviewed_against": "art/style-guide/ufo-asset-style-guide.png",
+    "runtime_qualified": false
+  },
+  "alpha_audit": {
+    "dimensions_px": [
+      512,
+      512
+    ],
+    "rgba": true,
+    "alpha_range": [
+      0,
+      207
+    ],
+    "alpha_nonzero_bbox": [
+      32,
+      32,
+      480,
+      480
+    ],
+    "transparent_margin_px": [
+      32,
+      32,
+      32,
+      32
+    ],
+    "border_alpha_max": 0,
+    "visible_pixels": 157972,
+    "repeat_axis_check": null,
+    "sha256": "29f98fb5eb25b7e286358873f2f61c120581b149585e716b47eff3978b9873d4"
+  },
+  "variants": [],
+  "svg": {
+    "self_contained": true,
+    "text_baked": false,
+    "external_dependencies": false
+  },
+  "usage": "Billboard fallback/style reference only. Unit sphere GLB and HLSL rim helper included for view-dependent 3D field; renderer integration required. Clamp sprite axes.",
+  "limitations": "Art production asset. Native runtime upload, blend, depth/occlusion and device readability are not qualified.",
+  "supplemental_geometry": {
+    "path": "assets/graphics/fx-shield-shell/unit-sphere.glb",
+    "triangles": 960,
+    "vertices": 561,
+    "unit_bounds_m": [
+      -1,
+      -1,
+      -1,
+      1,
+      1,
+      1
+    ],
+    "outward_winding": true,
+    "degenerate_triangles": 0,
+    "shader_helper": "assets/graphics/fx-shield-shell/shield-rim.hlsl",
+    "compiled_or_integrated": false
+  }
+}

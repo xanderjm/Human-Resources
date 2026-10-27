@@ -1,0 +1,29 @@
+── Plan ──────────────────────────
+input: /Users/coral/Documents/App Development/Human Resources/assets/references/straw-hat/v1.png
+model: P1-20260311 — explicit --model
+steps:
+  1. image-to-model  POST /v3/generation/image-to-model — generate a 3D model from one image
+     model="P1-20260311" face_limit=1000 texture=true pbr=false texture_quality="standard" texture_alignment="original_image" export_uv=true
+  2. convert  POST /v3/models/convert — convert format / texture size / orientation
+     format="GLTF" texture_size=1024
+cost impact:
+  · non-default convert options bill as complex convert
+──────────────────────────────────
+model: P1-20260311 (explicit --model)
+task created 0c4e4b67-4b7f-4cf9-ad6f-b262981d46c0 (@straw-hat)
+image_to_model · queued
+image_to_model · running 9% · 0c4e4b67
+image_to_model · running 16% · 0c4e4b67
+image_to_model · running 27% · 0c4e4b67
+image_to_model · running 41% · 0c4e4b67
+image_to_model · running 64% · 0c4e4b67
+image_to_model · success 100% · 0c4e4b67
+✓ image_to_model · 0c4e4b67-4b7f-4cf9-ad6f-b262981d46c0 · 50 credits
+! non-default convert options use the "complex convert" price tier
+task created be2c089a-0cd3-4305-9381-48547237e9f3 (@straw-hat-convert)
+convert_model · queued
+convert_model · success 100% · be2c089a
+✓ convert_model · be2c089a-0cd3-4305-9381-48547237e9f3 · 10 credits
+downloading artifacts…
+✓ artifacts saved to /Users/coral/Documents/App Development/Human Resources/assets/models/straw-hat/tripo-out/straw-hat-convert-be2c089a
+{"task_id":"be2c089a-0cd3-4305-9381-48547237e9f3","type":"convert_model","status":"success","credits_consumed":60,"output_dir":"/Users/coral/Documents/App Development/Human Resources/assets/models/straw-hat/tripo-out/straw-hat-convert-be2c089a","files":["model.glb"],"model_file":"/Users/coral/Documents/App Development/Human Resources/assets/models/straw-hat/tripo-out/straw-hat-convert-be2c089a/model.glb","chain":[{"task_id":"be2c089a-0cd3-4305-9381-48547237e9f3","type":"convert_model","status":"success","credits_consumed":10,"output_dir":"/Users/coral/Documents/App Development/Human Resources/assets/models/straw-hat/tripo-out/straw-hat-convert-be2c089a","files":["model.glb"],"model_file":"/Users/coral/Documents/App Development/Human Resources/assets/models/straw-hat/tripo-out/straw-hat-convert-be2c089a/model.glb"}],"source_task_id":"0c4e4b67-4b7f-4cf9-ad6f-b262981d46c0","credits_breakdown":[{"task_id":"0c4e4b67-4b7f-4cf9-ad6f-b262981d46c0","type":"image_to_model","credits_consumed":50},{"task_id":"be2c089a-0cd3-4305-9381-48547237e9f3","type":"convert_model","credits_consumed":10}]}

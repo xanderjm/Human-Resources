@@ -1,0 +1,58 @@
+{
+  "schema_version": 1,
+  "id": "fx-capture-dot",
+  "status": "art-review-passed",
+  "production": {
+    "status": "generated",
+    "file": "assets/graphics/fx-capture-dot/fx-capture-dot.png",
+    "source": "assets/graphics/fx-capture-dot/fx-capture-dot.svg",
+    "metadata": "assets/graphics/fx-capture-dot/asset.json"
+  },
+  "reference": {
+    "status": "approved",
+    "path": "assets/references/fx-capture-dot/v1.png",
+    "sha256": "a3196db731337a5025dbb92327610e715bd98d74977a0116632ccc3a29f4533b"
+  },
+  "qa": {
+    "status": "art-review-passed",
+    "visual_review": "One rounded mint capture dot with contained glow and transparent padding; no frozen trail.",
+    "review_evidence": "assets/production/reviews/native-graphics-contact-sheet.png",
+    "reviewed_against": "art/style-guide/ufo-asset-style-guide.png",
+    "runtime_qualified": false
+  },
+  "alpha_audit": {
+    "dimensions_px": [
+      128,
+      128
+    ],
+    "rgba": true,
+    "alpha_range": [
+      0,
+      255
+    ],
+    "alpha_nonzero_bbox": [
+      9,
+      9,
+      119,
+      119
+    ],
+    "transparent_margin_px": [
+      9,
+      9,
+      9,
+      9
+    ],
+    "border_alpha_max": 0,
+    "visible_pixels": 9396,
+    "repeat_axis_check": null,
+    "sha256": "0a96fdebe1350c8fe450363c366628a4a22f251add4d8416cd9ce661bb8c7103"
+  },
+  "variants": [],
+  "svg": {
+    "self_contained": true,
+    "text_baked": false,
+    "external_dependencies": false
+  },
+  "usage": "Instance one dot along runtime capture paths; no trail curve baked in. Clamp both axes.",
+  "limitations": "Art production asset. Native runtime upload, blend, depth/occlusion and device readability are not qualified."
+}

@@ -1,0 +1,1543 @@
+{
+  "scope": "Offline authoring collection; not device/runtime qualification",
+  "expected": 92,
+  "passed": 92,
+  "failures": [],
+  "files": [
+    {
+      "id": "ufo-body",
+      "kind": "tripo_model",
+      "file": "assets/models/ufo-body/ufo-body.glb",
+      "bytes": 394792,
+      "sha256": "38dc5be4b80ce1a4023a4b4c3ed22b59d11834a5ae38cd02550c7cfde7401644",
+      "triangles": 2788,
+      "bounds_m": [
+        [
+          -1.1,
+          0.0,
+          -1.1
+        ],
+        [
+          1.1,
+          1.3992172211350296,
+          1.1
+        ]
+      ]
+    },
+    {
+      "id": "ufo-laser-mount",
+      "kind": "tripo_model",
+      "file": "assets/models/ufo-laser-mount/ufo-laser-mount.glb",
+      "bytes": 292740,
+      "sha256": "e53f7366ab183536777c8d1cc6992ab99551576355cc902f0494b70233c2e1d8",
+      "triangles": 1112,
+      "bounds_m": [
+        [
+          -0.18635029354207439,
+          -0.16345401174168298,
+          0.0
+        ],
+        [
+          0.18635029354207439,
+          0.16345401174168298,
+          0.6500000000000001
+        ]
+      ]
+    },
+    {
+      "id": "ufo-beam-emitter",
+      "kind": "tripo_model",
+      "file": "assets/models/ufo-beam-emitter/ufo-beam-emitter.glb",
+      "bytes": 213996,
+      "sha256": "1f2919efac5f71087b006de31aabfee256b76e253d659416443707f1aae20cdd",
+      "triangles": 1114,
+      "bounds_m": [
+        [
+          -0.325,
+          -0.11320939334637965,
+          -0.325
+        ],
+        [
+          0.325,
+          0.0,
+          0.325
+        ]
+      ]
+    },
+    {
+      "id": "ufo-shield-emitter",
+      "kind": "tripo_model",
+      "file": "assets/models/ufo-shield-emitter/ufo-shield-emitter.glb",
+      "bytes": 209728,
+      "sha256": "98e4104bed43d28abb9be3200dab2251aaf847c771dc6cb00bf2c41308462f53",
+      "triangles": 926,
+      "bounds_m": [
+        [
+          -0.14050880626223092,
+          0.0,
+          -0.11702544031311155
+        ],
+        [
+          0.14050880626223092,
+          0.4,
+          0.11702544031311155
+        ]
+      ]
+    },
+    {
+      "id": "farmer-body",
+      "kind": "tripo_model",
+      "file": "assets/models/farmer-body/farmer-body.glb",
+      "bytes": 378692,
+      "sha256": "7a09a2af9d7a16a79abefc9d32b3a32728a20b6a4cda85817f55782b191bcd6d",
+      "triangles": 5788,
+      "bounds_m": [
+        [
+          -0.5682974559686889,
+          0.0,
+          -0.30528375733855184
+        ],
+        [
+          0.5682974559686889,
+          1.6,
+          0.30528375733855184
+        ]
+      ]
+    },
+    {
+      "id": "resident-body",
+      "kind": "tripo_model",
+      "file": "assets/models/resident-body/resident-body.glb",
+      "bytes": 386072,
+      "sha256": "4a2cc1a80eece1cb5ee6e67fe1a2d94a914646d497d3d5fcbe04102fd52c39dd",
+      "triangles": 5830,
+      "bounds_m": [
+        [
+          -0.6152641878669276,
+          0.0,
+          -0.37103718199608615
+        ],
+        [
+          0.6152641878669276,
+          1.6,
+          0.37103718199608615
+        ]
+      ]
+    },
+    {
+      "id": "soldier-body",
+      "kind": "tripo_model",
+      "file": "assets/models/soldier-body/soldier-body.glb",
+      "bytes": 407624,
+      "sha256": "9f62f3131502e187d401e064ce1e7261025021b7d0552793e203ad48504954f8",
+      "triangles": 5744,
+      "bounds_m": [
+        [
+          -0.5964774951076321,
+          0.0,
+          -0.3898238747553816
+        ],
+        [
+          0.5964774951076321,
+          1.6,
+          0.3898238747553816
+        ]
+      ]
+    },
+    {
+      "id": "straw-hat",
+      "kind": "tripo_model",
+      "file": "assets/models/straw-hat/straw-hat.glb",
+      "bytes": 210076,
+      "sha256": "cb77e0b7468d8b6de5574e5e2054757a867b56ce2b00e9bb9e60a1290da03b83",
+      "triangles": 911,
+      "bounds_m": [
+        [
+          -0.525,
+          0.0,
+          -0.5126712328767123
+        ],
+        [
+          0.525,
+          0.5527397260273973,
+          0.5126712328767123
+        ]
+      ]
+    },
+    {
+      "id": "nightcap",
+      "kind": "tripo_model",
+      "file": "assets/models/nightcap/nightcap.glb",
+      "bytes": 165404,
+      "sha256": "b688d889ca38949f2892e55d7c5234b5f2452e29420d474a7b147532e2bd5ca0",
+      "triangles": 964,
+      "bounds_m": [
+        [
+          -0.34,
+          0.0,
+          -0.4031090487238979
+        ],
+        [
+          0.34,
+          0.6326682134570766,
+          0.4031090487238979
+        ]
+      ]
+    },
+    {
+      "id": "cow",
+      "kind": "tripo_model",
+      "file": "assets/models/cow/cow.glb",
+      "bytes": 496596,
+      "sha256": "7046e91817b882c94547ce2e62cee5387cca50b8940ec2b954f1d1a74aa94df8",
+      "triangles": 6005,
+      "bounds_m": [
+        [
+          -0.7273972602739726,
+          0.0,
+          -0.9
+        ],
+        [
+          0.7273972602739727,
+          1.2645792563600784,
+          0.9
+        ]
+      ]
+    },
+    {
+      "id": "sheep",
+      "kind": "tripo_model",
+      "file": "assets/models/sheep/sheep.glb",
+      "bytes": 330720,
+      "sha256": "8bfcfc21aaa2a25160d2f4963a4e43c4ba23fffa5c883653d92ebd00ea8826e2",
+      "triangles": 4478,
+      "bounds_m": [
+        [
+          -0.3561097256857856,
+          0.0,
+          -0.5097256857855362
+        ],
+        [
+          0.3561097256857856,
+          0.8000000000000002,
+          0.5097256857855362
+        ]
+      ]
+    },
+    {
+      "id": "pig",
+      "kind": "tripo_model",
+      "file": "assets/models/pig/pig.glb",
+      "bytes": 269532,
+      "sha256": "228e032a62ea3cac577fc5f11d657a08743a9e654d2f32110da1c8bb20c057bb",
+      "triangles": 4463,
+      "bounds_m": [
+        [
+          -0.3318904593639576,
+          0.0,
+          -0.5868374558303887
+        ],
+        [
+          0.3318904593639576,
+          0.65,
+          0.5868374558303887
+        ]
+      ]
+    },
+    {
+      "id": "jeep-chassis",
+      "kind": "tripo_model",
+      "file": "assets/models/jeep-chassis/jeep-chassis.glb",
+      "bytes": 410072,
+      "sha256": "f5c3216456bd78d2f842d42154838b8fb58b40f9df9b22cdbd8cf1db9eb1e0b1",
+      "triangles": 2584,
+      "bounds_m": [
+        [
+          -0.8280821917808219,
+          0.0,
+          -1.5500000000000003
+        ],
+        [
+          0.8280821917808221,
+          1.2800391389432486,
+          1.5500000000000003
+        ]
+      ]
+    },
+    {
+      "id": "jeep-wheel",
+      "kind": "tripo_model",
+      "file": "assets/models/jeep-wheel/jeep-wheel.glb",
+      "bytes": 232596,
+      "sha256": "2f39e7a7db81504cb2ce47c17d0cb510416a47c10d815df9f1cda6dc21f6debd",
+      "triangles": 935,
+      "bounds_m": [
+        [
+          -0.09921722561412596,
+          -0.3,
+          -0.3
+        ],
+        [
+          0.09921722561412596,
+          0.3,
+          0.3
+        ]
+      ]
+    },
+    {
+      "id": "tank-hull",
+      "kind": "tripo_model",
+      "file": "assets/models/tank-hull/tank-hull.glb",
+      "bytes": 438872,
+      "sha256": "dc840c7ce2168942a51b7ad02225cc0ba2180ec58071cbd0543e986cdc5515c8",
+      "triangles": 2583,
+      "bounds_m": [
+        [
+          -1.1,
+          0.0,
+          -1.091389432485323
+        ],
+        [
+          1.1,
+          0.9945206136386222,
+          1.091389432485323
+        ]
+      ]
+    },
+    {
+      "id": "tank-turret",
+      "kind": "tripo_model",
+      "file": "assets/models/tank-turret/tank-turret.glb",
+      "bytes": 383040,
+      "sha256": "d99d8b1a49dac32adacae4e806434b0d685dc407d7515cc47816c1f9e650c4e0",
+      "triangles": 2280,
+      "bounds_m": [
+        [
+          -0.6554794834084708,
+          0.0,
+          -0.8157534246575343
+        ],
+        [
+          0.6636985987833102,
+          1.3109589041095893,
+          1.284246575342466
+        ]
+      ]
+    },
+    {
+      "id": "missile",
+      "kind": "tripo_model",
+      "file": "assets/models/missile/missile.glb",
+      "bytes": 209580,
+      "sha256": "58f91f8339fa33a10ac7d75bd661fceaf107832a2800940d66c0f191269e1ea1",
+      "triangles": 980,
+      "bounds_m": [
+        [
+          -0.2436888454011742,
+          -0.22539138943248532,
+          -0.425
+        ],
+        [
+          0.24368884540117414,
+          0.22539138943248532,
+          0.425
+        ]
+      ]
+    },
+    {
+      "id": "tree-round-large",
+      "kind": "tripo_model",
+      "file": "assets/models/tree-round-large/tree-round-large.glb",
+      "bytes": 200444,
+      "sha256": "4b6dc24d112c869e4e6521f78a283d6d2deddc5c9eb82f98ffa72355937bd042",
+      "triangles": 1690,
+      "bounds_m": [
+        [
+          -1.4309197651663406,
+          0.0,
+          -1.5123287671232877
+        ],
+        [
+          1.4309197651663406,
+          3.2,
+          1.5123287671232877
+        ]
+      ]
+    },
+    {
+      "id": "tree-round-small",
+      "kind": "tripo_model",
+      "file": "assets/models/tree-round-small/tree-round-small.glb",
+      "bytes": 181460,
+      "sha256": "13e108d1b1491c0cf5e3581d93189b97b6eb1a1f7936407628ca59cf1db2b28e",
+      "triangles": 1806,
+      "bounds_m": [
+        [
+          -1.0757894736842104,
+          0.0,
+          -0.8315789473684211
+        ],
+        [
+          1.0757894736842104,
+          2.0,
+          0.8315789473684211
+        ]
+      ]
+    },
+    {
+      "id": "bush-round",
+      "kind": "tripo_model",
+      "file": "assets/models/bush-round/bush-round.glb",
+      "bytes": 281368,
+      "sha256": "320a8b5970a7b98dd9cbd84a1dbb66bc6f717cd90b87296c77612809c7c2b8ac",
+      "triangles": 1821,
+      "bounds_m": [
+        [
+          -0.5095441595441594,
+          0.0,
+          -0.5095441595441594
+        ],
+        [
+          0.5095441595441594,
+          0.6999999999999998,
+          0.5095441595441594
+        ]
+      ]
+    },
+    {
+      "id": "bush-low",
+      "kind": "tripo_model",
+      "file": "assets/models/bush-low/bush-low.glb",
+      "bytes": 343696,
+      "sha256": "397ee6640a87bccdf5dc01b01028c1682f1833b029678ad58edfe3a255b4b7b8",
+      "triangles": 1904,
+      "bounds_m": [
+        [
+          -0.5257201811149246,
+          0.0,
+          -0.49279836938170035
+        ],
+        [
+          0.5257201811149246,
+          0.5,
+          0.49279836938170035
+        ]
+      ]
+    },
+    {
+      "id": "hedge-module",
+      "kind": "tripo_model",
+      "file": "assets/models/hedge-module/hedge-module.glb",
+      "bytes": 223560,
+      "sha256": "1a9b23e0a52c9ce210400c7db210b29d8899091043bc53889d6325c81e939593",
+      "triangles": 1788,
+      "bounds_m": [
+        [
+          -1.0,
+          0.0,
+          -0.3542074363992172
+        ],
+        [
+          1.0,
+          0.6692759295499021,
+          0.3542074363992172
+        ]
+      ]
+    },
+    {
+      "id": "field-rock-a",
+      "kind": "tripo_model",
+      "file": "assets/models/field-rock-a/field-rock-a.glb",
+      "bytes": 201460,
+      "sha256": "68879cbe5a7e989b70b63f4228047eae6edf56bd4ac77d1867e0e99da354f7d2",
+      "triangles": 1823,
+      "bounds_m": [
+        [
+          -0.325,
+          0.0,
+          -0.31863992172211353
+        ],
+        [
+          0.325,
+          0.24804307224699199,
+          0.31863992172211353
+        ]
+      ]
+    },
+    {
+      "id": "field-rock-b",
+      "kind": "tripo_model",
+      "file": "assets/models/field-rock-b/field-rock-b.glb",
+      "bytes": 202652,
+      "sha256": "90ea2260a91898c41f92cf5770fa569cc223353169e4a61825e94a53890be94d",
+      "triangles": 1740,
+      "bounds_m": [
+        [
+          -0.2894324853228963,
+          0.0,
+          -0.2659491193737769
+        ],
+        [
+          0.2894324853228963,
+          0.6,
+          0.2659491193737769
+        ]
+      ]
+    },
+    {
+      "id": "cactus-tall",
+      "kind": "tripo_model",
+      "file": "assets/models/cactus-tall/cactus-tall.glb",
+      "bytes": 206960,
+      "sha256": "856411037ec10c6fcede03ebe88eaaa5cd2e41134698865783d95250b2e5f785",
+      "triangles": 1718,
+      "bounds_m": [
+        [
+          -0.8096868884540117,
+          0.0,
+          -0.35469667318982384
+        ],
+        [
+          0.8096868884540117,
+          2.5,
+          0.3546966731898239
+        ]
+      ]
+    },
+    {
+      "id": "cactus-short",
+      "kind": "tripo_model",
+      "file": "assets/models/cactus-short/cactus-short.glb",
+      "bytes": 203240,
+      "sha256": "0a6fa4e6a7979a04ff3a861dc64a80fe3fea2c47433967bf1e7637a857ef9efb",
+      "triangles": 1703,
+      "bounds_m": [
+        [
+          -0.36570450097847357,
+          0.0,
+          -0.22137964774951074
+        ],
+        [
+          0.36570450097847357,
+          1.25,
+          0.22137964774951074
+        ]
+      ]
+    },
+    {
+      "id": "cliff-module-a",
+      "kind": "tripo_model",
+      "file": "assets/models/cliff-module-a/cliff-module-a.glb",
+      "bytes": 229496,
+      "sha256": "64579a0aa686442d284061c0ef427b259d91a27151aaac2b4eb7966d2bd56f4b",
+      "triangles": 2672,
+      "bounds_m": [
+        [
+          -1.7499999999999998,
+          0.0,
+          -1.5924657534246573
+        ],
+        [
+          1.7499999999999998,
+          2.952054794520548,
+          1.5924657534246573
+        ]
+      ]
+    },
+    {
+      "id": "cliff-module-b",
+      "kind": "tripo_model",
+      "file": "assets/models/cliff-module-b/cliff-module-b.glb",
+      "bytes": 307920,
+      "sha256": "f26f9da627d30316d9d1a999aec754838fa998815f47363fc048226b4618dec5",
+      "triangles": 2809,
+      "bounds_m": [
+        [
+          -1.5,
+          0.0,
+          -1.159491193737769
+        ],
+        [
+          1.5,
+          1.3209393794289306,
+          1.159491193737769
+        ]
+      ]
+    },
+    {
+      "id": "desert-boulder-a",
+      "kind": "tripo_model",
+      "file": "assets/models/desert-boulder-a/desert-boulder-a.glb",
+      "bytes": 125268,
+      "sha256": "da7cd60f18db98e76d861b51c364e6edc41f9cf5491f9e628ed6eadcfe813701",
+      "triangles": 1688,
+      "bounds_m": [
+        [
+          -0.625,
+          0.0,
+          -0.6029843444227005
+        ],
+        [
+          0.625,
+          0.8145792563600782,
+          0.6029843444227005
+        ]
+      ]
+    },
+    {
+      "id": "desert-boulder-b",
+      "kind": "tripo_model",
+      "file": "assets/models/desert-boulder-b/desert-boulder-b.glb",
+      "bytes": 143468,
+      "sha256": "412f2b67b0b80fe704ea560d19b7b51c46bd141a4e7d6173dc1b5d84fc3458e7",
+      "triangles": 1800,
+      "bounds_m": [
+        [
+          -0.5141640866873065,
+          0.0,
+          -0.5141640866873065
+        ],
+        [
+          0.5141640866873065,
+          0.65,
+          0.5141640866873065
+        ]
+      ]
+    },
+    {
+      "id": "grass-tuft",
+      "kind": "tripo_model",
+      "file": "assets/models/grass-tuft/grass-tuft.glb",
+      "bytes": 234140,
+      "sha256": "274955486ba3e3cc9e6d4b4a4f5779b4b3e89e7b432a2dde1c2b2222edb9be4a",
+      "triangles": 1814,
+      "bounds_m": [
+        [
+          -0.12623761994805302,
+          0.0,
+          -0.15178217363165905
+        ],
+        [
+          0.12623761994805302,
+          0.3,
+          0.15178217363165905
+        ]
+      ]
+    },
+    {
+      "id": "desert-scrub",
+      "kind": "tripo_model",
+      "file": "assets/models/desert-scrub/desert-scrub.glb",
+      "bytes": 234056,
+      "sha256": "b96beeeb30b48cac1f3d695039f73368106f8510818d17390fe57cf7630893c7",
+      "triangles": 1659,
+      "bounds_m": [
+        [
+          -0.27440334128878285,
+          0.0,
+          -0.27440334128878285
+        ],
+        [
+          0.27440334128878285,
+          0.45000000000000007,
+          0.27440334128878285
+        ]
+      ]
+    },
+    {
+      "id": "crop-seedling",
+      "kind": "tripo_model",
+      "file": "assets/models/crop-seedling/crop-seedling.glb",
+      "bytes": 248836,
+      "sha256": "2bb9c607e3d84c50ba9bad9a2d4a7c4ae1b524dce92f3f4f6760184b4c1205b3",
+      "triangles": 1700,
+      "bounds_m": [
+        [
+          -0.15827586206896552,
+          0.0,
+          -0.1762068965517241
+        ],
+        [
+          0.15827586206896552,
+          0.3,
+          0.1762068965517241
+        ]
+      ]
+    },
+    {
+      "id": "barn",
+      "kind": "tripo_model",
+      "file": "assets/models/barn/barn.glb",
+      "bytes": 669776,
+      "sha256": "b9058735713f9706a7d4b009df7e6fb8da53b62865b330dc26bf782cd5a74d37",
+      "triangles": 897,
+      "bounds_m": [
+        [
+          -2.1513977580747397,
+          0.0,
+          -2.050353636364771
+        ],
+        [
+          2.1513977580747397,
+          3.5,
+          2.050353636364771
+        ]
+      ]
+    },
+    {
+      "id": "silo",
+      "kind": "tripo_model",
+      "file": "assets/models/silo/silo.glb",
+      "bytes": 261876,
+      "sha256": "1c7787096d5be5852b733b72ca6deab4068f9cfdc8a300725abe7606be5cb3e4",
+      "triangles": 1873,
+      "bounds_m": [
+        [
+          -1.0998043052837572,
+          0.0,
+          -1.091976516634051
+        ],
+        [
+          1.0998043052837572,
+          4.0,
+          1.091976516634051
+        ]
+      ]
+    },
+    {
+      "id": "windmill-mast",
+      "kind": "tripo_model",
+      "file": "assets/models/windmill-mast/windmill-mast.glb",
+      "bytes": 351684,
+      "sha256": "a0e8b489b0bcaf6fb1df414524e6443594369052e66c5ceebf137ba6c9e02fa6",
+      "triangles": 1972,
+      "bounds_m": [
+        [
+          -0.8249081564828216,
+          0.0,
+          -0.9432227671225806
+        ],
+        [
+          0.8249081564828216,
+          3.5,
+          0.9432227671225806
+        ]
+      ]
+    },
+    {
+      "id": "windmill-rotor",
+      "kind": "tripo_model",
+      "file": "assets/models/windmill-rotor/windmill-rotor.glb",
+      "bytes": 249400,
+      "sha256": "d74c23fe434fd80f2eb0595b91f4237eca042e77d87f8d15788d50e2f7a902a6",
+      "triangles": 1362,
+      "bounds_m": [
+        [
+          -0.9,
+          -0.8929549902152643,
+          -0.23072407045009785
+        ],
+        [
+          0.9,
+          0.8929549902152643,
+          0.23072407045009785
+        ]
+      ]
+    },
+    {
+      "id": "hay-bale",
+      "kind": "tripo_model",
+      "file": "assets/models/hay-bale/hay-bale.glb",
+      "bytes": 180472,
+      "sha256": "00a70c9fae356781cb67240a6fc50135ac1b8804e800a61fbd3659306dd453fe",
+      "triangles": 1600,
+      "bounds_m": [
+        [
+          -0.43757396449704145,
+          0.0,
+          -0.4535502958579882
+        ],
+        [
+          0.43757396449704145,
+          0.9,
+          0.4535502958579882
+        ]
+      ]
+    },
+    {
+      "id": "house-coral",
+      "kind": "tripo_model",
+      "file": "assets/models/house-coral/house-coral.glb",
+      "bytes": 600884,
+      "sha256": "ff43e98516241e03b831b0aa69489a3cc3de5ccc31a6bc3d0968cdb61cf36e5b",
+      "triangles": 2540,
+      "bounds_m": [
+        [
+          -2.175790754257908,
+          0.0,
+          -2.150243309002433
+        ],
+        [
+          2.175790754257908,
+          3.5,
+          2.150243309002433
+        ]
+      ]
+    },
+    {
+      "id": "house-teal",
+      "kind": "tripo_model",
+      "file": "assets/models/house-teal/house-teal.glb",
+      "bytes": 608384,
+      "sha256": "3961cd086eedc93d7b2b64707646f3c73d265da5037b85196d469a74f36cec2f",
+      "triangles": 2418,
+      "bounds_m": [
+        [
+          -2.094262220243781,
+          0.0,
+          -2.086065499225214
+        ],
+        [
+          2.094262220243781,
+          3.5,
+          2.086065499225214
+        ]
+      ]
+    },
+    {
+      "id": "streetlamp",
+      "kind": "tripo_model",
+      "file": "assets/models/streetlamp/streetlamp.glb",
+      "bytes": 274340,
+      "sha256": "a4681c94e84b0b20f853071d6e0d5b02d0f276fa5587a0b97c1881dde22133b5",
+      "triangles": 1688,
+      "bounds_m": [
+        [
+          -0.3150684931506849,
+          0.0,
+          -0.3150684931506849
+        ],
+        [
+          0.3150684931506849,
+          2.8,
+          0.3150684931506849
+        ]
+      ]
+    },
+    {
+      "id": "mailbox-red",
+      "kind": "tripo_model",
+      "file": "assets/models/mailbox-red/mailbox-red.glb",
+      "bytes": 246044,
+      "sha256": "fac3ae924acf8e55104d582ea5d28e3e85bae1cf5b9d035e7d52ec33f3eae9a6",
+      "triangles": 1151,
+      "bounds_m": [
+        [
+          -0.23356164383561645,
+          0.0,
+          -0.25078277886497063
+        ],
+        [
+          0.23356164383561645,
+          1.1,
+          0.25078277886497063
+        ]
+      ]
+    },
+    {
+      "id": "mailbox-teal",
+      "kind": "tripo_model",
+      "file": "assets/models/mailbox-teal/mailbox-teal.glb",
+      "bytes": 249072,
+      "sha256": "5bbb1bf2ce566de8707ea5b6bb8787a919e8899b19c74a18235b3d56a4da6409",
+      "triangles": 1209,
+      "bounds_m": [
+        [
+          -0.2981409001956947,
+          0.0,
+          -0.22495107632093936
+        ],
+        [
+          0.2981409001956947,
+          1.1,
+          0.22495107632093936
+        ]
+      ]
+    },
+    {
+      "id": "wheelie-bin",
+      "kind": "tripo_model",
+      "file": "assets/models/wheelie-bin/wheelie-bin.glb",
+      "bytes": 216448,
+      "sha256": "2ee4358a0b72cfbf8c283792edfd26cc1807ab0e18a19071b2e03e4a90ce2683",
+      "triangles": 1548,
+      "bounds_m": [
+        [
+          -0.28669275929549903,
+          0.0,
+          -0.3336594911937377
+        ],
+        [
+          0.28669275929549903,
+          1.0,
+          0.3336594911937377
+        ]
+      ]
+    },
+    {
+      "id": "service-canopy",
+      "kind": "tripo_model",
+      "file": "assets/models/service-canopy/service-canopy.glb",
+      "bytes": 293428,
+      "sha256": "bf6cf9eade6ebc8cff41294c0cb1c123bc4bdbf7b8f1b57ef0c8653411b7c714",
+      "triangles": 2606,
+      "bounds_m": [
+        [
+          -3.0,
+          0.0,
+          -2.107632093933464
+        ],
+        [
+          3.0,
+          3.0645796146878057,
+          2.107632093933464
+        ]
+      ]
+    },
+    {
+      "id": "fuel-pump-red",
+      "kind": "tripo_model",
+      "file": "assets/models/fuel-pump-red/fuel-pump-red.glb",
+      "bytes": 243652,
+      "sha256": "99286157a69d8b774321651e6c80a25f08f348f8705eea34658d6b765b551c3c",
+      "triangles": 1762,
+      "bounds_m": [
+        [
+          -0.6747553816046967,
+          0.0,
+          -0.31154598825831703
+        ],
+        [
+          0.6747553816046967,
+          1.6,
+          0.31154598825831703
+        ]
+      ]
+    },
+    {
+      "id": "fuel-pump-blue",
+      "kind": "tripo_model",
+      "file": "assets/models/fuel-pump-blue/fuel-pump-blue.glb",
+      "bytes": 239116,
+      "sha256": "f49efd62296d88dcade9e12c4ba2fdfad32510194b3a93fba158d88460bf5081",
+      "triangles": 1682,
+      "bounds_m": [
+        [
+          -0.6684931506849315,
+          0.0,
+          -0.34285714285714286
+        ],
+        [
+          0.6684931506849315,
+          1.6,
+          0.34285714285714286
+        ]
+      ]
+    },
+    {
+      "id": "road-bollard",
+      "kind": "tripo_model",
+      "file": "assets/models/road-bollard/road-bollard.glb",
+      "bytes": 129120,
+      "sha256": "14d6a870f4a127c6bf281a7986755e630c701f21a215c9189b9d7629651e6c74",
+      "triangles": 690,
+      "bounds_m": [
+        [
+          -0.11394324853228963,
+          0.0,
+          -0.11727007139918855
+        ],
+        [
+          0.11394324853228963,
+          0.85,
+          0.11727007139918855
+        ]
+      ]
+    },
+    {
+      "id": "fence-post",
+      "kind": "procedural_model",
+      "file": "assets/models/fence-post/fence-post.glb",
+      "bytes": 909660,
+      "sha256": "25e11f78673f9ad0c5b772fd30f196a78f7bc772b04d29a414dfeac85fd712ec",
+      "triangles": 22,
+      "bounds_m": [
+        [
+          -0.07999999821186066,
+          0.0,
+          -0.07999999821186066
+        ],
+        [
+          0.07999999821186066,
+          1.100000023841858,
+          0.07999999821186066
+        ]
+      ]
+    },
+    {
+      "id": "fence-rail",
+      "kind": "procedural_model",
+      "file": "assets/models/fence-rail/fence-rail.glb",
+      "bytes": 908748,
+      "sha256": "08cfe389247bb7cf8854dc6aa02dc583e40968f48fb239ad7ec15ee4c12c1eab",
+      "triangles": 12,
+      "bounds_m": [
+        [
+          0.0,
+          0.0,
+          -0.04500000178813934
+        ],
+        [
+          2.0,
+          0.11999999731779099,
+          0.04500000178813934
+        ]
+      ]
+    },
+    {
+      "id": "ground-tile",
+      "kind": "procedural_model",
+      "file": "assets/models/ground-tile/ground-tile.glb",
+      "bytes": 1272612,
+      "sha256": "58182d8c5d9f1130c31ce2c0a9f3ef449351b38e9b31fa6a19f52570835d3fa7",
+      "triangles": 2,
+      "bounds_m": [
+        [
+          -8.0,
+          0.0,
+          0.0
+        ],
+        [
+          8.0,
+          0.0,
+          16.0
+        ]
+      ]
+    },
+    {
+      "id": "path-straight",
+      "kind": "procedural_model",
+      "file": "assets/models/path-straight/path-straight.glb",
+      "bytes": 1147540,
+      "sha256": "34fb75d3c51f0e4579a6994e524eb1a7056b83a653814b234b3feeecf77b0e73",
+      "triangles": 2,
+      "bounds_m": [
+        [
+          -1.5,
+          0.0,
+          0.0
+        ],
+        [
+          1.5,
+          0.0,
+          16.0
+        ]
+      ]
+    },
+    {
+      "id": "path-corner",
+      "kind": "procedural_model",
+      "file": "assets/models/path-corner/path-corner.glb",
+      "bytes": 1161208,
+      "sha256": "0a393430b92f0ab7db18a0b4ab87668feabfe946d6ada7ad2209d88c648befba",
+      "triangles": 128,
+      "bounds_m": [
+        [
+          2.7554553521421787e-16,
+          0.0,
+          0.0
+        ],
+        [
+          7.5,
+          0.0,
+          7.5
+        ]
+      ]
+    },
+    {
+      "id": "soil-bed",
+      "kind": "procedural_model",
+      "file": "assets/models/soil-bed/soil-bed.glb",
+      "bytes": 1031172,
+      "sha256": "52210dc407bbc9945951e1f3a4f578332aa190e659b39e1e53a647f77b9ce130",
+      "triangles": 2,
+      "bounds_m": [
+        [
+          -0.5,
+          0.0,
+          0.0
+        ],
+        [
+          0.5,
+          0.0,
+          4.0
+        ]
+      ]
+    },
+    {
+      "id": "road-straight",
+      "kind": "procedural_model",
+      "file": "assets/models/road-straight/road-straight.glb",
+      "bytes": 1429808,
+      "sha256": "364ff627876091a77fbab0655ed2eb4fa0e5d7e4746d5be00f8dbb54f3f808b5",
+      "triangles": 2,
+      "bounds_m": [
+        [
+          -3.0,
+          0.0,
+          0.0
+        ],
+        [
+          3.0,
+          0.0,
+          16.0
+        ]
+      ]
+    },
+    {
+      "id": "road-corner",
+      "kind": "procedural_model",
+      "file": "assets/models/road-corner/road-corner.glb",
+      "bytes": 1443444,
+      "sha256": "64a01bf8e11750320dd763f0841b7fde7adf2f237e77aff0f3362e33fb7c83a4",
+      "triangles": 128,
+      "bounds_m": [
+        [
+          3.6739402930577075e-16,
+          0.0,
+          0.0
+        ],
+        [
+          12.0,
+          0.0,
+          12.0
+        ]
+      ]
+    },
+    {
+      "id": "road-junction",
+      "kind": "procedural_model",
+      "file": "assets/models/road-junction/road-junction.glb",
+      "bytes": 1430096,
+      "sha256": "28fb4f84ae8946fdd056b659d4c947cd5be11453a62c0f2acc4607d63f3fa959",
+      "triangles": 4,
+      "bounds_m": [
+        [
+          -8.0,
+          0.0,
+          -3.0
+        ],
+        [
+          8.0,
+          0.0,
+          8.0
+        ]
+      ]
+    },
+    {
+      "id": "pavement-straight",
+      "kind": "procedural_model",
+      "file": "assets/models/pavement-straight/pavement-straight.glb",
+      "bytes": 1287304,
+      "sha256": "63786b8787c76edbe4659275e1d41e64ba782dff886774d110152361f4ffeab4",
+      "triangles": 300,
+      "bounds_m": [
+        [
+          0.0,
+          0.0,
+          0.0
+        ],
+        [
+          1.5,
+          0.1599999964237213,
+          16.0
+        ]
+      ]
+    },
+    {
+      "id": "pavement-corner",
+      "kind": "procedural_model",
+      "file": "assets/models/pavement-corner/pavement-corner.glb",
+      "bytes": 1376800,
+      "sha256": "fc5aa71d6f90785299022da6d9247379d5be933fe6887f168cf6493002e715f7",
+      "triangles": 1128,
+      "bounds_m": [
+        [
+          7.347880586115415e-16,
+          0.0,
+          0.0
+        ],
+        [
+          13.5,
+          0.1599999964237213,
+          13.5
+        ]
+      ]
+    },
+    {
+      "id": "pavement-end",
+      "kind": "procedural_model",
+      "file": "assets/models/pavement-end/pavement-end.glb",
+      "bytes": 1258884,
+      "sha256": "a41d5c067d37cfc0d86c2a439bc54e6f0defcc4fe15ff6d297ba588f50f8812f",
+      "triangles": 38,
+      "bounds_m": [
+        [
+          0.0,
+          0.0,
+          0.0
+        ],
+        [
+          1.5,
+          0.1599999964237213,
+          0.4000000059604645
+        ]
+      ]
+    },
+    {
+      "id": "texture-grass",
+      "kind": "tileable_texture",
+      "file": "assets/textures/texture-grass/texture-grass.png",
+      "bytes": 1270666,
+      "sha256": "f655840380659629bf5fc05fb916a7a92d39114e82af4df1cd13430691b24762",
+      "edge_and_first_difference_max": 0
+    },
+    {
+      "id": "texture-dirt",
+      "kind": "tileable_texture",
+      "file": "assets/textures/texture-dirt/texture-dirt.png",
+      "bytes": 1145596,
+      "sha256": "b7d96159204c321796ecbf9b78e43c8f78b4da36e89dacddc4c8530631452e64",
+      "edge_and_first_difference_max": 0
+    },
+    {
+      "id": "texture-soil",
+      "kind": "tileable_texture",
+      "file": "assets/textures/texture-soil/texture-soil.png",
+      "bytes": 1029238,
+      "sha256": "97af5f3af2a86b2de4374c417ee29ff0c048375da148e637963ba6d975fe31a4",
+      "edge_and_first_difference_max": 0
+    },
+    {
+      "id": "texture-asphalt",
+      "kind": "tileable_texture",
+      "file": "assets/textures/texture-asphalt/texture-asphalt.png",
+      "bytes": 1427853,
+      "sha256": "1b1821bf91bdddb363680813ca37feac7d5c0a2dfe7fc8bd955e819b7d443017",
+      "edge_and_first_difference_max": 0
+    },
+    {
+      "id": "texture-pavement",
+      "kind": "tileable_texture",
+      "file": "assets/textures/texture-pavement/texture-pavement.png",
+      "bytes": 1253102,
+      "sha256": "a9ab7ae7d93dc1ad324893ac7be643beed9988986b53999773ea1bd000f00131",
+      "edge_and_first_difference_max": 0
+    },
+    {
+      "id": "texture-sand",
+      "kind": "tileable_texture",
+      "file": "assets/textures/texture-sand/texture-sand.png",
+      "bytes": 1230030,
+      "sha256": "3ad9f7030d4188e8aaa5004108d2847babb464ccbf768bd805bb84512a88c327",
+      "edge_and_first_difference_max": 0
+    },
+    {
+      "id": "texture-wood",
+      "kind": "tileable_texture",
+      "file": "assets/textures/texture-wood/texture-wood.png",
+      "bytes": 905662,
+      "sha256": "eda1074005f39ad2f739b6b457e43bb3a344a57b827bdaec47579094fec10eae",
+      "edge_and_first_difference_max": 0
+    },
+    {
+      "id": "fx-capture-ring",
+      "kind": "native_graphic",
+      "file": "assets/graphics/fx-capture-ring/fx-capture-ring.png",
+      "bytes": 57736,
+      "sha256": "0660d769690e10b1bcfd30537d8c1df2283b36bba9af75887f0b624ce97bd8e6"
+    },
+    {
+      "id": "fx-crop-circle",
+      "kind": "native_graphic",
+      "file": "assets/graphics/fx-crop-circle/fx-crop-circle.png",
+      "bytes": 29020,
+      "sha256": "846264656a6ff9d800225b30a3174f5c12c502583964a1ce4d0173ab0d23010c"
+    },
+    {
+      "id": "fx-capture-dot",
+      "kind": "native_graphic",
+      "file": "assets/graphics/fx-capture-dot/fx-capture-dot.png",
+      "bytes": 7573,
+      "sha256": "0a96fdebe1350c8fe450363c366628a4a22f251add4d8416cd9ce661bb8c7103"
+    },
+    {
+      "id": "fx-laser",
+      "kind": "native_graphic",
+      "file": "assets/graphics/fx-laser/fx-laser.png",
+      "bytes": 2109,
+      "sha256": "e98f54204ff576e810264c4bf03663b1dd145ddb393e3a90f026572491a1c28c"
+    },
+    {
+      "id": "fx-hit-spark",
+      "kind": "native_graphic",
+      "file": "assets/graphics/fx-hit-spark/fx-hit-spark.png",
+      "bytes": 19489,
+      "sha256": "5eae5e18b15ccafff98de1d82040975f5af445cc2a998caa808ee1f9342a8f8d"
+    },
+    {
+      "id": "fx-exhaust-puff",
+      "kind": "native_graphic",
+      "file": "assets/graphics/fx-exhaust-puff/fx-exhaust-puff.png",
+      "bytes": 27047,
+      "sha256": "86d99de92dad9ef3858328c8329e65545b1f9fa90d2081f007c6de33943b88ec"
+    },
+    {
+      "id": "fx-blob-shadow",
+      "kind": "native_graphic",
+      "file": "assets/graphics/fx-blob-shadow/fx-blob-shadow.png",
+      "bytes": 15579,
+      "sha256": "5939ff6e1a26b3feab73947cc65a10a44cba3d852028c2b655f7b76863c57a9e"
+    },
+    {
+      "id": "fx-threat-chevron",
+      "kind": "native_graphic",
+      "file": "assets/graphics/fx-threat-chevron/fx-threat-chevron.png",
+      "bytes": 6637,
+      "sha256": "fca9fdb6a6eb150a6d2485098a2566476597e8538613119c96be423866125356"
+    },
+    {
+      "id": "fx-shield-shell",
+      "kind": "native_graphic",
+      "file": "assets/graphics/fx-shield-shell/fx-shield-shell.png",
+      "bytes": 82027,
+      "sha256": "29f98fb5eb25b7e286358873f2f61c120581b149585e716b47eff3978b9873d4"
+    },
+    {
+      "id": "ui-coin",
+      "kind": "native_graphic",
+      "file": "assets/graphics/ui-coin/ui-coin.png",
+      "bytes": 24335,
+      "sha256": "9883046d9244beaaa2dd6a82780a95328691d3a0722f0a3edf6dd089ad8777dd"
+    },
+    {
+      "id": "ui-beam",
+      "kind": "native_graphic",
+      "file": "assets/graphics/ui-beam/ui-beam.png",
+      "bytes": 14533,
+      "sha256": "65cc64785bb976b52c8fc2cc7308d9b500bfd0ee24d2d47fc243533ad7c7bc5d"
+    },
+    {
+      "id": "ui-laser",
+      "kind": "native_graphic",
+      "file": "assets/graphics/ui-laser/ui-laser.png",
+      "bytes": 12055,
+      "sha256": "9a532972f5331eac248e2d5351c6a19d9d95d0f975983b5deef1c569d17deec0"
+    },
+    {
+      "id": "ui-shield",
+      "kind": "native_graphic",
+      "file": "assets/graphics/ui-shield/ui-shield.png",
+      "bytes": 18921,
+      "sha256": "7ca94fc57245f36c78a7324ccdeb47a46055d3091ed82c1e9b513a1301bd04b9"
+    },
+    {
+      "id": "ui-hud-panel",
+      "kind": "native_graphic",
+      "file": "assets/graphics/ui-hud-panel/ui-hud-panel.png",
+      "bytes": 4975,
+      "sha256": "8630ef96650195a86733b349c1e262130e36df5d7ee7f3dfce820866d13e6f6d"
+    },
+    {
+      "id": "ui-xp-track",
+      "kind": "native_graphic",
+      "file": "assets/graphics/ui-xp-track/ui-xp-track.png",
+      "bytes": 4900,
+      "sha256": "763e9324bab0ca653b5c43342c46cf19666beabf8d14cafadabbd65edea5473c"
+    },
+    {
+      "id": "ui-upgrade-card",
+      "kind": "native_graphic",
+      "file": "assets/graphics/ui-upgrade-card/ui-upgrade-card.png",
+      "bytes": 10703,
+      "sha256": "dadcd87088fd6f29a9d15b76a2b895be1f19e3140443057c7819f54236213924"
+    },
+    {
+      "id": "road-centre-dash",
+      "kind": "native_graphic",
+      "file": "assets/graphics/road-centre-dash/road-centre-dash.png",
+      "bytes": 8914,
+      "sha256": "9e5d2d2af1c406468842a99fc74afde658356597932fb7725a7eabdd95c401dd"
+    },
+    {
+      "id": "infantry-rifleman-body",
+      "kind": "tripo_model",
+      "file": "assets/models/infantry-rifleman-body/infantry-rifleman-body.glb",
+      "bytes": 553656,
+      "sha256": "876d638d28bbff3514da68d4b5cb5b70ec1483e190ab5c2e90ba7cb6f8a7e84f",
+      "triangles": 4990,
+      "bounds_m": [
+        [
+          -0.8753747323340472,
+          0.0,
+          -0.3580299785867238
+        ],
+        [
+          0.8753747323340472,
+          1.6,
+          0.3580299785867238
+        ]
+      ]
+    },
+    {
+      "id": "infantry-shotgunner-body",
+      "kind": "tripo_model",
+      "file": "assets/models/infantry-shotgunner-body/infantry-shotgunner-body.glb",
+      "bytes": 424544,
+      "sha256": "26988121870f9ef1d041b6a34ce7dc454597d817bf433a41f79464950212cb13",
+      "triangles": 5763,
+      "bounds_m": [
+        [
+          -0.8651241534988713,
+          0.0,
+          -0.4012415349887133
+        ],
+        [
+          0.8651241534988713,
+          1.5,
+          0.4012415349887133
+        ]
+      ]
+    },
+    {
+      "id": "infantry-rocketeer-body",
+      "kind": "tripo_model",
+      "file": "assets/models/infantry-rocketeer-body/infantry-rocketeer-body.glb",
+      "bytes": 380788,
+      "sha256": "e825433728deb3b321cea7426ad0e76db7329175c9e10745984f1f96f9d5ac62",
+      "triangles": 5505,
+      "bounds_m": [
+        [
+          -0.9366598778004074,
+          0.0,
+          -0.36476578411405297
+        ],
+        [
+          0.9366598778004074,
+          1.8,
+          0.36476578411405297
+        ]
+      ]
+    },
+    {
+      "id": "weapon-carbine",
+      "kind": "tripo_model",
+      "file": "assets/models/weapon-carbine/weapon-carbine.glb",
+      "bytes": 261676,
+      "sha256": "375a1b5fb078b026d3b850a508a0980b06d33bfc47b16012942eb823cd7b3741",
+      "triangles": 1348,
+      "bounds_m": [
+        [
+          -0.06027397260273973,
+          -0.04922945205479452,
+          -0.23767123287671235
+        ],
+        [
+          0.05616438356164383,
+          0.17679794520547948,
+          0.46232876712328763
+        ]
+      ]
+    },
+    {
+      "id": "weapon-shotgun",
+      "kind": "tripo_model",
+      "file": "assets/models/weapon-shotgun/weapon-shotgun.glb",
+      "bytes": 296848,
+      "sha256": "fdfb970d978be03c8cef8e3db03a088cdc9d77fd054169901f8588e08934a3a4",
+      "triangles": 1537,
+      "bounds_m": [
+        [
+          -0.0426369879343738,
+          -0.10719178082191783,
+          -0.22003424657534246
+        ],
+        [
+          0.03818493248665168,
+          0.07226027397260273,
+          0.4799657534246575
+        ]
+      ]
+    },
+    {
+      "id": "weapon-rocket-launcher",
+      "kind": "tripo_model",
+      "file": "assets/models/weapon-rocket-launcher/weapon-rocket-launcher.glb",
+      "bytes": 218388,
+      "sha256": "c9e3fa0367dd62ea0142554cb24eb6a516562cbbb7927705ab73280db2561818",
+      "triangles": 1729,
+      "bounds_m": [
+        [
+          -0.1413588551859099,
+          -0.11646281800391388,
+          -0.42140410958904106
+        ],
+        [
+          0.14445327788649712,
+          0.33138454011741675,
+          0.7285958904109588
+        ]
+      ]
+    },
+    {
+      "id": "jeep-minigun-head",
+      "kind": "tripo_model",
+      "file": "assets/models/jeep-minigun-head/jeep-minigun-head.glb",
+      "bytes": 446080,
+      "sha256": "9b75f1d8d4a539b3d44bf21c1170fb2f18e71f762502c3b9be92fa81f66d098b",
+      "triangles": 2587,
+      "bounds_m": [
+        [
+          -0.21624266144814092,
+          -0.1505381604696673,
+          -0.42250489236790606
+        ],
+        [
+          0.22123287671232875,
+          0.20709393346379648,
+          0.4274951076320939
+        ]
+      ]
+    },
+    {
+      "id": "jeep-minigun-mount",
+      "kind": "tripo_model",
+      "file": "assets/models/jeep-minigun-mount/jeep-minigun-mount.glb",
+      "bytes": 279720,
+      "sha256": "e272fd867a17fd6eb7e1ac9ca8fa358d0b487bbc7110ceb39b37473179353613",
+      "triangles": 984,
+      "bounds_m": [
+        [
+          -0.2090465754678805,
+          0.0,
+          -0.12636986301369865
+        ],
+        [
+          0.2090465754678805,
+          1.05,
+          0.12636986301369865
+        ]
+      ]
+    }
+  ]
+}

@@ -1,0 +1,141 @@
+{
+  "status": "passed",
+  "fonts": [
+    {
+      "font": "HR-Bureau-Medium",
+      "status": "passed",
+      "characters": 374,
+      "glyphs": 385,
+      "outline_glyphs": 376,
+      "tabular_advance": 625,
+      "ttf_bytes": 61096,
+      "checks": [
+        "table checksums",
+        "ASCII / Latin-1 / Extended-A coverage",
+        "name and embedding metadata",
+        "vertical bounds and bearings",
+        "tabular and proportional numbers",
+        "kerning",
+        "NFC/NFD equivalence",
+        "HarfBuzz shaping",
+        "FreeType rendering",
+        "WOFF2 round-trip"
+      ]
+    },
+    {
+      "font": "HR-Bureau-SemiBold",
+      "status": "passed",
+      "characters": 374,
+      "glyphs": 385,
+      "outline_glyphs": 376,
+      "tabular_advance": 640,
+      "ttf_bytes": 60668,
+      "checks": [
+        "table checksums",
+        "ASCII / Latin-1 / Extended-A coverage",
+        "name and embedding metadata",
+        "vertical bounds and bearings",
+        "tabular and proportional numbers",
+        "kerning",
+        "NFC/NFD equivalence",
+        "HarfBuzz shaping",
+        "FreeType rendering",
+        "WOFF2 round-trip"
+      ]
+    },
+    {
+      "font": "HR-Bureau-Bold",
+      "status": "passed",
+      "characters": 374,
+      "glyphs": 385,
+      "outline_glyphs": 376,
+      "tabular_advance": 656,
+      "ttf_bytes": 60148,
+      "checks": [
+        "table checksums",
+        "ASCII / Latin-1 / Extended-A coverage",
+        "name and embedding metadata",
+        "vertical bounds and bearings",
+        "tabular and proportional numbers",
+        "kerning",
+        "NFC/NFD equivalence",
+        "HarfBuzz shaping",
+        "FreeType rendering",
+        "WOFF2 round-trip"
+      ]
+    },
+    {
+      "font": "HR-Panic-Broadcast-Bold",
+      "status": "passed",
+      "characters": 374,
+      "glyphs": 385,
+      "outline_glyphs": 376,
+      "tabular_advance": 659,
+      "ttf_bytes": 61132,
+      "checks": [
+        "table checksums",
+        "ASCII / Latin-1 / Extended-A coverage",
+        "name and embedding metadata",
+        "vertical bounds and bearings",
+        "tabular and proportional numbers",
+        "kerning",
+        "NFC/NFD equivalence",
+        "HarfBuzz shaping",
+        "FreeType rendering",
+        "WOFF2 round-trip"
+      ]
+    },
+    {
+      "font": "HR-Hostile-Takeover-Black",
+      "status": "passed",
+      "characters": 374,
+      "glyphs": 385,
+      "outline_glyphs": 376,
+      "tabular_advance": 729,
+      "ttf_bytes": 55668,
+      "checks": [
+        "table checksums",
+        "ASCII / Latin-1 / Extended-A coverage",
+        "name and embedding metadata",
+        "vertical bounds and bearings",
+        "tabular and proportional numbers",
+        "kerning",
+        "NFC/NFD equivalence",
+        "HarfBuzz shaping",
+        "FreeType rendering",
+        "WOFF2 round-trip"
+      ]
+    },
+    {
+      "font": "HR-Earthling-Signs-Regular",
+      "status": "passed",
+      "characters": 374,
+      "glyphs": 385,
+      "outline_glyphs": 376,
+      "tabular_advance": 713,
+      "ttf_bytes": 63920,
+      "checks": [
+        "table checksums",
+        "ASCII / Latin-1 / Extended-A coverage",
+        "name and embedding metadata",
+        "vertical bounds and bearings",
+        "tabular and proportional numbers",
+        "kerning",
+        "NFC/NFD equivalence",
+        "HarfBuzz shaping",
+        "FreeType rendering",
+        "WOFF2 round-trip"
+      ]
+    }
+  ],
+  "limitations": [
+    "Fonts have no manual TrueType hinting; rendering uses the host rasterizer.",
+    "Latin coverage only; other writing systems need separate fallback fonts.",
+    "Engine-specific import and distance-field atlas settings require in-engine QA."
+  ],
+  "browser_preview": {
+    "status": "passed",
+    "loaded_styles": 6,
+    "method": "Browser font loading status and visual screenshot inspection of specimen.html"
+  }
+}

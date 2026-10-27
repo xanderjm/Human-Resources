@@ -1,0 +1,102 @@
+{
+  "triangles": 1800,
+  "vertices": 1505,
+  "mesh_primitives": 1,
+  "uv_present": true,
+  "textures": [
+    {
+      "size": [
+        1024,
+        1024
+      ],
+      "mode": "RGB"
+    }
+  ],
+  "raw_accessor_bounds": [
+    {
+      "min": [
+        -0.4990234375,
+        -0.3154296875,
+        -0.4990234375
+      ],
+      "max": [
+        0.4990234375,
+        0.3154296875,
+        0.4990234375
+      ]
+    }
+  ],
+  "extensions": [],
+  "bytes": 143208,
+  "asset": "desert-boulder-b",
+  "model_file": "assets/models/desert-boulder-b/desert-boulder-b.glb",
+  "requested_face_limit": 1800,
+  "source_task_id": "f23fdba4-52b3-4d4e-b55f-338b1871984f",
+  "convert_task_id": "e7fed6c0-5816-4c12-8d09-5c216ed3cb66",
+  "credits_consumed": 60,
+  "preview": null,
+  "triangle_budget_review": {
+    "requested_target": 1800,
+    "actual_triangles": 1800,
+    "target_met": true,
+    "category_ceiling": 3000,
+    "status": "passed"
+  },
+  "structural_review": {
+    "status": "passed",
+    "notes": "Triangle mode, valid GLB length, UVs and embedded 1024px base colour checked. Requested targets are approximate; actual triangle count and target deviations are reported separately, within the user-specified 3000-prop / 8000-character ceilings. Scale, pivot, topology and visual quality require separate review."
+  },
+  "visual_review": {
+    "status": "accepted",
+    "notes": "Distinct angular faceted sandstone boulder, clean hidden side, no debris/base. Muted palette and broad paint planes match desert family.",
+    "views": [
+      "three-quarter",
+      "opposite"
+    ]
+  },
+  "import_review": {
+    "status": "passed",
+    "units": "metres",
+    "up": "+Y",
+    "forward": "+Z",
+    "yaw_degrees": 0.0,
+    "pivot": "ground-centre",
+    "double_sided": false,
+    "uniform_scale": 1.0303405572755417,
+    "bounds_m": [
+      [
+        -0.5141640866873065,
+        0.0,
+        -0.5141640866873065
+      ],
+      [
+        0.5141640866873065,
+        0.65,
+        0.5141640866873065
+      ]
+    ],
+    "dimensions_m": [
+      1.028328173374613,
+      0.65,
+      1.028328173374613
+    ],
+    "vertex_checks": [
+      {
+        "triangles": 1800,
+        "degenerate_triangles": 0,
+        "uv_bounds": [
+          [
+            0.0,
+            0.0
+          ],
+          [
+            1.0,
+            1.0
+          ]
+        ]
+      }
+    ],
+    "notes": "Real scene vertices and indices decoded; finite positions/UVs; retained embedded 1024px base colour. Uniform root transform; raw file preserved."
+  },
+  "raw_model_file": "assets/models/desert-boulder-b/tripo-out/desert-boulder-b-convert-e7fed6c0/model.glb"
+}

@@ -1,0 +1,19 @@
+{
+  "task_id": "9b7eb27d-4170-4fde-9881-9e4578f948f6",
+  "type": "convert_model",
+  "status": "success",
+  "input": {
+    "format": "GLTF",
+    "texture_size": 1024,
+    "original_model_id": "56ab1fa4-294e-4c2b-a299-2a6963aba224"
+  },
+  "output_fields": [
+    "model_url"
+  ],
+  "credits_consumed": 10,
+  "created_at": "2026-10-24T20:27:15.669148Z",
+  "completed_at": "2026-10-24T20:27:16.994832Z",
+  "files": [
+    "model.glb"
+  ]
+}

@@ -1,0 +1,39 @@
+[
+  {
+    "task_id": "e8dd1da5-7011-4196-b9dd-0ca60245d2a5",
+    "type": "convert_model",
+    "status": "success",
+    "credits_consumed": 60,
+    "output_dir": "/Users/coral/Documents/App Development/Human Resources/assets/models/jeep-chassis/tripo-out/jeep-chassis-convert-e8dd1da5",
+    "files": [
+      "model.glb"
+    ],
+    "model_file": "/Users/coral/Documents/App Development/Human Resources/assets/models/jeep-chassis/tripo-out/jeep-chassis-convert-e8dd1da5/model.glb",
+    "chain": [
+      {
+        "task_id": "e8dd1da5-7011-4196-b9dd-0ca60245d2a5",
+        "type": "convert_model",
+        "status": "success",
+        "credits_consumed": 10,
+        "output_dir": "/Users/coral/Documents/App Development/Human Resources/assets/models/jeep-chassis/tripo-out/jeep-chassis-convert-e8dd1da5",
+        "files": [
+          "model.glb"
+        ],
+        "model_file": "/Users/coral/Documents/App Development/Human Resources/assets/models/jeep-chassis/tripo-out/jeep-chassis-convert-e8dd1da5/model.glb"
+      }
+    ],
+    "source_task_id": "613855fe-1d70-438a-8cd6-1ccf1f2438b8",
+    "credits_breakdown": [
+      {
+        "task_id": "613855fe-1d70-438a-8cd6-1ccf1f2438b8",
+        "type": "image_to_model",
+        "credits_consumed": 50
+      },
+      {
+        "task_id": "e8dd1da5-7011-4196-b9dd-0ca60245d2a5",
+        "type": "convert_model",
+        "credits_consumed": 10
+      }
+    ]
+  }
+]

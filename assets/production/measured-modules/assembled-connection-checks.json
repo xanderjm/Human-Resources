@@ -1,0 +1,87 @@
+{
+  "status": "passed",
+  "connections": [
+    {
+      "a": "path-straight:end",
+      "yaw_a": 0,
+      "b": "path-corner:start",
+      "yaw_b": 0,
+      "position_gap_m": 0.0,
+      "samples": 4097,
+      "max_rgb_error": 0.0
+    },
+    {
+      "a": "path-corner:end",
+      "yaw_a": 0,
+      "b": "path-straight:start",
+      "yaw_b": 270,
+      "position_gap_m": 0.0,
+      "samples": 4097,
+      "max_rgb_error": 0.0
+    },
+    {
+      "a": "road-straight:end",
+      "yaw_a": 0,
+      "b": "road-corner:start",
+      "yaw_b": 0,
+      "position_gap_m": 0.0,
+      "samples": 4097,
+      "max_rgb_error": 0.0
+    },
+    {
+      "a": "road-corner:end",
+      "yaw_a": 0,
+      "b": "road-straight:start",
+      "yaw_b": 270,
+      "position_gap_m": 0.0,
+      "samples": 4097,
+      "max_rgb_error": 0.0
+    },
+    {
+      "a": "road-straight:end",
+      "yaw_a": 90,
+      "b": "road-junction:west",
+      "yaw_b": 0,
+      "position_gap_m": 0.0,
+      "samples": 4097,
+      "max_rgb_error": 0.0
+    },
+    {
+      "a": "road-junction:east",
+      "yaw_a": 0,
+      "b": "road-straight:start",
+      "yaw_b": 90,
+      "position_gap_m": 0.0,
+      "samples": 4097,
+      "max_rgb_error": 0.0
+    },
+    {
+      "a": "road-junction:north",
+      "yaw_a": 0,
+      "b": "road-straight:start",
+      "yaw_b": 0,
+      "position_gap_m": 0.0,
+      "samples": 4097,
+      "max_rgb_error": 0.0
+    },
+    {
+      "a": "pavement-straight:end",
+      "yaw_a": 0,
+      "b": "pavement-corner:start",
+      "yaw_b": 0,
+      "position_gap_m": 0.0,
+      "samples": 4097,
+      "max_rgb_error": 0.0
+    },
+    {
+      "a": "pavement-corner:end",
+      "yaw_a": 0,
+      "b": "pavement-straight:start",
+      "yaw_b": 270,
+      "position_gap_m": 0.0,
+      "samples": 4097,
+      "max_rgb_error": 0.0
+    }
+  ],
+  "uniform_planar_uv_check": "passed all40 surface orientations"
+}

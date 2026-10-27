@@ -1,0 +1,103 @@
+{
+  "triangles": 1112,
+  "vertices": 923,
+  "mesh_primitives": 1,
+  "uv_present": true,
+  "textures": [
+    {
+      "size": [
+        1024,
+        1024
+      ],
+      "mode": "RGB"
+    }
+  ],
+  "raw_accessor_bounds": [
+    {
+      "min": [
+        -0.2861328125,
+        -0.2509765625,
+        -0.4990234375
+      ],
+      "max": [
+        0.2861328125,
+        0.2509765625,
+        0.4990234375
+      ]
+    }
+  ],
+  "extensions": [],
+  "bytes": 292412,
+  "asset": "ufo-laser-mount",
+  "model_file": "assets/models/ufo-laser-mount/ufo-laser-mount.glb",
+  "requested_face_limit": 1200,
+  "source_task_id": "3abe302d-ba27-4dec-9b59-0990657dae15",
+  "convert_task_id": "921d89b5-f7af-4161-9a50-6d39bbef6310",
+  "credits_consumed": 60,
+  "preview": null,
+  "triangle_budget_review": {
+    "requested_target": 1200,
+    "actual_triangles": 1112,
+    "target_met": true,
+    "category_ceiling": 3000,
+    "status": "passed"
+  },
+  "structural_review": {
+    "status": "passed",
+    "notes": "Triangle mode, valid GLB length, UVs and embedded 1024px base colour checked. Requested targets are approximate; actual triangle count and target deviations are reported separately, within the user-specified 3000-prop / 8000-character ceilings. Scale, pivot, topology and visual quality require separate review."
+  },
+  "visual_review": {
+    "status": "accepted",
+    "notes": "One clean bolt-on cobalt barrel, visible mint muzzle and mounting block, no effects or scenery. Front view confirms +Z muzzle, rear-centre attachment pivot, 0.65m length.",
+    "views": [
+      "three-quarter",
+      "left",
+      "front"
+    ]
+  },
+  "import_review": {
+    "status": "passed",
+    "units": "metres",
+    "up": "+Y",
+    "forward": "+Z",
+    "yaw_degrees": 180.0,
+    "pivot": "rear-centre",
+    "double_sided": false,
+    "uniform_scale": 0.6512720156555774,
+    "bounds_m": [
+      [
+        -0.18635029354207439,
+        -0.16345401174168298,
+        0.0
+      ],
+      [
+        0.18635029354207439,
+        0.16345401174168298,
+        0.6500000000000001
+      ]
+    ],
+    "dimensions_m": [
+      0.37270058708414877,
+      0.32690802348336595,
+      0.6500000000000001
+    ],
+    "vertex_checks": [
+      {
+        "triangles": 1112,
+        "degenerate_triangles": 0,
+        "uv_bounds": [
+          [
+            0.0,
+            0.0
+          ],
+          [
+            1.0,
+            1.0
+          ]
+        ]
+      }
+    ],
+    "notes": "Real scene vertices and indices decoded; finite positions/UVs; retained embedded 1024px base colour. Uniform root transform; raw file preserved."
+  },
+  "raw_model_file": "assets/models/ufo-laser-mount/tripo-out/ufo-laser-mount-convert-921d89b5/model.glb"
+}

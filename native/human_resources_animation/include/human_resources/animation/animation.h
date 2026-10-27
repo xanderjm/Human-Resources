@@ -105,6 +105,9 @@ struct DeformedVertex final {
 // ankle frames; only thigh/shin/foot rotations change. No allocation or root IK.
 [[nodiscard]] bool place_infantry_feet(const Asset& asset, const Pose& base,
     const std::array<Matrix, 2>& targets, const std::array<Vec3, 2>& knee_poles, Pose& output, float weight = 1);
+// Combine the six existing gait joints with an authoritative upper aim/fire
+// pose. Root, pelvis, weapon and all other channels remain those of base.
+[[nodiscard]] bool apply_infantry_gait(const Asset& asset, const Pose& base, const Pose& gait, Pose& output);
 // Product capture transport owns world motion. Remove only the source bone
 // named root's translation delta; preserve its rotation and every joint pose.
 [[nodiscard]] bool normalize_capture_root(const Asset& asset, const Pose& base, Pose& output);
@@ -118,8 +121,9 @@ public:
   // Repeating the current clip preserves time unless restart is requested.
   [[nodiscard]] bool play(std::string_view clip, float fade_seconds = .18F, bool restart = false);
   // Active presentation delta only, [0,.25] seconds. Zero freezes all clocks;
-  // invalid input rejects without mutation. Playback rate [0,256] affects only
-  // clip time; crossfades keep their active-second duration. No allocation.
+  // invalid input rejects without mutation. Playback rate [-256,256] affects
+  // only clip time; negative rates require a looping clip. Crossfades keep
+  // their active-second duration. No allocation.
   [[nodiscard]] bool advance(float seconds, float playback_rate = 1);
   // Explicit spawn/replay positioning; ends any fade. Looping clips wrap.
   [[nodiscard]] bool seek(float seconds);

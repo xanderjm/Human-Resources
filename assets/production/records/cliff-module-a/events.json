@@ -1,0 +1,39 @@
+[
+  {
+    "task_id": "2208a5ab-5683-4679-972e-1118086d9828",
+    "type": "convert_model",
+    "status": "success",
+    "credits_consumed": 60,
+    "output_dir": "/Users/coral/Documents/App Development/Human Resources/assets/models/cliff-module-a/tripo-out/cliff-module-a-convert-2208a5ab",
+    "files": [
+      "model.glb"
+    ],
+    "model_file": "/Users/coral/Documents/App Development/Human Resources/assets/models/cliff-module-a/tripo-out/cliff-module-a-convert-2208a5ab/model.glb",
+    "chain": [
+      {
+        "task_id": "2208a5ab-5683-4679-972e-1118086d9828",
+        "type": "convert_model",
+        "status": "success",
+        "credits_consumed": 10,
+        "output_dir": "/Users/coral/Documents/App Development/Human Resources/assets/models/cliff-module-a/tripo-out/cliff-module-a-convert-2208a5ab",
+        "files": [
+          "model.glb"
+        ],
+        "model_file": "/Users/coral/Documents/App Development/Human Resources/assets/models/cliff-module-a/tripo-out/cliff-module-a-convert-2208a5ab/model.glb"
+      }
+    ],
+    "source_task_id": "80f1fc6f-93bd-4e33-bb35-ce79b5570f74",
+    "credits_breakdown": [
+      {
+        "task_id": "80f1fc6f-93bd-4e33-bb35-ce79b5570f74",
+        "type": "image_to_model",
+        "credits_consumed": 50
+      },
+      {
+        "task_id": "2208a5ab-5683-4679-972e-1118086d9828",
+        "type": "convert_model",
+        "credits_consumed": 10
+      }
+    ]
+  }
+]

@@ -1,0 +1,56 @@
+{
+  "triangles": 2671,
+  "vertices": 4291,
+  "mesh_primitives": 1,
+  "uv_present": true,
+  "textures": [
+    {
+      "size": [
+        1024,
+        1024
+      ],
+      "mode": "RGB"
+    }
+  ],
+  "raw_accessor_bounds": [
+    {
+      "min": [
+        -0.4755859375,
+        -0.3818359375,
+        -0.4990234375
+      ],
+      "max": [
+        0.4755859375,
+        0.3818359375,
+        0.4990234375
+      ]
+    }
+  ],
+  "extensions": [],
+  "bytes": 376516,
+  "asset": "barn",
+  "model_file": "assets/models/barn/tripo-out/barn-convert-2-ca86e56c/model.glb",
+  "requested_face_limit": 2800,
+  "source_task_id": "3dcbbb31-5d17-44e8-8e2f-cbfe380a9d15",
+  "convert_task_id": "ca86e56c-c080-408d-957f-d0eb0e756dc3",
+  "credits_consumed": 60,
+  "preview": null,
+  "triangle_budget_review": {
+    "requested_target": 2800,
+    "actual_triangles": 2671,
+    "target_met": true,
+    "category_ceiling": 3000,
+    "status": "passed"
+  },
+  "structural_review": {
+    "status": "passed",
+    "notes": "Triangle mode, valid GLB length, UVs and embedded 1024px base colour checked. Requested targets are approximate; actual triangle count and target deviations are reported separately, within the user-specified 3000-prop / 8000-character ceilings. Scale, pivot, topology and visual quality require separate review."
+  },
+  "visual_review": {
+    "status": "rejected",
+    "notes": "Generated roof panels were collapsed/disconnected with large holes exposing wall/interior. Backing alone failed overhead visual review; roof zone was rebuilt with closed regular relief tiles, preserving original wall/door geometry and embedded albedo."
+  },
+  "import_review": {
+    "status": "pending"
+  }
+}

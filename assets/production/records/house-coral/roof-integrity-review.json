@@ -1,0 +1,28 @@
+{
+  "asset": "house-coral",
+  "status": "passed_authoring_review",
+  "trigger_capture": "build/captures/seamless-material-check/suburbia.png",
+  "final_model": "assets/models/house-coral/house-coral.glb",
+  "final_model_sha256": "ff43e98516241e03b831b0aa69489a3cc3de5ccc31a6bc3d0968cdb61cf36e5b",
+  "review_views": [
+    "Top",
+    "Top with unlit material",
+    "Top wireframe (teal)",
+    "Underside",
+    "Three-quarter"
+  ],
+  "findings": {
+    "teal_cream_L_patch": "Baked albedo on intact tile; not a hole. Present before and after geometry fix.",
+    "small_join_openings": "Covered by two closed colour-matched roof underlays.",
+    "material_preservation": "Original embedded1024 albedo unchanged; no retexture or PBR maps added.",
+    "geometry_addition_triangles": 24,
+    "final_triangles": 2540,
+    "native_requalification": "Requires recook/current model capture; old capture hash predates repair."
+  },
+  "preservation_checks": {
+    "original_positions_normals_uvs": "bitwise unchanged in final prefix",
+    "original_triangle_indices": "bitwise unchanged in final prefix",
+    "embedded_base_colour_bytes": "identical SHA256 before/after",
+    "embedded_image_sha256": "a78bf4756e1926d82d5e0e59117964db6bb63ec833f8fbf491b70268b7e1dd7e"
+  }
+}

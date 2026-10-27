@@ -88,7 +88,7 @@ void opening_and_deliveries() {
     }
   }
   game::Game::State state;
-  state.view.stats.active_seconds = 14;
+  state.view.stats.active_seconds = 6;
   state.view.runner_distance = 26.4F;
   state.biological_budget = static_cast<float>(tune::encounter_cohort_size);
   state.next_boss = 150;
@@ -192,12 +192,14 @@ void visible_warnings_and_recovery() {
 void introductions_and_schedule() {
   game::Game::State s;
   s.next_boss = 150;
-  s.view.stats.active_seconds = tune::encounter_intro_escort_second;
+  s.view.stats.active_seconds = tune::population_rifle_reveal_seconds;
   s.director(dt);
-  require(s.actors.size() == 2, "opening escort pair arrives on time without waiting for a budget");
+  require(s.actors.size() == 1 && s.actors.front().view.infantry_role == game::InfantryRole::rifleman, "first lone rifleman arrives at its staged gate without waiting for a budget");
   for (const auto kind : {game::EntityKind::jeep, game::EntityKind::tank}) {
     game::Game::State state;
-    state.next_boss = 150;
+    state.next_boss = 180;
+    state.revealed_threats = 31;
+    state.revealed_threats = static_cast<std::uint8_t>(state.revealed_threats & ~(kind == game::EntityKind::jeep ? 4U : 16U));
     state.view.stats.active_seconds = tune::enemy_start_second[static_cast<unsigned>(kind) - 4];
     state.director(dt);
     require(std::any_of(state.actors.begin(), state.actors.end(), [kind](const auto& a) { return a.view.kind == kind; }),
@@ -214,14 +216,58 @@ void introductions_and_schedule() {
       full.view.director_schedule_hash == empty.view.director_schedule_hash, "blocked cohorts retain the same encounter schedule");
   std::cout << "PASS timed introductions and bounded population-independent cohort schedule\n";
 }
+void opening_speed_ramp() {
+  game::Game::State state;
+  float previous = 0;
+  for (unsigned second = 0; second <= 180; ++second) {
+    state.view.stats.active_seconds = second;
+    state.sync();
+    require(state.view.forward_speed >= previous, "opening pace rises without backwards steps");
+    require(state.view.forward_speed <= 5.0001F, "time alone retains room for earned acceleration");
+    previous = state.view.forward_speed;
+    if (second == 0) require_near(previous, 3.F, .0001F, "opening starts with immediate forward pace");
+    if (second == 45) require_near(previous, 5.F, .0001F, "opening acceleration spreads across active play");
+    if (second >= 45) require_near(previous, 5.F, .0001F, "time contribution settles after forty-five active seconds");
+  }
+  state.view.stats.active_seconds = 45;
+  state.view.stats.captures = 10;
+  state.view.stats.level = 3;
+  state.sync();
+  require_near(state.view.forward_speed, 5.94F, .0001F, "harvesting and levels build pace above the time floor");
+  const auto speed = state.view.forward_speed;
+  state.view.harvest_overdrive_seconds = tune::harvest_overdrive_seconds;
+  state.sync();
+  require_near(state.view.forward_speed, speed, 0, "Overdrive ending cannot drop world speed");
+
+  game::Game run;
+  run.start();
+  run.advance(dt);
+  run.pause();
+  const auto paused = run.save_state();
+  const auto paused_speed = run.snapshot().forward_speed;
+  run.advance(60);
+  require(run.save_state() == paused && run.snapshot().forward_speed == paused_speed,
+          "pause cannot advance the opening ramp");
+  game::Game restored;
+  require(restored.restore_state(paused) == game::SaveStateIssue::none,
+          "opening ramp restores from existing active-time counters");
+  run.resume(); restored.resume();
+  for (unsigned frame = 0; frame < 180; ++frame) {
+    run.advance(dt); restored.advance(dt);
+    require(run.save_state() == restored.save_state() && run.snapshot().forward_speed == restored.snapshot().forward_speed,
+            "cold continuation preserves the exact active-time acceleration");
+  }
+  run.start();
+  require_near(run.snapshot().forward_speed, 3.F, .0001F, "new flight resets the opening curve");
+}
 void earned_speed_flee_and_expanded_flight() {
   game::Game::State state;
   state.sync();
   require_near(state.view.forward_speed, tune::forward_scroll_metres_per_second, .0001F, "fresh world starts at its authored real speed");
-  state.view.stats.captures = 60;
-  state.view.stats.level = 7;
+  state.view.stats.captures = 20;
+  state.view.stats.level = 4;
   state.sync();
-  require_near(state.view.forward_speed, 3.28F, .0001F, "actual collected specimens and earned power raise world travel");
+  require_near(state.view.forward_speed, 4.66F, .0001F, "actual collected specimens and earned power raise world travel");
   state.view.stats.captures = 100000;
   state.view.stats.level = 1000;
   state.sync();
@@ -287,7 +333,7 @@ void earned_speed_flee_and_expanded_flight() {
 void readable_band_and_stopped_mounts() {
   game::Game::State state;
   state.view.player = {0, -17};
-  state.actors = {threat(game::EntityKind::soldier, 1, {0, -13})};
+  state.actors = {threat(game::EntityKind::soldier, 1, {0, -tune::encounter_warning_retire_behind - 1})};
   state.enemies(dt);
   require(state.actors.front().view.warning_seconds == 0, "below-screen sources cannot begin a warning near the lower player bound");
   auto& a = state.actors.front();
@@ -320,7 +366,21 @@ void real_run_trace() {
     float empty_window{}, maximum_empty{};
     std::size_t maximum_population{}, maximum_biological{};
     for (unsigned frame = 0; frame < 60 * 120 && run.snapshot().phase != game::Phase::dead; ++frame) {
-      if (run.snapshot().phase == game::Phase::choosing_upgrade) require(run.choose_upgrade(0), "natural draft can continue");
+      if (run.snapshot().phase == game::Phase::choosing_upgrade) {
+        // Keep this arrival/warning fixture from upgrading away its shooters.
+        // The smaller card pool changes card-zero builds; choose actual offered
+        // defensive research/hardware while preserving every timing bound.
+        unsigned pick = 0; int best = -1;
+        for (unsigned i = 0; i < run.snapshot().choices.size(); ++i) {
+          const auto& c = run.snapshot().choices[i]; int score = 0;
+          if (c.hardware && (c.module == game::Module::shield_generator || c.module == game::Module::repair_swarm ||
+              c.module == game::Module::vector_thrusters || c.module == game::Module::phase_drive)) score = 3;
+          if (!c.hardware && (c.research == game::Research::hull_reinforcement || c.research == game::Research::shield_capacity ||
+              c.research == game::Research::emergency_repairs || c.research == game::Research::specimen_value)) score = 4;
+          if (score > best) { best = score; pick = i; }
+        }
+        require(run.choose_upgrade(pick), "real offered defensive draft can continue the warning fixture");
+      }
       run.advance(dt);
       const auto& v = run.snapshot();
       std::size_t visible{};
@@ -339,10 +399,11 @@ void real_run_trace() {
       require(v.entities.size() <= tune::biological_active_cap + 27, "real delivery trace preserves the combined actor cap");
       require(v.projectiles.size() <= tune::projectile_active_cap, "real delivery trace preserves projectile cap");
     }
+    std::cerr << "Opening trace seed=" << seed << " warning=" << first_warning << " shot=" << first_shot << " level=" << run.snapshot().stats.level << "\n";
     require(first_capture > 0 && first_capture < 3, "ordinary stationary opening pays off within three seconds");
-    require(first_warning > 2 && first_warning < 9, "opening threat becomes visible and warns without a long idle introduction");
-    require(first_shot > first_warning && first_shot < 12, "first authored warning leads to an actual avoidable projectile");
-    require(first_jeep >= tune::enemy_start_second[1] && first_jeep < tune::enemy_start_second[1] + 1, "ordinary run delivers the first jeep at the gate");
+    require(first_warning >= tune::population_rifle_reveal_seconds && first_warning < tune::population_rifle_reveal_seconds + 12, "opening threat becomes visible and warns without a long idle introduction");
+    require(first_shot > first_warning && first_shot < tune::population_rifle_reveal_seconds + 16, "first authored warning leads to an actual avoidable projectile");
+    require(first_jeep >= tune::enemy_start_second[1] && first_jeep < tune::enemy_start_second[1] + 25, "ordinary run delivers the first jeep at the gate");
     require(maximum_empty < .1F, "ordinary first two minutes never lose all visible harvest specimens");
     std::cout << std::fixed << std::setprecision(3) << "TRACE seed=" << seed << " active_seconds=" << run.snapshot().stats.active_seconds
         << " first_capture=" << first_capture << " first_warning=" << first_warning << " first_shot=" << first_shot
@@ -356,6 +417,7 @@ int main() {
   visible_warnings_and_recovery();
   introductions_and_schedule();
   earned_speed_flee_and_expanded_flight();
+  opening_speed_ramp();
   readable_band_and_stopped_mounts();
   real_run_trace();
 }

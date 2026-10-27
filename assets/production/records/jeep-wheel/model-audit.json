@@ -1,0 +1,115 @@
+{
+  "triangles": 935,
+  "vertices": 1295,
+  "mesh_primitives": 1,
+  "uv_present": true,
+  "textures": [
+    {
+      "size": [
+        1024,
+        1024
+      ],
+      "mode": "RGB"
+    }
+  ],
+  "raw_accessor_bounds": [
+    {
+      "min": [
+        -0.4990234375,
+        -0.4990234375,
+        -0.1650390625
+      ],
+      "max": [
+        0.4990234375,
+        0.4990234375,
+        0.1650390774011612
+      ]
+    }
+  ],
+  "extensions": [],
+  "bytes": 232296,
+  "asset": "jeep-wheel",
+  "model_file": "assets/models/jeep-wheel/jeep-wheel.glb",
+  "requested_face_limit": 900,
+  "source_task_id": "49e284f7-ddcc-49d0-ad97-416ae4eabc39",
+  "convert_task_id": "9d423381-e402-4121-9328-0e8f06fe6534",
+  "credits_consumed": 60,
+  "preview": null,
+  "triangle_budget_review": {
+    "requested_target": 900,
+    "actual_triangles": 935,
+    "target_met": false,
+    "category_ceiling": 3000,
+    "status": "passed"
+  },
+  "structural_review": {
+    "status": "passed",
+    "notes": "Triangle mode, valid GLB length, UVs and embedded 1024px base colour checked. Requested targets are approximate; actual triangle count and target deviations are reported separately, within the user-specified 3000-prop / 8000-character ceilings. Scale, pivot, topology and visual quality require separate review."
+  },
+  "visual_review": {
+    "status": "accepted",
+    "notes": "One chunky tyre/hub with clean opposite face and axle socket. Centred axle pivot along X, 0.6m diameter. 935 triangles versus approximate 900 target is within 500\u20133000 prop budget.",
+    "views": [
+      "three-quarter",
+      "rear"
+    ]
+  },
+  "import_review": {
+    "status": "passed",
+    "units": "metres",
+    "up": "+Y",
+    "forward": "+Z",
+    "yaw_degrees": -90.0,
+    "pivot": "centre",
+    "double_sided": false,
+    "uniform_scale": 0.601174168297456,
+    "bounds_m": [
+      [
+        -0.09921722561412596,
+        -0.3,
+        -0.3
+      ],
+      [
+        0.09921722561412596,
+        0.3,
+        0.3
+      ]
+    ],
+    "dimensions_m": [
+      0.19843445122825193,
+      0.6,
+      0.6
+    ],
+    "vertex_checks": [
+      {
+        "triangles": 935,
+        "degenerate_triangles": 0,
+        "uv_bounds": [
+          [
+            0.0006023563328199089,
+            0.002849876880645752
+          ],
+          [
+            0.9994370341300964,
+            0.9994302988052368
+          ]
+        ]
+      }
+    ],
+    "notes": "Real scene vertices and indices decoded; finite positions/UVs; retained embedded 1024px base colour. Uniform root transform; raw file preserved."
+  },
+  "raw_model_file": "assets/models/jeep-wheel/tripo-out/jeep-wheel-convert-9d423381/model.glb",
+  "assembly_review": {
+    "status": "passed",
+    "assemblies": [
+      "jeep-four-wheels",
+      "jeep-four-wheels",
+      "jeep-four-wheels",
+      "jeep-four-wheels"
+    ],
+    "definition": "assets/production/assemblies.json",
+    "evidence": "assets/production/reviews/assemblies-final.png",
+    "notes": "Static actual-geometry fit checked from front, rear/opposite, side, three-quarter and high angles. Socket frames use metres/+Y up/+Z forward. No reflections or nonuniform scale.",
+    "runtime_qualified": false
+  }
+}

@@ -1,0 +1,29 @@
+── Plan ──────────────────────────
+input: /Users/coral/Documents/App Development/Human Resources/assets/references/desert-scrub/v1.png
+model: P1-20260311 — explicit --model
+steps:
+  1. image-to-model  POST /v3/generation/image-to-model — generate a 3D model from one image
+     model="P1-20260311" face_limit=1800 texture=true pbr=false texture_quality="standard" texture_alignment="original_image" export_uv=true
+  2. convert  POST /v3/models/convert — convert format / texture size / orientation
+     format="GLTF" texture_size=1024
+cost impact:
+  · non-default convert options bill as complex convert
+──────────────────────────────────
+model: P1-20260311 (explicit --model)
+task created bb627b37-6b14-4b9c-be25-cdd6c1c991f9 (@desert-scrub)
+image_to_model · queued
+image_to_model · running 12% · bb627b37
+image_to_model · running 35% · bb627b37
+image_to_model · running 53% · bb627b37
+image_to_model · running 84% · bb627b37
+image_to_model · success 100% · bb627b37
+✓ image_to_model · bb627b37-6b14-4b9c-be25-cdd6c1c991f9 · 50 credits
+! non-default convert options use the "complex convert" price tier
+task created d0842e13-aa6e-4ded-94b4-2b646d46b61e (@desert-scrub-convert)
+convert_model · queued
+convert_model · queued 0% · d0842e13
+convert_model · success 100% · d0842e13
+✓ convert_model · d0842e13-aa6e-4ded-94b4-2b646d46b61e · 10 credits
+downloading artifacts…
+✓ artifacts saved to /Users/coral/Documents/App Development/Human Resources/assets/models/desert-scrub/tripo-out/desert-scrub-convert-d0842e13
+{"task_id":"d0842e13-aa6e-4ded-94b4-2b646d46b61e","type":"convert_model","status":"success","credits_consumed":60,"output_dir":"/Users/coral/Documents/App Development/Human Resources/assets/models/desert-scrub/tripo-out/desert-scrub-convert-d0842e13","files":["model.glb"],"model_file":"/Users/coral/Documents/App Development/Human Resources/assets/models/desert-scrub/tripo-out/desert-scrub-convert-d0842e13/model.glb","chain":[{"task_id":"d0842e13-aa6e-4ded-94b4-2b646d46b61e","type":"convert_model","status":"success","credits_consumed":10,"output_dir":"/Users/coral/Documents/App Development/Human Resources/assets/models/desert-scrub/tripo-out/desert-scrub-convert-d0842e13","files":["model.glb"],"model_file":"/Users/coral/Documents/App Development/Human Resources/assets/models/desert-scrub/tripo-out/desert-scrub-convert-d0842e13/model.glb"}],"source_task_id":"bb627b37-6b14-4b9c-be25-cdd6c1c991f9","credits_breakdown":[{"task_id":"bb627b37-6b14-4b9c-be25-cdd6c1c991f9","type":"image_to_model","credits_consumed":50},{"task_id":"d0842e13-aa6e-4ded-94b4-2b646d46b61e","type":"convert_model","credits_consumed":10}]}

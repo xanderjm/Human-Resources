@@ -1,0 +1,39 @@
+[
+  {
+    "task_id": "71cf9644-d4b7-4195-9ac8-3c36ee8b3714",
+    "type": "convert_model",
+    "status": "success",
+    "credits_consumed": 60,
+    "output_dir": "/Users/coral/Documents/App Development/Human Resources/assets/models/bush-round/tripo-out/bush-round-convert-2-71cf9644",
+    "files": [
+      "model.glb"
+    ],
+    "model_file": "/Users/coral/Documents/App Development/Human Resources/assets/models/bush-round/tripo-out/bush-round-convert-2-71cf9644/model.glb",
+    "chain": [
+      {
+        "task_id": "71cf9644-d4b7-4195-9ac8-3c36ee8b3714",
+        "type": "convert_model",
+        "status": "success",
+        "credits_consumed": 10,
+        "output_dir": "/Users/coral/Documents/App Development/Human Resources/assets/models/bush-round/tripo-out/bush-round-convert-2-71cf9644",
+        "files": [
+          "model.glb"
+        ],
+        "model_file": "/Users/coral/Documents/App Development/Human Resources/assets/models/bush-round/tripo-out/bush-round-convert-2-71cf9644/model.glb"
+      }
+    ],
+    "source_task_id": "7e255ef2-0282-4cf6-8e58-040821e3898b",
+    "credits_breakdown": [
+      {
+        "task_id": "7e255ef2-0282-4cf6-8e58-040821e3898b",
+        "type": "image_to_model",
+        "credits_consumed": 50
+      },
+      {
+        "task_id": "71cf9644-d4b7-4195-9ac8-3c36ee8b3714",
+        "type": "convert_model",
+        "credits_consumed": 10
+      }
+    ]
+  }
+]

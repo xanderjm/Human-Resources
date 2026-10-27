@@ -1,0 +1,9 @@
+{
+  "id": "weapon-shotgun",
+  "version": 1,
+  "source": "/Users/coral/.codex/generated_images/01a16e3b-5221-78b2-bd33-9830eab86a7f/exec-8d1653a9-4fa9-417e-94b3-085ceadd8106.png",
+  "prompt": "Use case: precise-object-edit. Production image-to-3D reference. Image1 is an ARMED CHARACTER VISUAL GUIDE ONLY: extract exactly the named weapon; do not copy the whole image. Image2 is approved game material/style. SUBJECT: ONE short chunky navy DOUBLE-BARREL SHOTGUN from the character reference,all by itself. ExactlyTWO large side-by-side navy barrels with dark circular muzzle insets,one broad warm wooden stock and squared wood foregrip,small coral receiver chevron. NO third lower barrel/tube; lower foregrip is solid rectangular wood. One weapon with no loose ammunition. Full stock and both muzzles visible.\nIsolated gun only: absolutelyNO person,head,skin,hands,arms,character fragment,stand,strap,ground,vehicle,mount,firing effects,casings or detached extra piece. Single full weapon in a clear slightly elevated three-quarter view. Do NOT include the soldier.\nPainterly low-poly3D game asset with BROAD VISIBLY HAND-PAINTED gouache albedo strokes matching reference. Economical exaggerated massing,navy/steel-blue uniforms or metal,warm peach character skin,brown boots/wood,coral military accents. Neutral softlight,no realistic PBR,photo detail or plastic.\nOne SINGLE asset centred on PURE WHITE (#FFFFFF) background with comfortable white margin on ALL edges,including hands/feet or weapon tips. No labels,text,logos,watermarks,bases,ground plane,cast shadows,scene,framing,additional objects or alternative views.",
+  "status": "approved",
+  "input_contract": "isolated_weapon_no_human",
+  "review": "Approved one isolated double-barrel shotgun,two side-by-side muzzle holes,solid wood stock/foregrip,no human fragments or third barrel; navy/coral broad gouache paint."
+}

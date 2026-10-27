@@ -1,0 +1,58 @@
+{
+  "schema_version": 1,
+  "id": "ui-shield",
+  "status": "art-review-passed",
+  "production": {
+    "status": "generated",
+    "file": "assets/graphics/ui-shield/ui-shield.png",
+    "source": "assets/graphics/ui-shield/ui-shield.svg",
+    "metadata": "assets/graphics/ui-shield/asset.json"
+  },
+  "reference": {
+    "status": "approved",
+    "path": "assets/references/ui-shield/v1.png",
+    "sha256": "03f75350c9bc91293edd798612f8441603e60503ffe2809978dfc252054aa6ec"
+  },
+  "qa": {
+    "status": "art-review-passed",
+    "visual_review": "Mint/navy shield silhouette remains distinct; no text baked in.",
+    "review_evidence": "assets/production/reviews/native-graphics-contact-sheet.png",
+    "reviewed_against": "art/style-guide/ufo-asset-style-guide.png",
+    "runtime_qualified": false
+  },
+  "alpha_audit": {
+    "dimensions_px": [
+      512,
+      512
+    ],
+    "rgba": true,
+    "alpha_range": [
+      0,
+      255
+    ],
+    "alpha_nonzero_bbox": [
+      87,
+      48,
+      425,
+      466
+    ],
+    "transparent_margin_px": [
+      87,
+      48,
+      87,
+      46
+    ],
+    "border_alpha_max": 0,
+    "visible_pixels": 102630,
+    "repeat_axis_check": null,
+    "sha256": "7ca94fc57245f36c78a7324ccdeb47a46055d3091ed82c1e9b513a1301bd04b9"
+  },
+  "variants": [],
+  "svg": {
+    "self_contained": true,
+    "text_baked": false,
+    "external_dependencies": false
+  },
+  "usage": "Health pip or upgrade icon. Clamp both axes; states tint/alpha can be applied by presentation.",
+  "limitations": "Art production asset. Native runtime upload, blend, depth/occlusion and device readability are not qualified."
+}

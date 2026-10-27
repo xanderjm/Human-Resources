@@ -1,0 +1,39 @@
+[
+  {
+    "task_id": "be2c089a-0cd3-4305-9381-48547237e9f3",
+    "type": "convert_model",
+    "status": "success",
+    "credits_consumed": 60,
+    "output_dir": "/Users/coral/Documents/App Development/Human Resources/assets/models/straw-hat/tripo-out/straw-hat-convert-be2c089a",
+    "files": [
+      "model.glb"
+    ],
+    "model_file": "/Users/coral/Documents/App Development/Human Resources/assets/models/straw-hat/tripo-out/straw-hat-convert-be2c089a/model.glb",
+    "chain": [
+      {
+        "task_id": "be2c089a-0cd3-4305-9381-48547237e9f3",
+        "type": "convert_model",
+        "status": "success",
+        "credits_consumed": 10,
+        "output_dir": "/Users/coral/Documents/App Development/Human Resources/assets/models/straw-hat/tripo-out/straw-hat-convert-be2c089a",
+        "files": [
+          "model.glb"
+        ],
+        "model_file": "/Users/coral/Documents/App Development/Human Resources/assets/models/straw-hat/tripo-out/straw-hat-convert-be2c089a/model.glb"
+      }
+    ],
+    "source_task_id": "0c4e4b67-4b7f-4cf9-ad6f-b262981d46c0",
+    "credits_breakdown": [
+      {
+        "task_id": "0c4e4b67-4b7f-4cf9-ad6f-b262981d46c0",
+        "type": "image_to_model",
+        "credits_consumed": 50
+      },
+      {
+        "task_id": "be2c089a-0cd3-4305-9381-48547237e9f3",
+        "type": "convert_model",
+        "credits_consumed": 10
+      }
+    ]
+  }
+]

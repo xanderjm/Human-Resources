@@ -58,3 +58,16 @@ Promote only fonts actually consumed by that implementation into the runtime
 allowlist, retaining the font licence. Font source scripts, previews, archives
 and the reference artwork remain authoring assets. The current package covers
 Latin text; additional writing systems require a coverage and fallback review.
+
+## Atomic Enamel implementation companion — 26 October 2026
+
+The current native UI cooks an upright label bitmap companion from the owned
+Abduction Compact outlines, reversing the source builder's0.31shear offline.
+This keeps the reference's condensed black label weight while reserving the
+original italic faces for signs and saucer actions. Original font files are
+preserved; no stroke dilation or runtime faux-style transform is applied.
+Optical sidebearings and tabular digit advances belong to the atlas recipe.
+Descriptions and policy text retain Beam UI SemiBold. See
+[Atomic UI implementation](ATOMIC_UI_IMPLEMENTATION.md) for fit and visual
+acceptance status. This companion is an implementation candidate under native
+comparison, not a new owner-approved font package or device qualification.

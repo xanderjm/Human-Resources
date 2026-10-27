@@ -1,0 +1,112 @@
+{
+  "triangles": 2280,
+  "vertices": 3203,
+  "mesh_primitives": 1,
+  "uv_present": true,
+  "textures": [
+    {
+      "size": [
+        1024,
+        1024
+      ],
+      "mode": "RGB"
+    }
+  ],
+  "raw_accessor_bounds": [
+    {
+      "min": [
+        -0.4990234375,
+        -0.3115234375,
+        -0.3134765625
+      ],
+      "max": [
+        0.4990234375,
+        0.3115234375,
+        0.3134765625
+      ]
+    }
+  ],
+  "extensions": [],
+  "bytes": 382704,
+  "asset": "tank-turret",
+  "model_file": "assets/models/tank-turret/tank-turret.glb",
+  "requested_face_limit": 2400,
+  "source_task_id": "dc9f953e-53a1-420d-9f71-587fa9ea5d88",
+  "convert_task_id": "21337c70-f4fb-4049-9558-a91b97c34d1e",
+  "credits_consumed": 60,
+  "preview": null,
+  "triangle_budget_review": {
+    "requested_target": 2400,
+    "actual_triangles": 2280,
+    "target_met": true,
+    "category_ceiling": 3000,
+    "status": "passed"
+  },
+  "structural_review": {
+    "status": "passed",
+    "notes": "Triangle mode, valid GLB length, UVs and embedded 1024px base colour checked. Requested targets are approximate; actual triangle count and target deviations are reported separately, within the user-specified 3000-prop / 8000-character ceilings. Scale, pivot, topology and visual quality require separate review."
+  },
+  "visual_review": {
+    "status": "accepted",
+    "notes": "Separate navy/coral turret and cannon with antenna; no hull/tracks. Correct +Z aim and base-footprint-centred pivot for independent yaw, length 2.1m including cannon.",
+    "views": [
+      "three-quarter",
+      "top"
+    ]
+  },
+  "import_review": {
+    "status": "passed",
+    "units": "metres",
+    "up": "+Y",
+    "forward": "+Z",
+    "yaw_degrees": -90.0,
+    "pivot": "base-centre",
+    "double_sided": false,
+    "uniform_scale": 2.104109589041096,
+    "bounds_m": [
+      [
+        -0.6554794834084708,
+        0.0,
+        -0.8157534246575343
+      ],
+      [
+        0.6636985987833102,
+        1.3109589041095893,
+        1.284246575342466
+      ]
+    ],
+    "dimensions_m": [
+      1.319178082191781,
+      1.3109589041095893,
+      2.1
+    ],
+    "vertex_checks": [
+      {
+        "triangles": 2280,
+        "degenerate_triangles": 0,
+        "uv_bounds": [
+          [
+            0.0008246056386269629,
+            0.0008246302604675293
+          ],
+          [
+            0.9977720379829407,
+            0.9991753101348877
+          ]
+        ]
+      }
+    ],
+    "notes": "Real scene vertices and indices decoded; finite positions/UVs; retained embedded 1024px base colour. Uniform root transform; raw file preserved."
+  },
+  "raw_model_file": "assets/models/tank-turret/tripo-out/tank-turret-convert-21337c70/model.glb",
+  "assembly_review": {
+    "status": "passed",
+    "assemblies": [
+      "tank-with-turret"
+    ],
+    "definition": "assets/production/assemblies.json",
+    "evidence": "assets/production/reviews/assemblies-final.png",
+    "notes": "Static actual-geometry fit checked from front, rear/opposite, side, three-quarter and high angles. Socket frames use metres/+Y up/+Z forward. No reflections or nonuniform scale.",
+    "runtime_qualified": false
+  }
+}

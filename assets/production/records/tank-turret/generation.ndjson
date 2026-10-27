@@ -1,0 +1,28 @@
+── Plan ──────────────────────────
+input: /Users/coral/Documents/App Development/Human Resources/assets/references/tank-turret/v1.png
+model: P1-20260311 — explicit --model
+steps:
+  1. image-to-model  POST /v3/generation/image-to-model — generate a 3D model from one image
+     model="P1-20260311" face_limit=2400 texture=true pbr=false texture_quality="standard" texture_alignment="original_image" export_uv=true
+  2. convert  POST /v3/models/convert — convert format / texture size / orientation
+     format="GLTF" texture_size=1024
+cost impact:
+  · non-default convert options bill as complex convert
+──────────────────────────────────
+model: P1-20260311 (explicit --model)
+task created dc9f953e-53a1-420d-9f71-587fa9ea5d88 (@tank-turret)
+image_to_model · queued
+image_to_model · running 9% · dc9f953e
+image_to_model · running 15% · dc9f953e
+image_to_model · running 25% · dc9f953e
+image_to_model · running 39% · dc9f953e
+image_to_model · running 59% · dc9f953e
+image_to_model · success 100% · dc9f953e
+✓ image_to_model · dc9f953e-53a1-420d-9f71-587fa9ea5d88 · 50 credits
+! non-default convert options use the "complex convert" price tier
+task created 21337c70-f4fb-4049-9558-a91b97c34d1e (@tank-turret-convert)
+convert_model · queued
+✓ convert_model · 21337c70-f4fb-4049-9558-a91b97c34d1e · 10 credits
+downloading artifacts…
+✓ artifacts saved to /Users/coral/Documents/App Development/Human Resources/assets/models/tank-turret/tripo-out/tank-turret-convert-21337c70
+{"task_id":"21337c70-f4fb-4049-9558-a91b97c34d1e","type":"convert_model","status":"success","credits_consumed":60,"output_dir":"/Users/coral/Documents/App Development/Human Resources/assets/models/tank-turret/tripo-out/tank-turret-convert-21337c70","files":["model.glb"],"model_file":"/Users/coral/Documents/App Development/Human Resources/assets/models/tank-turret/tripo-out/tank-turret-convert-21337c70/model.glb","chain":[{"task_id":"21337c70-f4fb-4049-9558-a91b97c34d1e","type":"convert_model","status":"success","credits_consumed":10,"output_dir":"/Users/coral/Documents/App Development/Human Resources/assets/models/tank-turret/tripo-out/tank-turret-convert-21337c70","files":["model.glb"],"model_file":"/Users/coral/Documents/App Development/Human Resources/assets/models/tank-turret/tripo-out/tank-turret-convert-21337c70/model.glb"}],"source_task_id":"dc9f953e-53a1-420d-9f71-587fa9ea5d88","credits_breakdown":[{"task_id":"dc9f953e-53a1-420d-9f71-587fa9ea5d88","type":"image_to_model","credits_consumed":50},{"task_id":"21337c70-f4fb-4049-9558-a91b97c34d1e","type":"convert_model","credits_consumed":10}]}

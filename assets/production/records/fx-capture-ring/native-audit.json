@@ -1,0 +1,58 @@
+{
+  "schema_version": 1,
+  "id": "fx-capture-ring",
+  "status": "art-review-passed",
+  "production": {
+    "status": "generated",
+    "file": "assets/graphics/fx-capture-ring/fx-capture-ring.png",
+    "source": "assets/graphics/fx-capture-ring/fx-capture-ring.svg",
+    "metadata": "assets/graphics/fx-capture-ring/asset.json"
+  },
+  "reference": {
+    "status": "approved",
+    "path": "assets/references/fx-capture-ring/v1.png",
+    "sha256": "8e444999081cb1b25a03e365e8aa6a2fa23beab2804f13042b55a8fae8a614d9"
+  },
+  "qa": {
+    "status": "art-review-passed",
+    "visual_review": "Clean mint radius boundary with restrained dashed outer ring; no ground or UFO baked in.",
+    "review_evidence": "assets/production/reviews/native-graphics-contact-sheet.png",
+    "reviewed_against": "art/style-guide/ufo-asset-style-guide.png",
+    "runtime_qualified": false
+  },
+  "alpha_audit": {
+    "dimensions_px": [
+      512,
+      512
+    ],
+    "rgba": true,
+    "alpha_range": [
+      0,
+      255
+    ],
+    "alpha_nonzero_bbox": [
+      27,
+      27,
+      485,
+      485
+    ],
+    "transparent_margin_px": [
+      27,
+      27,
+      27,
+      27
+    ],
+    "border_alpha_max": 0,
+    "visible_pixels": 51700,
+    "repeat_axis_check": null,
+    "sha256": "0660d769690e10b1bcfd30537d8c1df2283b36bba9af75887f0b624ce97bd8e6"
+  },
+  "variants": [],
+  "svg": {
+    "self_contained": true,
+    "text_baked": false,
+    "external_dependencies": false
+  },
+  "usage": "Ground decal; scale to capture radius. Alpha blend, clamp both axes. No ground baked in.",
+  "limitations": "Art production asset. Native runtime upload, blend, depth/occlusion and device readability are not qualified."
+}

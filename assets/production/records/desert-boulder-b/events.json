@@ -1,0 +1,39 @@
+[
+  {
+    "task_id": "e7fed6c0-5816-4c12-8d09-5c216ed3cb66",
+    "type": "convert_model",
+    "status": "success",
+    "credits_consumed": 60,
+    "output_dir": "/Users/coral/Documents/App Development/Human Resources/assets/models/desert-boulder-b/tripo-out/desert-boulder-b-convert-e7fed6c0",
+    "files": [
+      "model.glb"
+    ],
+    "model_file": "/Users/coral/Documents/App Development/Human Resources/assets/models/desert-boulder-b/tripo-out/desert-boulder-b-convert-e7fed6c0/model.glb",
+    "chain": [
+      {
+        "task_id": "e7fed6c0-5816-4c12-8d09-5c216ed3cb66",
+        "type": "convert_model",
+        "status": "success",
+        "credits_consumed": 10,
+        "output_dir": "/Users/coral/Documents/App Development/Human Resources/assets/models/desert-boulder-b/tripo-out/desert-boulder-b-convert-e7fed6c0",
+        "files": [
+          "model.glb"
+        ],
+        "model_file": "/Users/coral/Documents/App Development/Human Resources/assets/models/desert-boulder-b/tripo-out/desert-boulder-b-convert-e7fed6c0/model.glb"
+      }
+    ],
+    "source_task_id": "f23fdba4-52b3-4d4e-b55f-338b1871984f",
+    "credits_breakdown": [
+      {
+        "task_id": "f23fdba4-52b3-4d4e-b55f-338b1871984f",
+        "type": "image_to_model",
+        "credits_consumed": 50
+      },
+      {
+        "task_id": "e7fed6c0-5816-4c12-8d09-5c216ed3cb66",
+        "type": "convert_model",
+        "credits_consumed": 10
+      }
+    ]
+  }
+]

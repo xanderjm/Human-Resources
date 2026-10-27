@@ -1,0 +1,12 @@
+{
+  "id": "texture-asphalt",
+  "version": 1,
+  "kind": "tile",
+  "prompt": "Use case: stylized-concept. Generate the FINAL SEAMLESS TILEABLE ALBEDO TEXTURE for a low-poly painterly mobile game. Attached image 1 is the approved white-backed material reference; image 2 is style guide context. Fill the ENTIRE square image edge-to-edge with only material, with NO WHITE MARGINS, border, object, thickness, perspective, lighting gradient, cast shadow, text or labels. Flat orthographic albedo, exactly even illumination, broad visibly hand-painted gouache strokes and subtle brushed edges, restrained low contrast so small characters stand out. Required palette/material: slate blue-grey (#687389, #5F6B81), broad quiet hand-painted patches. No markings, cracks, gravel, litter or directional lighting. Match the brush language of the reference while obeying these precise final-tile constraints. Left/right edges must match; top/bottom edges must match. Seamless when repeated in a 4x4 grid; no focal centre or obvious large repeated motif. 1024 by 1024 pixels.",
+  "refs": [
+    "/Users/coral/Documents/App Development/Human Resources/assets/references/texture-asphalt/v1.png",
+    "/Users/coral/Documents/App Development/Human Resources/art/style-guide/ufo-asset-style-guide.png"
+  ],
+  "source": "/Users/coral/.codex/generated_images/01a16e3b-5221-78b2-bd33-9830eab86a7f/exec-59c357eb-a08b-46e6-a09d-e31ef9435954.png",
+  "status": "awaiting_visual_review"
+}

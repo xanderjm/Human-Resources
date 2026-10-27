@@ -4,23 +4,18 @@
   "fixed_hz": 60,
   "maximum_catchup_seconds": 0.25,
   "field_half_width": 7.5,
-  "forward_scroll_metres_per_second": 2.2,
+  "forward_scroll_metres_per_second": 3.0,
   "player_radius": 0.85,
   "laser_range": 15,
   "laser_flash_seconds": 0.12,
+  "laser_stagger_seconds": 0.07,
   "pierce_alignment_metres": 1.5,
   "enemy_spawn_ahead": 26,
   "enemy_retire_behind": 23,
-  "biological_active_cap": 42,
+  "biological_active_cap": 64,
   "projectile_active_cap": 96,
   "warning_active_cap": 8,
-  "biological_spawn_per_second": 1.4,
-  "biological_score": [
-    3,
-    5,
-    2,
-    3
-  ],
+  "biological_spawn_per_second": 2.8,
   "biological_movement_speed": [
     1.5,
     1.35,
@@ -41,7 +36,7 @@
     3.2,
     5.8,
     3.8,
-    3.5
+    7.5
   ],
   "projectile_speed": [
     6,
@@ -69,10 +64,8 @@
   ],
   "hit_invulnerability_seconds": 0.55,
   "projectile_lifetime_seconds": 8,
-  "soldier_capture_seconds_multiplier": 1.2,
-  "vehicle_score": 5,
   "boss_active_cap": 1,
-  "steering_acceleration": 28,
+  "steering_acceleration": 64,
   "initial_biological_count": 24,
   "emergency_disable_radius": 4,
   "attack_prediction_fraction": 0.85,
@@ -169,17 +162,16 @@
     "boss_entry_half_width": 1,
     "cohort_size": 4,
     "herd_lane_metres": 3.4,
-    "herd_lateral_step": 1.1,
-    "herd_forward_step": 1.25,
+    "herd_lateral_step": 1.35,
+    "herd_forward_step": 1.5,
     "opening_near": 1.5,
-    "opening_group_step": 3.5,
+    "opening_group_step": 3.2,
     "opening_lane_metres": 1.2,
-    "intro_escort_second": 1.2,
     "warning_entry_ahead": 15,
     "recovery_warning_cap": 1,
     "recovery_soldier_multiplier": 0.5,
-    "military_pressure_multiplier": 2.5,
-    "warning_retire_behind": 12,
+    "military_pressure_multiplier": 4,
+    "warning_retire_behind": 15,
     "herd_lane_jitter_metres": 0.4,
     "cattle_lateral_step": 1.25,
     "cattle_lane_offset_metres": 0.7
@@ -200,14 +192,17 @@
     "cooldown": 4
   },
   "scroll_progression": {
-    "maximum_metres_per_second": 4.6,
-    "per_capture_metres_per_second": 0.008,
-    "per_level_metres_per_second": 0.1
+    "maximum_metres_per_second": 6.8,
+    "per_capture_metres_per_second": 0.05,
+    "per_level_metres_per_second": 0.22,
+    "time_bonus_metres_per_second": 2.0,
+    "ramp_seconds": 45
   },
   "native_director": {
-    "jeep_start_second": 12,
-    "tank_start_second": 40,
-    "boss_first_second": 90
+    "jeep_start_second": 36,
+    "tank_start_second": 65,
+    "boss_first_second": 100,
+    "rate_growth_per_minute": 0.9
   },
   "enemy_tactics": {
     "rifle_range": 6.5,
@@ -220,9 +215,6 @@
     "capture_standoff_buffer": 1.25,
     "arrival_radius": 0.65,
     "vehicle_fire_recovery": 0.55,
-    "civilian_lateral_bias": 0.55,
-    "civilian_turn_acceleration": 4,
-    "civilian_fear_radius": 7,
     "civilian_travel_lateral_bias": 0.22
   },
   "military_spacing": {
@@ -270,5 +262,108 @@
     "turn_radians_per_second": 10,
     "acceleration": 16,
     "braking": 24
-  }
+  },
+  "flight_response": {
+    "steering_response": 18,
+    "braking_response": 26,
+    "dash_seconds": 0.15
+  },
+  "abduction": {
+    "targets": [
+      "farmer",
+      "cow",
+      "sheep",
+      "pig",
+      "rifleman",
+      "shotgunner",
+      "rocketeer",
+      "jeep",
+      "tank"
+    ],
+    "lift_load": [
+      1.35,
+      1.75,
+      1.0,
+      1.15,
+      1.55,
+      1.7,
+      1.9,
+      2.25,
+      3.0
+    ],
+    "score": [
+      4,
+      6,
+      2,
+      3,
+      7,
+      9,
+      12,
+      18,
+      35
+    ],
+    "base_seconds_per_load": 1.2
+  },
+  "population": {
+    "cow_reveal_seconds": 8,
+    "rifle_reveal_seconds": 12,
+    "shotgun_reveal_seconds": 24,
+    "rocket_reveal_seconds": 48,
+    "single_formation_until_seconds": 18,
+    "formation_station": 7,
+    "formation_lane": 4.6,
+    "formation_stagger_seconds": 0.4,
+    "easy_pocket_interval": 3,
+    "late_pocket_weights": [
+      10,
+      10,
+      35,
+      10,
+      20,
+      15
+    ],
+    "early_formation_cap": 3,
+    "late_formation_cap": 6
+  },
+  "civilian_escape": {
+    "fear_radius": [
+      8,
+      6,
+      5.5,
+      6
+    ],
+    "reaction_seconds": [
+      0,
+      0.65,
+      0.15,
+      0.05
+    ],
+    "hold_seconds": [
+      0.8,
+      1.5,
+      0.8,
+      1.2
+    ],
+    "turn_acceleration": [
+      4,
+      1.4,
+      3,
+      4
+    ],
+    "lateral_bias": [
+      0.9,
+      0.35,
+      0.6,
+      1.0
+    ],
+    "flock_radius": 3.2,
+    "flock_follow_seconds": 0.25
+  },
+  "biological_clearance_radius": [
+    0.719,
+    1.158,
+    0.622,
+    0.675
+  ],
+  "biological_clearance_source": "Root-centred enclosing XZ neutral cooked-body boxes, rounded upward. Human uses the larger resident/farmer footprint; sheep/pig/cow use their own meshes. Collision/capture cores remain separate. tools/gameplay_qa/measure_body_footprints.py"
 }

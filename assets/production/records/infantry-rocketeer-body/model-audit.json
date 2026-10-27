@@ -1,0 +1,163 @@
+{
+  "triangles": 5505,
+  "vertices": 3717,
+  "mesh_primitives": 1,
+  "uv_present": true,
+  "textures": [
+    {
+      "size": [
+        1024,
+        1024
+      ],
+      "mode": "RGB"
+    }
+  ],
+  "raw_accessor_bounds": [
+    {
+      "min": [
+        -0.1943359375,
+        -0.4794921875,
+        -0.4990234375
+      ],
+      "max": [
+        0.1943359375,
+        0.4794921875,
+        0.4990234375
+      ]
+    }
+  ],
+  "extensions": [],
+  "bytes": 380488,
+  "asset": "infantry-rocketeer-body",
+  "model_file": "assets/models/infantry-rocketeer-body/infantry-rocketeer-body.glb",
+  "requested_face_limit": 5500,
+  "source_task_id": "c1f29a2d-26aa-499d-8475-3f5c4581d874",
+  "convert_task_id": "a551878c-12ca-4f0f-a0c3-318c4777410a",
+  "credits_consumed": 60,
+  "preview": null,
+  "triangle_budget_review": {
+    "requested_target": 5500,
+    "actual_triangles": 5505,
+    "target_met": false,
+    "category_ceiling": 8000,
+    "status": "passed"
+  },
+  "structural_review": {
+    "status": "passed",
+    "notes": "Triangle mode, valid GLB length, UVs and embedded 1024px base colour checked. Requested targets are approximate; actual triangle count and target deviations are reported separately, within the user-specified 3000-prop / 8000-character ceilings. Scale, pivot, topology and visual quality require separate review."
+  },
+  "visual_review": {
+    "status": "accepted",
+    "reviewer": "measured_modules agent",
+    "reviewed_at": "2026-10-24T22:48:07.454255+00:00",
+    "notes": "Accepted lanky rocket-trooper body: long navy trousers, ear-pad helmet and small integral navy backpack remain distinct from the other two troops. Friendly painted face, boots and brown harness match the approved reference. Both straight arms extend horizontally in a true T-pose; empty flat hands and no launcher/projectile, weapon grip or seated posture. Complete arms/hands and legs/boots; no scenery. Compared directly against latest approved T-pose reference in four actual-model angles. Requested5500-triangle target exceeded by5 triangles(0.091%), within approximate8000-character ceiling.",
+    "views": [
+      "three-quarter",
+      "opposite",
+      "front",
+      "right"
+    ],
+    "actual_model_evidence": [
+      {
+        "view": "three-quarter",
+        "camera_direction": [
+          1,
+          0.65,
+          1
+        ],
+        "file": "assets/production/records/infantry-rocketeer-body/review-infantry-normalized-three-quarter.png",
+        "sha256": "64fba4781841524d6a157eab6e69e32ef86c13f309a0c343db4df022a6afbf98"
+      },
+      {
+        "view": "opposite",
+        "camera_direction": [
+          -1,
+          0.55,
+          -1
+        ],
+        "file": "assets/production/records/infantry-rocketeer-body/review-infantry-normalized-opposite.png",
+        "sha256": "52970b7096d5cbc59b32cbd9fae7ab5829d56c518802b73bfb3ffc4f1507fcda"
+      },
+      {
+        "view": "front",
+        "camera_direction": [
+          0,
+          0.3,
+          1
+        ],
+        "file": "assets/production/records/infantry-rocketeer-body/review-infantry-normalized-front.png",
+        "sha256": "63e4c80f7cd86a3f0846e23358365da6a6c3881d8698242fe1f304fe6db14b18"
+      },
+      {
+        "view": "right",
+        "camera_direction": [
+          1,
+          0.3,
+          0
+        ],
+        "file": "assets/production/records/infantry-rocketeer-body/review-infantry-normalized-right.png",
+        "sha256": "ce92f72bd5b7969dc4a003fac9b0e197293513e158ed8afd591d28ceca2a06be"
+      }
+    ],
+    "comparison_sheet": "assets/production/reviews/props-six-infantry-normalized.png",
+    "raw_orientation_sheet": "assets/production/reviews/props-six-infantry-raw.png",
+    "reviewed_model_sha256": "e825433728deb3b321cea7426ad0e76db7329175c9e10745984f1f96f9d5ac62",
+    "reviewed_reference_file": "assets/references/infantry-rocketeer-body/v1.png",
+    "reviewed_reference_sha256": "d80c65b10391b04958909fdef8ca87d5c31b4e5f9a9c2e6d9ee42e54f8ba475d",
+    "pose_review": {
+      "status": "passed",
+      "pose": "unarmed true T-pose",
+      "horizontal_straight_arms": true,
+      "empty_hands": true,
+      "complete_limbs": true,
+      "seated_or_gripping_pose": false,
+      "attached_weapon": false
+    },
+    "limitations": "Static authoring mesh acceptance. No rigging, skinning, deformation, animation, equipping or seated crew pose is implemented or qualified."
+  },
+  "import_review": {
+    "status": "passed",
+    "units": "metres",
+    "up": "+Y",
+    "forward": "+Z",
+    "yaw_degrees": -90.0,
+    "pivot": "ground-centre",
+    "double_sided": false,
+    "uniform_scale": 1.8769857433808554,
+    "bounds_m": [
+      [
+        -0.9366598778004074,
+        0.0,
+        -0.36476578411405297
+      ],
+      [
+        0.9366598778004074,
+        1.8,
+        0.36476578411405297
+      ]
+    ],
+    "dimensions_m": [
+      1.8733197556008148,
+      1.8,
+      0.7295315682281059
+    ],
+    "vertex_checks": [
+      {
+        "triangles": 5505,
+        "degenerate_triangles": 0,
+        "uv_bounds": [
+          [
+            0.0,
+            0.0
+          ],
+          [
+            1.0,
+            1.0
+          ]
+        ]
+      }
+    ],
+    "notes": "Real scene vertices and indices decoded; finite positions/UVs; retained embedded 1024px base colour. Uniform root transform; raw file preserved."
+  },
+  "raw_model_file": "assets/models/infantry-rocketeer-body/tripo-out/infantry-rocketeer-body-convert-a551878c/model.glb"
+}

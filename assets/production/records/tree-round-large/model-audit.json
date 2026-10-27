@@ -1,0 +1,101 @@
+{
+  "triangles": 1690,
+  "vertices": 1360,
+  "mesh_primitives": 1,
+  "uv_present": true,
+  "textures": [
+    {
+      "size": [
+        1024,
+        1024
+      ],
+      "mode": "RGB"
+    }
+  ],
+  "raw_accessor_bounds": [
+    {
+      "min": [
+        -0.4462890625,
+        -0.4990234375,
+        -0.4716796875
+      ],
+      "max": [
+        0.4462890625,
+        0.4990234375,
+        0.4716796875
+      ]
+    }
+  ],
+  "extensions": [],
+  "bytes": 200184,
+  "asset": "tree-round-large",
+  "model_file": "assets/models/tree-round-large/tree-round-large.glb",
+  "requested_face_limit": 1800,
+  "source_task_id": "66f8e411-564b-40b3-8389-d82be112668e",
+  "convert_task_id": "50d6e19d-ee33-4fd9-b32a-8a1636c5f73e",
+  "credits_consumed": 60,
+  "preview": null,
+  "triangle_budget_review": {
+    "requested_target": 1800,
+    "actual_triangles": 1690,
+    "target_met": true,
+    "category_ceiling": 3000,
+    "status": "passed"
+  },
+  "structural_review": {
+    "status": "passed",
+    "notes": "Triangle mode, valid GLB length, UVs and embedded 1024px base colour checked. Requested targets are approximate; actual triangle count and target deviations are reported separately, within the user-specified 3000-prop / 8000-character ceilings. Scale, pivot, topology and visual quality require separate review."
+  },
+  "visual_review": {
+    "status": "accepted",
+    "notes": "Single broad round olive/sage canopy and short brown trunk, coherent silhouette and no ground. Broad paint masses remain; fine brush detail softened by generation. Height 3.2m.",
+    "views": [
+      "three-quarter"
+    ]
+  },
+  "import_review": {
+    "status": "passed",
+    "units": "metres",
+    "up": "+Y",
+    "forward": "+Z",
+    "yaw_degrees": 0.0,
+    "pivot": "ground-centre",
+    "double_sided": false,
+    "uniform_scale": 3.2062622309197653,
+    "bounds_m": [
+      [
+        -1.4309197651663406,
+        0.0,
+        -1.5123287671232877
+      ],
+      [
+        1.4309197651663406,
+        3.2,
+        1.5123287671232877
+      ]
+    ],
+    "dimensions_m": [
+      2.861839530332681,
+      3.2,
+      3.0246575342465754
+    ],
+    "vertex_checks": [
+      {
+        "triangles": 1690,
+        "degenerate_triangles": 0,
+        "uv_bounds": [
+          [
+            0.0,
+            0.0
+          ],
+          [
+            1.0,
+            1.0
+          ]
+        ]
+      }
+    ],
+    "notes": "Real scene vertices and indices decoded; finite positions/UVs; retained embedded 1024px base colour. Uniform root transform; raw file preserved."
+  },
+  "raw_model_file": "assets/models/tree-round-large/tripo-out/tree-round-large-convert-50d6e19d/model.glb"
+}

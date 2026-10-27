@@ -1,0 +1,39 @@
+[
+  {
+    "task_id": "2fa7f583-fdff-44cc-8351-ef418d7a3222",
+    "type": "convert_model",
+    "status": "success",
+    "credits_consumed": 60,
+    "output_dir": "/Users/coral/Documents/App Development/Human Resources/assets/models/ufo-shield-emitter/tripo-out/ufo-shield-emitter-convert-2fa7f583",
+    "files": [
+      "model.glb"
+    ],
+    "model_file": "/Users/coral/Documents/App Development/Human Resources/assets/models/ufo-shield-emitter/tripo-out/ufo-shield-emitter-convert-2fa7f583/model.glb",
+    "chain": [
+      {
+        "task_id": "2fa7f583-fdff-44cc-8351-ef418d7a3222",
+        "type": "convert_model",
+        "status": "success",
+        "credits_consumed": 10,
+        "output_dir": "/Users/coral/Documents/App Development/Human Resources/assets/models/ufo-shield-emitter/tripo-out/ufo-shield-emitter-convert-2fa7f583",
+        "files": [
+          "model.glb"
+        ],
+        "model_file": "/Users/coral/Documents/App Development/Human Resources/assets/models/ufo-shield-emitter/tripo-out/ufo-shield-emitter-convert-2fa7f583/model.glb"
+      }
+    ],
+    "source_task_id": "38fee116-5a9a-40b0-aee4-8173c3dc8d40",
+    "credits_breakdown": [
+      {
+        "task_id": "38fee116-5a9a-40b0-aee4-8173c3dc8d40",
+        "type": "image_to_model",
+        "credits_consumed": 50
+      },
+      {
+        "task_id": "2fa7f583-fdff-44cc-8351-ef418d7a3222",
+        "type": "convert_model",
+        "credits_consumed": 10
+      }
+    ]
+  }
+]

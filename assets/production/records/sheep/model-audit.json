@@ -1,0 +1,103 @@
+{
+  "triangles": 4478,
+  "vertices": 3033,
+  "mesh_primitives": 1,
+  "uv_present": true,
+  "textures": [
+    {
+      "size": [
+        1024,
+        1024
+      ],
+      "mode": "RGB"
+    }
+  ],
+  "raw_accessor_bounds": [
+    {
+      "min": [
+        -0.3486328125,
+        -0.3916015625,
+        -0.4990234375
+      ],
+      "max": [
+        0.3486328125,
+        0.3916015625,
+        0.4990234375
+      ]
+    }
+  ],
+  "extensions": [],
+  "bytes": 330416,
+  "asset": "sheep",
+  "model_file": "assets/models/sheep/sheep.glb",
+  "requested_face_limit": 4500,
+  "source_task_id": "7253319f-61a6-4c05-a9d1-fc533b67ef18",
+  "convert_task_id": "264ccf0c-14fc-4e3e-87d9-775c2c63353c",
+  "credits_consumed": 60,
+  "preview": null,
+  "triangle_budget_review": {
+    "requested_target": 4500,
+    "actual_triangles": 4478,
+    "target_met": true,
+    "category_ceiling": 8000,
+    "status": "passed"
+  },
+  "structural_review": {
+    "status": "passed",
+    "notes": "Triangle mode, valid GLB length, UVs and embedded 1024px base colour checked. Requested targets are approximate; actual triangle count and target deviations are reported separately, within the user-specified 3000-prop / 8000-character ceilings. Scale, pivot, topology and visual quality require separate review."
+  },
+  "visual_review": {
+    "status": "accepted",
+    "notes": "Four downward legs, dark face and two ears; scalloped cream wool and quiet gold shading. No scene elements or accessory geometry. Corrected forward axis after review: 180 degree yaw, +Z face; height 0.8m. Fine gouache detail softer than the reference, broad wool colour masses retained.",
+    "views": [
+      "three-quarter",
+      "front",
+      "rear",
+      "left",
+      "right"
+    ]
+  },
+  "import_review": {
+    "status": "passed",
+    "units": "metres",
+    "up": "+Y",
+    "forward": "+Z",
+    "yaw_degrees": 180.0,
+    "uniform_scale": 1.0214463840399004,
+    "bounds_m": [
+      [
+        -0.3561097256857856,
+        0.0,
+        -0.5097256857855362
+      ],
+      [
+        0.3561097256857856,
+        0.8000000000000002,
+        0.5097256857855362
+      ]
+    ],
+    "dimensions_m": [
+      0.7122194513715712,
+      0.8000000000000002,
+      1.0194513715710725
+    ],
+    "vertex_checks": [
+      {
+        "triangles": 4478,
+        "degenerate_triangles": 0,
+        "uv_bounds": [
+          [
+            0.0,
+            0.0
+          ],
+          [
+            1.0,
+            1.0
+          ]
+        ]
+      }
+    ],
+    "notes": "Real scene vertices and indices decoded; finite positions/UVs; retained embedded 1024px base colour. Uniform root transform; raw file preserved."
+  },
+  "raw_model_file": "assets/models/sheep/tripo-out/sheep-convert-264ccf0c/model.glb"
+}

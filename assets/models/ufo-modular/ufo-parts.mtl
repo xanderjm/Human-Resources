@@ -1,0 +1,79 @@
+newmtl Cobalt_Armour_Matte
+Kd 0.82 0.92 1
+Pr 0.84
+Pm 0.04
+map_Kd materials/mapped-ring.png
+
+newmtl Navy_Frame
+Kd 0.22 0.3 0.43
+Pr 0.74
+Pm 0.08
+map_Kd materials/dome-enamel.png
+
+newmtl Mint_Lens
+Kd 0.3 0.85 0.7
+Pr 0.72
+Pm 0
+map_Kd materials/mint-lens.png
+
+newmtl Satin_Blue_Edge
+Kd 0.09 0.17 0.24
+Pr 0.65
+Pm 0.12
+
+newmtl Painted_Cobalt_Dome
+Kd 0.85 0.94 1
+Pr 0.68
+Pm 0
+map_Kd materials/mapped-dome.png
+
+newmtl Slate_Cover_Plates
+Kd 0.54 0.63 0.74
+Pr 0.88
+Pm 0.04
+map_Kd materials/expressive-blue.png
+
+newmtl Light_Cover_Plates
+Kd 0.8 0.9 1
+Pr 0.8
+Pm 0.04
+map_Kd materials/expressive-blue.png
+
+newmtl Cobalt_Module_Paint
+Kd 0.72 0.84 0.94
+Pr 0.84
+Pm 0.04
+map_Kd materials/expressive-blue.png
+
+newmtl Exposed_Blue_Grey_Metal
+Kd 0.23 0.31 0.37
+Pr 0.72
+Pm 0.15
+
+newmtl Cobalt_Cover_Plates
+Kd 0.68 0.8 0.93
+Pr 0.88
+Pm 0.04
+map_Kd materials/expressive-blue.png
+
+newmtl Dome_Light_Paint
+Kd 0.94 0.98 1
+Pr 0.72
+Pm 0
+map_Kd materials/mapped-dome.png
+
+newmtl Dome_Shadow_Paint
+Kd 0.75 0.85 0.95
+Pr 0.72
+Pm 0
+map_Kd materials/mapped-dome.png
+
+newmtl Teal_Lens_Bezel
+Kd 0.025 0.2 0.2
+Pr 0.74
+Pm 0.06
+
+newmtl Warm_Ochre_Underpaint
+Kd 0.46 0.22 0.085
+Pr 0.92
+Pm 0

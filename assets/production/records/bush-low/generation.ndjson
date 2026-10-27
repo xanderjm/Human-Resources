@@ -1,0 +1,27 @@
+── Plan ──────────────────────────
+input: /Users/coral/Documents/App Development/Human Resources/assets/references/bush-low/v1.png
+model: P1-20260311 — explicit --model
+steps:
+  1. image-to-model  POST /v3/generation/image-to-model — generate a 3D model from one image
+     model="P1-20260311" face_limit=1800 texture=true pbr=false texture_quality="standard" texture_alignment="original_image" export_uv=true
+  2. convert  POST /v3/models/convert — convert format / texture size / orientation
+     format="GLTF" texture_size=1024
+cost impact:
+  · non-default convert options bill as complex convert
+──────────────────────────────────
+model: P1-20260311 (explicit --model)
+task created ff0719d2-c4b9-4892-8731-65fdc7091572 (@bush-low)
+image_to_model · queued
+image_to_model · running 9% · ff0719d2
+image_to_model · running 17% · ff0719d2
+image_to_model · running 32% · ff0719d2
+image_to_model · running 53% · ff0719d2
+image_to_model · success 100% · ff0719d2
+✓ image_to_model · ff0719d2-c4b9-4892-8731-65fdc7091572 · 50 credits
+! non-default convert options use the "complex convert" price tier
+task created cd9b5e3a-b012-4a12-a521-870b982e7897 (@bush-low-convert)
+convert_model · queued
+✓ convert_model · cd9b5e3a-b012-4a12-a521-870b982e7897 · 10 credits
+downloading artifacts…
+✓ artifacts saved to /Users/coral/Documents/App Development/Human Resources/assets/models/bush-low/tripo-out/bush-low-convert-cd9b5e3a
+{"task_id":"cd9b5e3a-b012-4a12-a521-870b982e7897","type":"convert_model","status":"success","credits_consumed":60,"output_dir":"/Users/coral/Documents/App Development/Human Resources/assets/models/bush-low/tripo-out/bush-low-convert-cd9b5e3a","files":["model.glb"],"model_file":"/Users/coral/Documents/App Development/Human Resources/assets/models/bush-low/tripo-out/bush-low-convert-cd9b5e3a/model.glb","chain":[{"task_id":"cd9b5e3a-b012-4a12-a521-870b982e7897","type":"convert_model","status":"success","credits_consumed":10,"output_dir":"/Users/coral/Documents/App Development/Human Resources/assets/models/bush-low/tripo-out/bush-low-convert-cd9b5e3a","files":["model.glb"],"model_file":"/Users/coral/Documents/App Development/Human Resources/assets/models/bush-low/tripo-out/bush-low-convert-cd9b5e3a/model.glb"}],"source_task_id":"ff0719d2-c4b9-4892-8731-65fdc7091572","credits_breakdown":[{"task_id":"ff0719d2-c4b9-4892-8731-65fdc7091572","type":"image_to_model","credits_consumed":50},{"task_id":"cd9b5e3a-b012-4a12-a521-870b982e7897","type":"convert_model","credits_consumed":10}]}

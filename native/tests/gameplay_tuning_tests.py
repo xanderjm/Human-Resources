@@ -47,8 +47,56 @@ class NativeTuningTests(unittest.TestCase):
         first = self.output.read_bytes()
         MODULE.generate(self.root, self.output)
         self.assertEqual(first, self.output.read_bytes())
-        self.assertIn(b'xp_base = 16.0F', first)
+        self.assertIn(b'xp_base = 12.0F', first)
         self.assertIn(b'jeep_capture_threshold', first)
+
+    def test_beam_splitter_stays_in_the_fresh_random_pool(self):
+        self.mutate('design/balance/archero-ufo-system.json',
+                    lambda v: v['starting_blueprints'].__setitem__(v['starting_blueprints'].index('beam_splitter'), 'phase_drive'))
+        self.reject()
+
+    def test_retired_hardware_cannot_reenter_catalogue(self):
+        self.mutate('design/balance/endless-upgrade-system.json',
+                    lambda v: v['hardware'][0].update(id='reserve_battery'))
+        self.reject()
+
+    def test_level_capture_gain_is_validated_and_fingerprinted(self):
+        original = self.fingerprint()
+        self.mutate('design/balance/archero-ufo-system.json',
+                    lambda v: v['run'].update(capture_speed_per_level=.09))
+        self.assertNotEqual(original, self.fingerprint())
+        for invalid in (0, -1, True, float('inf'), .5):
+            with self.subTest(invalid=invalid):
+                self.output.unlink(missing_ok=True)
+                self.mutate('design/balance/archero-ufo-system.json',
+                            lambda v: v['run'].update(capture_speed_per_level=invalid))
+                self.reject()
+
+    def test_population_rules_change_resume_fingerprint(self):
+        original = self.fingerprint()
+        self.mutate('native/human_resources_gameplay/runtime-spatial.json',
+                    lambda v: v['abduction']['lift_load'].__setitem__(0, 1.36))
+        self.assertNotEqual(original, self.fingerprint())
+
+    def test_duplicate_capture_profiles_rejected(self):
+        self.mutate('native/human_resources_gameplay/runtime-spatial.json',
+                    lambda v: v['abduction']['score'].__setitem__(0, 2))
+        self.reject()
+
+    def test_out_of_order_reveals_rejected(self):
+        self.mutate('native/human_resources_gameplay/runtime-spatial.json',
+                    lambda v: v['population'].update(rocket_reveal_seconds=30))
+        self.reject()
+
+    def test_formation_cannot_consume_escape_corridor(self):
+        self.mutate('native/human_resources_gameplay/runtime-spatial.json',
+                    lambda v: v['population'].update(formation_lane=3))
+        self.reject()
+
+    def test_escape_profiles_reject_nonfinite_numbers(self):
+        self.mutate('native/human_resources_gameplay/runtime-spatial.json',
+                    lambda v: v['civilian_escape']['hold_seconds'].__setitem__(0, float('nan')))
+        self.reject()
 
     def test_negative_baseline_rejected(self):
         self.mutate('design/balance/endless-upgrade-system.json', lambda v: v['loop']['baseline'].update(hull=-1))
@@ -123,6 +171,57 @@ class NativeTuningTests(unittest.TestCase):
         self.mutate('native/human_resources_gameplay/runtime-spatial.json',
                     lambda v: v['biological_movement_speed'].__setitem__(0, 3))
         self.reject()
+
+    def test_opening_scroll_semantics_invalidate_resume(self):
+        original = self.fingerprint()
+        path = self.root / 'native/human_resources_gameplay/runtime-spatial.json'
+        baseline = json.loads(path.read_text())
+        for key in ('ramp_seconds', 'time_bonus_metres_per_second'):
+            with self.subTest(key=key):
+                value = json.loads(json.dumps(baseline))
+                value['scroll_progression'][key] *= 1.1
+                path.write_text(json.dumps(value))
+                self.assertNotEqual(original, self.fingerprint())
+
+    def test_opening_scroll_rejects_invalid_or_unbounded_ramps(self):
+        path = self.root / 'native/human_resources_gameplay/runtime-spatial.json'
+        baseline = json.loads(path.read_text())
+        for key, invalid in (('ramp_seconds', 0), ('ramp_seconds', float('nan')),
+                             ('time_bonus_metres_per_second', -1),
+                             ('time_bonus_metres_per_second', 8)):
+            with self.subTest(key=key, invalid=invalid):
+                value = json.loads(json.dumps(baseline))
+                value['scroll_progression'][key] = invalid
+                path.write_text(json.dumps(value))
+                self.output.unlink(missing_ok=True)
+                self.reject()
+
+    def test_native_lift_and_formation_bounds(self):
+        path = self.root / 'native/human_resources_gameplay/runtime-spatial.json'
+        baseline = json.loads(path.read_text())
+        for section, key, invalid in (('abduction', 'base_seconds_per_load', 0),
+                                      ('abduction', 'base_seconds_per_load', float('nan')),
+                                      ('population', 'late_formation_cap', 7),
+                                      ('population', 'early_formation_cap', 1.5),
+                                      ('population', 'late_formation_cap', True)):
+            with self.subTest(key=key, invalid=invalid):
+                value = json.loads(json.dumps(baseline))
+                value[section][key] = invalid
+                path.write_text(json.dumps(value))
+                self.output.unlink(missing_ok=True)
+                self.reject()
+
+    def test_native_pacing_changes_resume_fingerprint(self):
+        original = self.fingerprint()
+        path = self.root / 'native/human_resources_gameplay/runtime-spatial.json'
+        baseline = json.loads(path.read_text())
+        for section, key, replacement in (('abduction', 'base_seconds_per_load', 1.3),
+                                          ('population', 'late_formation_cap', 5),
+                                          ('native_director', 'rate_growth_per_minute', 1)):
+            value = json.loads(json.dumps(baseline))
+            value[section][key] = replacement
+            path.write_text(json.dumps(value))
+            self.assertNotEqual(original, self.fingerprint())
 
     def test_native_ramp_must_be_ordered(self):
         self.mutate('native/human_resources_gameplay/runtime-spatial.json',

@@ -1,6 +1,7 @@
 #include "account_internal.h"
 
 #include <human_resources/gameplay/gameplay.h>
+#include <human_resources/gameplay/tuning.h>
 
 #include <cmath>
 
@@ -35,7 +36,7 @@ bool detail::valid_continuation(const Account& account) {
       continuation.game_state.size() > maximum_continuation_bytes) return false;
   const auto info = gameplay::inspect_saved_state(continuation.game_state);
   if (!info.valid() || info.phase == gameplay::Phase::ready || info.revive_count != (account.revive_used ? 1U : 0U) ||
-      info.setup.permanent_ranks != account.ranks || info.setup.unlocked_blueprints != account.unlocked_blueprints ||
+      info.setup.permanent_ranks != account.ranks || info.setup.unlocked_blueprints != (account.unlocked_blueprints & gameplay::tuning::available_blueprints) ||
       !std::isfinite(info.stats.active_seconds) || info.stats.active_seconds < 0 || info.stats.active_seconds > 1000000000)
     return false;
   return same_receipt(receipt_from(info.stats, account.checkpoint.run_id), account.checkpoint) &&

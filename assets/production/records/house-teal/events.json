@@ -1,0 +1,39 @@
+[
+  {
+    "task_id": "70f36040-ad79-4bfb-a78c-09bcd0fd79c7",
+    "type": "convert_model",
+    "status": "success",
+    "credits_consumed": 60,
+    "output_dir": "/Users/coral/Documents/App Development/Human Resources/assets/models/house-teal/tripo-out/house-teal-convert-70f36040",
+    "files": [
+      "model.glb"
+    ],
+    "model_file": "/Users/coral/Documents/App Development/Human Resources/assets/models/house-teal/tripo-out/house-teal-convert-70f36040/model.glb",
+    "chain": [
+      {
+        "task_id": "70f36040-ad79-4bfb-a78c-09bcd0fd79c7",
+        "type": "convert_model",
+        "status": "success",
+        "credits_consumed": 10,
+        "output_dir": "/Users/coral/Documents/App Development/Human Resources/assets/models/house-teal/tripo-out/house-teal-convert-70f36040",
+        "files": [
+          "model.glb"
+        ],
+        "model_file": "/Users/coral/Documents/App Development/Human Resources/assets/models/house-teal/tripo-out/house-teal-convert-70f36040/model.glb"
+      }
+    ],
+    "source_task_id": "27aa635f-894b-4e6a-ad76-3f65b6497ec4",
+    "credits_breakdown": [
+      {
+        "task_id": "27aa635f-894b-4e6a-ad76-3f65b6497ec4",
+        "type": "image_to_model",
+        "credits_consumed": 50
+      },
+      {
+        "task_id": "70f36040-ad79-4bfb-a78c-09bcd0fd79c7",
+        "type": "convert_model",
+        "credits_consumed": 10
+      }
+    ]
+  }
+]

@@ -1,0 +1,39 @@
+{
+  "asset": "jeep-minigun-head",
+  "description": "Added a small closed matching navy connector collar behind the existing rear barrel ring to bridge the unintended receiver separation. Existing game-prop geometry and embedded paint atlas retained.",
+  "source": "assets/models/jeep-minigun-head/tripo-out/jeep-minigun-head-convert-ad75a003/model.glb",
+  "source_sha256": "440425943f0379c7381b9321b5ddeb6298b2d46b0432672ad295a4295950c961",
+  "repaired_source": "assets/models/jeep-minigun-head/jeep-minigun-head-repaired-source.glb",
+  "repaired_source_sha256": "d9fada93794304efe9af4e99de273aed5d559a47a803665afd8058ea923ca0a1",
+  "details": {
+    "added_triangles": 12,
+    "raw_collar_bounds": [
+      [
+        -0.075,
+        -0.16,
+        -0.135
+      ],
+      [
+        0.02,
+        0.12,
+        0.135
+      ]
+    ],
+    "intended_openings_retained": "Six stylized barrel muzzle insets and rear handle gap.",
+    "source_uv_triangle": [
+      [
+        0.7251902222633362,
+        0.20644211769104004
+      ],
+      [
+        0.7156206965446472,
+        0.1951027512550354
+      ],
+      [
+        0.6905199289321899,
+        0.21672677993774414
+      ]
+    ]
+  },
+  "material_policy": "Original embedded base-colour and material retained; no PBR maps, no retexture."
+}

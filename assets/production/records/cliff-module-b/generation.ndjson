@@ -1,0 +1,29 @@
+── Plan ──────────────────────────
+input: /Users/coral/Documents/App Development/Human Resources/assets/references/cliff-module-b/v1.png
+model: P1-20260311 — explicit --model
+steps:
+  1. image-to-model  POST /v3/generation/image-to-model — generate a 3D model from one image
+     model="P1-20260311" face_limit=2800 texture=true pbr=false texture_quality="standard" texture_alignment="original_image" export_uv=true
+  2. convert  POST /v3/models/convert — convert format / texture size / orientation
+     format="GLTF" texture_size=1024
+cost impact:
+  · non-default convert options bill as complex convert
+──────────────────────────────────
+model: P1-20260311 (explicit --model)
+task created e02e7b68-2b7a-4b45-abb5-976bba8ab2df (@cliff-module-b)
+image_to_model · queued
+image_to_model · running 12% · e02e7b68
+image_to_model · running 20% · e02e7b68
+image_to_model · running 32% · e02e7b68
+image_to_model · running 51% · e02e7b68
+image_to_model · running 77% · e02e7b68
+image_to_model · success 100% · e02e7b68
+✓ image_to_model · e02e7b68-2b7a-4b45-abb5-976bba8ab2df · 50 credits
+! non-default convert options use the "complex convert" price tier
+task created 02704657-3e2e-4480-8c8a-3d47d9c7a212 (@cliff-module-b-convert)
+convert_model · queued
+convert_model · queued 0% · 02704657
+✓ convert_model · 02704657-3e2e-4480-8c8a-3d47d9c7a212 · 10 credits
+downloading artifacts…
+✓ artifacts saved to /Users/coral/Documents/App Development/Human Resources/assets/models/cliff-module-b/tripo-out/cliff-module-b-convert-02704657
+{"task_id":"02704657-3e2e-4480-8c8a-3d47d9c7a212","type":"convert_model","status":"success","credits_consumed":60,"output_dir":"/Users/coral/Documents/App Development/Human Resources/assets/models/cliff-module-b/tripo-out/cliff-module-b-convert-02704657","files":["model.glb"],"model_file":"/Users/coral/Documents/App Development/Human Resources/assets/models/cliff-module-b/tripo-out/cliff-module-b-convert-02704657/model.glb","chain":[{"task_id":"02704657-3e2e-4480-8c8a-3d47d9c7a212","type":"convert_model","status":"success","credits_consumed":10,"output_dir":"/Users/coral/Documents/App Development/Human Resources/assets/models/cliff-module-b/tripo-out/cliff-module-b-convert-02704657","files":["model.glb"],"model_file":"/Users/coral/Documents/App Development/Human Resources/assets/models/cliff-module-b/tripo-out/cliff-module-b-convert-02704657/model.glb"}],"source_task_id":"e02e7b68-2b7a-4b45-abb5-976bba8ab2df","credits_breakdown":[{"task_id":"e02e7b68-2b7a-4b45-abb5-976bba8ab2df","type":"image_to_model","credits_consumed":50},{"task_id":"02704657-3e2e-4480-8c8a-3d47d9c7a212","type":"convert_model","credits_consumed":10}]}

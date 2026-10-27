@@ -1,0 +1,101 @@
+{
+  "triangles": 926,
+  "vertices": 807,
+  "mesh_primitives": 1,
+  "uv_present": true,
+  "textures": [
+    {
+      "size": [
+        1024,
+        1024
+      ],
+      "mode": "RGB"
+    }
+  ],
+  "raw_accessor_bounds": [
+    {
+      "min": [
+        -0.3505859375,
+        -0.4990234375,
+        -0.2919921875
+      ],
+      "max": [
+        0.3505859375,
+        0.4990234375,
+        0.2919921875
+      ]
+    }
+  ],
+  "extensions": [],
+  "bytes": 209464,
+  "asset": "ufo-shield-emitter",
+  "model_file": "assets/models/ufo-shield-emitter/ufo-shield-emitter.glb",
+  "requested_face_limit": 1000,
+  "source_task_id": "38fee116-5a9a-40b0-aee4-8173c3dc8d40",
+  "convert_task_id": "2fa7f583-fdff-44cc-8351-ef418d7a3222",
+  "credits_consumed": 60,
+  "preview": null,
+  "triangle_budget_review": {
+    "requested_target": 1000,
+    "actual_triangles": 926,
+    "target_met": true,
+    "category_ceiling": 3000,
+    "status": "passed"
+  },
+  "structural_review": {
+    "status": "passed",
+    "notes": "Triangle mode, valid GLB length, UVs and embedded 1024px base colour checked. Requested targets are approximate; actual triangle count and target deviations are reported separately, within the user-specified 3000-prop / 8000-character ceilings. Scale, pivot, topology and visual quality require separate review."
+  },
+  "visual_review": {
+    "status": "accepted",
+    "notes": "Single mint lens on cobalt stalk/foot, no generated shield sphere or glow geometry. Ground-centre mounting foot, 0.4m height.",
+    "views": [
+      "three-quarter"
+    ]
+  },
+  "import_review": {
+    "status": "passed",
+    "units": "metres",
+    "up": "+Y",
+    "forward": "+Z",
+    "yaw_degrees": 0.0,
+    "pivot": "ground-centre",
+    "double_sided": false,
+    "uniform_scale": 0.40078277886497066,
+    "bounds_m": [
+      [
+        -0.14050880626223092,
+        0.0,
+        -0.11702544031311155
+      ],
+      [
+        0.14050880626223092,
+        0.4,
+        0.11702544031311155
+      ]
+    ],
+    "dimensions_m": [
+      0.28101761252446184,
+      0.4,
+      0.2340508806262231
+    ],
+    "vertex_checks": [
+      {
+        "triangles": 926,
+        "degenerate_triangles": 0,
+        "uv_bounds": [
+          [
+            0.0,
+            0.0
+          ],
+          [
+            1.0,
+            1.0
+          ]
+        ]
+      }
+    ],
+    "notes": "Real scene vertices and indices decoded; finite positions/UVs; retained embedded 1024px base colour. Uniform root transform; raw file preserved."
+  },
+  "raw_model_file": "assets/models/ufo-shield-emitter/tripo-out/ufo-shield-emitter-convert-2fa7f583/model.glb"
+}

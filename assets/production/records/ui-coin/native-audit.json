@@ -1,0 +1,58 @@
+{
+  "schema_version": 1,
+  "id": "ui-coin",
+  "status": "art-review-passed",
+  "production": {
+    "status": "generated",
+    "file": "assets/graphics/ui-coin/ui-coin.png",
+    "source": "assets/graphics/ui-coin/ui-coin.svg",
+    "metadata": "assets/graphics/ui-coin/asset.json"
+  },
+  "reference": {
+    "status": "approved",
+    "path": "assets/references/ui-coin/v1.png",
+    "sha256": "35e0a10f6ce00ca4f2cd733ec267f35278936da9c5ee61dfafaffd8a63d5b4d4"
+  },
+  "qa": {
+    "status": "art-review-passed",
+    "visual_review": "Amber disc silhouette with slight ivory highlight, no baked score digits.",
+    "review_evidence": "assets/production/reviews/native-graphics-contact-sheet.png",
+    "reviewed_against": "art/style-guide/ufo-asset-style-guide.png",
+    "runtime_qualified": false
+  },
+  "alpha_audit": {
+    "dimensions_px": [
+      512,
+      512
+    ],
+    "rgba": true,
+    "alpha_range": [
+      0,
+      255
+    ],
+    "alpha_nonzero_bbox": [
+      67,
+      60,
+      445,
+      452
+    ],
+    "transparent_margin_px": [
+      67,
+      60,
+      67,
+      60
+    ],
+    "border_alpha_max": 0,
+    "visible_pixels": 118206,
+    "repeat_axis_check": null,
+    "sha256": "9883046d9244beaaa2dd6a82780a95328691d3a0722f0a3edf6dd089ad8777dd"
+  },
+  "variants": [],
+  "svg": {
+    "self_contained": true,
+    "text_baked": false,
+    "external_dependencies": false
+  },
+  "usage": "Score symbol only; dynamic digits rendered separately. Clamp both axes.",
+  "limitations": "Art production asset. Native runtime upload, blend, depth/occlusion and device readability are not qualified."
+}

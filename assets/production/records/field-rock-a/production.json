@@ -1,0 +1,27 @@
+{
+  "asset": "field-rock-a",
+  "status": "cli_succeeded_pending_model_audit",
+  "task_ids": [
+    "efc15429-91a2-4763-ae19-de51e5da96df",
+    "c850ab9f-b7e2-46c9-99f8-ecf6556352ec"
+  ],
+  "started_at": "2026-10-24T20:09:26.948571+00:00",
+  "reference": "/Users/coral/Documents/App Development/Human Resources/assets/references/field-rock-a/v1.png",
+  "reference_version": 1,
+  "local_pid": 9540,
+  "command": [
+    "tripo",
+    "task",
+    "watch",
+    "c850ab9f-b7e2-46c9-99f8-ecf6556352ec",
+    "--download",
+    "--out",
+    "/Users/coral/Documents/App Development/Human Resources/assets/models/field-rock-a",
+    "--timeout",
+    "600",
+    "--json",
+    "--no-open"
+  ],
+  "return_code": 0,
+  "finished_at": "2026-10-24T20:39:18.778939+00:00"
+}

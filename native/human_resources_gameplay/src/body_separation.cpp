@@ -7,7 +7,8 @@ bool grounded(const Actor& actor) {
   return !actor.removed && biological(actor.view.kind) && !actor.lifted && actor.view.capture_progress == 0;
 }
 float radius(const Actor& actor) {
-  return tuning::biological_body_radius[static_cast<std::size_t>(actor.view.kind)];
+  return actor.view.kind < EntityKind::soldier ? tuning::biological_clearance_radius[static_cast<std::size_t>(actor.view.kind)] :
+      tuning::military_body_radius[military_index(actor.view.kind)];
 }
 Vec2 normal(Vec2 delta, std::uint32_t first, std::uint32_t second) {
   if (length_squared(delta) > 0.00000001F) {
@@ -28,7 +29,8 @@ void displace(Motion& motion, Vec2 offset, float maximum) {
     total = scaled(direction(total), maximum);
   }
   motion.position = add(motion.preferred, total);
-  motion.position.x = std::clamp(motion.position.x, -tuning::field_half_width, tuning::field_half_width);
+  const float edge = std::max(tuning::field_half_width - radius(*motion.actor), std::abs(motion.origin.x));
+  motion.position.x = std::clamp(motion.position.x, -edge, edge);
 }
 } // namespace
 
@@ -75,26 +77,14 @@ void Game::State::move_biological(float dt) {
     if (count == motions.size()) {
       break;
     }
-    const float offset = actor.view.position.x - view.player.x;
-    const float side = std::abs(offset) > .1F ? (offset > 0 ? 1.F : -1.F) : (actor.view.id & 1U ? 1.F : -1.F);
-    // Everyone keeps jogging forward. Only the local UFO threat redirects that
-    // individual heading into escape; distant herds do not form global rails.
-    const float fear = std::clamp(1 - std::sqrt(distance_squared(actor.view.position, view.player)) /
-        tuning::tactics_civilian_fear_radius, 0.F, 1.F);
-    const auto heading_key = actor.view.id * 2654435761U;
-    const float travel = (2 * static_cast<float>(heading_key >> 8) / 16777215.F - 1) *
-        tuning::tactics_civilian_travel_lateral_bias;
-    const float lateral = travel * (1 - fear) + side * tuning::tactics_civilian_lateral_bias * fear;
-    const float travel_side = lateral >= 0 ? 1.F : -1.F;
-    // Near an edge, turn forward instead of bouncing back toward the threat.
-    const float lateral_space = std::clamp((tuning::field_half_width - radius(actor) - travel_side * actor.view.position.x) / 1.5F, 0.F, 1.F);
-    const float speed = tuning::biological_movement_speed[static_cast<std::size_t>(actor.view.kind)];
-    const auto desired = scaled(direction({lateral * lateral_space, 1}), speed);
-    const float turn = tuning::tactics_civilian_turn_acceleration * dt;
+    const auto index = static_cast<std::size_t>(actor.view.kind);
+    const auto desired = scaled(civilian_heading(actor, dt), tuning::biological_movement_speed[index]);
+    const float turn = tuning::civilian_turn_acceleration[index] * dt;
     actor.locomotion_velocity.x += std::clamp(desired.x - actor.locomotion_velocity.x, -turn, turn);
     actor.locomotion_velocity.z += std::clamp(desired.z - actor.locomotion_velocity.z, -turn, turn);
     auto preferred = add(actor.view.position, scaled(actor.locomotion_velocity, dt));
-    preferred.x = std::clamp(preferred.x, -tuning::field_half_width, tuning::field_half_width);
+    const float edge = std::max(tuning::field_half_width - radius(actor), std::abs(actor.view.position.x));
+    preferred.x = std::clamp(preferred.x, -edge, edge);
     motions[count++] = {&actor, actor.view.position, preferred, preferred};
   }
   std::sort(motions.begin(), motions.begin() + static_cast<std::ptrdiff_t>(count), [](const Motion& a, const Motion& b) {

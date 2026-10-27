@@ -1,0 +1,140 @@
+{
+  "triangles": 2540,
+  "vertices": 4265,
+  "mesh_primitives": 1,
+  "uv_present": true,
+  "textures": [
+    {
+      "size": [
+        1024,
+        1024
+      ],
+      "mode": "RGB"
+    }
+  ],
+  "raw_accessor_bounds": [
+    {
+      "min": [
+        -0.4931640625,
+        -0.4013671875,
+        -0.4990234375
+      ],
+      "max": [
+        0.4931640625,
+        0.4013671875,
+        0.4990234375
+      ]
+    }
+  ],
+  "extensions": [],
+  "bytes": 600884,
+  "asset": "house-coral",
+  "model_file": "assets/models/house-coral/house-coral.glb",
+  "requested_face_limit": 2800,
+  "source_task_id": "8fbb238d-abaa-4490-8ed1-25b93dccddbd",
+  "convert_task_id": "76e46352-e400-4673-b23e-ea8058c9afac",
+  "credits_consumed": 60,
+  "preview": null,
+  "triangle_budget_review": {
+    "requested_target": 2800,
+    "actual_triangles": 2540,
+    "target_met": true,
+    "category_ceiling": 3000,
+    "status": "passed"
+  },
+  "structural_review": {
+    "status": "passed",
+    "notes": "Triangle mode, valid GLB length, UVs and embedded 1024px base colour checked. Requested targets are approximate; actual triangle count and target deviations are reported separately, within the user-specified 3000-prop / 8000-character ceilings. Scale, pivot, topology and visual quality require separate review."
+  },
+  "visual_review": {
+    "status": "accepted",
+    "reviewer": "seamless_materials agent",
+    "reviewed_at": "2026-10-24T22:52:52.006327+00:00",
+    "model_sha256": "ff43e98516241e03b831b0aa69489a3cc3de5ccc31a6bc3d0968cdb61cf36e5b",
+    "notes": "Follow-up roof-integrity review after native suburbia capture: existing tile and ridge joins had tiny openings to light underlying surfaces. Added 24 triangles as two continuous closed inset roof underlays using existing matching painted atlas; preserved every original tile, wall and texture pixel. Rechecked actual GLB overhead, underside and three-quarter views; underlays seated below roof and within eaves, silhouette retained. The large cream L-shaped patch on teal is baked albedo on an intact tile, confirmed by unlit overhead and wireframe face coverage; deliberately preserved. Door facade +Z, height3.5m, uniform grounded import unchanged. Authoring import QA only; native capture should be regenerated with this current model hash."
+  },
+  "import_review": {
+    "status": "passed",
+    "units": "metres",
+    "up": "+Y",
+    "forward": "+Z",
+    "yaw_degrees": -90.0,
+    "pivot": "ground-centre",
+    "double_sided": false,
+    "uniform_scale": 4.360097323600973,
+    "bounds_m": [
+      [
+        -2.175790754257908,
+        0.0,
+        -2.150243309002433
+      ],
+      [
+        2.175790754257908,
+        3.5,
+        2.150243309002433
+      ]
+    ],
+    "dimensions_m": [
+      4.351581508515816,
+      3.5,
+      4.300486618004866
+    ],
+    "vertex_checks": [
+      {
+        "triangles": 2540,
+        "degenerate_triangles": 0,
+        "uv_bounds": [
+          [
+            0.0009500891319476068,
+            0.0008823871612548828
+          ],
+          [
+            0.996117353439331,
+            0.9991069436073303
+          ]
+        ]
+      }
+    ],
+    "notes": "Real scene vertices and indices decoded; finite positions/UVs; retained embedded 1024px base colour. Uniform root transform; raw file preserved."
+  },
+  "raw_model_file": "assets/models/house-coral/house-coral-repaired-source.glb",
+  "generation_raw_model_file": "assets/models/house-coral/tripo-out/house-coral-convert-76e46352/model.glb",
+  "geometry_repair": {
+    "asset": "house-coral",
+    "description": "Added two thin continuous closed roof underlays behind existing healthy tile and ridge joins. Original tile/body geometry and original embedded paint atlas retained unchanged.",
+    "source": "assets/models/house-coral/tripo-out/house-coral-convert-76e46352/model.glb",
+    "source_sha256": "095eee60439fc11c1c43b0d201c017830b556b0260902468301b89e8c96be895",
+    "repaired_source": "assets/models/house-coral/house-coral-repaired-source.glb",
+    "repaired_source_sha256": "05c0900492054bd5694a65eddd4e6fc6b0cb2b3ef6adc0d471b2710de82db44c",
+    "details": {
+      "added_triangles": 24,
+      "raw_ridge_y": 0.38,
+      "raw_eave_y": 0.045,
+      "raw_x_bounds": [
+        -0.465,
+        0.465
+      ],
+      "raw_z_bounds": [
+        -0.47,
+        0.47
+      ],
+      "raw_thickness": 0.012,
+      "source_paint_uv_patch": [
+        [
+          0.849609375,
+          0.4013671875
+        ],
+        [
+          0.857421875,
+          0.4013671875
+        ],
+        [
+          0.853515625,
+          0.4091796875
+        ]
+      ],
+      "large_teal_light_patch": "Existing baked albedo on intact tile, confirmed by unlit and wireframe overhead review; preserved."
+    },
+    "material_policy": "Original embedded base-colour and material retained; no PBR maps, no retexture."
+  }
+}

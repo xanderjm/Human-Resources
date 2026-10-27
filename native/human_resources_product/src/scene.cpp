@@ -1,6 +1,8 @@
 #include <human_resources/product/presentation.h>
 #include <human_resources/product/scene_effects.h>
 #include <human_resources/product/gear_presentation.h>
+#include <human_resources/product/ship_appearance.h>
+#include "ship_assembly.h"
 #include <human_resources/product/combat_feedback.h>
 #include "infantry_equipment.generated.h"
 #include "vehicle_assembly.h"
@@ -174,9 +176,12 @@ void beats(StyleFrame& frame, const SceneEffects* effects, float distance, Vec3 
 std::vector<std::string_view> content_ids() {
   const auto scenery = presentation::scenery_materials();
   std::vector<std::string_view> ids(scenery.begin(), scenery.end());
-  for (auto id : {"ufo-modular", "ufo-antenna", "ufo-beam", "ufo-laser", "ufo-shield", "ufo-rim-lens", "shield-shell", "cow", "sheep", "pig", "farmer-body", "straw-hat", "resident-body", "nightcap", "infantry-rifleman-body", "infantry-shotgunner-body", "infantry-rocketeer-body", "weapon-carbine", "weapon-shotgun", "weapon-rocket-launcher", "jeep-chassis", "jeep-wheel", "jeep-minigun-head", "jeep-minigun-fixed-post", "jeep-minigun-yaw-cap", "tank-hull", "tank-turret", "missile", "beam", "plane", "ui-atlas"})
+  for (auto id : {"ufo-modular", "ufo-antenna", "ufo-beam", "ufo-laser", "ufo-rim-lens", "shield-shell", "cow", "sheep", "pig", "farmer-body", "straw-hat", "resident-body", "nightcap", "infantry-rifleman-body", "infantry-shotgunner-body", "infantry-rocketeer-body", "weapon-carbine", "weapon-shotgun", "weapon-rocket-launcher", "jeep-chassis", "jeep-wheel", "jeep-minigun-head", "jeep-minigun-fixed-post", "jeep-minigun-yaw-cap", "tank-hull", "tank-turret", "missile", "beam", "plane", "ui-atlas"})
     if (std::find(ids.begin(), ids.end(), id) == ids.end())
       ids.push_back(id);
+  ids.push_back("ui-components");
+  const auto components=ship_component_ids();
+  ids.insert(ids.end(),components.begin(),components.end());
   return ids;
 }
 presentation::StyleFrame scene(const gameplay::Snapshot& run, float aspect, bool reduced_motion, bool attract, SceneEffects* effects, presentation::SceneryTheme theme) {
@@ -197,8 +202,9 @@ presentation::StyleFrame scene(const gameplay::Snapshot& run, const GameplayFram
       prop.rotation.z = windmill_phase;
   const auto scenery_count = frame.instances.size();
   frame.show_overlay = false;
+  const auto appearance = ship_appearance(run);
   frame.ring_angle = reduced_motion ? 0 : effects && !attract ? effects->rotor_angle()
-                                                              : t * 1.8F;
+                                                              : t * appearance.rotor_speed;
   const auto damage = effects && !attract ? effects->damage_feedback() : DamageFeedback{};
   const float hit = damage.age >= 0 && damage.age < .24F ? 1 - damage.age / .24F : 0;
   frame.damage_flash = reduced_motion ? 0 : (damage.hull ? 1.F : -1.F) * hit * hit;
@@ -208,7 +214,7 @@ presentation::StyleFrame scene(const gameplay::Snapshot& run, const GameplayFram
   frame.camera = framing.camera;
   frame.world_destination = framing.destination;
   const float threat_unit = framing.logical_pixel;
-  const auto velocity = effects && !attract ? effects->flight_velocity() : run.velocity;
+  const auto velocity = effects && !attract ? effects->flight_velocity() : gameplay::Vec2{run.velocity.x, run.velocity.z - run.forward_speed};
   const float response = effects && !attract ? effects->capture_response() : 0;
   const auto dash = effects && !attract ? effects->dash_response() : gameplay::Vec2{};
   const Vec3 ship{attract ? 0.F : run.player.x,
@@ -217,11 +223,11 @@ presentation::StyleFrame scene(const gameplay::Snapshot& run, const GameplayFram
   const float bank = reduced_motion ? 0 : std::clamp(-velocity.x * .035F - dash.x * .15F + .12F * recoil, -.38F, .38F);
   const float pitch = reduced_motion ? 0 : std::clamp(-velocity.z * .022F - dash.z * .13F + .07F * recoil, -.26F, .26F);
   const float ship_scale = (attract ? 1.7F : 1.12F) / .75F;
-  add(frame, "ufo-modular", ship, {ship_scale, ship_scale, ship_scale}, {pitch, 0, bank});
-  frame.instances.back().polished_hull = true;
-  frame.instances.back().damage_reactive = true;
   const ShipPose ship_pose{ship, ship_scale, bank, pitch};
-  append_ship_gear(frame, run, ship_pose, reduced_motion);
+  const auto ship_rig=detail::ship_assembly(run,ship_pose,reduced_motion,frame.ring_angle,effects?effects->repair_response():0);
+  frame.instances.insert(frame.instances.end(),ship_rig.instances().begin(),ship_rig.instances().end());
+  for (auto& part : frame.instances)
+    if (part.damage_reactive) part.hit_flash = impact_flash(std::abs(frame.damage_flash));
   const Vec3 intake = ship_socket(ship_pose, {0, .04F, 0});
   if (run.invulnerability_seconds > 0)
     add(frame, "ring", {ship.x, .06F, ship.z}, {1.6F, 1, 1.6F}, {}, {.5F, .95F, 1, .7F}, true);
@@ -233,19 +239,23 @@ presentation::StyleFrame scene(const gameplay::Snapshot& run, const GameplayFram
   for (std::size_t actor_index = 0; actor_index < run.entities.size() + completed.size(); ++actor_index) {
     const bool finishing = actor_index >= run.entities.size();
     const auto& e = finishing ? completed[actor_index - run.entities.size()] : run.entities[actor_index];
+    Vec3 actor_intake=effects&&!attract?ship_rig.intakes[effects->capture_port(e.id)%ship_rig.intake_count]:intake;
+    for(std::size_t index=0;index<run.beams.size();++index)
+      if((!effects||attract)&&run.beams[index].target_id==e.id)
+        actor_intake=ship_rig.intakes[index%ship_rig.intake_count];
     auto p = point(e.position);
     if (std::abs(p.z) > 32)
       continue;
     const float progress = std::clamp(e.kind <= gameplay::EntityKind::soldier ? (effects && !attract ? effects->capture_progress(e) : SceneEffects::capture_lift_progress(e.capture_progress)) : e.capture_progress, 0.F, 1.F);
     const float lift = smooth(.08F, 1.F, progress);
     const bool organic = e.kind <= gameplay::EntityKind::soldier;
-    // Keep the first lift readable, then sweep into the real fixed-hull intake.
+    // Keep the first lift readable, then sweep into the real fixed-hull actor_intake.
     // Authored lift/struggle clips and head attachments remain on the same root.
     const float travel = smooth(.16F, 1.F, progress);
     float size = 1 - .98F * smooth(.60F, 1.F, progress);
     if (organic && !reduced_motion)
       size *= 1 + .055F * std::sin(std::min(1.F, progress / .3F) * std::numbers::pi_v<float>);
-    p = lerp(p, intake, travel);
+    p = lerp(p, actor_intake, travel);
     p.y += .28F * std::sin(progress * std::numbers::pi_v<float>);
     if (!reduced_motion) {
       const float sway = std::sin(progress * std::numbers::pi_v<float>) * .16F;
@@ -263,7 +273,7 @@ presentation::StyleFrame scene(const gameplay::Snapshot& run, const GameplayFram
         yaw + (reduced_motion || !organic ? 0 : lift * .65F),
         reduced_motion ? 0 : std::sin(t * 6 + static_cast<float>(e.id)) * lift * (organic ? .44F : .16F)};
     if (finishing) {
-      p = intake;
+      p = actor_intake;
       size = .02F;
     }
     if (effects && !attract) {
@@ -277,8 +287,8 @@ presentation::StyleFrame scene(const gameplay::Snapshot& run, const GameplayFram
     }
     if (finishing) {
       const Vec3 specimen{p.x, p.y + size * .3F, p.z};
-      cone(frame, specimen, intake, size * .6F, .12F);
-      capture_guides(frame, specimen, intake, size * .6F, t, reduced_motion, threat_unit);
+      cone(frame, specimen, actor_intake, size * .6F, .12F);
+      capture_guides(frame, specimen, actor_intake, size * .6F, t, reduced_motion, threat_unit);
     }
     const auto body_index = frame.instances.size();
     if (e.kind == gameplay::EntityKind::cow || e.kind == gameplay::EntityKind::sheep || e.kind == gameplay::EntityKind::pig) {
@@ -322,11 +332,7 @@ presentation::StyleFrame scene(const gameplay::Snapshot& run, const GameplayFram
       const float hit_strength = enemy_hit_strength(run, e.id, reduced_motion);
       for (std::size_t i = body_index; i < frame.instances.size(); ++i)
         if (!frame.instances[i].effect) {
-          // Brief warm enamel/cloth response, local to the actor actually hit.
-          // No displacement: source muzzles and physical rays stay coherent.
-          frame.instances[i].tint[0] *= 1 + .8F * hit_strength;
-          frame.instances[i].tint[1] *= 1 + .45F * hit_strength;
-          frame.instances[i].tint[2] *= 1 + .12F * hit_strength;
+          frame.instances[i].hit_flash = impact_flash(hit_strength);
         }
     }
     if (organic) {
@@ -337,9 +343,15 @@ presentation::StyleFrame scene(const gameplay::Snapshot& run, const GameplayFram
       body.animation.capture_progress = progress;
       body.animation.fleeing = e.kind < gameplay::EntityKind::soldier && !finishing && progress == 0 && speed > .04F;
       if (gear) {
+        // Gameplay velocity is local to the scrolling combat arena. Feet use
+        // actual ground travel, including keeping pace while holding station.
+        const gameplay::Vec2 ground{e.velocity.x, e.velocity.z + (e.disabled_seconds > 0 ? 0.F : run.forward_speed)};
+        if (progress == 0) body.animation.speed = std::hypot(ground.x, ground.z);
         body.animation.preparing = e.preparing;
         body.animation.aim_pose_seconds = e.aim_pose_seconds;
         body.animation.body_heading = e.body_heading;
+        body.animation.backward = e.body_heading &&
+            ground.x * std::sin(*e.body_heading) - ground.z * std::cos(*e.body_heading) < -.04F;
         const auto aim = point(e.warning_aim, 2.5F);
         const float dx = aim.x - p.x, dz = aim.z - p.z;
         body.animation.aim_target = {std::cos(yaw)*dx-std::sin(yaw)*dz, aim.y-p.y, std::sin(yaw)*dx+std::cos(yaw)*dz};
@@ -389,12 +401,15 @@ presentation::StyleFrame scene(const gameplay::Snapshot& run, const GameplayFram
   // carry each pull. Stacked cones must not wash out targets under the hull.
   const float cone_budget = 1.F / std::max(1.F, static_cast<float>(run.beams.size()));
   float intake_progress = 0;
-  for (const auto& beam : run.beams) {
+  for (std::size_t index=0;index<run.beams.size();++index) {
+    const auto& beam=run.beams[index];
+    const unsigned port=effects&&!attract?effects->capture_port(beam.target_id):static_cast<unsigned>(index);
+    const auto beam_intake=ship_rig.intakes[port%ship_rig.intake_count];
     const auto target = point(beam.target, .025F);
     intake_progress = std::max(intake_progress, beam.progress);
     const bool overdrive = run.harvest_overdrive_seconds > 0;
-    cone(frame, target, intake, beam.vehicle ? 1.15F : .72F, ((overdrive ? .19F : .12F) + .07F * beam.progress) * cone_budget);
-    capture_guides(frame, target, intake, beam.vehicle ? 1.15F : .72F, t * (overdrive ? 1.7F : 1.F), reduced_motion, threat_unit);
+    cone(frame, target, beam_intake, beam.vehicle ? 1.15F : .72F, ((overdrive ? .19F : .12F) + .07F * beam.progress) * cone_budget);
+    capture_guides(frame, target, beam_intake, beam.vehicle ? 1.15F : .72F, t * (overdrive ? 1.7F : 1.F), reduced_motion, threat_unit);
     const bool sweep = !beam.vehicle && !overdrive && beam.sweep_fraction > 0;
     const bool qualified = sweep && beam.sweep_fraction >= 1;
     add(frame, "ring", target, {.85F, 1, .85F}, {},

@@ -2,6 +2,7 @@
 #include <human_resources/renderer/style_renderer.h>
 
 #include "shadow_influence.h"
+#include <human_resources/presentation/rotor_geometry.h>
 #include "style_animation.h"
 #include "style_resources.h"
 #include "style_surfaces.h"
@@ -20,13 +21,13 @@ constexpr Uint32 shadow_size = 2048;
 constexpr std::size_t batch_capacity = 64;
 struct alignas(16) InstanceUniforms final {
   presentation::Matrix model;
-  std::array<float, 4> tint, params, texture_style;
+  std::array<float, 4> tint, params, texture_style, hit_flash, rotor_style;
 };
 struct alignas(16) SceneUniforms final {
   presentation::Matrix camera, light;
   std::array<float, 4> animation;
 };
-static_assert(sizeof(InstanceUniforms) == 112);
+static_assert(sizeof(InstanceUniforms) == 144);
 static_assert(sizeof(SceneUniforms) == 144);
 static_assert(sizeof(InstanceUniforms) * batch_capacity < 16384);
 SDL_GPUTexture* texture(SDL_GPUDevice* device, SDL_GPUTextureFormat format, SDL_GPUTextureUsageFlags usage,
@@ -225,8 +226,11 @@ struct StyleRenderer::State final {
     // Full target viewport: normalized layout and input keep the same physical
     // screen bounds, independent of the world's small rounding/letterbox bars.
     SDL_BindGPUGraphicsPipeline(pass, ui_pipeline);
-    const SDL_GPUTextureSamplerBinding binding{meshes.find("ui-atlas")->second.texture, sampler};
-    SDL_BindGPUFragmentSamplers(pass, 0, &binding, 1);
+    auto* legacy = meshes.find("ui-atlas")->second.texture;
+    const auto enamel = meshes.find("ui-components");
+    const std::array<SDL_GPUTextureSamplerBinding, 2> bindings{{
+        {legacy, sampler}, {enamel == meshes.end() ? legacy : enamel->second.texture, sampler}}};
+    SDL_BindGPUFragmentSamplers(pass, 0, bindings.data(), static_cast<Uint32>(bindings.size()));
     std::array<presentation::ScreenQuad, 128> batch{};
     for (std::size_t offset = 0; offset < quads.size(); offset += batch.size()) {
       const auto count = std::min(batch.size(), quads.size() - offset);
@@ -242,6 +246,7 @@ struct StyleRenderer::State final {
     const StyleMesh* mesh;
     InstanceUniforms uniforms;
     bool visible, caster;
+    presentation::Vec3 minimum, maximum;
   };
   std::vector<Prepared> prepared;
   std::vector<const Prepared*> selection;
@@ -275,9 +280,11 @@ struct StyleRenderer::State final {
         }
       }
       const auto clip = presentation::multiply(frame.camera, model);
-      const bool visible = presentation::bounds_visible(clip, mesh->minimum, mesh->maximum);
+      auto minimum = mesh->minimum, maximum = mesh->maximum;
+      presentation::expand_rotor_bounds(minimum, maximum, i.rotor_style[0]);
+      const bool visible = presentation::bounds_visible(clip, minimum, maximum);
       // Retain offscreen occluders near the view: their shadows can enter it.
-      const bool caster = i.casts_shadow && !i.effect && presentation::bounds_visible(clip, mesh->minimum, mesh->maximum, 1.6F);
+      const bool caster = i.casts_shadow && !i.effect && presentation::bounds_visible(clip, minimum, maximum, 1.6F);
       stats.visible_instances += visible ? 1U : 0U;
       stats.culled_instances += visible ? 0U : 1U;
       stats.shadow_instances += caster ? 1U : 0U;
@@ -286,18 +293,18 @@ struct StyleRenderer::State final {
                                                         i.shield_rim ? 2.F : i.effect ? 1.F
                                                                                       : 0.F,
                                                         i.texture_repeat, i.texture_repeat * i.scale.z / i.scale.x},
-                                        {mesh->average[0], mesh->average[1], mesh->average[2], i.texture_detail}},
-          visible, caster});
+                                        {mesh->average[0], mesh->average[1], mesh->average[2], i.texture_detail}, i.hit_flash, i.rotor_style},
+          visible, caster, minimum, maximum});
     }
     double receiver_floor = std::numeric_limits<double>::infinity();
     for (const auto& p : prepared)
-      receiver_floor = std::min(receiver_floor, shadow_detail::receiver_floor(p.uniforms.model, p.mesh->minimum, p.mesh->maximum));
+      receiver_floor = std::min(receiver_floor, shadow_detail::receiver_floor(p.uniforms.model, p.minimum, p.maximum));
     for (const auto& surface : frame.surfaces)
       for (const auto& vertex : surface.vertices)
         receiver_floor = std::min(receiver_floor, static_cast<double>(vertex.position.y));
     const shadow_detail::Influence influence(frame.camera, frame.light, receiver_floor, shadow_size);
     for (auto& p : prepared)
-      if (p.caster && !p.visible && influence.rejects(p.uniforms.model, p.mesh->minimum, p.mesh->maximum)) {
+      if (p.caster && !p.visible && influence.rejects(p.uniforms.model, p.minimum, p.maximum)) {
         p.caster = false;
         --stats.shadow_instances;
       }
@@ -479,6 +486,9 @@ bool StyleRenderer::render(const presentation::StyleFrame& frame, SDL_IOStream* 
   }
   if (!frame.screen_quads.empty() && (!s.meshes.contains("ui-atlas") || frame.screen_quads.size() > 8192))
     return SDL_SetError("Missing UI atlas or UI quad budget exceeded");
+  for (const auto& quad : frame.screen_quads)
+    if (quad.presentation[0] != 0 && (quad.presentation[0] != 1 || !s.meshes.contains("ui-components")))
+      return SDL_SetError("Missing enamel UI atlas or unsupported UI texture page");
   for (const auto& instance : frame.instances)
     if (!s.meshes.contains(instance.mesh)) {
       SDL_SetError("Unprepared scene model: %s", std::string(instance.mesh).c_str());
@@ -545,7 +555,7 @@ bool StyleRenderer::render(const presentation::StyleFrame& frame, SDL_IOStream* 
   std::array<InstanceUniforms, batch_capacity> surface_batch{};
   for (const auto& range : s.surface_stream.ranges) {
     const auto& mesh = s.meshes.find(range.material)->second;
-    surface_batch[0] = {presentation::model_matrix({}), range.tint, {0, 0, 1, 1}, {mesh.average[0], mesh.average[1], mesh.average[2], range.detail}};
+    surface_batch[0] = {presentation::model_matrix({}), range.tint, {0, 0, 1, 1}, {mesh.average[0], mesh.average[1], mesh.average[2], range.detail}, {}, {0, 1, 1, 1}};
     SDL_PushGPUVertexUniformData(command, 1, surface_batch.data(), sizeof(surface_batch));
     const SDL_GPUBufferBinding binding{s.surface_stream.buffer, 0};
     SDL_BindGPUVertexBuffers(pass, 0, &binding, 1);

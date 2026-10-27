@@ -1,0 +1,140 @@
+{
+  "triangles": 897,
+  "vertices": 5875,
+  "mesh_primitives": 1,
+  "uv_present": true,
+  "textures": [
+    {
+      "size": [
+        1024,
+        1024
+      ],
+      "mode": "RGB"
+    }
+  ],
+  "raw_accessor_bounds": [
+    {
+      "min": [
+        -0.4755859375,
+        -0.3818359375,
+        -0.4990234375
+      ],
+      "max": [
+        0.4755859375,
+        0.4300000071525574,
+        0.4990234375
+      ]
+    }
+  ],
+  "extensions": [],
+  "bytes": 669776,
+  "asset": "barn",
+  "model_file": "assets/models/barn/barn.glb",
+  "requested_face_limit": 2800,
+  "source_task_id": "3dcbbb31-5d17-44e8-8e2f-cbfe380a9d15",
+  "convert_task_id": "ca86e56c-c080-408d-957f-d0eb0e756dc3",
+  "credits_consumed": 60,
+  "preview": null,
+  "triangle_budget_review": {
+    "requested_target": 2800,
+    "actual_triangles": 897,
+    "target_met": true,
+    "category_ceiling": 3000,
+    "status": "passed"
+  },
+  "structural_review": {
+    "status": "passed",
+    "notes": "Triangle mode, valid GLB length, UVs and embedded 1024px base colour checked. Requested targets are approximate; actual triangle count and target deviations are reported separately, within the user-specified 3000-prop / 8000-character ceilings. Scale, pivot, topology and visual quality require separate review."
+  },
+  "visual_review": {
+    "status": "accepted",
+    "reviewer": "seamless_materials agent",
+    "reviewed_at": "2026-10-24T22:24:23.964299+00:00",
+    "model_sha256": "b9058735713f9706a7d4b009df7e6fb8da53b62865b330dc26bf782cd5a74d37",
+    "notes": "Rejected collapsed generated roof after backing-only attempt still left broken overhead silhouette. Preserved cream walls, dark flush front door and footprint; rebuilt only roof-zone triangles as regular six-column, three-row terracotta relief tiles on both pitches, closed underlay and ridge caps. Final actual GLB checked three-quarter, front, rear and top: no white/interior roof holes, intact closed rear wall, +Z door facade, Y3.5m grounded uniform import. Original painted material/1024 albedo retained without new maps. Authored roof is more regular and flatter-faced than original concept tiles; native rendering/device performance not qualified."
+  },
+  "import_review": {
+    "status": "passed",
+    "units": "metres",
+    "up": "+Y",
+    "forward": "+Z",
+    "yaw_degrees": -90.0,
+    "pivot": "ground-centre",
+    "double_sided": false,
+    "uniform_scale": 4.311215859625309,
+    "bounds_m": [
+      [
+        -2.1513977580747397,
+        0.0,
+        -2.050353636364771
+      ],
+      [
+        2.1513977580747397,
+        3.5,
+        2.050353636364771
+      ]
+    ],
+    "dimensions_m": [
+      4.302795516149479,
+      3.5,
+      4.100707272729542
+    ],
+    "vertex_checks": [
+      {
+        "triangles": 897,
+        "degenerate_triangles": 0,
+        "uv_bounds": [
+          [
+            0.0009292110335081816,
+            0.0009126663208007812
+          ],
+          [
+            0.9975358247756958,
+            0.9990511536598206
+          ]
+        ]
+      }
+    ],
+    "notes": "Real scene vertices and indices decoded; finite positions/UVs; retained embedded 1024px base colour. Uniform root transform; raw file preserved."
+  },
+  "generation_raw_model_file": "assets/models/barn/tripo-out/barn-convert-2-ca86e56c/model.glb",
+  "raw_model_file": "assets/models/barn/barn-repaired-source.glb",
+  "geometry_repair": {
+    "asset": "barn",
+    "description": "Removed only the failed roof-zone triangles and rebuilt a regular relief tile roof over two closed pitched backing slabs; original cream walls, door and footprint preserved. Reused existing terracotta paint atlas; one material primitive.",
+    "source": "assets/models/barn/tripo-out/barn-convert-2-ca86e56c/model.glb",
+    "source_sha256": "3a96a193ad031170ff645190a362ac6c62c92bd8d3a1390fdc32f407160e8148",
+    "repaired_source": "assets/models/barn/barn-repaired-source.glb",
+    "repaired_source_sha256": "7ea8725a3d8211192fc8c1ff151621ed9f49ef9f420be73004bad62257e28c19",
+    "details": {
+      "removed_damaged_roof_triangles": 2302,
+      "added_triangles": 528,
+      "raw_ridge_yz": [
+        0.371,
+        -0.028
+      ],
+      "raw_eave_y": 0.007,
+      "raw_half_width_x": 0.465,
+      "raw_eave_z": [
+        -0.485,
+        0.485
+      ],
+      "raw_backing_thickness": 0.018,
+      "existing_terracotta_uv_patch": [
+        [
+          0.703125,
+          0.0771484375
+        ],
+        [
+          0.72265625,
+          0.0771484375
+        ],
+        [
+          0.712890625,
+          0.0966796875
+        ]
+      ]
+    },
+    "material_policy": "Original embedded base-colour and material retained; no PBR maps, no retexture."
+  }
+}

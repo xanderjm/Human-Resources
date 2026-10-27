@@ -1,0 +1,102 @@
+{
+  "triangles": 2672,
+  "vertices": 2076,
+  "mesh_primitives": 1,
+  "uv_present": true,
+  "textures": [
+    {
+      "size": [
+        1024,
+        1024
+      ],
+      "mode": "RGB"
+    }
+  ],
+  "raw_accessor_bounds": [
+    {
+      "min": [
+        -0.4541015625,
+        -0.4208984375,
+        -0.4990234375
+      ],
+      "max": [
+        0.4541015625,
+        0.4208984375,
+        0.4990234375
+      ]
+    }
+  ],
+  "extensions": [],
+  "bytes": 229192,
+  "asset": "cliff-module-a",
+  "model_file": "assets/models/cliff-module-a/cliff-module-a.glb",
+  "requested_face_limit": 2800,
+  "source_task_id": "80f1fc6f-93bd-4e33-bb35-ce79b5570f74",
+  "convert_task_id": "2208a5ab-5683-4679-972e-1118086d9828",
+  "credits_consumed": 60,
+  "preview": null,
+  "triangle_budget_review": {
+    "requested_target": 2800,
+    "actual_triangles": 2672,
+    "target_met": true,
+    "category_ceiling": 3000,
+    "status": "passed"
+  },
+  "structural_review": {
+    "status": "passed",
+    "notes": "Triangle mode, valid GLB length, UVs and embedded 1024px base colour checked. Requested targets are approximate; actual triangle count and target deviations are reported separately, within the user-specified 3000-prop / 8000-character ceilings. Scale, pivot, topology and visual quality require separate review."
+  },
+  "visual_review": {
+    "status": "accepted",
+    "notes": "One connected tall stepped sandstone/mauve mass, clean back and no loose debris. Uniform scale preserves silhouette; actual bounds stored for edge placement.",
+    "views": [
+      "three-quarter",
+      "opposite"
+    ]
+  },
+  "import_review": {
+    "status": "passed",
+    "units": "metres",
+    "up": "+Y",
+    "forward": "+Z",
+    "yaw_degrees": 90.0,
+    "pivot": "ground-centre",
+    "double_sided": false,
+    "uniform_scale": 3.506849315068493,
+    "bounds_m": [
+      [
+        -1.7499999999999998,
+        0.0,
+        -1.5924657534246573
+      ],
+      [
+        1.7499999999999998,
+        2.952054794520548,
+        1.5924657534246573
+      ]
+    ],
+    "dimensions_m": [
+      3.4999999999999996,
+      2.952054794520548,
+      3.1849315068493147
+    ],
+    "vertex_checks": [
+      {
+        "triangles": 2672,
+        "degenerate_triangles": 0,
+        "uv_bounds": [
+          [
+            0.0,
+            0.0
+          ],
+          [
+            1.0,
+            1.0
+          ]
+        ]
+      }
+    ],
+    "notes": "Real scene vertices and indices decoded; finite positions/UVs; retained embedded 1024px base colour. Uniform root transform; raw file preserved."
+  },
+  "raw_model_file": "assets/models/cliff-module-a/tripo-out/cliff-module-a-convert-2208a5ab/model.glb"
+}

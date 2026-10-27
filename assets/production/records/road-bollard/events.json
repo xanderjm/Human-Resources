@@ -1,0 +1,39 @@
+[
+  {
+    "task_id": "b362a8fd-8a62-4dbe-b30a-d24ffd361f03",
+    "type": "convert_model",
+    "status": "success",
+    "credits_consumed": 60,
+    "output_dir": "/Users/coral/Documents/App Development/Human Resources/assets/models/road-bollard/tripo-out/road-bollard-convert-b362a8fd",
+    "files": [
+      "model.glb"
+    ],
+    "model_file": "/Users/coral/Documents/App Development/Human Resources/assets/models/road-bollard/tripo-out/road-bollard-convert-b362a8fd/model.glb",
+    "chain": [
+      {
+        "task_id": "b362a8fd-8a62-4dbe-b30a-d24ffd361f03",
+        "type": "convert_model",
+        "status": "success",
+        "credits_consumed": 10,
+        "output_dir": "/Users/coral/Documents/App Development/Human Resources/assets/models/road-bollard/tripo-out/road-bollard-convert-b362a8fd",
+        "files": [
+          "model.glb"
+        ],
+        "model_file": "/Users/coral/Documents/App Development/Human Resources/assets/models/road-bollard/tripo-out/road-bollard-convert-b362a8fd/model.glb"
+      }
+    ],
+    "source_task_id": "39e7879e-a941-4301-b6f6-fb1068334372",
+    "credits_breakdown": [
+      {
+        "task_id": "39e7879e-a941-4301-b6f6-fb1068334372",
+        "type": "image_to_model",
+        "credits_consumed": 50
+      },
+      {
+        "task_id": "b362a8fd-8a62-4dbe-b30a-d24ffd361f03",
+        "type": "convert_model",
+        "credits_consumed": 10
+      }
+    ]
+  }
+]

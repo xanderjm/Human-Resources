@@ -1,0 +1,54 @@
+{
+  "purpose": "Review copies of the canonical corrected seamless exports. The native development preview consumes assets/textures directly. No mirroring, cropping or recolouring.",
+  "tiles": [
+    {
+      "id": "grass",
+      "canonical_file": "assets/textures/texture-grass/texture-grass.png",
+      "sha256": "f655840380659629bf5fc05fb916a7a92d39114e82af4df1cd13430691b24762",
+      "audit": "assets/production/records/texture-grass/texture-audit.json",
+      "status": "seamless-authoring-reviewed"
+    },
+    {
+      "id": "dirt",
+      "canonical_file": "assets/textures/texture-dirt/texture-dirt.png",
+      "sha256": "b7d96159204c321796ecbf9b78e43c8f78b4da36e89dacddc4c8530631452e64",
+      "audit": "assets/production/records/texture-dirt/texture-audit.json",
+      "status": "seamless-authoring-reviewed"
+    },
+    {
+      "id": "soil",
+      "canonical_file": "assets/textures/texture-soil/texture-soil.png",
+      "sha256": "97af5f3af2a86b2de4374c417ee29ff0c048375da148e637963ba6d975fe31a4",
+      "audit": "assets/production/records/texture-soil/texture-audit.json",
+      "status": "seamless-authoring-reviewed"
+    },
+    {
+      "id": "asphalt",
+      "canonical_file": "assets/textures/texture-asphalt/texture-asphalt.png",
+      "sha256": "1b1821bf91bdddb363680813ca37feac7d5c0a2dfe7fc8bd955e819b7d443017",
+      "audit": "assets/production/records/texture-asphalt/texture-audit.json",
+      "status": "seamless-authoring-reviewed"
+    },
+    {
+      "id": "pavement",
+      "canonical_file": "assets/textures/texture-pavement/texture-pavement.png",
+      "sha256": "a9ab7ae7d93dc1ad324893ac7be643beed9988986b53999773ea1bd000f00131",
+      "audit": "assets/production/records/texture-pavement/texture-audit.json",
+      "status": "seamless-authoring-reviewed"
+    },
+    {
+      "id": "sand",
+      "canonical_file": "assets/textures/texture-sand/texture-sand.png",
+      "sha256": "3ad9f7030d4188e8aaa5004108d2847babb464ccbf768bd805bb84512a88c327",
+      "audit": "assets/production/records/texture-sand/texture-audit.json",
+      "status": "seamless-authoring-reviewed"
+    },
+    {
+      "id": "wood",
+      "canonical_file": "assets/textures/texture-wood/texture-wood.png",
+      "sha256": "eda1074005f39ad2f739b6b457e43bb3a344a57b827bdaec47579094fec10eae",
+      "audit": "assets/production/records/texture-wood/texture-audit.json",
+      "status": "seamless-authoring-reviewed"
+    }
+  ]
+}

@@ -20,6 +20,8 @@ struct InstanceData {
   float4 tint;
   float4 params;
   float4 texture_style;
+  float4 hit_flash; // Shared native instance stride; authored preview has no hit events.
+  float4 rotor_style;
 };
 cbuffer Scene : register(b0, space1) {
   row_major float4x4 camera;
@@ -42,6 +44,15 @@ Output vertex_main(Input i, uint instance_id : SV_InstanceID) {
   float3 p=i.position;
   float3 n=i.normal;
   if(i.flags.y>0.5) {
+    float radius=max(length(p.xz),.00001);
+    float growth=clamp(data.rotor_style.x,0,.6);
+    float expanded=radius+max(0,radius-.604)*growth;
+    float2 radial=p.xz/radius;
+    // Inverse transpose of the radial map; preserve the authored bore.
+    float radial_normal=dot(n.xz,radial);
+    n.xz=(n.xz-radial*radial_normal)*(radius/expanded)
+        +radial*radial_normal/(radius>.604?1+growth:1);
+    p.xz*=expanded/radius;
     p.y-=0.35;
     float c=cos(animation.x),s=sin(animation.x);
     p=float3(c*p.x+s*p.z,p.y,-s*p.x+c*p.z);
@@ -51,9 +62,16 @@ Output vertex_main(Input i, uint instance_id : SV_InstanceID) {
   float4 world=mul(data.model,float4(p,1));
   Output o;
   o.position=mul(camera,world);
-  o.normal=normalize(mul((float3x3)data.model,n));
+  // Nonuniform canopy, nozzle and housing scales require inverse-transpose
+  // normals. Cofactor rows avoid a runtime inverse and retain mirrored models.
+  float3 row0=data.model[0].xyz,row1=data.model[1].xyz,row2=data.model[2].xyz;
+  float3 c0=cross(row1,row2),c1=cross(row2,row0),c2=cross(row0,row1);
+  float orientation=dot(row0,c0)<0?-1:1;
+  o.normal=normalize(float3(dot(c0,n),dot(c1,n),dot(c2,n))*orientation);
   o.uv=i.uv*data.params.zw;
   o.color=i.color*data.tint;
+  if(i.flags.y>.5 && i.flags.x<.5)
+    o.color.rgb*=data.rotor_style.yzw;
   // Explicit procedural effects use the same sRGB-authored palette as the UI.
   // Vertex/material factors remain linear; alpha remains coverage.
   if(data.params.y>0.5)

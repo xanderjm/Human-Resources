@@ -1,0 +1,412 @@
+{
+  "asset": "pavement-straight",
+  "model_file": "assets/models/pavement-straight/pavement-straight.glb",
+  "generator": "tools/build_measured_modules.py",
+  "orientation_variants": [
+    {
+      "yaw_degrees": 90,
+      "model_file": "assets/models/pavement-straight/pavement-straight-yaw90.glb",
+      "ports": [
+        {
+          "name": "start",
+          "centre_m": [
+            0.0,
+            0.0,
+            -0.75
+          ],
+          "outward": [
+            -1,
+            0,
+            0
+          ],
+          "edge_m": [
+            [
+              0.0,
+              0.11,
+              0.0
+            ],
+            [
+              0.0,
+              0.11,
+              -1.5
+            ]
+          ],
+          "edge_uv": [
+            [
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              -1.5
+            ]
+          ]
+        },
+        {
+          "name": "end",
+          "centre_m": [
+            16.0,
+            0.0,
+            -0.75
+          ],
+          "outward": [
+            1,
+            0,
+            0
+          ],
+          "edge_m": [
+            [
+              16.0,
+              0.11,
+              0.0
+            ],
+            [
+              16.0,
+              0.11,
+              -1.5
+            ]
+          ],
+          "edge_uv": [
+            [
+              16.0,
+              0.0
+            ],
+            [
+              16.0,
+              -1.5
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "yaw_degrees": 180,
+      "model_file": "assets/models/pavement-straight/pavement-straight-yaw180.glb",
+      "ports": [
+        {
+          "name": "start",
+          "centre_m": [
+            -0.75,
+            0.0,
+            0.0
+          ],
+          "outward": [
+            0,
+            0,
+            1
+          ],
+          "edge_m": [
+            [
+              0.0,
+              0.11,
+              0.0
+            ],
+            [
+              -1.5,
+              0.11,
+              0.0
+            ]
+          ],
+          "edge_uv": [
+            [
+              0.0,
+              0.0
+            ],
+            [
+              -1.5,
+              0.0
+            ]
+          ]
+        },
+        {
+          "name": "end",
+          "centre_m": [
+            -0.75,
+            0.0,
+            -16.0
+          ],
+          "outward": [
+            0,
+            0,
+            -1
+          ],
+          "edge_m": [
+            [
+              0.0,
+              0.11,
+              -16.0
+            ],
+            [
+              -1.5,
+              0.11,
+              -16.0
+            ]
+          ],
+          "edge_uv": [
+            [
+              0.0,
+              -16.0
+            ],
+            [
+              -1.5,
+              -16.0
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "yaw_degrees": 270,
+      "model_file": "assets/models/pavement-straight/pavement-straight-yaw270.glb",
+      "ports": [
+        {
+          "name": "start",
+          "centre_m": [
+            0.0,
+            0.0,
+            0.75
+          ],
+          "outward": [
+            1,
+            0,
+            0
+          ],
+          "edge_m": [
+            [
+              0.0,
+              0.11,
+              0.0
+            ],
+            [
+              0.0,
+              0.11,
+              1.5
+            ]
+          ],
+          "edge_uv": [
+            [
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              1.5
+            ]
+          ]
+        },
+        {
+          "name": "end",
+          "centre_m": [
+            -16.0,
+            0.0,
+            0.75
+          ],
+          "outward": [
+            -1,
+            0,
+            0
+          ],
+          "edge_m": [
+            [
+              -16.0,
+              0.11,
+              0.0
+            ],
+            [
+              -16.0,
+              0.11,
+              1.5
+            ]
+          ],
+          "edge_uv": [
+            [
+              -16.0,
+              0.0
+            ],
+            [
+              -16.0,
+              1.5
+            ]
+          ]
+        }
+      ]
+    }
+  ],
+  "texture": "assets/textures/texture-pavement/texture-pavement.png",
+  "texture_sha256": "a9ab7ae7d93dc1ad324893ac7be643beed9988986b53999773ea1bd000f00131",
+  "bounds_m": [
+    [
+      0.0,
+      0.0,
+      0.0
+    ],
+    [
+      1.5,
+      0.1599999964237213,
+      16.0
+    ]
+  ],
+  "dimensions_m": [
+    1.5,
+    0.1599999964237213,
+    16.0
+  ],
+  "ports": [
+    {
+      "name": "start",
+      "centre_m": [
+        0.75,
+        0.0,
+        0.0
+      ],
+      "outward": [
+        0,
+        0,
+        -1
+      ],
+      "edge_m": [
+        [
+          0.0,
+          0.11,
+          0.0
+        ],
+        [
+          1.5,
+          0.11,
+          0.0
+        ]
+      ],
+      "edge_uv": [
+        [
+          0.0,
+          0.0
+        ],
+        [
+          1.5,
+          0.0
+        ]
+      ]
+    },
+    {
+      "name": "end",
+      "centre_m": [
+        0.75,
+        0.0,
+        16.0
+      ],
+      "outward": [
+        0,
+        0,
+        1
+      ],
+      "edge_m": [
+        [
+          0.0,
+          0.11,
+          16.0
+        ],
+        [
+          1.5,
+          0.11,
+          16.0
+        ]
+      ],
+      "edge_uv": [
+        [
+          0.0,
+          16.0
+        ],
+        [
+          1.5,
+          16.0
+        ]
+      ]
+    }
+  ],
+  "uv_mode": "world-aligned planar top UV; integer-metre translation; select baked orientation variants",
+  "notes": [
+    "Walking slab .14m; narrow road-facing inner kerb .16m. 6mm geometric grooves at 2m slab and 1m kerb rhythms. Join ends each reserve half a groove.",
+    "Planar top UV=(localX,localZ), one1m repeat. Orientation variants bake rotations and reprojectUV so texture remains world aligned. Translate only on integer-metre grid; select baked yaw variant instead of rotating default UVs."
+  ],
+  "seam_checks": [
+    {
+      "asset": "pavement-straight",
+      "port": "start",
+      "samples": 1025,
+      "integer_grid_translation": [
+        16,
+        16
+      ],
+      "max_rgb_error": 0.0
+    },
+    {
+      "asset": "pavement-straight",
+      "port": "end",
+      "samples": 1025,
+      "integer_grid_translation": [
+        16,
+        16
+      ],
+      "max_rgb_error": 0.0
+    }
+  ],
+  "structural_review": {
+    "status": "passed"
+  },
+  "visual_review": {
+    "status": "passed_authoring_review",
+    "notes": "Reviewed isolated 3/4 render, twelve-item contact sheet, assembled tangent road/path joins, and 3x3 scrolling-ground preview. No scenery baked into references; native-device material scale review remains open."
+  },
+  "import_review": {
+    "status": "passed",
+    "units": "metres",
+    "up": "+Y",
+    "pivot": "local origin; see ports",
+    "bounds_m": [
+      [
+        0.0,
+        0.0,
+        0.0
+      ],
+      [
+        1.5,
+        0.1599999964237213,
+        16.0
+      ]
+    ],
+    "dimensions_m": [
+      1.5,
+      0.1599999964237213,
+      16.0
+    ]
+  },
+  "triangles": 300,
+  "vertices": 900,
+  "mesh_primitives": 1,
+  "uv_present": true,
+  "textures": [
+    {
+      "size": [
+        1024,
+        1024
+      ],
+      "mode": "RGB"
+    }
+  ],
+  "raw_accessor_bounds": [
+    {
+      "min": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "max": [
+        1.5,
+        0.1599999964237213,
+        16.0
+      ]
+    }
+  ],
+  "extensions": [],
+  "bytes": 1287304
+}

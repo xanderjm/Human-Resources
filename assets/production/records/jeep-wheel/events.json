@@ -1,0 +1,39 @@
+[
+  {
+    "task_id": "9d423381-e402-4121-9328-0e8f06fe6534",
+    "type": "convert_model",
+    "status": "success",
+    "credits_consumed": 60,
+    "output_dir": "/Users/coral/Documents/App Development/Human Resources/assets/models/jeep-wheel/tripo-out/jeep-wheel-convert-9d423381",
+    "files": [
+      "model.glb"
+    ],
+    "model_file": "/Users/coral/Documents/App Development/Human Resources/assets/models/jeep-wheel/tripo-out/jeep-wheel-convert-9d423381/model.glb",
+    "chain": [
+      {
+        "task_id": "9d423381-e402-4121-9328-0e8f06fe6534",
+        "type": "convert_model",
+        "status": "success",
+        "credits_consumed": 10,
+        "output_dir": "/Users/coral/Documents/App Development/Human Resources/assets/models/jeep-wheel/tripo-out/jeep-wheel-convert-9d423381",
+        "files": [
+          "model.glb"
+        ],
+        "model_file": "/Users/coral/Documents/App Development/Human Resources/assets/models/jeep-wheel/tripo-out/jeep-wheel-convert-9d423381/model.glb"
+      }
+    ],
+    "source_task_id": "49e284f7-ddcc-49d0-ad97-416ae4eabc39",
+    "credits_breakdown": [
+      {
+        "task_id": "49e284f7-ddcc-49d0-ad97-416ae4eabc39",
+        "type": "image_to_model",
+        "credits_consumed": 50
+      },
+      {
+        "task_id": "9d423381-e402-4121-9328-0e8f06fe6534",
+        "type": "convert_model",
+        "credits_consumed": 10
+      }
+    ]
+  }
+]

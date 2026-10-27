@@ -4,27 +4,30 @@ namespace human_resources::gameplay {
 using namespace detail;
 
 float Game::State::damage_multiplier() const {
-  const auto reserve = rank(Module::reserve_battery);
-  const auto idle = view.beam_capacity - std::min(view.beam_capacity, used_beam_slots());
-  const float per = reserve > 0 ? tuning::reserve_base + static_cast<float>(reserve - 1) * tuning::reserve_step : 0;
-  const float bonus = std::min(static_cast<float>(idle) * per, 2 * per);
-  return (1 + permanent(0)) * (1 + research(Research::weapon_damage) / 100 + bonus);
+  return (1 + permanent(0)) * (1 + research(Research::weapon_damage) / 100);
 }
 float Game::State::fire_multiplier() const {
-  const auto overtime = rank(Module::overtime_reactor);
-  const float per = overtime > 0 ? tuning::overtime_base + static_cast<float>(overtime - 1) * tuning::overtime_step : 0;
-  const float bonus = std::min(static_cast<float>(view.beams.size()) * per, 3 * per);
-  const float upgrades = std::min(tuning::firing_rate_maximum_base_multiplier, 1 + research(Research::fire_rate) / 100 + bonus);
+  const float upgrades = std::min(tuning::firing_rate_maximum_base_multiplier, 1 + research(Research::fire_rate) / 100);
   return upgrades * (view.harvest_overdrive_seconds > 0 ? tuning::harvest_overdrive_multiplier : 1.F);
 }
+
 void Game::State::combat(float dt) {
   laser_clock -= dt;
   drone_clock -= dt;
   pulse_clock -= dt;
-  mirrorball_clock -= dt;
   if (laser_clock <= 0) {
-    laser_fire();
-    laser_clock += 1 / (tuning::base_laser_shots_per_second * fire_multiplier());
+    if (next_laser == 0) laser_targets.fill(0);
+    laser_fire(next_laser);
+    const float rate = fire_multiplier();
+    const float interval = tuning::laser_stagger_seconds / rate;
+    if (++next_laser < view.laser_count) {
+      laser_clock += interval;
+    } else {
+      next_laser = 0;
+      laser_targets.fill(0);
+      laser_clock += 1 / (tuning::base_laser_shots_per_second * rate) -
+          static_cast<float>(view.laser_count - 1) * interval;
+    }
   }
   if (rank(Module::orbit_drones) > 0 && drone_clock <= 0) {
     drone_fire();
@@ -34,83 +37,53 @@ void Game::State::combat(float dt) {
     pulse();
     pulse_clock = tuning::pulse_cooldown_base - static_cast<float>(rank(Module::emp_ring) - 1);
   }
-  if (evolved(Evolution::mirrorball) && mirrorball_clock <= 0) {
-    mirrorball_clock = tuning::mirrorball_period;
-    std::array<Actor*, 4> targets{};
-    unsigned count = 0;
-    for (auto& target : actors) {
-      if (!target.removed && military(target.view.kind) && distance_squared(view.player, target.view.position) <= tuning::laser_range * tuning::laser_range) {
-        targets[count++] = &target;
-        if (count == targets.size()) {
-          break;
-        }
-      }
-    }
-    if (count > 0) {
-      const float damage = std::min(reflected_damage, tuning::mirrorball_damage_cap * (1 + research(Research::weapon_damage) / 100)) / static_cast<float>(count);
-      for (unsigned i = 0; i < count; ++i) {
-        hit(*targets[i], damage);
-        if (damage > 0 && view.shots.size() < 64)
-          view.shots.push_back({view.player, targets[i]->view.position, tuning::laser_flash_seconds, true, ShotKind::mirrorball});
-      }
-      if (damage > 0)
-        present(PresentationEventKind::mirrorball, view.player, 0, tuning::laser_range);
-      reflected_damage = 0;
-    }
-  }
+
 }
-void Game::State::laser_fire() {
-  std::array<std::uint32_t, 4> targeted{};
-  bool volley_announced = false;
-  for (unsigned laser = 0; laser < view.laser_count; ++laser) {
-    Actor* closest = nullptr;
-    float best = tuning::laser_range * tuning::laser_range;
-    for (auto& target : actors) {
-      if (target.removed || !military(target.view.kind) || target.lifted) {
-        continue;
-      }
-      if (std::find(targeted.begin(), targeted.end(), target.view.id) != targeted.end()) {
-        continue;
-      }
-      const float distance = distance_squared(view.player, target.view.position);
-      if (distance < best) {
-        closest = &target;
-        best = distance;
-      }
-    }
-    // Independently mounted lasers can concentrate when fewer targets exist.
-    if (!closest) {
-      for (auto& target : actors) {
-        if (!target.removed && military(target.view.kind) && !target.lifted &&
-            distance_squared(view.player, target.view.position) < best) {
-          closest = &target;
-          best = distance_squared(view.player, target.view.position);
-        }
-      }
-    }
-    if (!closest) {
+void Game::State::laser_fire(unsigned laser) {
+  Actor* closest = nullptr;
+  float best = tuning::laser_range * tuning::laser_range;
+  for (auto& target : actors) {
+    if (target.removed || !military(target.view.kind) || target.lifted) {
       continue;
     }
-    if (!volley_announced) {
-      present(PresentationEventKind::laser_volley, view.player);
-      volley_announced = true;
+    if (std::find(laser_targets.begin(), laser_targets.end(), target.view.id) != laser_targets.end()) {
+      continue;
     }
-    targeted[laser] = closest->view.id;
-    const float mount = laser == 0 ? 1 : tuning::added_laser_fraction;
-    float focus = 1;
-    if (rank(Module::laser_array) == 3) {
-      closest->focused_hits = std::min(tuning::focus_hits, closest->focused_hits + 1);
-      closest->focus_timer = tuning::focus_expiry;
-      focus += tuning::focus_bonus * closest->focused_hits / tuning::focus_hits;
+    const float distance = distance_squared(view.player, target.view.position);
+    if (distance < best) {
+      closest = &target;
+      best = distance;
     }
-    const float evolution = evolved(Evolution::office_shredder) ? 1 + tuning::evolution_laser_bonus : 1;
-    const float damage = tuning::base_laser_damage * damage_multiplier() * mount * focus * evolution;
-    if (view.shots.size() < 64) {
-      view.shots.push_back({view.player, closest->view.position, tuning::laser_flash_seconds, false, ShotKind::laser, static_cast<std::uint8_t>(laser)});
-    }
-    hit(*closest, damage);
-    secondary_hits(*closest, damage);
   }
+  // Independently mounted lasers can concentrate when fewer targets exist.
+  if (!closest) {
+    for (auto& target : actors) {
+      if (!target.removed && military(target.view.kind) && !target.lifted &&
+          distance_squared(view.player, target.view.position) < best) {
+        closest = &target;
+        best = distance_squared(view.player, target.view.position);
+      }
+    }
+  }
+  if (!closest) {
+    return;
+  }
+  present(PresentationEventKind::laser_volley, view.player);
+  laser_targets[laser] = closest->view.id;
+  const float mount = laser == 0 ? 1 : tuning::added_laser_fraction;
+  float focus = 1;
+  if (rank(Module::laser_array) == 3) {
+    closest->focused_hits = std::min(tuning::focus_hits, closest->focused_hits + 1);
+    closest->focus_timer = tuning::focus_expiry;
+    focus += tuning::focus_bonus * closest->focused_hits / tuning::focus_hits;
+  }
+  const float evolution = evolved(Evolution::office_shredder) ? 1 + tuning::evolution_laser_bonus : 1;
+  const float damage = tuning::base_laser_damage * damage_multiplier() * mount * focus * evolution;
+  if (view.shots.size() < 64) {
+    view.shots.push_back({view.player, closest->view.position, tuning::laser_flash_seconds, false, ShotKind::laser, static_cast<std::uint8_t>(laser)});
+  }
+  hit(*closest, damage);
+  secondary_hits(*closest, damage);
 }
 void Game::State::secondary_hits(Actor& primary, float damage) {
   const Vec2 ray = {primary.view.position.x - view.player.x, primary.view.position.z - view.player.z};
@@ -173,7 +146,7 @@ void Game::State::pulse() {
   present(PresentationEventKind::emp_pulse, view.player, 0, radius);
   const float damage = (tuning::pulse_damage_base + offset * tuning::pulse_damage_step) * damage_multiplier();
   for (auto& target : actors) {
-    if (!target.removed && military(target.view.kind) && distance_squared(view.player, target.view.position) <= radius * radius) {
+    if (!target.removed && !target.lifted && military(target.view.kind) && distance_squared(view.player, target.view.position) <= radius * radius) {
       hit(target, damage);
       if (evolved(Evolution::storm_drain)) {
         target.slow_timer = tuning::storm_slow_seconds;
@@ -209,17 +182,6 @@ void Game::State::projectiles(float dt) {
       present(PresentationEventKind::intercept, bullet.view.position);
       continue;
     }
-    const float chance = static_cast<float>(rank(Module::mirror_plating)) * tuning::reflect_step;
-    if (view.shield > 0 && chance > 0 && combat_unit() < chance) {
-      present(PresentationEventKind::reflect, bullet.view.position);
-      if (auto* source = actor(bullet.source)) {
-        hit(*source, bullet.view.damage);
-        if (view.shots.size() < 64)
-          view.shots.push_back({bullet.view.position, source->view.position, tuning::laser_flash_seconds, true, ShotKind::reflection});
-      }
-      reflected_damage = std::min(reflected_damage + bullet.view.damage, tuning::mirrorball_damage_cap * (1 + research(Research::weapon_damage) / 100));
-      continue;
-    }
     hurt(bullet.view.damage, DamageCause::projectile, bullet.source);
   }
 }
@@ -237,11 +199,10 @@ void Game::State::hurt(float damage, DamageCause cause, std::uint32_t source_id)
   if (hull_damage > 0) {
     present(PresentationEventKind::hull_hit, view.player, source_id, 0, cause);
     view.hull = std::max(0.0F, view.hull - hull_damage);
-    streak = 0;
   }
 }
 void Game::State::hit(Actor& enemy, float damage) {
-  if (enemy.removed || damage <= 0) {
+  if (enemy.removed || enemy.lifted || damage <= 0) {
     return;
   }
   enemy.view.hull = std::max(0.0F, enemy.view.hull - damage);

@@ -1,0 +1,27 @@
+── Plan ──────────────────────────
+input: /Users/coral/Documents/App Development/Human Resources/assets/references/road-bollard/v1.png
+model: P1-20260311 — explicit --model
+steps:
+  1. image-to-model  POST /v3/generation/image-to-model — generate a 3D model from one image
+     model="P1-20260311" face_limit=700 texture=true pbr=false texture_quality="standard" texture_alignment="original_image" export_uv=true
+  2. convert  POST /v3/models/convert — convert format / texture size / orientation
+     format="GLTF" texture_size=1024
+cost impact:
+  · non-default convert options bill as complex convert
+──────────────────────────────────
+model: P1-20260311 (explicit --model)
+task created 39e7879e-a941-4301-b6f6-fb1068334372 (@road-bollard)
+image_to_model · queued
+image_to_model · running 9% · 39e7879e
+image_to_model · running 17% · 39e7879e
+image_to_model · running 26% · 39e7879e
+image_to_model · running 40% · 39e7879e
+image_to_model · success 100% · 39e7879e
+✓ image_to_model · 39e7879e-a941-4301-b6f6-fb1068334372 · 50 credits
+! non-default convert options use the "complex convert" price tier
+task created b362a8fd-8a62-4dbe-b30a-d24ffd361f03 (@road-bollard-convert)
+convert_model · queued
+✓ convert_model · b362a8fd-8a62-4dbe-b30a-d24ffd361f03 · 10 credits
+downloading artifacts…
+✓ artifacts saved to /Users/coral/Documents/App Development/Human Resources/assets/models/road-bollard/tripo-out/road-bollard-convert-b362a8fd
+{"task_id":"b362a8fd-8a62-4dbe-b30a-d24ffd361f03","type":"convert_model","status":"success","credits_consumed":60,"output_dir":"/Users/coral/Documents/App Development/Human Resources/assets/models/road-bollard/tripo-out/road-bollard-convert-b362a8fd","files":["model.glb"],"model_file":"/Users/coral/Documents/App Development/Human Resources/assets/models/road-bollard/tripo-out/road-bollard-convert-b362a8fd/model.glb","chain":[{"task_id":"b362a8fd-8a62-4dbe-b30a-d24ffd361f03","type":"convert_model","status":"success","credits_consumed":10,"output_dir":"/Users/coral/Documents/App Development/Human Resources/assets/models/road-bollard/tripo-out/road-bollard-convert-b362a8fd","files":["model.glb"],"model_file":"/Users/coral/Documents/App Development/Human Resources/assets/models/road-bollard/tripo-out/road-bollard-convert-b362a8fd/model.glb"}],"source_task_id":"39e7879e-a941-4301-b6f6-fb1068334372","credits_breakdown":[{"task_id":"39e7879e-a941-4301-b6f6-fb1068334372","type":"image_to_model","credits_consumed":50},{"task_id":"b362a8fd-8a62-4dbe-b30a-d24ffd361f03","type":"convert_model","credits_consumed":10}]}

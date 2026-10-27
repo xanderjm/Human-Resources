@@ -1,0 +1,22 @@
+{
+  "asset": "jeep-minigun-mount",
+  "description": "Widened only the upper fork cheeks/bridge and enlarged the visual bearing bores; lowered its floor and shortened the upper neck for neutral head clearance. Base, bolts, lower column, maximum height and existing paint atlas retained.",
+  "source": "assets/models/jeep-minigun-mount/tripo-out/jeep-minigun-mount-convert-fd6b2548/model.glb",
+  "source_sha256": "9be117e0622f847847244340de62633cf23e482c1940e135755546d523111d98",
+  "repaired_source": "assets/models/jeep-minigun-mount/jeep-minigun-mount-repaired-source.glb",
+  "repaired_source_sha256": "8e58dc131fa3bd7e83ce140ce35cfe652a14f2da41a06d6cbbc664dc8a58f160",
+  "details": {
+    "raw_cheek_translation_each_side": 0.103,
+    "raw_fork_floor_lowering": 0.095,
+    "raw_upper_neck_shortening": 0.065,
+    "raw_bearing_xy_centre": [
+      -0.0048828125,
+      0.453125
+    ],
+    "added_triangles": 0,
+    "lower_geometry_below_raw_y": 0.24,
+    "neutral_fit_only": true,
+    "pitch_sweep": "Future owner rigging review; not qualified."
+  },
+  "material_policy": "Original embedded base-colour and material retained; no PBR maps, no retexture."
+}

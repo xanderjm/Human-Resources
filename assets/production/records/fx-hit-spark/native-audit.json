@@ -1,0 +1,58 @@
+{
+  "schema_version": 1,
+  "id": "fx-hit-spark",
+  "status": "art-review-passed",
+  "production": {
+    "status": "generated",
+    "file": "assets/graphics/fx-hit-spark/fx-hit-spark.png",
+    "source": "assets/graphics/fx-hit-spark/fx-hit-spark.svg",
+    "metadata": "assets/graphics/fx-hit-spark/asset.json"
+  },
+  "reference": {
+    "status": "approved",
+    "path": "assets/references/fx-hit-spark/v1.png",
+    "sha256": "4169d59089839ea7d4ef03ec756873efd0952974c9199cdd01b102f23483a4c6"
+  },
+  "qa": {
+    "status": "art-review-passed",
+    "visual_review": "Small six-ray ivory/mint impact silhouette; all rays fit transparent margins.",
+    "review_evidence": "assets/production/reviews/native-graphics-contact-sheet.png",
+    "reviewed_against": "art/style-guide/ufo-asset-style-guide.png",
+    "runtime_qualified": false
+  },
+  "alpha_audit": {
+    "dimensions_px": [
+      512,
+      512
+    ],
+    "rgba": true,
+    "alpha_range": [
+      0,
+      255
+    ],
+    "alpha_nonzero_bbox": [
+      76,
+      49,
+      436,
+      463
+    ],
+    "transparent_margin_px": [
+      76,
+      49,
+      76,
+      49
+    ],
+    "border_alpha_max": 0,
+    "visible_pixels": 31154,
+    "repeat_axis_check": null,
+    "sha256": "5eae5e18b15ccafff98de1d82040975f5af445cc2a998caa808ee1f9342a8f8d"
+  },
+  "variants": [],
+  "svg": {
+    "self_contained": true,
+    "text_baked": false,
+    "external_dependencies": false
+  },
+  "usage": "One restrained impact sprite; tintable, alpha blend, clamp both axes.",
+  "limitations": "Art production asset. Native runtime upload, blend, depth/occlusion and device readability are not qualified."
+}

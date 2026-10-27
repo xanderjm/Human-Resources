@@ -1,0 +1,925 @@
+{
+  "title": "Infantry & jeep weapons",
+  "contract": "Three unarmed true T-pose bodies. Reuse rifleman as jeep crew. Separate weapons and minigun components; rigging,equipping,seating and animation are later work.",
+  "models": [
+    {
+      "id": "infantry-rifleman-body",
+      "title": "Rifleman body",
+      "model_file": "assets/models/infantry-rifleman-body/infantry-rifleman-body.glb",
+      "sha256": "876d638d28bbff3514da68d4b5cb5b70ec1483e190ab5c2e90ba7cb6f8a7e84f",
+      "triangles": 4990,
+      "reference": {
+        "status": "approved",
+        "version": 1,
+        "path": "assets/references/infantry-rifleman-body/v1.png",
+        "review": "Approved unarmed true T-pose: both straight horizontal arms,empty palms,one complete body; matching rifleman navy helmet/shorts/coral sleeves and painterly face. No gun parts."
+      },
+      "generation_model": "P1-20260311",
+      "generation_task": "278374b5-5020-4182-a002-aff5a56d36c8",
+      "conversion_task": "623defd5-e746-46a0-8048-5ac73d3b24fa",
+      "credits_consumed": 60,
+      "generation_original": "assets/models/infantry-rifleman-body/tripo-out/infantry-rifleman-body-convert-623defd5/model.glb",
+      "import": {
+        "status": "passed",
+        "units": "metres",
+        "up": "+Y",
+        "forward": "+Z",
+        "yaw_degrees": -90.0,
+        "pivot": "ground-centre",
+        "double_sided": false,
+        "uniform_scale": 1.7541755888650965,
+        "bounds_m": [
+          [
+            -0.8753747323340472,
+            0.0,
+            -0.3580299785867238
+          ],
+          [
+            0.8753747323340472,
+            1.6,
+            0.3580299785867238
+          ]
+        ],
+        "dimensions_m": [
+          1.7507494646680943,
+          1.6,
+          0.7160599571734476
+        ],
+        "vertex_checks": [
+          {
+            "triangles": 4990,
+            "degenerate_triangles": 0,
+            "uv_bounds": [
+              [
+                0.0009670013096183538,
+                0.0009670257568359375
+              ],
+              [
+                0.993156373500824,
+                0.9990329742431641
+              ]
+            ]
+          }
+        ],
+        "notes": "Real scene vertices and indices decoded; finite positions/UVs; retained embedded 1024px base colour. Uniform root transform; raw file preserved."
+      },
+      "review": {
+        "status": "accepted",
+        "reviewer": "measured_modules agent",
+        "reviewed_at": "2026-10-24T22:48:07.446678+00:00",
+        "notes": "Accepted compact rifleman body: navy short-sleeve shirt and shorts, coral/orange sleeve stripes, brown boots/pouches and readable friendly painted face under navy helmet. Both straight arms extend horizontally in a true T-pose; flat empty hands with no gun, grip object or aiming/seated pose. Two complete arms/hands and legs/boots; no attached weapon or scenery. Compared directly against latest approved T-pose reference in four actual-model angles.",
+        "views": [
+          "three-quarter",
+          "opposite",
+          "front",
+          "right"
+        ],
+        "actual_model_evidence": [
+          {
+            "view": "three-quarter",
+            "camera_direction": [
+              1,
+              0.65,
+              1
+            ],
+            "file": "assets/production/records/infantry-rifleman-body/review-infantry-normalized-three-quarter.png",
+            "sha256": "6d24a3a142b1ecb5b2b0a6667191b20270dcc2fa255cd23117716d52f96b774e"
+          },
+          {
+            "view": "opposite",
+            "camera_direction": [
+              -1,
+              0.55,
+              -1
+            ],
+            "file": "assets/production/records/infantry-rifleman-body/review-infantry-normalized-opposite.png",
+            "sha256": "7d8fb95fc03d76f8e78e8c4b0b2210958804971324b5d7f897b2be51acac6710"
+          },
+          {
+            "view": "front",
+            "camera_direction": [
+              0,
+              0.3,
+              1
+            ],
+            "file": "assets/production/records/infantry-rifleman-body/review-infantry-normalized-front.png",
+            "sha256": "bd27661c2e12d4f938bfee71834b19a390735ac2e8fc43eb6e5fae0f3c7f90eb"
+          },
+          {
+            "view": "right",
+            "camera_direction": [
+              1,
+              0.3,
+              0
+            ],
+            "file": "assets/production/records/infantry-rifleman-body/review-infantry-normalized-right.png",
+            "sha256": "05621ee3e7ec468068a042e52bd530d7f78ae579d0c83f85628b256b01e5b8d6"
+          }
+        ],
+        "comparison_sheet": "assets/production/reviews/props-six-infantry-normalized.png",
+        "raw_orientation_sheet": "assets/production/reviews/props-six-infantry-raw.png",
+        "reviewed_model_sha256": "876d638d28bbff3514da68d4b5cb5b70ec1483e190ab5c2e90ba7cb6f8a7e84f",
+        "reviewed_reference_file": "assets/references/infantry-rifleman-body/v1.png",
+        "reviewed_reference_sha256": "d80bba8571c75d38d61c9b9bba5958ebcfe3f889d8312e0bc5604adc83e0da32",
+        "pose_review": {
+          "status": "passed",
+          "pose": "unarmed true T-pose",
+          "horizontal_straight_arms": true,
+          "empty_hands": true,
+          "complete_limbs": true,
+          "seated_or_gripping_pose": false,
+          "attached_weapon": false
+        },
+        "limitations": "Static authoring mesh acceptance. No rigging, skinning, deformation, animation, equipping or seated crew pose is implemented or qualified."
+      },
+      "geometry_repair": null
+    },
+    {
+      "id": "infantry-shotgunner-body",
+      "title": "Heavy shotgunner body",
+      "model_file": "assets/models/infantry-shotgunner-body/infantry-shotgunner-body.glb",
+      "sha256": "26988121870f9ef1d041b6a34ce7dc454597d817bf433a41f79464950212cb13",
+      "triangles": 5763,
+      "reference": {
+        "status": "approved",
+        "version": 1,
+        "path": "assets/references/infantry-shotgunner-body/v1.png",
+        "review": "Approved unarmed true T-pose: straight horizontal arms,empty hands,short broad padded-vest body and wide helmet; no gun,stock,barrels or trigger parts."
+      },
+      "generation_model": "P1-20260311",
+      "generation_task": "80b37b36-a7cc-4152-a225-cb53c6562789",
+      "conversion_task": "4582013f-1dca-47de-959a-e6cefa248645",
+      "credits_consumed": 60,
+      "generation_original": "assets/models/infantry-shotgunner-body/tripo-out/infantry-shotgunner-body-convert-4582013f/model.glb",
+      "import": {
+        "status": "passed",
+        "units": "metres",
+        "up": "+Y",
+        "forward": "+Z",
+        "yaw_degrees": -90.0,
+        "pivot": "ground-centre",
+        "double_sided": false,
+        "uniform_scale": 1.7336343115124153,
+        "bounds_m": [
+          [
+            -0.8651241534988713,
+            0.0,
+            -0.4012415349887133
+          ],
+          [
+            0.8651241534988713,
+            1.5,
+            0.4012415349887133
+          ]
+        ],
+        "dimensions_m": [
+          1.7302483069977426,
+          1.5,
+          0.8024830699774266
+        ],
+        "vertex_checks": [
+          {
+            "triangles": 5763,
+            "degenerate_triangles": 0,
+            "uv_bounds": [
+              [
+                0.0,
+                0.0
+              ],
+              [
+                1.0,
+                1.0
+              ]
+            ]
+          }
+        ],
+        "notes": "Real scene vertices and indices decoded; finite positions/UVs; retained embedded 1024px base colour. Uniform root transform; raw file preserved."
+      },
+      "review": {
+        "status": "accepted",
+        "reviewer": "measured_modules agent",
+        "reviewed_at": "2026-10-24T22:48:07.451033+00:00",
+        "notes": "Accepted short broad heavy body: wide navy helmet and padded vest, bare forearms, short navy trousers and broad brown boots. Friendly painted face and broad proportions match the approved reference. Both straight arms extend horizontally in a true T-pose; empty flat hands, no stock/barrel/trigger or gripping/seated posture. Complete limbs, no scenery or generated weapon. Compared directly against latest approved T-pose reference in four actual-model angles.",
+        "views": [
+          "three-quarter",
+          "opposite",
+          "front",
+          "right"
+        ],
+        "actual_model_evidence": [
+          {
+            "view": "three-quarter",
+            "camera_direction": [
+              1,
+              0.65,
+              1
+            ],
+            "file": "assets/production/records/infantry-shotgunner-body/review-infantry-normalized-three-quarter.png",
+            "sha256": "89bd84cd7ca7f4f06b3c58411c73a6f73c0d8c476a165fc66eea72c916dfa115"
+          },
+          {
+            "view": "opposite",
+            "camera_direction": [
+              -1,
+              0.55,
+              -1
+            ],
+            "file": "assets/production/records/infantry-shotgunner-body/review-infantry-normalized-opposite.png",
+            "sha256": "86eb4c39ac44548adf9f7ee3abc28cd203af799da22844ec2f90aec2528384f7"
+          },
+          {
+            "view": "front",
+            "camera_direction": [
+              0,
+              0.3,
+              1
+            ],
+            "file": "assets/production/records/infantry-shotgunner-body/review-infantry-normalized-front.png",
+            "sha256": "4e90ba301fa6e11b75ad663486b613849f033ffb542f0cfa6570f5d643dff6e7"
+          },
+          {
+            "view": "right",
+            "camera_direction": [
+              1,
+              0.3,
+              0
+            ],
+            "file": "assets/production/records/infantry-shotgunner-body/review-infantry-normalized-right.png",
+            "sha256": "06ba9fdf87e870cdb628fd6dcf6b795a8cfb83b8c90758fa715ec1b8c763ee55"
+          }
+        ],
+        "comparison_sheet": "assets/production/reviews/props-six-infantry-normalized.png",
+        "raw_orientation_sheet": "assets/production/reviews/props-six-infantry-raw.png",
+        "reviewed_model_sha256": "26988121870f9ef1d041b6a34ce7dc454597d817bf433a41f79464950212cb13",
+        "reviewed_reference_file": "assets/references/infantry-shotgunner-body/v1.png",
+        "reviewed_reference_sha256": "7eb99a7be62f971cc9c3ff3895e267a5f895ff486695e5988a1eaff1f0085018",
+        "pose_review": {
+          "status": "passed",
+          "pose": "unarmed true T-pose",
+          "horizontal_straight_arms": true,
+          "empty_hands": true,
+          "complete_limbs": true,
+          "seated_or_gripping_pose": false,
+          "attached_weapon": false
+        },
+        "limitations": "Static authoring mesh acceptance. No rigging, skinning, deformation, animation, equipping or seated crew pose is implemented or qualified."
+      },
+      "geometry_repair": null
+    },
+    {
+      "id": "infantry-rocketeer-body",
+      "title": "Rocket trooper body",
+      "model_file": "assets/models/infantry-rocketeer-body/infantry-rocketeer-body.glb",
+      "sha256": "e825433728deb3b321cea7426ad0e76db7329175c9e10745984f1f96f9d5ac62",
+      "triangles": 5505,
+      "reference": {
+        "status": "approved",
+        "version": 1,
+        "path": "assets/references/infantry-rocketeer-body/v1.png",
+        "review": "Approved unarmed true T-pose: straight horizontal arms,empty hands,tall long-trouser body,ear-pad helmet and small integral backpack; no launcher or projectile."
+      },
+      "generation_model": "P1-20260311",
+      "generation_task": "c1f29a2d-26aa-499d-8475-3f5c4581d874",
+      "conversion_task": "a551878c-12ca-4f0f-a0c3-318c4777410a",
+      "credits_consumed": 60,
+      "generation_original": "assets/models/infantry-rocketeer-body/tripo-out/infantry-rocketeer-body-convert-a551878c/model.glb",
+      "import": {
+        "status": "passed",
+        "units": "metres",
+        "up": "+Y",
+        "forward": "+Z",
+        "yaw_degrees": -90.0,
+        "pivot": "ground-centre",
+        "double_sided": false,
+        "uniform_scale": 1.8769857433808554,
+        "bounds_m": [
+          [
+            -0.9366598778004074,
+            0.0,
+            -0.36476578411405297
+          ],
+          [
+            0.9366598778004074,
+            1.8,
+            0.36476578411405297
+          ]
+        ],
+        "dimensions_m": [
+          1.8733197556008148,
+          1.8,
+          0.7295315682281059
+        ],
+        "vertex_checks": [
+          {
+            "triangles": 5505,
+            "degenerate_triangles": 0,
+            "uv_bounds": [
+              [
+                0.0,
+                0.0
+              ],
+              [
+                1.0,
+                1.0
+              ]
+            ]
+          }
+        ],
+        "notes": "Real scene vertices and indices decoded; finite positions/UVs; retained embedded 1024px base colour. Uniform root transform; raw file preserved."
+      },
+      "review": {
+        "status": "accepted",
+        "reviewer": "measured_modules agent",
+        "reviewed_at": "2026-10-24T22:48:07.454255+00:00",
+        "notes": "Accepted lanky rocket-trooper body: long navy trousers, ear-pad helmet and small integral navy backpack remain distinct from the other two troops. Friendly painted face, boots and brown harness match the approved reference. Both straight arms extend horizontally in a true T-pose; empty flat hands and no launcher/projectile, weapon grip or seated posture. Complete arms/hands and legs/boots; no scenery. Compared directly against latest approved T-pose reference in four actual-model angles. Requested5500-triangle target exceeded by5 triangles(0.091%), within approximate8000-character ceiling.",
+        "views": [
+          "three-quarter",
+          "opposite",
+          "front",
+          "right"
+        ],
+        "actual_model_evidence": [
+          {
+            "view": "three-quarter",
+            "camera_direction": [
+              1,
+              0.65,
+              1
+            ],
+            "file": "assets/production/records/infantry-rocketeer-body/review-infantry-normalized-three-quarter.png",
+            "sha256": "64fba4781841524d6a157eab6e69e32ef86c13f309a0c343db4df022a6afbf98"
+          },
+          {
+            "view": "opposite",
+            "camera_direction": [
+              -1,
+              0.55,
+              -1
+            ],
+            "file": "assets/production/records/infantry-rocketeer-body/review-infantry-normalized-opposite.png",
+            "sha256": "52970b7096d5cbc59b32cbd9fae7ab5829d56c518802b73bfb3ffc4f1507fcda"
+          },
+          {
+            "view": "front",
+            "camera_direction": [
+              0,
+              0.3,
+              1
+            ],
+            "file": "assets/production/records/infantry-rocketeer-body/review-infantry-normalized-front.png",
+            "sha256": "63e4c80f7cd86a3f0846e23358365da6a6c3881d8698242fe1f304fe6db14b18"
+          },
+          {
+            "view": "right",
+            "camera_direction": [
+              1,
+              0.3,
+              0
+            ],
+            "file": "assets/production/records/infantry-rocketeer-body/review-infantry-normalized-right.png",
+            "sha256": "ce92f72bd5b7969dc4a003fac9b0e197293513e158ed8afd591d28ceca2a06be"
+          }
+        ],
+        "comparison_sheet": "assets/production/reviews/props-six-infantry-normalized.png",
+        "raw_orientation_sheet": "assets/production/reviews/props-six-infantry-raw.png",
+        "reviewed_model_sha256": "e825433728deb3b321cea7426ad0e76db7329175c9e10745984f1f96f9d5ac62",
+        "reviewed_reference_file": "assets/references/infantry-rocketeer-body/v1.png",
+        "reviewed_reference_sha256": "d80c65b10391b04958909fdef8ca87d5c31b4e5f9a9c2e6d9ee42e54f8ba475d",
+        "pose_review": {
+          "status": "passed",
+          "pose": "unarmed true T-pose",
+          "horizontal_straight_arms": true,
+          "empty_hands": true,
+          "complete_limbs": true,
+          "seated_or_gripping_pose": false,
+          "attached_weapon": false
+        },
+        "limitations": "Static authoring mesh acceptance. No rigging, skinning, deformation, animation, equipping or seated crew pose is implemented or qualified."
+      },
+      "geometry_repair": null
+    },
+    {
+      "id": "weapon-carbine",
+      "title": "Infantry carbine",
+      "model_file": "assets/models/weapon-carbine/weapon-carbine.glb",
+      "sha256": "375a1b5fb078b026d3b850a508a0980b06d33bfc47b16012942eb823cd7b3741",
+      "triangles": 1348,
+      "reference": {
+        "status": "approved",
+        "version": 1,
+        "path": "assets/references/weapon-carbine/v1.png",
+        "review": "Approved isolated painterly navy single-barrel game carbine,woodstock/grip,square magazine,coral chevrons; no human fragments or extra parts."
+      },
+      "generation_model": "P1-20260311",
+      "generation_task": "f779d5a9-cf3e-48f4-a379-c4040c116cc6",
+      "conversion_task": "687a89a3-9cb3-49fb-9702-7e36371e040c",
+      "credits_consumed": 60,
+      "generation_original": "assets/models/weapon-carbine/tripo-out/weapon-carbine-convert-687a89a3/model.glb",
+      "import": {
+        "status": "passed",
+        "units": "metres",
+        "up": "+Y",
+        "forward": "+Z",
+        "yaw_degrees": 180.0,
+        "pivot": "primary-grip",
+        "double_sided": false,
+        "uniform_scale": 0.7013698630136986,
+        "bounds_m": [
+          [
+            -0.060274,
+            -0.049229,
+            -0.237671
+          ],
+          [
+            0.056164,
+            0.176798,
+            0.462329
+          ]
+        ],
+        "dimensions_m": [
+          0.116438,
+          0.226027,
+          0.7
+        ],
+        "vertex_checks": [
+          {
+            "triangles": 1348,
+            "degenerate_triangles": 0,
+            "uv_bounds": [
+              [
+                0.0,
+                0.0
+              ],
+              [
+                1.0,
+                1.0
+              ]
+            ]
+          }
+        ],
+        "notes": "Real scene vertices and indices decoded; finite positions/UVs; retained embedded 1024px base colour. Uniform root transform; raw file preserved.",
+        "primary_grip_origin": true,
+        "measured_canonical_grip_m": [
+          0.002055,
+          -0.063784,
+          -0.112329
+        ],
+        "pivot_notes": "Actual inspected feature bounds measured from triangle surface samples; only outer-root translation changed. No body poses/equipment/rigging.",
+        "normalized_file_bytes": 261676,
+        "bin_payload_matches_raw": true
+      },
+      "review": {
+        "status": "accepted",
+        "notes": "Accepted independent compact carbine: one open barrel/muzzle verified in front view, square magazine, wooden stock and pistol grip, navy receiver and coral double chevrons, no hands/body fragments or added loose props. Rear-side small lever detail differs from the source but remains coherent gun geometry. Broad painterly colour blocks remain; fine brush detail is smoother than reference. Uniform 0.70 m length, +Y up/+Z muzzle, actual wood pistol-grip centre at origin with separate support/buttplate/muzzle datums. No equipping, carrying/seating test, posing, rigging or animation.",
+        "model_sha256": "375a1b5fb078b026d3b850a508a0980b06d33bfc47b16012942eb823cd7b3741",
+        "reference": "assets/references/weapon-carbine/v1.png",
+        "reference_sha256": "5d15698356cc19f82e1768186e9358c0b38e589dc79b91eb2df46712a2f4c1a8",
+        "evidence": [
+          "assets/production/records/weapon-carbine/review-weapons-final-three-quarter.png",
+          "assets/production/records/weapon-carbine/review-weapons-final-opposite.png",
+          "assets/production/records/weapon-carbine/review-weapons-final-front.png",
+          "assets/production/records/weapon-carbine/review-weapons-final-right.png",
+          "assets/production/records/weapon-carbine/review-sockets-side.png"
+        ],
+        "contact_sheet": "assets/production/reviews/props-six-weapons-final.png",
+        "method": "Actual decoded triangle/UV/base-colour geometry rendered with CPU depth buffer; measured socket overlay inspected.",
+        "runtime_qualified": false
+      },
+      "geometry_repair": null
+    },
+    {
+      "id": "weapon-shotgun",
+      "title": "Double-barrel shotgun",
+      "model_file": "assets/models/weapon-shotgun/weapon-shotgun.glb",
+      "sha256": "fdfb970d978be03c8cef8e3db03a088cdc9d77fd054169901f8588e08934a3a4",
+      "triangles": 1537,
+      "reference": {
+        "status": "approved",
+        "version": 1,
+        "path": "assets/references/weapon-shotgun/v1.png",
+        "review": "Approved one isolated double-barrel shotgun,two side-by-side muzzle holes,solid wood stock/foregrip,no human fragments or third barrel; navy/coral broad gouache paint."
+      },
+      "generation_model": "P1-20260311",
+      "generation_task": "c8e85741-eb07-402a-8866-e9e71a3233c4",
+      "conversion_task": "76c8dec5-7d22-4f4e-95a2-44f8f7d35695",
+      "credits_consumed": 60,
+      "generation_original": "assets/models/weapon-shotgun/tripo-out/weapon-shotgun-convert-76c8dec5/model.glb",
+      "import": {
+        "status": "passed",
+        "units": "metres",
+        "up": "+Y",
+        "forward": "+Z",
+        "yaw_degrees": -90.0,
+        "pivot": "primary-grip",
+        "double_sided": false,
+        "uniform_scale": 0.7013698630136986,
+        "bounds_m": [
+          [
+            -0.042637,
+            -0.107192,
+            -0.220034
+          ],
+          [
+            0.038185,
+            0.07226,
+            0.479966
+          ]
+        ],
+        "dimensions_m": [
+          0.080822,
+          0.179452,
+          0.7
+        ],
+        "vertex_checks": [
+          {
+            "triangles": 1537,
+            "degenerate_triangles": 0,
+            "uv_bounds": [
+              [
+                0.0006312744808383286,
+                0.0005785822868347168
+              ],
+              [
+                0.9994214177131653,
+                0.999412477016449
+              ]
+            ]
+          }
+        ],
+        "notes": "Real scene vertices and indices decoded; finite positions/UVs; retained embedded 1024px base colour. Uniform root transform; raw file preserved.",
+        "primary_grip_origin": true,
+        "measured_canonical_grip_m": [
+          0.002226,
+          0.017466,
+          -0.129966
+        ],
+        "pivot_notes": "Actual inspected feature bounds measured from triangle surface samples; only outer-root translation changed. No body poses/equipment/rigging.",
+        "normalized_file_bytes": 296848,
+        "bin_payload_matches_raw": true
+      },
+      "review": {
+        "status": "accepted",
+        "notes": "Accepted independent double-barrel shotgun: exactly two side-by-side open muzzle bores verified in the front render, coherent stock/neck, trigger loop and wooden fore-end, navy/coral palette, no hands/body fragments or shells. Fine brush detail is smoother than reference, but broad painted blocks and silhouette remain. Uniform 0.70 m length, +Y up/+Z muzzle, measured primary stock-neck grip at origin; separate support, shoulder/butt and two muzzle datums recorded. No equipping, rigging or pose work.",
+        "model_sha256": "fdfb970d978be03c8cef8e3db03a088cdc9d77fd054169901f8588e08934a3a4",
+        "reference": "assets/references/weapon-shotgun/v1.png",
+        "reference_sha256": "bdf7291c261d4abbe93f1dedeee8e7cf2a60a7fd1f8e0c7037d67e7081525ff3",
+        "evidence": [
+          "assets/production/records/weapon-shotgun/review-weapons-final-three-quarter.png",
+          "assets/production/records/weapon-shotgun/review-weapons-final-opposite.png",
+          "assets/production/records/weapon-shotgun/review-weapons-final-front.png",
+          "assets/production/records/weapon-shotgun/review-weapons-final-right.png",
+          "assets/production/records/weapon-shotgun/review-sockets-side.png"
+        ],
+        "contact_sheet": "assets/production/reviews/props-six-weapons-final.png",
+        "method": "Actual decoded triangle/UV/base-colour geometry rendered with CPU depth buffer, plus inspected measured socket overlays.",
+        "runtime_qualified": false
+      },
+      "geometry_repair": null
+    },
+    {
+      "id": "weapon-rocket-launcher",
+      "title": "Shoulder rocket launcher",
+      "model_file": "assets/models/weapon-rocket-launcher/weapon-rocket-launcher.glb",
+      "sha256": "c9e3fa0367dd62ea0142554cb24eb6a516562cbbb7927705ab73280db2561818",
+      "triangles": 1729,
+      "reference": {
+        "status": "approved",
+        "version": 1,
+        "path": "assets/references/weapon-rocket-launcher/v1.png",
+        "review": "Approved one isolated loaded shoulder launcher,navy tube,coral integral nose,two grips,no soldier/hands or detached ammunition; broad painterly planes."
+      },
+      "generation_model": "P1-20260311",
+      "generation_task": "5e804ca5-314a-4e37-a1fd-11adf584e7ff",
+      "conversion_task": "32b1d5cb-7957-49b2-88cb-43b7a8765439",
+      "credits_consumed": 60,
+      "generation_original": "assets/models/weapon-rocket-launcher/tripo-out/weapon-rocket-launcher-convert-32b1d5cb/model.glb",
+      "import": {
+        "status": "passed",
+        "units": "metres",
+        "up": "+Y",
+        "forward": "+Z",
+        "yaw_degrees": 180.0,
+        "pivot": "primary-grip",
+        "double_sided": false,
+        "uniform_scale": 1.1522504892367904,
+        "bounds_m": [
+          [
+            -0.141359,
+            -0.116463,
+            -0.421404
+          ],
+          [
+            0.144453,
+            0.331385,
+            0.728596
+          ]
+        ],
+        "dimensions_m": [
+          0.285812,
+          0.447847,
+          1.15
+        ],
+        "vertex_checks": [
+          {
+            "triangles": 1729,
+            "degenerate_triangles": 0,
+            "uv_bounds": [
+              [
+                0.0,
+                0.0
+              ],
+              [
+                1.0,
+                1.0
+              ]
+            ]
+          }
+        ],
+        "notes": "Real scene vertices and indices decoded; finite positions/UVs; retained embedded 1024px base colour. Uniform root transform; raw file preserved.",
+        "primary_grip_origin": true,
+        "measured_canonical_grip_m": [
+          -0.001547,
+          -0.107461,
+          -0.153596
+        ],
+        "pivot_notes": "Actual inspected feature bounds measured from triangle surface samples; only outer-root translation changed. No body poses/equipment/rigging.",
+        "normalized_file_bytes": 218388,
+        "bin_payload_matches_raw": true
+      },
+      "review": {
+        "status": "accepted",
+        "notes": "Accepted independent loaded launcher: coherent navy shoulder tube and two separate hanging grip forms, integral coral loaded nose as explicitly approved, no human fragments or loose ammunition. Rear tube cap and occupied mouth remain static; side chevrons/fine brush detail were not retained in generation, while the major navy/coral identity and loaded silhouette remain clear. Uniform 1.15 m length, +Y up/+Z nose, measured primary rear-grip origin and secondary/tube-underside/nose data recorded. No extraction, discharge, animation, equipping or pose work.",
+        "model_sha256": "c9e3fa0367dd62ea0142554cb24eb6a516562cbbb7927705ab73280db2561818",
+        "reference": "assets/references/weapon-rocket-launcher/v1.png",
+        "reference_sha256": "bf7baffa96454e16aaceccbd0f7422f9515d71db159f4d8e51eedf6cad3522f8",
+        "evidence": [
+          "assets/production/records/weapon-rocket-launcher/review-weapons-final-three-quarter.png",
+          "assets/production/records/weapon-rocket-launcher/review-weapons-final-opposite.png",
+          "assets/production/records/weapon-rocket-launcher/review-weapons-final-front.png",
+          "assets/production/records/weapon-rocket-launcher/review-weapons-final-right.png",
+          "assets/production/records/weapon-rocket-launcher/review-sockets-side.png"
+        ],
+        "contact_sheet": "assets/production/reviews/props-six-weapons-final.png",
+        "method": "Actual decoded triangle/UV/base-colour geometry rendered with CPU depth buffer, plus inspected measured socket overlays.",
+        "runtime_qualified": false
+      },
+      "geometry_repair": null
+    },
+    {
+      "id": "jeep-minigun-head",
+      "title": "Mounted jeep minigun",
+      "model_file": "assets/models/jeep-minigun-head/jeep-minigun-head.glb",
+      "sha256": "9b75f1d8d4a539b3d44bf21c1170fb2f18e71f762502c3b9be92fa81f66d098b",
+      "triangles": 2587,
+      "reference": {
+        "status": "approved",
+        "version": 1,
+        "path": "assets/references/jeep-minigun-head/v1.png",
+        "review": "Approved isolated compact rotary gun head,navy barrel cluster with five visible front muzzle openings,receiver,sidebox,trunnions and rearhandle; no vehicle/operator/pedestal. Stylized barrel count accepted as visual design."
+      },
+      "generation_model": "P1-20260311",
+      "generation_task": "8e64a8cf-c16e-4f14-b67f-b73d955d2e5f",
+      "conversion_task": "ad75a003-404a-431c-8f57-397091457814",
+      "credits_consumed": 60,
+      "generation_original": "assets/models/jeep-minigun-head/tripo-out/jeep-minigun-head-convert-ad75a003/model.glb",
+      "import": {
+        "status": "passed",
+        "units": "metres",
+        "up": "+Y",
+        "forward": "+Z",
+        "yaw_degrees": -90.0,
+        "pivot": "measured-trunnion-centre",
+        "double_sided": false,
+        "uniform_scale": 0.8516634050880626,
+        "bounds_m": [
+          [
+            -0.21624266144814092,
+            -0.1505381604696673,
+            -0.42250489236790606
+          ],
+          [
+            0.22123287671232875,
+            0.20709393346379648,
+            0.4274951076320939
+          ]
+        ],
+        "dimensions_m": [
+          0.4374755381604697,
+          0.3576320939334638,
+          0.85
+        ],
+        "vertex_checks": [
+          {
+            "triangles": 2587,
+            "degenerate_triangles": 0,
+            "uv_bounds": [
+              [
+                0.0,
+                0.0
+              ],
+              [
+                1.0,
+                1.0
+              ]
+            ]
+          }
+        ],
+        "notes": "Real scene vertices and indices decoded; finite positions/UVs; retained embedded 1024px base colour. Uniform root transform; raw file preserved. Origin is the measured pair-of-boss bounding centre; no character pose, rig or animation added.",
+        "trunnion_origin_raw": [
+          -0.0029296875,
+          -0.033203125,
+          0.0029296875
+        ],
+        "trunnion_axis": "+X",
+        "component_fit_record": "assets/production/records/jeep-minigun-head/component-fit.json",
+        "neutral_component_fit_status": "passed_neutral_static_authoring_fit",
+        "pitch_sweep": "Not qualified; owner will rig and position later.",
+        "trunnion_axle_bounds_local_m": [
+          [
+            -0.18962818003913895,
+            -0.04075342465753424,
+            -0.04158512720156555
+          ],
+          [
+            0.18962818003913892,
+            0.040753424657534246,
+            0.041585127201565555
+          ]
+        ],
+        "preservation_checks": {
+          "embedded_image_bytes": "identical SHA256 to downloaded original",
+          "embedded_image_sha256": "e8ea4cc1af6116221ba745111e192a2f70f1e1e769d86b0baa785c9d0cb089a5",
+          "source_uvs": "unchanged",
+          "source_geometry": "unchanged source head vertices; connector added"
+        }
+      },
+      "review": {
+        "status": "accepted",
+        "reviewer": "seamless_materials agent",
+        "reviewed_at": "2026-10-25T00:02:02.881877+00:00",
+        "model_sha256": "9b75f1d8d4a539b3d44bf21c1170fb2f18e71f762502c3b9be92fa81f66d098b",
+        "notes": "Accepted after closing unintended receiver-to-barrel ring separation with a 12-triangle matching material collar. Original geometry and 1024 paint retained. Actual front, side, back, underside and three-quarter reviewed; barrel rings/cluster connected and no unintended receiver holes. Actual model has SIX stylized visible muzzle openings; explicitly accepted as a visual variation from five-count approval note. +Z muzzle direction, 0.85m Z length, origin at measured trunnion pair centre with axle +X. Separate asset; no operator, rig or animation. Neutral mount fixture passed; animated pitch sweep remains owner work."
+      },
+      "geometry_repair": {
+        "asset": "jeep-minigun-head",
+        "description": "Added a small closed matching navy connector collar behind the existing rear barrel ring to bridge the unintended receiver separation. Existing game-prop geometry and embedded paint atlas retained.",
+        "source": "assets/models/jeep-minigun-head/tripo-out/jeep-minigun-head-convert-ad75a003/model.glb",
+        "source_sha256": "440425943f0379c7381b9321b5ddeb6298b2d46b0432672ad295a4295950c961",
+        "repaired_source": "assets/models/jeep-minigun-head/jeep-minigun-head-repaired-source.glb",
+        "repaired_source_sha256": "d9fada93794304efe9af4e99de273aed5d559a47a803665afd8058ea923ca0a1",
+        "details": {
+          "added_triangles": 12,
+          "raw_collar_bounds": [
+            [
+              -0.075,
+              -0.16,
+              -0.135
+            ],
+            [
+              0.02,
+              0.12,
+              0.135
+            ]
+          ],
+          "intended_openings_retained": "Six stylized barrel muzzle insets and rear handle gap.",
+          "source_uv_triangle": [
+            [
+              0.7251902222633362,
+              0.20644211769104004
+            ],
+            [
+              0.7156206965446472,
+              0.1951027512550354
+            ],
+            [
+              0.6905199289321899,
+              0.21672677993774414
+            ]
+          ]
+        },
+        "material_policy": "Original embedded base-colour and material retained; no PBR maps, no retexture."
+      }
+    },
+    {
+      "id": "jeep-minigun-mount",
+      "title": "Jeep minigun pedestal",
+      "model_file": "assets/models/jeep-minigun-mount/jeep-minigun-mount.glb",
+      "sha256": "e272fd867a17fd6eb7e1ac9ca8fa358d0b487bbc7110ceb39b37473179353613",
+      "triangles": 984,
+      "reference": {
+        "status": "approved",
+        "version": 2,
+        "path": "assets/references/jeep-minigun-mount/v2.png",
+        "review": "Approved revised slender pedestal,small square four-boltbase,long uprightcolumn and compact openfork,navy/coralpaint; proportions fit planned rear-bed footprint."
+      },
+      "generation_model": "P1-20260311",
+      "generation_task": "e7ecb75e-75b5-411f-9045-db03be9bb2e0",
+      "conversion_task": "fd6b2548-183b-4b75-aff8-e5ab3d7cda9b",
+      "credits_consumed": 60,
+      "generation_original": "assets/models/jeep-minigun-mount/tripo-out/jeep-minigun-mount-convert-fd6b2548/model.glb",
+      "import": {
+        "status": "passed",
+        "units": "metres",
+        "up": "+Y",
+        "forward": "+Z",
+        "yaw_degrees": -90.0,
+        "pivot": "ground-centre",
+        "double_sided": false,
+        "uniform_scale": 1.052054794520548,
+        "bounds_m": [
+          [
+            -0.2090465754678805,
+            0.0,
+            -0.12636986301369865
+          ],
+          [
+            0.2090465754678805,
+            1.05,
+            0.12636986301369865
+          ]
+        ],
+        "dimensions_m": [
+          0.418093150935761,
+          1.05,
+          0.2527397260273973
+        ],
+        "vertex_checks": [
+          {
+            "triangles": 984,
+            "degenerate_triangles": 0,
+            "uv_bounds": [
+              [
+                0.0,
+                0.0
+              ],
+              [
+                1.0,
+                1.0
+              ]
+            ]
+          }
+        ],
+        "notes": "Real scene vertices and indices decoded; finite positions/UVs; retained embedded 1024px base colour. Uniform root transform; raw file preserved.",
+        "component_fit_record": "assets/production/records/jeep-minigun-head/component-fit.json",
+        "neutral_component_fit_status": "passed_neutral_static_authoring_fit",
+        "pitch_sweep": "Not qualified; owner will rig and position later.",
+        "head_socket_m": [
+          4.336808689942018e-19,
+          1.0017123287671232,
+          -0.005136986301369864
+        ],
+        "bearing_axis": "+X",
+        "base_bounds_m": [
+          [
+            -0.1356164383561644,
+            0.0,
+            -0.12636986301369865
+          ],
+          [
+            0.14178082191780825,
+            0.05753424657534245,
+            0.12636986301369865
+          ]
+        ],
+        "preservation_checks": {
+          "embedded_image_bytes": "identical SHA256 to downloaded original",
+          "embedded_image_sha256": "af4f155deee75d680a836966cab2bab1754d4b2ff25b51d49dd107617db0a602",
+          "source_uvs": "unchanged",
+          "source_geometry": "all base/lower column positions below raw Y0.24 bitwise unchanged"
+        }
+      },
+      "review": {
+        "status": "accepted",
+        "reviewer": "seamless_materials agent",
+        "reviewed_at": "2026-10-25T00:02:02.885711+00:00",
+        "model_sha256": "e272fd867a17fd6eb7e1ac9ca8fa358d0b487bbc7110ceb39b37473179353613",
+        "notes": "Accepted after upper-fork-only fit repair: widened cheeks/bridge, enlarged intentional bearing bores, lowered bridge floor and shortened only upper neck. Preserved lower column/base/bolts and existing 1024 paint. Actual three-quarter, front, side and underside reviewed; connected floor/neck/column and small closed base; intentional U opening/bearing holes retained. 1.05m maximum height, base footprint 0.2774\u00d70.2527m, overall fork width 0.4181m overhang allowed. Neutral actual head fixture passed with 17.5mm bridge/neck clearance and conservative 2.46mm radial clearance; no promise of pitch animation clearance. No operator, rig or animation."
+      },
+      "geometry_repair": {
+        "asset": "jeep-minigun-mount",
+        "description": "Widened only the upper fork cheeks/bridge and enlarged the visual bearing bores; lowered its floor and shortened the upper neck for neutral head clearance. Base, bolts, lower column, maximum height and existing paint atlas retained.",
+        "source": "assets/models/jeep-minigun-mount/tripo-out/jeep-minigun-mount-convert-fd6b2548/model.glb",
+        "source_sha256": "9be117e0622f847847244340de62633cf23e482c1940e135755546d523111d98",
+        "repaired_source": "assets/models/jeep-minigun-mount/jeep-minigun-mount-repaired-source.glb",
+        "repaired_source_sha256": "8e58dc131fa3bd7e83ce140ce35cfe652a14f2da41a06d6cbbc664dc8a58f160",
+        "details": {
+          "raw_cheek_translation_each_side": 0.103,
+          "raw_fork_floor_lowering": 0.095,
+          "raw_upper_neck_shortening": 0.065,
+          "raw_bearing_xy_centre": [
+            -0.0048828125,
+            0.453125
+          ],
+          "added_triangles": 0,
+          "lower_geometry_below_raw_y": 0.24,
+          "neutral_fit_only": true,
+          "pitch_sweep": "Future owner rigging review; not qualified."
+        },
+        "material_policy": "Original embedded base-colour and material retained; no PBR maps, no retexture."
+      }
+    }
+  ],
+  "models_count": 8,
+  "new_tripo_credits": 480,
+  "character_rigging_animation_equipping_or_seating": false
+}

@@ -39,7 +39,7 @@ void earned_choice_recovery_preserves_location_and_offer() {
   require(restored.restore_state(reopened.account().continuation.game_state) == hr::gameplay::SaveStateIssue::none, "actual saved Game restores");
   restored.pause();
   require(restored.snapshot().phase == hr::gameplay::Phase::choosing_upgrade, "pause cannot erase an earned choice");
-  for (const auto viewport : std::array<hr::ui::Rect, 3>{{{0, 0, 320, 568}, {0, 0, 390, 844}, {0, 0, 844, 390}}}) {
+  for (const auto viewport : std::array<hr::ui::Rect, 3>{{{0, 0, 320, 568}, {0, 0, 390, 844}, {0, 0, 430, 932}}}) {
     View view{Screen::pause, &restored.snapshot(), &reopened.store(), viewport, {}};
     view.restored_run = true;
     view.theme = static_cast<hr::presentation::SceneryTheme>(reopened.account().continuation.location);
@@ -63,7 +63,7 @@ void protected_recovery_is_explicit_and_touch_safe() {
   require(store.load().playable(), "fixture store loads");
   hr::gameplay::Game game;
   game.start();
-  for (const auto viewport : std::array<hr::ui::Rect, 3>{{{0, 0, 320, 568}, {0, 0, 390, 844}, {0, 0, 844, 390}}}) {
+  for (const auto viewport : std::array<hr::ui::Rect, 3>{{{0, 0, 320, 568}, {0, 0, 390, 844}, {0, 0, 430, 932}}}) {
     View view{Screen::title, &game.snapshot(), &store, viewport, {}};
     view.save_error = true;
     view.can_bank_checkpoint = true;

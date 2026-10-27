@@ -1,0 +1,28 @@
+── Plan ──────────────────────────
+input: /Users/coral/Documents/App Development/Human Resources/assets/references/streetlamp/v1.png
+model: P1-20260311 — explicit --model
+steps:
+  1. image-to-model  POST /v3/generation/image-to-model — generate a 3D model from one image
+     model="P1-20260311" face_limit=1600 texture=true pbr=false texture_quality="standard" texture_alignment="original_image" export_uv=true
+  2. convert  POST /v3/models/convert — convert format / texture size / orientation
+     format="GLTF" texture_size=1024
+cost impact:
+  · non-default convert options bill as complex convert
+──────────────────────────────────
+model: P1-20260311 (explicit --model)
+task created 1c96be53-5dc5-47cd-b930-c1b4c981b650 (@streetlamp)
+image_to_model · queued
+image_to_model · running 11% · 1c96be53
+image_to_model · running 20% · 1c96be53
+image_to_model · running 32% · 1c96be53
+image_to_model · running 52% · 1c96be53
+image_to_model · running 81% · 1c96be53
+image_to_model · success 100% · 1c96be53
+✓ image_to_model · 1c96be53-5dc5-47cd-b930-c1b4c981b650 · 50 credits
+! non-default convert options use the "complex convert" price tier
+task created e4dab917-841b-4d3e-839e-7509d03d6229 (@streetlamp-convert)
+convert_model · queued
+✓ convert_model · e4dab917-841b-4d3e-839e-7509d03d6229 · 10 credits
+downloading artifacts…
+✓ artifacts saved to /Users/coral/Documents/App Development/Human Resources/assets/models/streetlamp/tripo-out/streetlamp-convert-e4dab917
+{"task_id":"e4dab917-841b-4d3e-839e-7509d03d6229","type":"convert_model","status":"success","credits_consumed":60,"output_dir":"/Users/coral/Documents/App Development/Human Resources/assets/models/streetlamp/tripo-out/streetlamp-convert-e4dab917","files":["model.glb"],"model_file":"/Users/coral/Documents/App Development/Human Resources/assets/models/streetlamp/tripo-out/streetlamp-convert-e4dab917/model.glb","chain":[{"task_id":"e4dab917-841b-4d3e-839e-7509d03d6229","type":"convert_model","status":"success","credits_consumed":10,"output_dir":"/Users/coral/Documents/App Development/Human Resources/assets/models/streetlamp/tripo-out/streetlamp-convert-e4dab917","files":["model.glb"],"model_file":"/Users/coral/Documents/App Development/Human Resources/assets/models/streetlamp/tripo-out/streetlamp-convert-e4dab917/model.glb"}],"source_task_id":"1c96be53-5dc5-47cd-b930-c1b4c981b650","credits_breakdown":[{"task_id":"1c96be53-5dc5-47cd-b930-c1b4c981b650","type":"image_to_model","credits_consumed":50},{"task_id":"e4dab917-841b-4d3e-839e-7509d03d6229","type":"convert_model","credits_consumed":10}]}

@@ -27,6 +27,9 @@ void bounded_approach_and_planted_sources() {
   for (auto moving : {gp::EntityKind::soldier, gp::EntityKind::jeep, gp::EntityKind::tank, gp::EntityKind::boss}) {
     for (auto fixed : {gp::EntityKind::soldier, gp::EntityKind::jeep, gp::EntityKind::tank, gp::EntityKind::boss}) {
       gp::Game::State s;
+      // Isolate body/lateral clearance in an interior arena. Vertical-wall
+      // containment is covered by enemy_engagement_contracts.
+      s.flight_bounds.backward = -64; s.flight_bounds.forward = 64;
       s.view.player = {0, 0};
       // Existing boss-ingress quiet window isolates approach without falsely
       // encoding an enormous timer as the vehicle's planted shot recovery.
@@ -129,6 +132,7 @@ void physical_infantry_pivots_and_clears_finite_obstructions() {
     for (unsigned fixture = 0; fixture < 3; ++fixture) {
       gp::Game::State state;
       state.view.stats.active_seconds = tune::director_boss_first_second - .5;
+      state.flight_bounds.backward = -64; state.flight_bounds.forward = 64;
       const float radius = tune::military_body_radius[0], edge = tune::field_half_width - radius;
       auto moving = actor(gp::EntityKind::soldier, 55, {fixture == 1 ? 0.F : edge, 14});
       moving.view.infantry_role = role;
@@ -153,9 +157,12 @@ void physical_infantry_pivots_and_clears_finite_obstructions() {
         require(speed <= tune::military_movement_speed[0] + .00001F &&
             distance(current.view.position, before.view.position) <= tune::military_movement_speed[0] * dt + .00001F,
             "finite infantry escape uses ordinary bounded steps without root correction");
-        require(std::abs(current.view.velocity.x * forward.z - current.view.velocity.z * forward.x) < .00002F &&
-            current.view.velocity.x * forward.x + current.view.velocity.z * forward.z >= -.00001F,
-            "infantry steps forward in its physical frame without lateral skating or vehicle-style backing");
+        const auto shot = gp::infantry_shot(role, current.view.position, state.view.player);
+        if (frame > 30 && shot.valid) {
+          const float yaw = std::atan2(shot.direction.x, -shot.direction.z) - gp::infantry_attack(role).weapon_yaw_radians;
+          require(std::abs(std::remainder(std::atan2(forward.x, -forward.z) - yaw, 6.28318530718F)) < .1F,
+              "infantry faces its real player-directed weapon frame while independently routing around bodies");
+        }
         require(std::abs(current.view.position.x) <= edge + .0001F,
             "physical infantry escape preserves the whole-body field boundary");
         pivoted_at_rest = pivoted_at_rest || (speed < .0001F && turn > .0001F);
@@ -168,10 +175,10 @@ void physical_infantry_pivots_and_clears_finite_obstructions() {
       if (!escaped || !pivoted_at_rest) std::cerr << "infantry escape role=" << static_cast<unsigned>(role) << " fixture=" << fixture <<
           " escaped=" << escaped << " pivoted=" << pivoted_at_rest << " final=" << state.actors.front().view.position.x << ',' << state.actors.front().view.position.z << '\n';
       require(escaped && pivoted_at_rest,
-          "each equipped role pivots at rest from a rear-facing or edge obstruction and makes finite forward progress");
+          "each equipped role pivots toward the player and makes finite progress around rear or edge obstructions");
     }
   }
-  std::cout << "PASS actual infantry role pivots, edges and fixed-body escapes without backing or ghosting\n";
+  std::cout << "PASS actual infantry pivots toward the player and clears edges/fixed bodies with swept travel\n";
 }
 void physical_reverse_escape_and_reopened_cage() {
   unsigned failures=0;
@@ -179,6 +186,7 @@ void physical_reverse_escape_and_reopened_cage() {
   for(const auto kind:{gp::EntityKind::jeep,gp::EntityKind::tank}) {
     for(unsigned fixture=0;fixture<6;++fixture) {
       gp::Game::State state;state.view.player={0,0};state.view.hull=state.view.maximum_hull=100;
+      state.flight_bounds.backward=-64;state.flight_bounds.forward=64;
       state.view.stats.active_seconds=tune::director_boss_first_second-.5;
       const float own=tune::military_body_radius[gp::detail::military_index(kind)],edge=tune::field_half_width-own;
       auto moving=actor(kind,3,{fixture==0||fixture==3?edge:-2.F,14});
@@ -310,10 +318,10 @@ void public_reproduction_and_restore() {
       if (run.snapshot().phase == gp::Phase::choosing_upgrade)
         require(run.choose_upgrade(0), "ordinary earned choice resumes the public spacing reproduction");
       // This checkpoint fixture tests recovery of a live crowded encounter.
-      // Seed 7841's idle pilot naturally dies before 32 seconds; use ordinary
-      // semantic flight and ready Dash while preserving the same seed/time.
+      // The faster opening brings seed514's idle death before32seconds too.
+      // Use ordinary semantic flight/Dash, keeping all seed/time/spacing gates.
       gp::Control control{};
-      if (seed == 7841U) {
+      if (seed == 514U || seed == 7841U) {
         control.movement = {static_cast<float>(std::sin(run.snapshot().stats.active_seconds * .8)), 1};
         control.dash = run.snapshot().dash_cooldown_seconds <= 0;
       }

@@ -1,0 +1,102 @@
+{
+  "scope": "Ten screens/subviews plus two recovery/protection states",
+  "data_note": "Illustrative state values and UI reorganisation for mockup review; not account data or a new runtime tuning authority.",
+  "source_owners": [
+    "native/human_resources_product/include/human_resources/product/presentation.h",
+    "native/human_resources_product/src/interface.cpp",
+    "native/human_resources_product/src/flight_report.cpp",
+    "native/human_resources_product/src/privacy_policy.h",
+    "native/human_resources_progression/src/account_store.cpp"
+  ],
+  "shared_state": {
+    "location": "Farmland",
+    "level": 7,
+    "active_time": "03:42",
+    "score": 790,
+    "captures": 42,
+    "hull": "85 / 120",
+    "shield": "30 / 60",
+    "hardware_slots": "4 / 6",
+    "bank_before_flight": 1240,
+    "earned_credits": 185,
+    "bank_after_flight": 1425
+  },
+  "screens": [
+    {
+      "id": "01-flight-hud",
+      "name": "Gameplay / Flight HUD",
+      "type": "main",
+      "summary": "Compact flight HUD, movement, Dash, sweep status and upgrade confirmation."
+    },
+    {
+      "id": "02-promotion",
+      "name": "Level-up / Promotion",
+      "type": "main",
+      "summary": "Three equal upgrade offers with projected changes, rerolls and evolution access."
+    },
+    {
+      "id": "03-pause",
+      "name": "Pause / On Hold",
+      "type": "main",
+      "summary": "Resume, settings, build inspection and an explicit bank preview."
+    },
+    {
+      "id": "04-current-build",
+      "name": "Current Build",
+      "type": "subview",
+      "summary": "Hardware inspection with tabs for temporary research and permanent Hangar ranks.",
+      "representative_page": "Hardware / page 1 of 3; research and permanent ranks are separate pages."
+    },
+    {
+      "id": "05-flight-report",
+      "name": "Flight Report / Results",
+      "type": "main",
+      "summary": "Saved credit receipt, run statistics, next unlock and immediate replay."
+    },
+    {
+      "id": "06-hangar",
+      "name": "Hangar",
+      "type": "main",
+      "summary": "Four permanent tracks with owned-to-next totals, costs and next-flight action."
+    },
+    {
+      "id": "07-blueprints",
+      "name": "Blueprint Library",
+      "type": "main",
+      "summary": "Free milestone unlocks with account progress and in-run requirements."
+    },
+    {
+      "id": "08-evolutions",
+      "name": "Evolution Recipes",
+      "type": "subview",
+      "summary": "Two recipes per page with ingredient ranks, effects and automatic-evolution guidance.",
+      "representative_page": "First two of six recipes / page 1 of 3."
+    },
+    {
+      "id": "09-settings",
+      "name": "Flight Settings",
+      "type": "main",
+      "summary": "Shared switch rows, flight-control guidance and privacy access."
+    },
+    {
+      "id": "10-privacy",
+      "name": "Privacy Policy",
+      "type": "subview",
+      "summary": "Readable paginated policy sheet in the same enamel frame.",
+      "representative_page": "Opening reader page / page 1 of 6; copy summarised for layout mockup."
+    },
+    {
+      "id": "11-saved-run",
+      "name": "Saved Run / Recovery",
+      "type": "state",
+      "summary": "Pause-family recovery state with saved flight context and a waiting upgrade."
+    },
+    {
+      "id": "12-progress-protected",
+      "name": "Progress Protected / Save Error",
+      "type": "state",
+      "summary": "Blocking save-protection dialog with retry and conditional verified-backup recovery.",
+      "conditional_actions": "Shows Retry Save + Back Up & Reset for protected/corrupt or unsupported account. An ordinary failed write shows Retry Save; incompatible-run recovery may instead show Back Up & Bank. Mutually exclusive alternatives use the same secondary button geometry."
+    }
+  ]
+}

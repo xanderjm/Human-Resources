@@ -1,4 +1,5 @@
 #include <human_resources/product/scene_effects.h>
+#include <human_resources/product/ship_appearance.h>
 
 #include <algorithm>
 #include <cmath>
@@ -48,8 +49,8 @@ gameplay::Vec2 SceneEffects::dash_response() const {
     }
   return response;
 }
-void SceneEffects::emit(const gameplay::PresentationEvent& event, double now, gameplay::Vec2 player) {
-  const float age = static_cast<float>(now - event.active_seconds);
+void SceneEffects::emit(const gameplay::PresentationEvent& event, const gameplay::Snapshot& run) {
+  const float age = static_cast<float>(run.stats.active_seconds - event.active_seconds);
   if (age < 0 || age > .55F)
     return;
   switch (event.kind) {
@@ -82,10 +83,10 @@ void SceneEffects::emit(const gameplay::PresentationEvent& event, double now, ga
   }
   if (beat_count_ == beat_capacity) {
     const auto oldest = std::max_element(beats_.begin(), beats_.end(), [](const auto& a, const auto& b) { return a.age < b.age; });
-    *oldest = {event.kind, event.position, event.actor_id, age, event.radius, player, event.damage_cause};
+    *oldest = {event.kind, event.position, event.actor_id, age, event.radius, run.player, event.damage_cause, event.kind == SceneBeatKind::phase_dash && run.dash_remaining_seconds > 0};
     return;
   }
-  beats_[beat_count_++] = {event.kind, event.position, event.actor_id, age, event.radius, player, event.damage_cause};
+  beats_[beat_count_++] = {event.kind, event.position, event.actor_id, age, event.radius, run.player, event.damage_cause, event.kind == SceneBeatKind::phase_dash && run.dash_remaining_seconds > 0};
 }
 void SceneEffects::update(const gameplay::Snapshot& run) {
   feedback_ = {};
@@ -94,18 +95,43 @@ void SceneEffects::update(const gameplay::Snapshot& run) {
     return;
   if (initialized_ && now < seconds_)
     reset();
+  // Immediate repairs can commit while the upgrade modal holds active time.
+  if (initialized_ && now >= seconds_ && run.maximum_hull == previous_maximum_hull_ && run.hull > previous_hull_)
+    repair_seconds_ = .65F;
+  previous_hull_ = run.hull;
+  previous_maximum_hull_ = run.maximum_hull;
   if (initialized_ && now == seconds_)
     return; // Pause, upgrade, background and protected saves freeze all effects.
   const float elapsed = initialized_ ? static_cast<float>(now - seconds_) : 0;
   const float blend = initialized_ ? -std::expm1(-std::min(elapsed, .25F) * 12.F) : 1.F;
-  flight_velocity_.x += (run.velocity.x - flight_velocity_.x) * blend;
-  flight_velocity_.z += (run.velocity.z - flight_velocity_.z) * blend;
+  const gameplay::Vec2 target{run.velocity.x, run.velocity.z - run.forward_speed};
+  if (!initialized_) { flight_velocity_ = target; flight_rate_ = {}; }
+  else {
+    // Exact underdamped spring: small overshoot, one soft return, no positional
+    // lag. Closed-form integration stays coherent at 30/60/120Hz and on pause.
+    const float dt = std::min(elapsed, .25F);
+    constexpr float damping = 16.F, frequency = 16.F;
+    const float decay = std::exp(-damping * dt), cosine = std::cos(frequency * dt), sine = std::sin(frequency * dt);
+    const auto spring = [&](float& value, float& rate, float goal) {
+      const float offset = value - goal, term = (rate + damping * offset) / frequency;
+      value = goal + decay * (offset * cosine + term * sine);
+      rate = decay * (rate * cosine - (damping * term + frequency * offset) * sine);
+    };
+    spring(flight_velocity_.x, flight_rate_.x, target.x);
+    spring(flight_velocity_.z, flight_rate_.z, target.z);
+  }
+  repair_seconds_ = std::max(0.F, repair_seconds_ - elapsed);
+  const float desired_speed = ship_appearance(run).rotor_speed;
   if (!initialized_)
-    rotor_angle_ = std::fmod(static_cast<float>(now) * 1.8F, 2 * std::numbers::pi_v<float>);
-  rotor_speed_ += ((run.harvest_overdrive_seconds > 0 ? 4.8F : 1.8F) - rotor_speed_) * blend;
+    rotor_angle_ = std::fmod(static_cast<float>(now) * desired_speed, 2 * std::numbers::pi_v<float>);
+  rotor_speed_ += (desired_speed - rotor_speed_) * blend;
   rotor_angle_ = std::fmod(rotor_angle_ + elapsed * rotor_speed_, 2 * std::numbers::pi_v<float>);
   for (std::size_t i = 0; i < beat_count_;) {
     beats_[i].age += elapsed;
+    if (beats_[i].dash_travelling) {
+      beats_[i].destination = run.player;
+      beats_[i].dash_travelling = run.dash_remaining_seconds > 0;
+    }
     if (beats_[i].age > .55F)
       beats_[i] = beats_[--beat_count_];
     else
@@ -119,7 +145,7 @@ void SceneEffects::update(const gameplay::Snapshot& run) {
       pending[count++] = &event;
   std::sort(pending.begin(), pending.begin() + static_cast<std::ptrdiff_t>(count), [](const auto* a, const auto* b) { return a->sequence < b->sequence; });
   for (std::size_t i = 0; i < count; ++i) {
-    emit(*pending[i], now, run.player);
+    emit(*pending[i], run);
     last_sequence_ = pending[i]->sequence;
   }
   std::array<float, actor_capacity> next_angles{};

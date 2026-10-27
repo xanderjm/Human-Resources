@@ -1,0 +1,39 @@
+[
+  {
+    "task_id": "e9a6bc76-2154-43f8-a71a-92c294026b32",
+    "type": "convert_model",
+    "status": "success",
+    "credits_consumed": 60,
+    "output_dir": "/Users/coral/Documents/App Development/Human Resources/assets/models/ufo-body/tripo-out/ufo-body-convert-e9a6bc76",
+    "files": [
+      "model.glb"
+    ],
+    "model_file": "/Users/coral/Documents/App Development/Human Resources/assets/models/ufo-body/tripo-out/ufo-body-convert-e9a6bc76/model.glb",
+    "chain": [
+      {
+        "task_id": "e9a6bc76-2154-43f8-a71a-92c294026b32",
+        "type": "convert_model",
+        "status": "success",
+        "credits_consumed": 10,
+        "output_dir": "/Users/coral/Documents/App Development/Human Resources/assets/models/ufo-body/tripo-out/ufo-body-convert-e9a6bc76",
+        "files": [
+          "model.glb"
+        ],
+        "model_file": "/Users/coral/Documents/App Development/Human Resources/assets/models/ufo-body/tripo-out/ufo-body-convert-e9a6bc76/model.glb"
+      }
+    ],
+    "source_task_id": "b6c7aefe-c86d-441c-8dd2-4d3f1c740fea",
+    "credits_breakdown": [
+      {
+        "task_id": "b6c7aefe-c86d-441c-8dd2-4d3f1c740fea",
+        "type": "image_to_model",
+        "credits_consumed": 50
+      },
+      {
+        "task_id": "e9a6bc76-2154-43f8-a71a-92c294026b32",
+        "type": "convert_model",
+        "credits_consumed": 10
+      }
+    ]
+  }
+]

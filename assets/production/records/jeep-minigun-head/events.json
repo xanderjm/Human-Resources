@@ -1,0 +1,39 @@
+[
+  {
+    "task_id": "ad75a003-404a-431c-8f57-397091457814",
+    "type": "convert_model",
+    "status": "success",
+    "credits_consumed": 60,
+    "output_dir": "/Users/coral/Documents/App Development/Human Resources/assets/models/jeep-minigun-head/tripo-out/jeep-minigun-head-convert-ad75a003",
+    "files": [
+      "model.glb"
+    ],
+    "model_file": "/Users/coral/Documents/App Development/Human Resources/assets/models/jeep-minigun-head/tripo-out/jeep-minigun-head-convert-ad75a003/model.glb",
+    "chain": [
+      {
+        "task_id": "ad75a003-404a-431c-8f57-397091457814",
+        "type": "convert_model",
+        "status": "success",
+        "credits_consumed": 10,
+        "output_dir": "/Users/coral/Documents/App Development/Human Resources/assets/models/jeep-minigun-head/tripo-out/jeep-minigun-head-convert-ad75a003",
+        "files": [
+          "model.glb"
+        ],
+        "model_file": "/Users/coral/Documents/App Development/Human Resources/assets/models/jeep-minigun-head/tripo-out/jeep-minigun-head-convert-ad75a003/model.glb"
+      }
+    ],
+    "source_task_id": "8e64a8cf-c16e-4f14-b67f-b73d955d2e5f",
+    "credits_breakdown": [
+      {
+        "task_id": "8e64a8cf-c16e-4f14-b67f-b73d955d2e5f",
+        "type": "image_to_model",
+        "credits_consumed": 50
+      },
+      {
+        "task_id": "ad75a003-404a-431c-8f57-397091457814",
+        "type": "convert_model",
+        "credits_consumed": 10
+      }
+    ]
+  }
+]

@@ -1,0 +1,90 @@
+{
+  "asset": "fence-post",
+  "model_file": "assets/models/fence-post/fence-post.glb",
+  "generator": "tools/build_measured_modules.py",
+  "orientation_variants": [],
+  "texture": "assets/textures/texture-wood/texture-wood.png",
+  "texture_sha256": "eda1074005f39ad2f739b6b457e43bb3a344a57b827bdaec47579094fec10eae",
+  "bounds_m": [
+    [
+      -0.07999999821186066,
+      0.0,
+      -0.07999999821186066
+    ],
+    [
+      0.07999999821186066,
+      1.100000023841858,
+      0.07999999821186066
+    ]
+  ],
+  "dimensions_m": [
+    0.1599999964237213,
+    1.100000023841858,
+    0.1599999964237213
+  ],
+  "ports": [],
+  "uv_mode": "world-aligned planar top UV; integer-metre translation; select baked orientation variants",
+  "notes": [
+    "Bottom-centre pivot. Grain +U follows vertical Y on post faces; top bevel preserves .16m footprint and1.1m height. Post spacing2m."
+  ],
+  "seam_checks": [],
+  "structural_review": {
+    "status": "passed"
+  },
+  "visual_review": {
+    "status": "passed_authoring_review",
+    "notes": "Reviewed isolated 3/4 render, twelve-item contact sheet, assembled tangent road/path joins, and 3x3 scrolling-ground preview. No scenery baked into references; native-device material scale review remains open."
+  },
+  "import_review": {
+    "status": "passed",
+    "units": "metres",
+    "up": "+Y",
+    "pivot": "local origin; see ports",
+    "bounds_m": [
+      [
+        -0.07999999821186066,
+        0.0,
+        -0.07999999821186066
+      ],
+      [
+        0.07999999821186066,
+        1.100000023841858,
+        0.07999999821186066
+      ]
+    ],
+    "dimensions_m": [
+      0.1599999964237213,
+      1.100000023841858,
+      0.1599999964237213
+    ]
+  },
+  "triangles": 22,
+  "vertices": 66,
+  "mesh_primitives": 1,
+  "uv_present": true,
+  "textures": [
+    {
+      "size": [
+        1024,
+        1024
+      ],
+      "mode": "RGB"
+    }
+  ],
+  "raw_accessor_bounds": [
+    {
+      "min": [
+        -0.07999999821186066,
+        0.0,
+        -0.07999999821186066
+      ],
+      "max": [
+        0.07999999821186066,
+        1.100000023841858,
+        0.07999999821186066
+      ]
+    }
+  ],
+  "extensions": [],
+  "bytes": 909660
+}

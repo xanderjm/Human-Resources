@@ -17,7 +17,7 @@ struct Tone final {
 };
 constexpr std::array<Tone, static_cast<std::size_t>(Cue::count)> tones{{
     {0.36F, 420.0F, 880.0F, 0.15F, 0.07F}, // A soft upward capture resolution.
-    {0.15F, 740.0F, 190.0F, 0.10F, 0.065F},
+    {0.15F, 740.0F, 190.0F, 0.10F, 0.02F}, // Admit each staggered laser, including full Overdrive cadence.
     {0.44F, 230.0F, 205.0F, 0.12F, 1.2F},
     {0.26F, 90.0F, 45.0F, 0.24F, 0.12F},
     {0.9F, 523.25F, 523.25F, 0.15F, 0.25F},

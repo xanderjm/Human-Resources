@@ -1,0 +1,27 @@
+── Plan ──────────────────────────
+input: /Users/coral/Documents/App Development/Human Resources/assets/references/jeep-wheel/v1.png
+model: P1-20260311 — explicit --model
+steps:
+  1. image-to-model  POST /v3/generation/image-to-model — generate a 3D model from one image
+     model="P1-20260311" face_limit=900 texture=true pbr=false texture_quality="standard" texture_alignment="original_image" export_uv=true
+  2. convert  POST /v3/models/convert — convert format / texture size / orientation
+     format="GLTF" texture_size=1024
+cost impact:
+  · non-default convert options bill as complex convert
+──────────────────────────────────
+model: P1-20260311 (explicit --model)
+task created 49e284f7-ddcc-49d0-ad97-416ae4eabc39 (@jeep-wheel)
+image_to_model · queued
+image_to_model · running 11% · 49e284f7
+image_to_model · running 19% · 49e284f7
+image_to_model · running 30% · 49e284f7
+image_to_model · running 48% · 49e284f7
+image_to_model · success 100% · 49e284f7
+✓ image_to_model · 49e284f7-ddcc-49d0-ad97-416ae4eabc39 · 50 credits
+! non-default convert options use the "complex convert" price tier
+task created 9d423381-e402-4121-9328-0e8f06fe6534 (@jeep-wheel-convert)
+convert_model · queued
+✓ convert_model · 9d423381-e402-4121-9328-0e8f06fe6534 · 10 credits
+downloading artifacts…
+✓ artifacts saved to /Users/coral/Documents/App Development/Human Resources/assets/models/jeep-wheel/tripo-out/jeep-wheel-convert-9d423381
+{"task_id":"9d423381-e402-4121-9328-0e8f06fe6534","type":"convert_model","status":"success","credits_consumed":60,"output_dir":"/Users/coral/Documents/App Development/Human Resources/assets/models/jeep-wheel/tripo-out/jeep-wheel-convert-9d423381","files":["model.glb"],"model_file":"/Users/coral/Documents/App Development/Human Resources/assets/models/jeep-wheel/tripo-out/jeep-wheel-convert-9d423381/model.glb","chain":[{"task_id":"9d423381-e402-4121-9328-0e8f06fe6534","type":"convert_model","status":"success","credits_consumed":10,"output_dir":"/Users/coral/Documents/App Development/Human Resources/assets/models/jeep-wheel/tripo-out/jeep-wheel-convert-9d423381","files":["model.glb"],"model_file":"/Users/coral/Documents/App Development/Human Resources/assets/models/jeep-wheel/tripo-out/jeep-wheel-convert-9d423381/model.glb"}],"source_task_id":"49e284f7-ddcc-49d0-ad97-416ae4eabc39","credits_breakdown":[{"task_id":"49e284f7-ddcc-49d0-ad97-416ae4eabc39","type":"image_to_model","credits_consumed":50},{"task_id":"9d423381-e402-4121-9328-0e8f06fe6534","type":"convert_model","credits_consumed":10}]}

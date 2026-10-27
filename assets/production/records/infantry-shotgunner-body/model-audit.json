@@ -1,0 +1,163 @@
+{
+  "triangles": 5763,
+  "vertices": 3860,
+  "mesh_primitives": 1,
+  "uv_present": true,
+  "textures": [
+    {
+      "size": [
+        1024,
+        1024
+      ],
+      "mode": "RGB"
+    }
+  ],
+  "raw_accessor_bounds": [
+    {
+      "min": [
+        -0.2314453125,
+        -0.4326171875,
+        -0.4990234375
+      ],
+      "max": [
+        0.2314453125,
+        0.4326171875,
+        0.4990234375
+      ]
+    }
+  ],
+  "extensions": [],
+  "bytes": 424236,
+  "asset": "infantry-shotgunner-body",
+  "model_file": "assets/models/infantry-shotgunner-body/infantry-shotgunner-body.glb",
+  "requested_face_limit": 6000,
+  "source_task_id": "80b37b36-a7cc-4152-a225-cb53c6562789",
+  "convert_task_id": "4582013f-1dca-47de-959a-e6cefa248645",
+  "credits_consumed": 60,
+  "preview": null,
+  "triangle_budget_review": {
+    "requested_target": 6000,
+    "actual_triangles": 5763,
+    "target_met": true,
+    "category_ceiling": 8000,
+    "status": "passed"
+  },
+  "structural_review": {
+    "status": "passed",
+    "notes": "Triangle mode, valid GLB length, UVs and embedded 1024px base colour checked. Requested targets are approximate; actual triangle count and target deviations are reported separately, within the user-specified 3000-prop / 8000-character ceilings. Scale, pivot, topology and visual quality require separate review."
+  },
+  "visual_review": {
+    "status": "accepted",
+    "reviewer": "measured_modules agent",
+    "reviewed_at": "2026-10-24T22:48:07.451033+00:00",
+    "notes": "Accepted short broad heavy body: wide navy helmet and padded vest, bare forearms, short navy trousers and broad brown boots. Friendly painted face and broad proportions match the approved reference. Both straight arms extend horizontally in a true T-pose; empty flat hands, no stock/barrel/trigger or gripping/seated posture. Complete limbs, no scenery or generated weapon. Compared directly against latest approved T-pose reference in four actual-model angles.",
+    "views": [
+      "three-quarter",
+      "opposite",
+      "front",
+      "right"
+    ],
+    "actual_model_evidence": [
+      {
+        "view": "three-quarter",
+        "camera_direction": [
+          1,
+          0.65,
+          1
+        ],
+        "file": "assets/production/records/infantry-shotgunner-body/review-infantry-normalized-three-quarter.png",
+        "sha256": "89bd84cd7ca7f4f06b3c58411c73a6f73c0d8c476a165fc66eea72c916dfa115"
+      },
+      {
+        "view": "opposite",
+        "camera_direction": [
+          -1,
+          0.55,
+          -1
+        ],
+        "file": "assets/production/records/infantry-shotgunner-body/review-infantry-normalized-opposite.png",
+        "sha256": "86eb4c39ac44548adf9f7ee3abc28cd203af799da22844ec2f90aec2528384f7"
+      },
+      {
+        "view": "front",
+        "camera_direction": [
+          0,
+          0.3,
+          1
+        ],
+        "file": "assets/production/records/infantry-shotgunner-body/review-infantry-normalized-front.png",
+        "sha256": "4e90ba301fa6e11b75ad663486b613849f033ffb542f0cfa6570f5d643dff6e7"
+      },
+      {
+        "view": "right",
+        "camera_direction": [
+          1,
+          0.3,
+          0
+        ],
+        "file": "assets/production/records/infantry-shotgunner-body/review-infantry-normalized-right.png",
+        "sha256": "06ba9fdf87e870cdb628fd6dcf6b795a8cfb83b8c90758fa715ec1b8c763ee55"
+      }
+    ],
+    "comparison_sheet": "assets/production/reviews/props-six-infantry-normalized.png",
+    "raw_orientation_sheet": "assets/production/reviews/props-six-infantry-raw.png",
+    "reviewed_model_sha256": "26988121870f9ef1d041b6a34ce7dc454597d817bf433a41f79464950212cb13",
+    "reviewed_reference_file": "assets/references/infantry-shotgunner-body/v1.png",
+    "reviewed_reference_sha256": "7eb99a7be62f971cc9c3ff3895e267a5f895ff486695e5988a1eaff1f0085018",
+    "pose_review": {
+      "status": "passed",
+      "pose": "unarmed true T-pose",
+      "horizontal_straight_arms": true,
+      "empty_hands": true,
+      "complete_limbs": true,
+      "seated_or_gripping_pose": false,
+      "attached_weapon": false
+    },
+    "limitations": "Static authoring mesh acceptance. No rigging, skinning, deformation, animation, equipping or seated crew pose is implemented or qualified."
+  },
+  "import_review": {
+    "status": "passed",
+    "units": "metres",
+    "up": "+Y",
+    "forward": "+Z",
+    "yaw_degrees": -90.0,
+    "pivot": "ground-centre",
+    "double_sided": false,
+    "uniform_scale": 1.7336343115124153,
+    "bounds_m": [
+      [
+        -0.8651241534988713,
+        0.0,
+        -0.4012415349887133
+      ],
+      [
+        0.8651241534988713,
+        1.5,
+        0.4012415349887133
+      ]
+    ],
+    "dimensions_m": [
+      1.7302483069977426,
+      1.5,
+      0.8024830699774266
+    ],
+    "vertex_checks": [
+      {
+        "triangles": 5763,
+        "degenerate_triangles": 0,
+        "uv_bounds": [
+          [
+            0.0,
+            0.0
+          ],
+          [
+            1.0,
+            1.0
+          ]
+        ]
+      }
+    ],
+    "notes": "Real scene vertices and indices decoded; finite positions/UVs; retained embedded 1024px base colour. Uniform root transform; raw file preserved."
+  },
+  "raw_model_file": "assets/models/infantry-shotgunner-body/tripo-out/infantry-shotgunner-body-convert-4582013f/model.glb"
+}

@@ -1,6 +1,8 @@
 #pragma once
 #include <array>
 #include <human_resources/gameplay/gameplay.h>
+#include <human_resources/gameplay/tuning.h>
+#include <cmath>
 #include <iomanip>
 #include <sstream>
 #include <string>
@@ -12,6 +14,9 @@ namespace human_resources::product {
 struct UpgradeMetric final {
   std::string_view label, unit;
 };
+inline std::string level_capture_reward() {
+  return "Abduction speed +" + std::to_string(static_cast<unsigned>(std::lround(gameplay::tuning::capture_speed_per_level * 100))) + "% / level";
+}
 inline unsigned hardware_count(const gameplay::Snapshot& run) {
   unsigned count = 0;
   for (const auto rank : run.modules)
@@ -26,9 +31,9 @@ inline std::string choice_status(const gameplay::UpgradeChoice& choice) {
 inline UpgradeMetric choice_metric(const gameplay::UpgradeChoice& choice) {
   constexpr std::array<UpgradeMetric, static_cast<unsigned>(gameplay::Module::count)> hardware{{{"LASERS", ""}, {"PIERCING TARGETS", ""}, {"ARC CHANCE", "%"}, {"DRONES", ""},
       {"PULSE DAMAGE", ""}, {"CAPTURE BEAMS", ""}, {"CAPTURE REACH", "m"}, {"JEEP CAPTURE HULL", "%"},
-      {"FIRE RATE / BEAM", "%"}, {"DAMAGE / IDLE BEAM", "%"}, {"SHIELD CAPACITY", ""},
-      {"HULL / 12 CAPTURES", ""}, {"REFLECT CHANCE", "%"}, {"FLIGHT SPEED", "m/s"},
-      {"DASH PROTECTION", "s"}, {"BIO SCORE BONUS", "%"}}};
+      {"", ""}, {"", ""}, {"SHIELD CAPACITY", ""},
+      {"HULL / 12 CAPTURES", ""}, {"", ""}, {"FLIGHT SPEED", "m/s"},
+      {"DASH PROTECTION", "s"}, {"", ""}}};
   constexpr std::array<UpgradeMetric, static_cast<unsigned>(gameplay::Research::count)> research{{{"LASER DAMAGE", ""}, {"MAXIMUM HULL", ""}, {"SHIELD CAPACITY", ""}, {"SCORE BONUS", "%"},
       {"CAPTURE SPEED BONUS", "%"}, {"FIRE RATE BONUS", "%"}, {"HULL RESTORED", ""}}};
   const auto index = choice.hardware ? static_cast<unsigned>(choice.module) : static_cast<unsigned>(choice.research);

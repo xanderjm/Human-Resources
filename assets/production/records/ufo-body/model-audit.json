@@ -1,0 +1,102 @@
+{
+  "triangles": 2788,
+  "vertices": 3722,
+  "mesh_primitives": 1,
+  "uv_present": true,
+  "textures": [
+    {
+      "size": [
+        1024,
+        1024
+      ],
+      "mode": "RGB"
+    }
+  ],
+  "raw_accessor_bounds": [
+    {
+      "min": [
+        -0.4990234375,
+        -0.3173828125,
+        -0.4990234375
+      ],
+      "max": [
+        0.4990234375,
+        0.3173828125,
+        0.4990234375
+      ]
+    }
+  ],
+  "extensions": [],
+  "bytes": 394524,
+  "asset": "ufo-body",
+  "model_file": "assets/models/ufo-body/ufo-body.glb",
+  "requested_face_limit": 3000,
+  "source_task_id": "b6c7aefe-c86d-441c-8dd2-4d3f1c740fea",
+  "convert_task_id": "e9a6bc76-2154-43f8-a71a-92c294026b32",
+  "credits_consumed": 60,
+  "preview": null,
+  "triangle_budget_review": {
+    "requested_target": 3000,
+    "actual_triangles": 2788,
+    "target_met": true,
+    "category_ceiling": 3000,
+    "status": "passed"
+  },
+  "structural_review": {
+    "status": "passed",
+    "notes": "Triangle mode, valid GLB length, UVs and embedded 1024px base colour checked. Requested targets are approximate; actual triangle count and target deviations are reported separately, within the user-specified 3000-prop / 8000-character ceilings. Scale, pivot, topology and visual quality require separate review."
+  },
+  "visual_review": {
+    "status": "accepted",
+    "notes": "Clean saucer, opaque dome and antenna; no generated effects or scenery. Six rim lenses complete the three visible in the reference. Broad blue/mint colour blocks survive; brush texture is softer than the source painting at 1024px. Width 2.2m including grounded coordinate root; antenna raises overall height to 1.399m.",
+    "views": [
+      "three-quarter",
+      "rear",
+      "top",
+      "albedo"
+    ]
+  },
+  "import_review": {
+    "status": "passed",
+    "units": "metres",
+    "up": "+Y",
+    "forward": "+Z",
+    "yaw_degrees": 0.0,
+    "uniform_scale": 2.2043052837573387,
+    "bounds_m": [
+      [
+        -1.1,
+        0.0,
+        -1.1
+      ],
+      [
+        1.1,
+        1.3992172211350296,
+        1.1
+      ]
+    ],
+    "dimensions_m": [
+      2.2,
+      1.3992172211350296,
+      2.2
+    ],
+    "vertex_checks": [
+      {
+        "triangles": 2788,
+        "degenerate_triangles": 0,
+        "uv_bounds": [
+          [
+            0.000775153108406812,
+            0.0007426738739013672
+          ],
+          [
+            0.9937894940376282,
+            0.9992485046386719
+          ]
+        ]
+      }
+    ],
+    "notes": "Real scene vertices and indices decoded; finite positions/UVs; retained embedded 1024px base colour. Uniform root transform; raw file preserved."
+  },
+  "raw_model_file": "assets/models/ufo-body/tripo-out/ufo-body-convert-e9a6bc76/model.glb"
+}

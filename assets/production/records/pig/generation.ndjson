@@ -1,0 +1,29 @@
+── Plan ──────────────────────────
+input: /Users/coral/Documents/App Development/Human Resources/assets/references/pig/v1.png
+model: P1-20260311 — explicit --model
+steps:
+  1. image-to-model  POST /v3/generation/image-to-model — generate a 3D model from one image
+     model="P1-20260311" face_limit=4500 texture=true pbr=false texture_quality="standard" texture_alignment="original_image" export_uv=true
+  2. convert  POST /v3/models/convert — convert format / texture size / orientation
+     format="GLTF" texture_size=1024
+cost impact:
+  · non-default convert options bill as complex convert
+──────────────────────────────────
+model: P1-20260311 (explicit --model)
+task created 9c4afa95-1332-4a00-8eaf-aa3e315c692d (@pig)
+image_to_model · queued
+image_to_model · running 13% · 9c4afa95
+image_to_model · running 23% · 9c4afa95
+image_to_model · running 38% · 9c4afa95
+image_to_model · running 60% · 9c4afa95
+image_to_model · running 89% · 9c4afa95
+image_to_model · success 100% · 9c4afa95
+✓ image_to_model · 9c4afa95-1332-4a00-8eaf-aa3e315c692d · 50 credits
+! non-default convert options use the "complex convert" price tier
+task created b76706c6-8740-445b-8275-8c4115cc174c (@pig-convert)
+convert_model · queued
+convert_model · success 100% · b76706c6
+✓ convert_model · b76706c6-8740-445b-8275-8c4115cc174c · 10 credits
+downloading artifacts…
+✓ artifacts saved to /Users/coral/Documents/App Development/Human Resources/assets/models/pig/tripo-out/pig-convert-b76706c6
+{"task_id":"b76706c6-8740-445b-8275-8c4115cc174c","type":"convert_model","status":"success","credits_consumed":60,"output_dir":"/Users/coral/Documents/App Development/Human Resources/assets/models/pig/tripo-out/pig-convert-b76706c6","files":["model.glb"],"model_file":"/Users/coral/Documents/App Development/Human Resources/assets/models/pig/tripo-out/pig-convert-b76706c6/model.glb","chain":[{"task_id":"b76706c6-8740-445b-8275-8c4115cc174c","type":"convert_model","status":"success","credits_consumed":10,"output_dir":"/Users/coral/Documents/App Development/Human Resources/assets/models/pig/tripo-out/pig-convert-b76706c6","files":["model.glb"],"model_file":"/Users/coral/Documents/App Development/Human Resources/assets/models/pig/tripo-out/pig-convert-b76706c6/model.glb"}],"source_task_id":"9c4afa95-1332-4a00-8eaf-aa3e315c692d","credits_breakdown":[{"task_id":"9c4afa95-1332-4a00-8eaf-aa3e315c692d","type":"image_to_model","credits_consumed":50},{"task_id":"b76706c6-8740-445b-8275-8c4115cc174c","type":"convert_model","credits_consumed":10}]}

@@ -1,0 +1,214 @@
+{
+  "status": "passed",
+  "checks": [
+    {
+      "asset": "ground-tile",
+      "port": "start",
+      "samples": 1025,
+      "integer_grid_translation": [
+        16,
+        16
+      ],
+      "max_rgb_error": 0.0
+    },
+    {
+      "asset": "ground-tile",
+      "port": "end",
+      "samples": 1025,
+      "integer_grid_translation": [
+        16,
+        16
+      ],
+      "max_rgb_error": 0.0
+    },
+    {
+      "asset": "path-straight",
+      "port": "start",
+      "samples": 1025,
+      "integer_grid_translation": [
+        16,
+        16
+      ],
+      "max_rgb_error": 0.0
+    },
+    {
+      "asset": "path-straight",
+      "port": "end",
+      "samples": 1025,
+      "integer_grid_translation": [
+        16,
+        16
+      ],
+      "max_rgb_error": 0.0
+    },
+    {
+      "asset": "path-corner",
+      "port": "start",
+      "samples": 1025,
+      "integer_grid_translation": [
+        16,
+        16
+      ],
+      "max_rgb_error": 0.0
+    },
+    {
+      "asset": "path-corner",
+      "port": "end",
+      "samples": 1025,
+      "integer_grid_translation": [
+        16,
+        16
+      ],
+      "max_rgb_error": 0.0
+    },
+    {
+      "asset": "soil-bed",
+      "port": "start",
+      "samples": 1025,
+      "integer_grid_translation": [
+        16,
+        16
+      ],
+      "max_rgb_error": 0.0
+    },
+    {
+      "asset": "soil-bed",
+      "port": "end",
+      "samples": 1025,
+      "integer_grid_translation": [
+        16,
+        16
+      ],
+      "max_rgb_error": 0.0
+    },
+    {
+      "asset": "road-straight",
+      "port": "start",
+      "samples": 1025,
+      "integer_grid_translation": [
+        16,
+        16
+      ],
+      "max_rgb_error": 0.0
+    },
+    {
+      "asset": "road-straight",
+      "port": "end",
+      "samples": 1025,
+      "integer_grid_translation": [
+        16,
+        16
+      ],
+      "max_rgb_error": 0.0
+    },
+    {
+      "asset": "road-corner",
+      "port": "start",
+      "samples": 1025,
+      "integer_grid_translation": [
+        16,
+        16
+      ],
+      "max_rgb_error": 0.0
+    },
+    {
+      "asset": "road-corner",
+      "port": "end",
+      "samples": 1025,
+      "integer_grid_translation": [
+        16,
+        16
+      ],
+      "max_rgb_error": 0.0
+    },
+    {
+      "asset": "road-junction",
+      "port": "west",
+      "samples": 1025,
+      "integer_grid_translation": [
+        16,
+        16
+      ],
+      "max_rgb_error": 0.0
+    },
+    {
+      "asset": "road-junction",
+      "port": "east",
+      "samples": 1025,
+      "integer_grid_translation": [
+        16,
+        16
+      ],
+      "max_rgb_error": 0.0
+    },
+    {
+      "asset": "road-junction",
+      "port": "north",
+      "samples": 1025,
+      "integer_grid_translation": [
+        16,
+        16
+      ],
+      "max_rgb_error": 0.0
+    },
+    {
+      "asset": "pavement-straight",
+      "port": "start",
+      "samples": 1025,
+      "integer_grid_translation": [
+        16,
+        16
+      ],
+      "max_rgb_error": 0.0
+    },
+    {
+      "asset": "pavement-straight",
+      "port": "end",
+      "samples": 1025,
+      "integer_grid_translation": [
+        16,
+        16
+      ],
+      "max_rgb_error": 0.0
+    },
+    {
+      "asset": "pavement-corner",
+      "port": "start",
+      "samples": 1025,
+      "integer_grid_translation": [
+        16,
+        16
+      ],
+      "max_rgb_error": 0.0
+    },
+    {
+      "asset": "pavement-corner",
+      "port": "end",
+      "samples": 1025,
+      "integer_grid_translation": [
+        16,
+        16
+      ],
+      "max_rgb_error": 0.0
+    },
+    {
+      "asset": "pavement-end",
+      "port": "join",
+      "samples": 1025,
+      "integer_grid_translation": [
+        16,
+        16
+      ],
+      "max_rgb_error": 0.0
+    }
+  ],
+  "texture_files_verified_periodic": [
+    "grass",
+    "dirt",
+    "soil",
+    "asphalt",
+    "pavement",
+    "wood",
+    "sand"
+  ]
+}

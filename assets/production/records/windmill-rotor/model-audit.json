@@ -1,0 +1,363 @@
+{
+  "triangles": 1362,
+  "vertices": 1442,
+  "mesh_primitives": 9,
+  "uv_present": true,
+  "textures": [
+    {
+      "size": [
+        1024,
+        1024
+      ],
+      "mode": "RGB"
+    }
+  ],
+  "raw_accessor_bounds": [
+    {
+      "min": [
+        -0.1279296875,
+        -0.4951171875,
+        -0.4990234375
+      ],
+      "max": [
+        0.1279296875,
+        0.4951171875,
+        0.4990234375
+      ]
+    },
+    {
+      "min": [
+        -0.08699999749660492,
+        0.0735933929681778,
+        -0.012828664854168892
+      ],
+      "max": [
+        -0.041999999433755875,
+        0.32547006011009216,
+        0.04018434137105942
+      ]
+    },
+    {
+      "min": [
+        -0.08699999749660492,
+        0.03764640912413597,
+        0.04289944842457771
+      ],
+      "max": [
+        -0.041999999433755875,
+        0.23367375135421753,
+        0.25101444125175476
+      ]
+    },
+    {
+      "min": [
+        -0.08699999749660492,
+        -0.04326485097408295,
+        0.07336974143981934
+      ],
+      "max": [
+        -0.041999999433755875,
+        0.01210231613367796,
+        0.3254145383834839
+      ]
+    },
+    {
+      "min": [
+        -0.08699999749660492,
+        -0.2632896602153778,
+        0.03343280777335167
+      ],
+      "max": [
+        -0.041999999433755875,
+        -0.04676230996847153,
+        0.2192879617214203
+      ]
+    },
+    {
+      "min": [
+        -0.08699999749660492,
+        -0.32546189427375793,
+        -0.040762972086668015
+      ],
+      "max": [
+        -0.041999999433755875,
+        -0.07355191558599472,
+        0.012692386284470558
+      ]
+    },
+    {
+      "min": [
+        -0.08699999749660492,
+        -0.24241919815540314,
+        -0.2426559180021286
+      ],
+      "max": [
+        -0.041999999433755875,
+        -0.04026922583580017,
+        -0.040340933948755264
+      ]
+    },
+    {
+      "min": [
+        -0.08699999749660492,
+        -0.043997976928949356,
+        -0.32539692521095276
+      ],
+      "max": [
+        -0.041999999433755875,
+        0.01192915253341198,
+        -0.07331548631191254
+      ]
+    },
+    {
+      "min": [
+        -0.08699999749660492,
+        0.04001910239458084,
+        -0.24347813427448273
+      ],
+      "max": [
+        -0.041999999433755875,
+        0.24159252643585205,
+        -0.0405903086066246
+      ]
+    }
+  ],
+  "extensions": [],
+  "bytes": 249400,
+  "asset": "windmill-rotor",
+  "model_file": "assets/models/windmill-rotor/windmill-rotor.glb",
+  "requested_face_limit": 1400,
+  "source_task_id": "a0e389f0-05d6-446c-b0a2-6ea95b395826",
+  "convert_task_id": "3f7e1b16-481c-42cd-9663-c62d831053fe",
+  "credits_consumed": 60,
+  "preview": null,
+  "triangle_budget_review": {
+    "requested_target": 1400,
+    "actual_triangles": 1362,
+    "target_met": true,
+    "category_ceiling": 3000,
+    "status": "passed"
+  },
+  "structural_review": {
+    "status": "passed",
+    "notes": "Triangle mode, valid GLB length, UVs and embedded 1024px base colour checked. Requested targets are approximate; actual triangle count and target deviations are reported separately, within the user-specified 3000-prop / 8000-character ceilings. Scale, pivot, topology and visual quality require separate review."
+  },
+  "visual_review": {
+    "status": "accepted",
+    "reviewer": "seamless_materials agent",
+    "notes": "Accepted after authored eight-spoke bridge repair: all eight vanes now visibly connect to hub from front and back; clear inter-vane gaps retained. Normal faces +Z, bounding diameter 1.8m with centre pivot; measured from actual vertices.",
+    "model_sha256": "d74c23fe434fd80f2eb0595b91f4237eca042e77d87f8d15788d50e2f7a902a6",
+    "reviewed_at": "2026-10-24T22:05:11.179782+00:00",
+    "qualification": "Authoring/import QA only; native engine rendering, collisions and device performance not qualified."
+  },
+  "import_review": {
+    "status": "passed",
+    "units": "metres",
+    "up": "+Y",
+    "forward": "+Z",
+    "yaw_degrees": -90.0,
+    "pivot": "centre",
+    "double_sided": false,
+    "uniform_scale": 1.803522504892368,
+    "bounds_m": [
+      [
+        -0.9,
+        -0.8929549902152643,
+        -0.23072407045009785
+      ],
+      [
+        0.9,
+        0.8929549902152643,
+        0.23072407045009785
+      ]
+    ],
+    "dimensions_m": [
+      1.8,
+      1.7859099804305285,
+      0.4614481409001957
+    ],
+    "vertex_checks": [
+      {
+        "triangles": 1266,
+        "degenerate_triangles": 0,
+        "uv_bounds": [
+          [
+            0.0,
+            0.0
+          ],
+          [
+            1.0,
+            1.0
+          ]
+        ]
+      },
+      {
+        "triangles": 12,
+        "degenerate_triangles": 0,
+        "uv_bounds": [
+          [
+            0.9866177439689636,
+            0.22482067346572876
+          ],
+          [
+            0.9988315105438232,
+            0.2512326240539551
+          ]
+        ]
+      },
+      {
+        "triangles": 12,
+        "degenerate_triangles": 0,
+        "uv_bounds": [
+          [
+            0.9866177439689636,
+            0.22482067346572876
+          ],
+          [
+            0.9988315105438232,
+            0.2512326240539551
+          ]
+        ]
+      },
+      {
+        "triangles": 12,
+        "degenerate_triangles": 0,
+        "uv_bounds": [
+          [
+            0.9866177439689636,
+            0.22482067346572876
+          ],
+          [
+            0.9988315105438232,
+            0.2512326240539551
+          ]
+        ]
+      },
+      {
+        "triangles": 12,
+        "degenerate_triangles": 0,
+        "uv_bounds": [
+          [
+            0.9866177439689636,
+            0.22482067346572876
+          ],
+          [
+            0.9988315105438232,
+            0.2512326240539551
+          ]
+        ]
+      },
+      {
+        "triangles": 12,
+        "degenerate_triangles": 0,
+        "uv_bounds": [
+          [
+            0.9866177439689636,
+            0.22482067346572876
+          ],
+          [
+            0.9988315105438232,
+            0.2512326240539551
+          ]
+        ]
+      },
+      {
+        "triangles": 12,
+        "degenerate_triangles": 0,
+        "uv_bounds": [
+          [
+            0.9866177439689636,
+            0.22482067346572876
+          ],
+          [
+            0.9988315105438232,
+            0.2512326240539551
+          ]
+        ]
+      },
+      {
+        "triangles": 12,
+        "degenerate_triangles": 0,
+        "uv_bounds": [
+          [
+            0.9866177439689636,
+            0.22482067346572876
+          ],
+          [
+            0.9988315105438232,
+            0.2512326240539551
+          ]
+        ]
+      },
+      {
+        "triangles": 12,
+        "degenerate_triangles": 0,
+        "uv_bounds": [
+          [
+            0.9866177439689636,
+            0.22482067346572876
+          ],
+          [
+            0.9988315105438232,
+            0.2512326240539551
+          ]
+        ]
+      }
+    ],
+    "notes": "Real scene vertices and indices decoded; finite positions/UVs; retained embedded 1024px base colour. Uniform root transform; raw file preserved. Semantic forward and repaired geometry checked in actual rendered views."
+  },
+  "generation_raw_model_file": "assets/models/windmill-rotor/tripo-out/windmill-rotor-convert-3f7e1b16/model.glb",
+  "raw_model_file": "assets/models/windmill-rotor/windmill-rotor-repaired-source.glb",
+  "geometry_repair": {
+    "asset": "windmill-rotor",
+    "description": "Added eight narrow supported radial spokes to close the visible hub-to-vane gaps.",
+    "source": "assets/models/windmill-rotor/tripo-out/windmill-rotor-convert-3f7e1b16/model.glb",
+    "source_sha256": "260ddb246368bceaf7f8e8d0e7c11cc3599a982c980fc71a6a16b0e8e61302ba",
+    "repaired_source": "assets/models/windmill-rotor/windmill-rotor-repaired-source.glb",
+    "repaired_source_sha256": "9d487242b914566cc712f1de9813a59ed943204b47e374d232d5c56fb7e291b2",
+    "details": {
+      "added_triangles": 96,
+      "measured_radial_directions_yz": [
+        [
+          0.9976586699485779,
+          0.06838919967412949
+        ],
+        [
+          0.6783004403114319,
+          0.734784722328186
+        ],
+        [
+          -0.07790633291006088,
+          0.9969606995582581
+        ],
+        [
+          -0.7751299142837524,
+          0.6318019032478333
+        ],
+        [
+          -0.9975345730781555,
+          -0.07017646729946136
+        ],
+        [
+          -0.7067210674285889,
+          -0.7074921727180481
+        ],
+        [
+          -0.08017206192016602,
+          -0.996781051158905
+        ],
+        [
+          0.7040290832519531,
+          -0.710171103477478
+        ]
+      ],
+      "raw_radial_span": [
+        0.075,
+        0.325
+      ],
+      "raw_spoke_width": 0.036,
+      "raw_thickness": 0.045
+    },
+    "material_policy": "Original embedded base-colour and material retained; no PBR maps, no retexture."
+  }
+}

@@ -1,0 +1,102 @@
+{
+  "triangles": 1688,
+  "vertices": 1779,
+  "mesh_primitives": 1,
+  "uv_present": true,
+  "textures": [
+    {
+      "size": [
+        1024,
+        1024
+      ],
+      "mode": "RGB"
+    }
+  ],
+  "raw_accessor_bounds": [
+    {
+      "min": [
+        -0.1123046875,
+        -0.4990234375,
+        -0.1123046875
+      ],
+      "max": [
+        0.1123046875,
+        0.4990234375,
+        0.1123046875
+      ]
+    }
+  ],
+  "extensions": [],
+  "bytes": 274340,
+  "asset": "streetlamp",
+  "model_file": "assets/models/streetlamp/streetlamp.glb",
+  "requested_face_limit": 1600,
+  "source_task_id": "1c96be53-5dc5-47cd-b930-c1b4c981b650",
+  "convert_task_id": "e4dab917-841b-4d3e-839e-7509d03d6229",
+  "credits_consumed": 60,
+  "preview": null,
+  "triangle_budget_review": {
+    "requested_target": 1600,
+    "actual_triangles": 1688,
+    "target_met": false,
+    "category_ceiling": 3000,
+    "status": "passed"
+  },
+  "structural_review": {
+    "status": "passed",
+    "notes": "Triangle mode, valid GLB length, UVs and embedded 1024px base colour checked. Requested targets are approximate; actual triangle count and target deviations are reported separately, within the user-specified 3000-prop / 8000-character ceilings. Scale, pivot, topology and visual quality require separate review."
+  },
+  "visual_review": {
+    "status": "accepted",
+    "reviewer": "seamless_materials agent",
+    "notes": "Accepted against approved reference from opposite actual GLB views: continuous slate post, grounded square base, warm enclosed lantern and roof. No cast light cone, base terrain or extra props. Approximately symmetric around Y; +Z is canonical front.",
+    "model_sha256": "a4681c94e84b0b20f853071d6e0d5b02d0f276fa5587a0b97c1881dde22133b5",
+    "reviewed_at": "2026-10-24T22:05:11.181632+00:00",
+    "qualification": "Authoring/import QA only; native engine rendering, collisions and device performance not qualified."
+  },
+  "import_review": {
+    "status": "passed",
+    "units": "metres",
+    "up": "+Y",
+    "forward": "+Z",
+    "yaw_degrees": 0.0,
+    "pivot": "ground-centre",
+    "double_sided": false,
+    "uniform_scale": 2.8054794520547945,
+    "bounds_m": [
+      [
+        -0.3150684931506849,
+        0.0,
+        -0.3150684931506849
+      ],
+      [
+        0.3150684931506849,
+        2.8,
+        0.3150684931506849
+      ]
+    ],
+    "dimensions_m": [
+      0.6301369863013698,
+      2.8,
+      0.6301369863013698
+    ],
+    "vertex_checks": [
+      {
+        "triangles": 1688,
+        "degenerate_triangles": 0,
+        "uv_bounds": [
+          [
+            0.0,
+            0.0
+          ],
+          [
+            1.0,
+            1.0
+          ]
+        ]
+      }
+    ],
+    "notes": "Real scene vertices and indices decoded; finite positions/UVs; retained embedded 1024px base colour. Uniform root transform; raw file preserved. Semantic forward and repaired geometry checked in actual rendered views."
+  },
+  "raw_model_file": "assets/models/streetlamp/tripo-out/streetlamp-convert-e4dab917/model.glb"
+}

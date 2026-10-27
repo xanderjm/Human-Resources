@@ -1,0 +1,58 @@
+{
+  "schema_version": 1,
+  "id": "ui-upgrade-card",
+  "status": "art-review-passed",
+  "production": {
+    "status": "generated",
+    "file": "assets/graphics/ui-upgrade-card/ui-upgrade-card.png",
+    "source": "assets/graphics/ui-upgrade-card/ui-upgrade-card.svg",
+    "metadata": "assets/graphics/ui-upgrade-card/asset.json"
+  },
+  "reference": {
+    "status": "approved",
+    "path": "assets/references/ui-upgrade-card/v1.png",
+    "sha256": "8feddfe3d026435e881529af90a72e9397f380eee4a3fbd30a53cfb4d203766e"
+  },
+  "qa": {
+    "status": "art-review-passed",
+    "visual_review": "Empty ivory/navy rounded card with clean content areas; no text, score, level or icons baked in.",
+    "review_evidence": "assets/production/reviews/native-graphics-contact-sheet.png",
+    "reviewed_against": "art/style-guide/ufo-asset-style-guide.png",
+    "runtime_qualified": false
+  },
+  "alpha_audit": {
+    "dimensions_px": [
+      512,
+      640
+    ],
+    "rgba": true,
+    "alpha_range": [
+      0,
+      255
+    ],
+    "alpha_nonzero_bbox": [
+      24,
+      24,
+      488,
+      616
+    ],
+    "transparent_margin_px": [
+      24,
+      24,
+      24,
+      24
+    ],
+    "border_alpha_max": 0,
+    "visible_pixels": 273564,
+    "repeat_axis_check": null,
+    "sha256": "dadcd87088fd6f29a9d15b76a2b895be1f19e3140443057c7819f54236213924"
+  },
+  "variants": [],
+  "svg": {
+    "self_contained": true,
+    "text_baked": false,
+    "external_dependencies": false
+  },
+  "usage": "Nine-slice card background; inset [64,224,64,64]px. Populate icon and dynamic text separately.",
+  "limitations": "Art production asset. Native runtime upload, blend, depth/occlusion and device readability are not qualified."
+}

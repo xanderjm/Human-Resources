@@ -18,12 +18,20 @@ RunReceipt earned_run(AccountStore& store) {
 void rewards_and_achievements_are_exactly_once() {
   MemoryBackend backend; AccountStore store(backend);
   require(store.load().issue == LoadIssue::missing, "absence is explicit");
-  require(store.account().unlocked_blueprints == human_resources::gameplay::tuning::starter_blueprints, "all ten starter blueprints");
+  require(store.account().unlocked_blueprints == human_resources::gameplay::tuning::starter_blueprints, "all nine starter blueprints, including Beam Splitter");
+  auto legacy = store.account(); legacy.unlocked_blueprints = 65535U;
+  legacy.credits = 432; legacy.ranks = {1, 2, 3, 4};
+  Account decoded;
+  const auto legacy_bytes = encode_account(legacy);
+  require(!legacy_bytes.empty() && decode_account(legacy_bytes, decoded) &&
+      encode_account(decoded) == legacy_bytes && decoded.credits == 432 && decoded.ranks == legacy.ranks,
+      "retired blueprint bits roundtrip historical account progress without renumbering or loss");
+  require(store.blueprints().size() == 3, "the library exposes only three surviving achievement unlocks");
   const auto run = earned_run(store);
   require(base_credits(run) == 778, "exact candidate reward formula");
   require(store.settle(run).succeeded(), "settles run");
   require(store.account().credits == 778 && store.account().counters.completed_runs == 1, "banks base once");
-  require(store.account().unlocked_blueprints == (65535U & ~(1U << 9)), "earned achievements automatically unlock five; reserve waits for 800 base credits");
+  require(store.account().unlocked_blueprints == human_resources::gameplay::tuning::available_blueprints, "the three surviving achievements unlock only live hardware");
   require(store.account().results.newly_unlocked != 0, "results show new unlocks");
   require(store.settle(run).issue == MutationIssue::duplicate && store.account().credits == 778, "duplicate death does not bank twice");
   for (const auto outcome : {PlacementOutcome::cancelled, PlacementOutcome::unavailable, PlacementOutcome::failed})
@@ -94,16 +102,16 @@ void blueprint_milestones_are_distinct_from_run_prerequisites() {
       "blueprints have readable names and explicit account capture units");
   require(fresh[0].requirement.find("Beam Splitter") != std::string::npos,
       "run draw prerequisite remains separate from account milestone");
-  require(fresh[2].milestone == "0 / 800 base credits" && fresh[3].milestone == "0 / 60 military defeats",
-      "earned base credits and military defeats have distinct milestone units");
-  require(fresh[4].milestone == "0 / 1800 active seconds" && fresh[5].milestone == "0 / 3600 active seconds",
-      "playtime milestones explicitly count active seconds");
+  require(fresh[1].milestone == "0 / 60 military defeats" && fresh[2].milestone == "0 / 3600 active seconds",
+      "surviving military and active-play milestones retain their exact units");
   const auto run = earned_run(store);
   require(store.settle(run).succeeded(), "settle milestone fixture");
   const auto earned = store.blueprints();
-  require(earned[0].milestone == "UNLOCKED / 300 captures" && earned[4].milestone == "UNLOCKED / 1800 active seconds",
-      "completed milestones expose unlocked state beyond colour");
-  require(earned[2].milestone == "778 / 800 base credits", "milestone progress follows banked base rewards");
+  require(earned[0].milestone == "UNLOCKED / 300 captures" && earned[2].milestone == "UNLOCKED / 3600 active seconds",
+      "completed surviving milestones expose unlocked state beyond colour");
+  for (const auto& blueprint : earned)
+    require(blueprint.title != "Reserve Battery" && blueprint.title != "Overtime Reactor" && blueprint.title != "Mirror Plating",
+        "retired achievements never appear in the live library");
 }
 }
 int main() {

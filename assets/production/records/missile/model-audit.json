@@ -1,0 +1,101 @@
+{
+  "triangles": 980,
+  "vertices": 971,
+  "mesh_primitives": 1,
+  "uv_present": true,
+  "textures": [
+    {
+      "size": [
+        1024,
+        1024
+      ],
+      "mode": "RGB"
+    }
+  ],
+  "raw_accessor_bounds": [
+    {
+      "min": [
+        -0.2861328125,
+        -0.2646484375,
+        -0.4990234375
+      ],
+      "max": [
+        0.2861328125,
+        0.2646484375,
+        0.4990234375
+      ]
+    }
+  ],
+  "extensions": [],
+  "bytes": 209276,
+  "asset": "missile",
+  "model_file": "assets/models/missile/missile.glb",
+  "requested_face_limit": 1000,
+  "source_task_id": "54d75941-9530-4014-bfba-6f8ce2bcbd7b",
+  "convert_task_id": "54ecd9a3-ae6c-4a8b-b662-b9823aaefb1e",
+  "credits_consumed": 60,
+  "preview": null,
+  "triangle_budget_review": {
+    "requested_target": 1000,
+    "actual_triangles": 980,
+    "target_met": true,
+    "category_ceiling": 3000,
+    "status": "passed"
+  },
+  "structural_review": {
+    "status": "passed",
+    "notes": "Triangle mode, valid GLB length, UVs and embedded 1024px base colour checked. Requested targets are approximate; actual triangle count and target deviations are reported separately, within the user-specified 3000-prop / 8000-character ceilings. Scale, pivot, topology and visual quality require separate review."
+  },
+  "visual_review": {
+    "status": "accepted",
+    "notes": "Compact navy/coral missile with clean nose/fins/exhaust opening and no smoke/flame. Correct +Z aim, centre pivot, 0.85m long.",
+    "views": [
+      "three-quarter"
+    ]
+  },
+  "import_review": {
+    "status": "passed",
+    "units": "metres",
+    "up": "+Y",
+    "forward": "+Z",
+    "yaw_degrees": 180.0,
+    "pivot": "centre",
+    "double_sided": false,
+    "uniform_scale": 0.8516634050880626,
+    "bounds_m": [
+      [
+        -0.2436888454011742,
+        -0.22539138943248532,
+        -0.425
+      ],
+      [
+        0.24368884540117414,
+        0.22539138943248532,
+        0.425
+      ]
+    ],
+    "dimensions_m": [
+      0.48737769080234833,
+      0.45078277886497065,
+      0.85
+    ],
+    "vertex_checks": [
+      {
+        "triangles": 980,
+        "degenerate_triangles": 0,
+        "uv_bounds": [
+          [
+            0.0,
+            0.0
+          ],
+          [
+            1.0,
+            1.0
+          ]
+        ]
+      }
+    ],
+    "notes": "Real scene vertices and indices decoded; finite positions/UVs; retained embedded 1024px base colour. Uniform root transform; raw file preserved."
+  },
+  "raw_model_file": "assets/models/missile/tripo-out/missile-convert-54ecd9a3/model.glb"
+}

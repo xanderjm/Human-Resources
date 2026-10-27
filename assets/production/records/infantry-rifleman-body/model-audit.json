@@ -1,0 +1,163 @@
+{
+  "triangles": 4990,
+  "vertices": 5872,
+  "mesh_primitives": 1,
+  "uv_present": true,
+  "textures": [
+    {
+      "size": [
+        1024,
+        1024
+      ],
+      "mode": "RGB"
+    }
+  ],
+  "raw_accessor_bounds": [
+    {
+      "min": [
+        -0.2041015625,
+        -0.4560546875,
+        -0.4990234375
+      ],
+      "max": [
+        0.2041015625,
+        0.4560546875,
+        0.4990234375
+      ]
+    }
+  ],
+  "extensions": [],
+  "bytes": 553356,
+  "asset": "infantry-rifleman-body",
+  "model_file": "assets/models/infantry-rifleman-body/infantry-rifleman-body.glb",
+  "requested_face_limit": 5000,
+  "source_task_id": "278374b5-5020-4182-a002-aff5a56d36c8",
+  "convert_task_id": "623defd5-e746-46a0-8048-5ac73d3b24fa",
+  "credits_consumed": 60,
+  "preview": null,
+  "triangle_budget_review": {
+    "requested_target": 5000,
+    "actual_triangles": 4990,
+    "target_met": true,
+    "category_ceiling": 8000,
+    "status": "passed"
+  },
+  "structural_review": {
+    "status": "passed",
+    "notes": "Triangle mode, valid GLB length, UVs and embedded 1024px base colour checked. Requested targets are approximate; actual triangle count and target deviations are reported separately, within the user-specified 3000-prop / 8000-character ceilings. Scale, pivot, topology and visual quality require separate review."
+  },
+  "visual_review": {
+    "status": "accepted",
+    "reviewer": "measured_modules agent",
+    "reviewed_at": "2026-10-24T22:48:07.446678+00:00",
+    "notes": "Accepted compact rifleman body: navy short-sleeve shirt and shorts, coral/orange sleeve stripes, brown boots/pouches and readable friendly painted face under navy helmet. Both straight arms extend horizontally in a true T-pose; flat empty hands with no gun, grip object or aiming/seated pose. Two complete arms/hands and legs/boots; no attached weapon or scenery. Compared directly against latest approved T-pose reference in four actual-model angles.",
+    "views": [
+      "three-quarter",
+      "opposite",
+      "front",
+      "right"
+    ],
+    "actual_model_evidence": [
+      {
+        "view": "three-quarter",
+        "camera_direction": [
+          1,
+          0.65,
+          1
+        ],
+        "file": "assets/production/records/infantry-rifleman-body/review-infantry-normalized-three-quarter.png",
+        "sha256": "6d24a3a142b1ecb5b2b0a6667191b20270dcc2fa255cd23117716d52f96b774e"
+      },
+      {
+        "view": "opposite",
+        "camera_direction": [
+          -1,
+          0.55,
+          -1
+        ],
+        "file": "assets/production/records/infantry-rifleman-body/review-infantry-normalized-opposite.png",
+        "sha256": "7d8fb95fc03d76f8e78e8c4b0b2210958804971324b5d7f897b2be51acac6710"
+      },
+      {
+        "view": "front",
+        "camera_direction": [
+          0,
+          0.3,
+          1
+        ],
+        "file": "assets/production/records/infantry-rifleman-body/review-infantry-normalized-front.png",
+        "sha256": "bd27661c2e12d4f938bfee71834b19a390735ac2e8fc43eb6e5fae0f3c7f90eb"
+      },
+      {
+        "view": "right",
+        "camera_direction": [
+          1,
+          0.3,
+          0
+        ],
+        "file": "assets/production/records/infantry-rifleman-body/review-infantry-normalized-right.png",
+        "sha256": "05621ee3e7ec468068a042e52bd530d7f78ae579d0c83f85628b256b01e5b8d6"
+      }
+    ],
+    "comparison_sheet": "assets/production/reviews/props-six-infantry-normalized.png",
+    "raw_orientation_sheet": "assets/production/reviews/props-six-infantry-raw.png",
+    "reviewed_model_sha256": "876d638d28bbff3514da68d4b5cb5b70ec1483e190ab5c2e90ba7cb6f8a7e84f",
+    "reviewed_reference_file": "assets/references/infantry-rifleman-body/v1.png",
+    "reviewed_reference_sha256": "d80bba8571c75d38d61c9b9bba5958ebcfe3f889d8312e0bc5604adc83e0da32",
+    "pose_review": {
+      "status": "passed",
+      "pose": "unarmed true T-pose",
+      "horizontal_straight_arms": true,
+      "empty_hands": true,
+      "complete_limbs": true,
+      "seated_or_gripping_pose": false,
+      "attached_weapon": false
+    },
+    "limitations": "Static authoring mesh acceptance. No rigging, skinning, deformation, animation, equipping or seated crew pose is implemented or qualified."
+  },
+  "import_review": {
+    "status": "passed",
+    "units": "metres",
+    "up": "+Y",
+    "forward": "+Z",
+    "yaw_degrees": -90.0,
+    "pivot": "ground-centre",
+    "double_sided": false,
+    "uniform_scale": 1.7541755888650965,
+    "bounds_m": [
+      [
+        -0.8753747323340472,
+        0.0,
+        -0.3580299785867238
+      ],
+      [
+        0.8753747323340472,
+        1.6,
+        0.3580299785867238
+      ]
+    ],
+    "dimensions_m": [
+      1.7507494646680943,
+      1.6,
+      0.7160599571734476
+    ],
+    "vertex_checks": [
+      {
+        "triangles": 4990,
+        "degenerate_triangles": 0,
+        "uv_bounds": [
+          [
+            0.0009670013096183538,
+            0.0009670257568359375
+          ],
+          [
+            0.993156373500824,
+            0.9990329742431641
+          ]
+        ]
+      }
+    ],
+    "notes": "Real scene vertices and indices decoded; finite positions/UVs; retained embedded 1024px base colour. Uniform root transform; raw file preserved."
+  },
+  "raw_model_file": "assets/models/infantry-rifleman-body/tripo-out/infantry-rifleman-body-convert-623defd5/model.glb"
+}

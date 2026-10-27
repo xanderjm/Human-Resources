@@ -59,6 +59,16 @@ void describe_control(ui::AccessibilityNode& node, const View& view, const Butto
   case Command::page_previous:
     node.label = "Previous page";
     break;
+  case Command::build_hardware:
+  case Command::build_research:
+  case Command::build_hangar: {
+    constexpr std::array names{"Flight hardware","Flight research","Permanent Hangar"};
+    const auto index=static_cast<unsigned>(button.command)-static_cast<unsigned>(Command::build_hardware);
+    node.label=names[index];
+    node.value=index==2?"Permanent bonuses for future flights.":"Temporary equipment and bonuses for this flight.";
+    node.selected=index==view.ui_page;
+    break;
+  }
   case Command::privacy:
     node.label = view.show_privacy ? "Back to settings" : "Privacy policy";
     node.value = view.show_privacy ? "Return to flight settings. Your run stays paused." : "Read offline data use, local saves, device backups and deletion.";
@@ -70,6 +80,10 @@ void describe_control(ui::AccessibilityNode& node, const View& view, const Butto
   case Command::location_next:
     node.label = "Change location";
     node.value = std::string(location_name(view.theme)) + ". Activate to choose " + std::string(location_name(next_location(view.theme))) + ". All locations are available.";
+    break;
+  case Command::location_previous:
+    node.label = "Previous location";
+    node.value = std::string(location_name(view.theme)) + ". Activate to choose " + std::string(location_name(previous_location(view.theme))) + ". All locations are available.";
     break;
   case Command::back_up_reset:
     node.label = "Back up existing save and reset";
@@ -103,7 +117,7 @@ void describe_control(ui::AccessibilityNode& node, const View& view, const Butto
     break;
   case Command::dash:
     node.label = "Dash";
-    node.value = view.run->dash_cooldown_seconds <= 0 ? "Ready. Press Space, controller east button or tap Dash for a protected burst. Counterfire at targets in range." : "Recharging. " + std::to_string(static_cast<unsigned>(std::ceil(view.run->dash_cooldown_seconds))) + " seconds remaining.";
+    node.value = view.run->dash_cooldown_seconds <= 0 ? "Ready. Flick the movement stick, press Space, controller east button or tap Dash for a protected burst. Counterfire at targets in range." : "Recharging. " + std::to_string(static_cast<unsigned>(std::ceil(view.run->dash_cooldown_seconds))) + " seconds remaining.";
     break;
   case Command::audio:
     node.role = ui::SemanticRole::toggle;
@@ -166,11 +180,12 @@ std::string screen_summary(const View& view) {
       }
     return std::string(view.damage_feedback.age >= 0 ? damage_announcement(view.damage_feedback) : "") + "Hull " + std::to_string(static_cast<unsigned>(std::max(0.F, run.hull))) + " of " +
            std::to_string(static_cast<unsigned>(run.maximum_hull)) + ". Shield " +
-           std::to_string(static_cast<unsigned>(std::max(0.F, run.shield))) + ". Level " + std::to_string(run.stats.level) +
+           std::to_string(static_cast<unsigned>(std::max(0.F, run.shield))) + " of " + std::to_string(static_cast<unsigned>(run.maximum_shield)) + ". Level " + std::to_string(run.stats.level) +
+           ". Experience " + metric_number(run.xp) + " of " + metric_number(run.next_level_xp) +
            ". Score " + std::to_string(run.stats.score) + ". Captures " + std::to_string(run.stats.captures) + ". " + boss_health + (run.harvest_overdrive_seconds > 0 ? "Overdrive active, " + std::to_string(static_cast<unsigned>(std::ceil(run.harvest_overdrive_seconds))) + " seconds remaining. Capture and firing are boosted. " : run.harvest_chain ? "Sweep chain " + std::to_string(run.harvest_chain) + " of " + std::to_string(gameplay::tuning::harvest_chain_target) + ". " + std::to_string(static_cast<unsigned>(std::ceil(run.harvest_chain_seconds))) + " seconds to keep the chain. " : "") + "Drag to fly. Pass close to specimens for faster captures. Keep moving through targets. Three sweeps trigger Overdrive. Capture and fire are automatic.";
   }
   case Screen::upgrade:
-    return "Level " + std::to_string(run.stats.level) + ". Choose one upgrade. Your run is paused. " + std::to_string(hardware_count(run)) + " of six hardware slots installed. New hardware uses a slot; ranking up improves installed hardware.";
+    return "Level " + std::to_string(run.stats.level) + ". " + level_capture_reward() + ". Additive to base rate for all targets this flight. Choose one upgrade. Your run is paused. " + std::to_string(hardware_count(run)) + " of six hardware slots installed. New hardware uses a slot; ranking up improves installed hardware.";
   case Screen::pause:
     if (view.restored_run)
       return std::string(location_name(view.theme)) + ". Saved run at level " + std::to_string(run.stats.level) + ". " + (run.phase == gameplay::Phase::choosing_upgrade ? "An earned upgrade is waiting. " : "") + "Choose Resume or End run and bank credits. The run clock is paused.";
@@ -185,7 +200,9 @@ std::string screen_summary(const View& view) {
     if (view.show_recipes) {
       summary = "Both ingredients require rank three. The first two completed recipes evolve automatically. ";
       for (unsigned slot = 0; slot < 2; ++slot) {
-        const unsigned i = (view.recipe_page % 3) * 2 + slot;
+        const unsigned position = (view.recipe_page % 3) * 2 + slot;
+        if (position >= gameplay::tuning::active_evolutions.size()) break;
+        const unsigned i = gameplay::tuning::active_evolutions[position];
         const auto ingredients = gameplay::tuning::evolution_ingredients[i];
         summary += std::string(gameplay::tuning::evolution_names[i]) + ". " + std::string(gameplay::tuning::module_names[ingredients[0]]) + " and " + std::string(gameplay::tuning::module_names[ingredients[1]]) + ". " + std::string(recipe_effects[i]) + ". ";
       }
@@ -198,7 +215,7 @@ std::string screen_summary(const View& view) {
   case Screen::settings:
     return "Drag to move. Keyboard WASD or arrow keys. Controller left stick. Capture and fire are automatic.";
   case Screen::title:
-    return std::string(location_name(view.theme)) + " selected. Fly the saucer. Gather specimens. Outrun the resistance.";
+    return std::string(location_name(view.theme)) + " selected. " + std::to_string(account.credits) + " Research Credits. Fly the saucer. Gather specimens. Outrun the resistance.";
   }
   return {};
 }
@@ -226,7 +243,7 @@ std::vector<ui::AccessibilityNode> accessibility_snapshot(const View& view,
     heading = "Privacy policy";
   if (view.save_error)
     heading = "Progress protected";
-  const std::string page_context = view.screen == Screen::upgrade && !view.save_error ? "Level " + std::to_string(view.run->stats.level) + ". Your run is paused. Choice " + std::to_string(std::min(view.upgrade_preview, 2U) + 1) + " of 3. " : "";
+  const std::string page_context = view.screen == Screen::upgrade && !view.save_error ? "Level " + std::to_string(view.run->stats.level) + ". " + level_capture_reward() + ". Your run is paused. Choice " + std::to_string(std::min(view.upgrade_preview, 2U) + 1) + " of 3. " : "";
   const auto spoken_context = view.screen == Screen::run && view.promotion.installed && !view.save_error
       ? screen_summary(view) + " Installed: " + view.promotion.installed->title + "."
       : interface.page_text.empty() ? screen_summary(view) : page_context + "Page " + std::to_string(interface.page + 1) + " of " + std::to_string(interface.page_count) + ". " + interface.page_text;

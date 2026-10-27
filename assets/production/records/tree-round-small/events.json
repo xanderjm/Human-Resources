@@ -1,0 +1,39 @@
+[
+  {
+    "task_id": "6c2bceb8-5523-483f-b732-52e78897db3d",
+    "type": "convert_model",
+    "status": "success",
+    "credits_consumed": 60,
+    "output_dir": "/Users/coral/Documents/App Development/Human Resources/assets/models/tree-round-small/tripo-out/tree-round-small-convert-6c2bceb8",
+    "files": [
+      "model.glb"
+    ],
+    "model_file": "/Users/coral/Documents/App Development/Human Resources/assets/models/tree-round-small/tripo-out/tree-round-small-convert-6c2bceb8/model.glb",
+    "chain": [
+      {
+        "task_id": "6c2bceb8-5523-483f-b732-52e78897db3d",
+        "type": "convert_model",
+        "status": "success",
+        "credits_consumed": 10,
+        "output_dir": "/Users/coral/Documents/App Development/Human Resources/assets/models/tree-round-small/tripo-out/tree-round-small-convert-6c2bceb8",
+        "files": [
+          "model.glb"
+        ],
+        "model_file": "/Users/coral/Documents/App Development/Human Resources/assets/models/tree-round-small/tripo-out/tree-round-small-convert-6c2bceb8/model.glb"
+      }
+    ],
+    "source_task_id": "43f248a6-bbd6-4661-ba3b-27613ffddabe",
+    "credits_breakdown": [
+      {
+        "task_id": "43f248a6-bbd6-4661-ba3b-27613ffddabe",
+        "type": "image_to_model",
+        "credits_consumed": 50
+      },
+      {
+        "task_id": "6c2bceb8-5523-483f-b732-52e78897db3d",
+        "type": "convert_model",
+        "credits_consumed": 10
+      }
+    ]
+  }
+]

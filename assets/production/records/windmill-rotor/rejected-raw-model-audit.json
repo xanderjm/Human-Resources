@@ -1,0 +1,56 @@
+{
+  "triangles": 1266,
+  "vertices": 1154,
+  "mesh_primitives": 1,
+  "uv_present": true,
+  "textures": [
+    {
+      "size": [
+        1024,
+        1024
+      ],
+      "mode": "RGB"
+    }
+  ],
+  "raw_accessor_bounds": [
+    {
+      "min": [
+        -0.1279296875,
+        -0.4951171875,
+        -0.4990234375
+      ],
+      "max": [
+        0.1279296875,
+        0.4951171875,
+        0.4990234375
+      ]
+    }
+  ],
+  "extensions": [],
+  "bytes": 231916,
+  "asset": "windmill-rotor",
+  "model_file": "assets/models/windmill-rotor/tripo-out/windmill-rotor-convert-3f7e1b16/model.glb",
+  "requested_face_limit": 1400,
+  "source_task_id": "a0e389f0-05d6-446c-b0a2-6ea95b395826",
+  "convert_task_id": "3f7e1b16-481c-42cd-9663-c62d831053fe",
+  "credits_consumed": 60,
+  "preview": null,
+  "triangle_budget_review": {
+    "requested_target": 1400,
+    "actual_triangles": 1266,
+    "target_met": true,
+    "category_ceiling": 3000,
+    "status": "passed"
+  },
+  "structural_review": {
+    "status": "passed",
+    "notes": "Triangle mode, valid GLB length, UVs and embedded 1024px base colour checked. Requested targets are approximate; actual triangle count and target deviations are reported separately, within the user-specified 3000-prop / 8000-character ceilings. Scale, pivot, topology and visual quality require separate review."
+  },
+  "visual_review": {
+    "status": "rejected",
+    "notes": "All eight generated vanes floated away from shortened hub spokes. Repaired by eight authored bridge spokes; raw retained."
+  },
+  "import_review": {
+    "status": "pending"
+  }
+}

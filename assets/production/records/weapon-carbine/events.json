@@ -1,0 +1,39 @@
+[
+  {
+    "task_id": "687a89a3-9cb3-49fb-9702-7e36371e040c",
+    "type": "convert_model",
+    "status": "success",
+    "credits_consumed": 60,
+    "output_dir": "/Users/coral/Documents/App Development/Human Resources/assets/models/weapon-carbine/tripo-out/weapon-carbine-convert-687a89a3",
+    "files": [
+      "model.glb"
+    ],
+    "model_file": "/Users/coral/Documents/App Development/Human Resources/assets/models/weapon-carbine/tripo-out/weapon-carbine-convert-687a89a3/model.glb",
+    "chain": [
+      {
+        "task_id": "687a89a3-9cb3-49fb-9702-7e36371e040c",
+        "type": "convert_model",
+        "status": "success",
+        "credits_consumed": 10,
+        "output_dir": "/Users/coral/Documents/App Development/Human Resources/assets/models/weapon-carbine/tripo-out/weapon-carbine-convert-687a89a3",
+        "files": [
+          "model.glb"
+        ],
+        "model_file": "/Users/coral/Documents/App Development/Human Resources/assets/models/weapon-carbine/tripo-out/weapon-carbine-convert-687a89a3/model.glb"
+      }
+    ],
+    "source_task_id": "f779d5a9-cf3e-48f4-a379-c4040c116cc6",
+    "credits_breakdown": [
+      {
+        "task_id": "f779d5a9-cf3e-48f4-a379-c4040c116cc6",
+        "type": "image_to_model",
+        "credits_consumed": 50
+      },
+      {
+        "task_id": "687a89a3-9cb3-49fb-9702-7e36371e040c",
+        "type": "convert_model",
+        "credits_consumed": 10
+      }
+    ]
+  }
+]

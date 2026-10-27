@@ -67,6 +67,18 @@ bool place_infantry_feet(const Asset& asset,const Pose& base,const std::array<Ma
   if(!detail::compose(asset,candidate))return false;
   output=candidate;return true;
 }
+bool apply_infantry_gait(const Asset& asset, const Pose& base, const Pose& gait, Pose& output) {
+  if (base.node_count != asset.nodes().size() || gait.node_count != base.node_count) return false;
+  Pose candidate = base;
+  for (const auto& chain : legs) for (const auto name : chain) {
+    const auto node = asset.find_node(name);
+    if (node >= base.node_count || !detail::valid_transform(gait.local[node])) return false;
+    candidate.local[node] = gait.local[node];
+  }
+  if (!detail::compose(asset, candidate)) return false;
+  output = candidate;
+  return true;
+}
 bool Player::adopt_infantry_legs(const Pose& visible) {
   if(!asset_ || visible.node_count!=pose_.node_count)return false;
   for(const auto& chain:legs)for(const auto name:chain) {

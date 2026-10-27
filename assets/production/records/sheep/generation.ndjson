@@ -1,0 +1,28 @@
+── Plan ──────────────────────────
+input: /Users/coral/Documents/App Development/Human Resources/assets/references/sheep/v1.png
+model: P1-20260311 — explicit --model
+steps:
+  1. image-to-model  POST /v3/generation/image-to-model — generate a 3D model from one image
+     model="P1-20260311" face_limit=4500 texture=true pbr=false texture_quality="standard" texture_alignment="original_image" export_uv=true
+  2. convert  POST /v3/models/convert — convert format / texture size / orientation
+     format="GLTF" texture_size=1024
+cost impact:
+  · non-default convert options bill as complex convert
+──────────────────────────────────
+model: P1-20260311 (explicit --model)
+task created 7253319f-61a6-4c05-a9d1-fc533b67ef18 (@sheep)
+image_to_model · queued
+image_to_model · running 7% · 7253319f
+image_to_model · running 15% · 7253319f
+image_to_model · running 25% · 7253319f
+image_to_model · running 39% · 7253319f
+image_to_model · running 60% · 7253319f
+image_to_model · success 100% · 7253319f
+✓ image_to_model · 7253319f-61a6-4c05-a9d1-fc533b67ef18 · 50 credits
+! non-default convert options use the "complex convert" price tier
+task created 264ccf0c-14fc-4e3e-87d9-775c2c63353c (@sheep-convert)
+convert_model · queued
+✓ convert_model · 264ccf0c-14fc-4e3e-87d9-775c2c63353c · 10 credits
+downloading artifacts…
+✓ artifacts saved to /Users/coral/Documents/App Development/Human Resources/assets/models/sheep/tripo-out/sheep-convert-264ccf0c
+{"task_id":"264ccf0c-14fc-4e3e-87d9-775c2c63353c","type":"convert_model","status":"success","credits_consumed":60,"output_dir":"/Users/coral/Documents/App Development/Human Resources/assets/models/sheep/tripo-out/sheep-convert-264ccf0c","files":["model.glb"],"model_file":"/Users/coral/Documents/App Development/Human Resources/assets/models/sheep/tripo-out/sheep-convert-264ccf0c/model.glb","chain":[{"task_id":"264ccf0c-14fc-4e3e-87d9-775c2c63353c","type":"convert_model","status":"success","credits_consumed":10,"output_dir":"/Users/coral/Documents/App Development/Human Resources/assets/models/sheep/tripo-out/sheep-convert-264ccf0c","files":["model.glb"],"model_file":"/Users/coral/Documents/App Development/Human Resources/assets/models/sheep/tripo-out/sheep-convert-264ccf0c/model.glb"}],"source_task_id":"7253319f-61a6-4c05-a9d1-fc533b67ef18","credits_breakdown":[{"task_id":"7253319f-61a6-4c05-a9d1-fc533b67ef18","type":"image_to_model","credits_consumed":50},{"task_id":"264ccf0c-14fc-4e3e-87d9-775c2c63353c","type":"convert_model","credits_consumed":10}]}

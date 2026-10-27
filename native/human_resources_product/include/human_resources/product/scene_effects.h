@@ -15,6 +15,7 @@ struct SceneBeat final {
   float age{}, radius{};
   gameplay::Vec2 destination; // Frozen observed player endpoint for real dashes.
   gameplay::DamageCause damage_cause{};
+  bool dash_travelling{};
 };
 struct SceneFeedback final {
   bool capture{}, laser{}, warning{}, hit{}, shield_hit{}, hull_hit{};
@@ -48,9 +49,13 @@ public:
     return rotor_angle_;
   }
   [[nodiscard]] DamageFeedback damage_feedback() const;
+  [[nodiscard]] float repair_response() const { return repair_seconds_ / .65F; }
   // Called once before scene actors. Retire absent/retyped IDs before admitting
   // replacements; history is reconstructible and never survives reset/restore.
   void begin_capture_frame(const gameplay::Snapshot& run);
+  // Stable physical aperture while an active target or its visual finisher is
+  // present. Compaction of gameplay's beam vector never swaps live intakes.
+  [[nodiscard]] unsigned capture_port(std::uint32_t actor_id) const;
   // A fast committed collection can finish its visible intake after authority
   // removes the actor. Live bodies and these confirmed finishers share one path.
   [[nodiscard]] float capture_progress(const gameplay::EntityView& actor) const;
@@ -71,7 +76,7 @@ public:
   }
 
 private:
-  void emit(const gameplay::PresentationEvent& event, double now, gameplay::Vec2 player);
+  void emit(const gameplay::PresentationEvent& event, const gameplay::Snapshot& run);
   std::array<gameplay::EntityView, actor_capacity> previous_{};
   std::array<float, actor_capacity> wheel_angles_{};
   std::array<SceneBeat, beat_capacity> beats_{};
@@ -79,8 +84,9 @@ private:
   std::uint64_t last_sequence_{};
   double seconds_{};
   bool initialized_{};
-  gameplay::Vec2 flight_velocity_{};
+  gameplay::Vec2 flight_velocity_{}, flight_rate_{};
   float rotor_angle_{}, rotor_speed_{1.8F};
+  float previous_hull_{}, previous_maximum_hull_{}, repair_seconds_{};
   SceneFeedback feedback_;
   struct CaptureHistory final {
     std::uint32_t id{};
@@ -96,6 +102,13 @@ private:
     bool completed{};
   };
   std::array<CaptureHistory, actor_capacity> captures_{};
+  struct IntakeBinding final {
+    std::uint32_t id{};
+    unsigned port{};
+    double last_seen{};
+  };
+  std::array<IntakeBinding, actor_capacity> intake_bindings_{};
+  void bind_capture_ports(const gameplay::Snapshot&);
   double capture_seconds_{};
   bool capture_initialized_{};
   std::array<gameplay::EntityView, actor_capacity> completed_captures_{};

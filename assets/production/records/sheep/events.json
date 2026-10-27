@@ -1,0 +1,39 @@
+[
+  {
+    "task_id": "264ccf0c-14fc-4e3e-87d9-775c2c63353c",
+    "type": "convert_model",
+    "status": "success",
+    "credits_consumed": 60,
+    "output_dir": "/Users/coral/Documents/App Development/Human Resources/assets/models/sheep/tripo-out/sheep-convert-264ccf0c",
+    "files": [
+      "model.glb"
+    ],
+    "model_file": "/Users/coral/Documents/App Development/Human Resources/assets/models/sheep/tripo-out/sheep-convert-264ccf0c/model.glb",
+    "chain": [
+      {
+        "task_id": "264ccf0c-14fc-4e3e-87d9-775c2c63353c",
+        "type": "convert_model",
+        "status": "success",
+        "credits_consumed": 10,
+        "output_dir": "/Users/coral/Documents/App Development/Human Resources/assets/models/sheep/tripo-out/sheep-convert-264ccf0c",
+        "files": [
+          "model.glb"
+        ],
+        "model_file": "/Users/coral/Documents/App Development/Human Resources/assets/models/sheep/tripo-out/sheep-convert-264ccf0c/model.glb"
+      }
+    ],
+    "source_task_id": "7253319f-61a6-4c05-a9d1-fc533b67ef18",
+    "credits_breakdown": [
+      {
+        "task_id": "7253319f-61a6-4c05-a9d1-fc533b67ef18",
+        "type": "image_to_model",
+        "credits_consumed": 50
+      },
+      {
+        "task_id": "264ccf0c-14fc-4e3e-87d9-775c2c63353c",
+        "type": "convert_model",
+        "credits_consumed": 10
+      }
+    ]
+  }
+]

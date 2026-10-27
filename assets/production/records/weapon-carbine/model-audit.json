@@ -1,0 +1,121 @@
+{
+  "triangles": 1348,
+  "vertices": 1216,
+  "mesh_primitives": 1,
+  "uv_present": true,
+  "textures": [
+    {
+      "size": [
+        1024,
+        1024
+      ],
+      "mode": "RGB"
+    }
+  ],
+  "raw_accessor_bounds": [
+    {
+      "min": [
+        -0.0830078125,
+        -0.1611328125,
+        -0.4990234375
+      ],
+      "max": [
+        0.0830078125,
+        0.1611328125,
+        0.4990234375
+      ]
+    }
+  ],
+  "extensions": [],
+  "bytes": 261324,
+  "asset": "weapon-carbine",
+  "model_file": "assets/models/weapon-carbine/weapon-carbine.glb",
+  "requested_face_limit": 1400,
+  "source_task_id": "f779d5a9-cf3e-48f4-a379-c4040c116cc6",
+  "convert_task_id": "687a89a3-9cb3-49fb-9702-7e36371e040c",
+  "credits_consumed": 60,
+  "preview": null,
+  "triangle_budget_review": {
+    "requested_target": 1400,
+    "actual_triangles": 1348,
+    "target_met": true,
+    "category_ceiling": 3000,
+    "status": "passed"
+  },
+  "structural_review": {
+    "status": "passed",
+    "notes": "Triangle mode, valid GLB length, UVs and embedded 1024px base colour checked. Requested targets are approximate; actual triangle count and target deviations are reported separately, within the user-specified 3000-prop / 8000-character ceilings. Scale, pivot, topology and visual quality require separate review."
+  },
+  "visual_review": {
+    "status": "accepted",
+    "notes": "Accepted independent compact carbine: one open barrel/muzzle verified in front view, square magazine, wooden stock and pistol grip, navy receiver and coral double chevrons, no hands/body fragments or added loose props. Rear-side small lever detail differs from the source but remains coherent gun geometry. Broad painterly colour blocks remain; fine brush detail is smoother than reference. Uniform 0.70 m length, +Y up/+Z muzzle, actual wood pistol-grip centre at origin with separate support/buttplate/muzzle datums. No equipping, carrying/seating test, posing, rigging or animation.",
+    "model_sha256": "375a1b5fb078b026d3b850a508a0980b06d33bfc47b16012942eb823cd7b3741",
+    "reference": "assets/references/weapon-carbine/v1.png",
+    "reference_sha256": "5d15698356cc19f82e1768186e9358c0b38e589dc79b91eb2df46712a2f4c1a8",
+    "evidence": [
+      "assets/production/records/weapon-carbine/review-weapons-final-three-quarter.png",
+      "assets/production/records/weapon-carbine/review-weapons-final-opposite.png",
+      "assets/production/records/weapon-carbine/review-weapons-final-front.png",
+      "assets/production/records/weapon-carbine/review-weapons-final-right.png",
+      "assets/production/records/weapon-carbine/review-sockets-side.png"
+    ],
+    "contact_sheet": "assets/production/reviews/props-six-weapons-final.png",
+    "method": "Actual decoded triangle/UV/base-colour geometry rendered with CPU depth buffer; measured socket overlay inspected.",
+    "runtime_qualified": false
+  },
+  "import_review": {
+    "status": "passed",
+    "units": "metres",
+    "up": "+Y",
+    "forward": "+Z",
+    "yaw_degrees": 180.0,
+    "pivot": "primary-grip",
+    "double_sided": false,
+    "uniform_scale": 0.7013698630136986,
+    "bounds_m": [
+      [
+        -0.060274,
+        -0.049229,
+        -0.237671
+      ],
+      [
+        0.056164,
+        0.176798,
+        0.462329
+      ]
+    ],
+    "dimensions_m": [
+      0.116438,
+      0.226027,
+      0.7
+    ],
+    "vertex_checks": [
+      {
+        "triangles": 1348,
+        "degenerate_triangles": 0,
+        "uv_bounds": [
+          [
+            0.0,
+            0.0
+          ],
+          [
+            1.0,
+            1.0
+          ]
+        ]
+      }
+    ],
+    "notes": "Real scene vertices and indices decoded; finite positions/UVs; retained embedded 1024px base colour. Uniform root transform; raw file preserved.",
+    "primary_grip_origin": true,
+    "measured_canonical_grip_m": [
+      0.002055,
+      -0.063784,
+      -0.112329
+    ],
+    "pivot_notes": "Actual inspected feature bounds measured from triangle surface samples; only outer-root translation changed. No body poses/equipment/rigging.",
+    "normalized_file_bytes": 261676,
+    "bin_payload_matches_raw": true
+  },
+  "raw_model_file": "assets/models/weapon-carbine/tripo-out/weapon-carbine-convert-687a89a3/model.glb",
+  "socket_metadata": "assets/production/weapon-sockets.json"
+}

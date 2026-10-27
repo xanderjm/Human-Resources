@@ -1,0 +1,58 @@
+{
+  "schema_version": 1,
+  "id": "ui-hud-panel",
+  "status": "art-review-passed",
+  "production": {
+    "status": "generated",
+    "file": "assets/graphics/ui-hud-panel/ui-hud-panel.png",
+    "source": "assets/graphics/ui-hud-panel/ui-hud-panel.svg",
+    "metadata": "assets/graphics/ui-hud-panel/asset.json"
+  },
+  "reference": {
+    "status": "approved",
+    "path": "assets/references/ui-hud-panel/v1.png",
+    "sha256": "2c913783484f1ae4d5039a0a7bb5f38ec4663b326294d6a182cf60ccc6900ffa"
+  },
+  "qa": {
+    "status": "art-review-passed",
+    "visual_review": "Empty navy rounded capsule with contained edge highlight; nine-slice needed to preserve corners.",
+    "review_evidence": "assets/production/reviews/native-graphics-contact-sheet.png",
+    "reviewed_against": "art/style-guide/ufo-asset-style-guide.png",
+    "runtime_qualified": false
+  },
+  "alpha_audit": {
+    "dimensions_px": [
+      768,
+      192
+    ],
+    "rgba": true,
+    "alpha_range": [
+      0,
+      251
+    ],
+    "alpha_nonzero_bbox": [
+      16,
+      16,
+      752,
+      176
+    ],
+    "transparent_margin_px": [
+      16,
+      16,
+      16,
+      16
+    ],
+    "border_alpha_max": 0,
+    "visible_pixels": 114863,
+    "repeat_axis_check": null,
+    "sha256": "8630ef96650195a86733b349c1e262130e36df5d7ee7f3dfce820866d13e6f6d"
+  },
+  "variants": [],
+  "svg": {
+    "self_contained": true,
+    "text_baked": false,
+    "external_dependencies": false
+  },
+  "usage": "Nine-slice background; cap inset 80px horizontal, 40px vertical. No glyphs/digits.",
+  "limitations": "Art production asset. Native runtime upload, blend, depth/occlusion and device readability are not qualified."
+}

@@ -1,0 +1,28 @@
+{
+  "asset": "windmill-mast",
+  "description": "Moved the detached diagonal spindle island, including its bolt geometry, into the existing bearing and aligned its axis horizontally to +Z.",
+  "source": "assets/models/windmill-mast/tripo-out/windmill-mast-convert-dcf7591d/model.glb",
+  "source_sha256": "88cf87babfb4e61376715091af2f845fd943fb5e8fb8a2b59870c26aad586c9e",
+  "repaired_source": "assets/models/windmill-mast/windmill-mast-repaired-source.glb",
+  "repaired_source_sha256": "33453fabc9fef38b3f27829adb40551cb400a80fbf856c6e04218f57df73870e",
+  "details": {
+    "moved_vertex_count": 645,
+    "original_axis": [
+      0.6225408315658569,
+      0.10579649358987808,
+      0.7754031419754028
+    ],
+    "target_axis": [
+      0.0,
+      0.0,
+      1.0
+    ],
+    "raw_bearing_anchor": [
+      -0.018,
+      0.446,
+      0.025
+    ],
+    "added_triangles": 0
+  },
+  "material_policy": "Original embedded base-colour and material retained; no PBR maps, no retexture."
+}

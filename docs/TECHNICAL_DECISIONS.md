@@ -1,5 +1,77 @@
 # Technical Decisions
 
+## 26 October 2026 — Portrait-only game
+
+The owner removes landscape from the product scope. Preserve the portrait
+project setting, iOS/Android orientation metadata and SDL orientation hint.
+The native composition root normalizes desktop startup dimensions into
+portrait and requests a320×568minimum with a3:4maximum aspect through SDL's
+window constraints. This supports resizable portrait phone/tablet previews
+without adding another screen hierarchy. Preserve existing gameplay rules,
+projection/edge contracts and saves. Do not convert old wide captures or
+headless stress fixtures into supported landscape play.
+
+Remove the newly added separate wide menu owner. Reuse the portrait component
+family and measured reader for small screens, safe areas and enlarged text.
+Portrait screen fidelity remains the active visual acceptance requirement;
+physical-device and selected desktop window-manager qualification stay separate.
+
+## 26 October 2026 — Shared Enamel UI and measured tactical boundaries
+
+Compose the approved visual family from reusable blank alpha surfaces, live
+glyphs and product queries. Rectangular panels use checked nine-slice seams;
+capsules use three horizontal slices. Fixed details and pictogram proportions
+remain intact. Source art, recipes and fonts are authoring inputs; only the
+allowlisted cooked texture and existing font licence ship. The additional
+2048x2048atlas costs16MiB of RGBA pixels and still needs device profiling.
+
+Author an upright label bitmap companion from the owned Compact outlines by
+reversing the source builder's0.31shear offline. This preserves its black weight
+without runtime faux styling or stroke dilation. Keep original fonts unchanged,
+readable mixed-case prose in SemiBold, and true italic faces on the signs and
+primary actions. Reuse the existing pinned Pillow cook; add no dependency.
+
+Expose `Interface.hud_bottom` as the occupied header boundary. Receipts,
+attached vitality and projection checks consume that boundary rather than
+assuming the44point Pause target describes the whole header. Short phones use
+shallower stat pods and a lower compact Dash action; preserve physical type,
+touch size and existing first-attack/retirement clearances. This changes no
+gameplay timing, camera, save authority or balance simulation. Ordinary source
+and native checks pass; remaining responsive/fidelity work is explicitly tracked
+in [ATOMIC_UI_IMPLEMENTATION.md](ATOMIC_UI_IMPLEMENTATION.md).
+
+Short portrait menus reflow on a width-based grid instead of scaling an844point
+screen until the text is too small. Measured benefits and conditions determine
+promotion heights; compact evolution spreads contain one complete recipe and
+publish their actual count to native navigation. Keep these disposable layout
+values separate from the account/save contract and from measured text page
+indices. The enlarged reader shares font metrics with drawing and explicitly
+disables label shrinking. Safe-area tests inspect consumed glyph alpha rather
+than transparent cell origins; full-copy and physical text/touch gates remain.
+
+## 26 October 2026 — Persistent enemy engagement
+
+[ADR 012](adr/012-persistent-enemy-engagement.md) records the owner-requested
+scrolling combat frame, bounded persistent military, independent infantry
+facing/travel, source-derived committed shots and reverse gait. Authority19
+retains protected continuations, existing physical steering, attack budgets and
+offline simulator separation.
+
+## 26 October 2026 — Opening pace uses bounded active time and earned progress
+
+The owner requests a modest initial speed lift and earlier escalation. Runtime
+scroll now combines a 2.4 m/s start, a 0.6 m/s linear opening bonus over 90 active
+seconds, 0.01 m/s per capture and 0.12 m/s per level after the first, retaining the
+4.6 m/s ceiling. A bounded time contribution prevents low-capture openings from
+remaining at minimum pace, while earned progress supplies most acceleration.
+Keep combat warning durations, introduction times and pressure rhythm intact.
+
+The existing gameplay speed projection consumes saved time/captures/level;
+no new state, dependency or simulator rule is needed. Generated numeric tuning
+changes the rules fingerprint, retaining protected handling of incompatible
+continuations. Pause/drafts/death do not advance active time; restarting resets
+the curve. These are runtime candidates requiring human feel review.
+
 ## 25 October 2026 — One authoritative boss attack plan and mobile recovery
 
 Boss combat has one private state-machine owner inside the existing gameplay
@@ -395,3 +467,38 @@ human pivot/step/facing and explicit real preparation age. Its five-byte
 infantry-only codec3 suffix supports truthful cold aim poses while retaining
 account2 and protected Game9 handling. Gameplay/native qualification is pending;
 existing gait/aim/fire assets and other actor controllers remain the authorities.
+
+## 26 October 2026 — Sequential laser bursts and committed hit materials
+
+Hull lasers release one mount at a time, 70ms apart at base cadence, with the
+spacing accelerated by the existing fire-rate multiplier. The remaining cooldown
+keeps one complete burst per original weapon period; each mount retains its
+existing damage, focus, pierce and arc rules. Target selection happens at each
+release, preferring actors not yet struck in that burst and permitting focus
+when fewer targets remain. Dash starts a fresh sequential counter-burst.
+
+Gameplay retains the next mount and four prior target IDs (17 portable bytes),
+because those values affect future damage and must survive pause/cold restore.
+The integrated Game codec5/authority13 also includes the concurrent physical
+flight slice; account2 and existing protected incompatible-run recovery remain.
+The runtime spatial contract owns the delay; the abstract balance simulator does
+not implement this timing.
+
+A renderer-neutral per-instance linear RGB/blend value owns the short local
+white→yellow→red material response. It is derived only from confirmed impact or
+player shield/hull events, shared across the struck assembly, and disabled under
+reduced motion. Player layer/cause labels retain their existing meaning. The
+native and separate style-preview shader instance strides must match the shared
+renderer; shader binaries remain generated. No new asset or dependency is used.
+
+## 26 October 2026 — Action pacing and military escalation
+
+[ADR 011](adr/011-action-pacing-and-military-escalation.md) records the owner-requested stronger runtime ramp, native weighted-lift baseline, larger civilian supply and active-time formation escalation. Full warnings, physical admission, bounded populations and protected authority17 continuation handling remain explicit. Abstract simulations remain separate.
+
+## 26 October 2026 — Equal visible directional flight
+
+[ADR 007](adr/007-thumbstick-flight-and-visible-edges.md) now records the owner's
+clarification: release holds screen position and equal input has equal forward,
+backward and lateral response. Preserve pilot velocity across world-speed changes
+and retain scroll carry at vertical stops. No new state, tuning or dependency is
+needed; existing protected continuation handling covers the changed rules.

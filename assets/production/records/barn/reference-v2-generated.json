@@ -1,0 +1,12 @@
+{
+  "id": "barn",
+  "version": 2,
+  "kind": "reference",
+  "prompt": "Use case: precise-object-edit. Image 1 is the approved style barn to simplify for 3D reconstruction; image 2 is the style guide. Preserve its low-poly cream timber walls, muted terracotta pitched tile roof, broad gouache strokes, single three-quarter view and pure white background. Replace the deep open doorway and visible interior with ONE very shallow dark navy-brown rectangular inset door panel in the FRONT wall, almost flush with the cream planks. All walls are solid cream timber; NO deep opening, interior floor/side-wall geometry, black cavity visible through the building, giant dark areas on side walls, or attached landscaping. Keep barn proportions. No ground slab, props, text, shadows or alternate views.",
+  "refs": [
+    "/Users/coral/Documents/App Development/Human Resources/assets/references/barn/v1.png",
+    "/Users/coral/Documents/App Development/Human Resources/art/style-guide/ufo-asset-style-guide.png"
+  ],
+  "source": "/Users/coral/.codex/generated_images/01a16e3b-5221-78b2-bd33-9830eab86a7f/exec-90ceb6a8-82fb-4142-a0c4-6781cec34771.png",
+  "status": "awaiting_visual_review"
+}

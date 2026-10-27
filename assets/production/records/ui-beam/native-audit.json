@@ -1,0 +1,58 @@
+{
+  "schema_version": 1,
+  "id": "ui-beam",
+  "status": "art-review-passed",
+  "production": {
+    "status": "generated",
+    "file": "assets/graphics/ui-beam/ui-beam.png",
+    "source": "assets/graphics/ui-beam/ui-beam.svg",
+    "metadata": "assets/graphics/ui-beam/asset.json"
+  },
+  "reference": {
+    "status": "approved",
+    "path": "assets/references/ui-beam/v1.png",
+    "sha256": "638f5cc527959a01755619abd7950e527f42a43a38efcfa11d8c4d50f2db699a"
+  },
+  "qa": {
+    "status": "art-review-passed",
+    "visual_review": "Standalone mint intake/rings symbol, no text or card.",
+    "review_evidence": "assets/production/reviews/native-graphics-contact-sheet.png",
+    "reviewed_against": "art/style-guide/ufo-asset-style-guide.png",
+    "runtime_qualified": false
+  },
+  "alpha_audit": {
+    "dimensions_px": [
+      512,
+      512
+    ],
+    "rgba": true,
+    "alpha_range": [
+      0,
+      255
+    ],
+    "alpha_nonzero_bbox": [
+      126,
+      91,
+      386,
+      387
+    ],
+    "transparent_margin_px": [
+      126,
+      91,
+      126,
+      125
+    ],
+    "border_alpha_max": 0,
+    "visible_pixels": 30324,
+    "repeat_axis_check": null,
+    "sha256": "65cc64785bb976b52c8fc2cc7308d9b500bfd0ee24d2d47fc243533ad7c7bc5d"
+  },
+  "variants": [],
+  "svg": {
+    "self_contained": true,
+    "text_baked": false,
+    "external_dependencies": false
+  },
+  "usage": "Standalone upgrade icon, no text/card. Clamp both axes.",
+  "limitations": "Art production asset. Native runtime upload, blend, depth/occlusion and device readability are not qualified."
+}

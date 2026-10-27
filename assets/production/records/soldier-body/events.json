@@ -1,0 +1,39 @@
+[
+  {
+    "task_id": "30c38a41-809c-4185-ad6c-9489bc3c5b04",
+    "type": "convert_model",
+    "status": "success",
+    "credits_consumed": 60,
+    "output_dir": "/Users/coral/Documents/App Development/Human Resources/assets/models/soldier-body/tripo-out/soldier-body-convert-30c38a41",
+    "files": [
+      "model.glb"
+    ],
+    "model_file": "/Users/coral/Documents/App Development/Human Resources/assets/models/soldier-body/tripo-out/soldier-body-convert-30c38a41/model.glb",
+    "chain": [
+      {
+        "task_id": "30c38a41-809c-4185-ad6c-9489bc3c5b04",
+        "type": "convert_model",
+        "status": "success",
+        "credits_consumed": 10,
+        "output_dir": "/Users/coral/Documents/App Development/Human Resources/assets/models/soldier-body/tripo-out/soldier-body-convert-30c38a41",
+        "files": [
+          "model.glb"
+        ],
+        "model_file": "/Users/coral/Documents/App Development/Human Resources/assets/models/soldier-body/tripo-out/soldier-body-convert-30c38a41/model.glb"
+      }
+    ],
+    "source_task_id": "ae71f1b5-2f3b-42e0-9730-b52ba9803965",
+    "credits_breakdown": [
+      {
+        "task_id": "ae71f1b5-2f3b-42e0-9730-b52ba9803965",
+        "type": "image_to_model",
+        "credits_consumed": 50
+      },
+      {
+        "task_id": "30c38a41-809c-4185-ad6c-9489bc3c5b04",
+        "type": "convert_model",
+        "credits_consumed": 10
+      }
+    ]
+  }
+]

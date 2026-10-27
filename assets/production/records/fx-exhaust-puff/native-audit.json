@@ -1,0 +1,58 @@
+{
+  "schema_version": 1,
+  "id": "fx-exhaust-puff",
+  "status": "art-review-passed",
+  "production": {
+    "status": "generated",
+    "file": "assets/graphics/fx-exhaust-puff/fx-exhaust-puff.png",
+    "source": "assets/graphics/fx-exhaust-puff/fx-exhaust-puff.svg",
+    "metadata": "assets/graphics/fx-exhaust-puff/asset.json"
+  },
+  "reference": {
+    "status": "approved",
+    "path": "assets/references/fx-exhaust-puff/v1.png",
+    "sha256": "12c9b948edf80c814f8a7d01db758f13cb15c925216998c975cfc2009342df5b"
+  },
+  "qa": {
+    "status": "art-review-passed",
+    "visual_review": "One warm-grey pale cloud with soft falloff; no projectile or trail baked in.",
+    "review_evidence": "assets/production/reviews/native-graphics-contact-sheet.png",
+    "reviewed_against": "art/style-guide/ufo-asset-style-guide.png",
+    "runtime_qualified": false
+  },
+  "alpha_audit": {
+    "dimensions_px": [
+      256,
+      256
+    ],
+    "rgba": true,
+    "alpha_range": [
+      0,
+      194
+    ],
+    "alpha_nonzero_bbox": [
+      22,
+      22,
+      234,
+      234
+    ],
+    "transparent_margin_px": [
+      22,
+      22,
+      22,
+      22
+    ],
+    "border_alpha_max": 0,
+    "visible_pixels": 35092,
+    "repeat_axis_check": null,
+    "sha256": "86d99de92dad9ef3858328c8329e65545b1f9fa90d2081f007c6de33943b88ec"
+  },
+  "variants": [],
+  "svg": {
+    "self_contained": true,
+    "text_baked": false,
+    "external_dependencies": false
+  },
+  "usage": "Instance one puff with runtime scale/fade; clamp both axes. No exhaust path or rocket baked in.",
+  "limitations": "Art production asset. Native runtime upload, blend, depth/occlusion and device readability are not qualified."
+}

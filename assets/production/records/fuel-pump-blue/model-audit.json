@@ -1,0 +1,104 @@
+{
+  "triangles": 1682,
+  "vertices": 1397,
+  "mesh_primitives": 1,
+  "uv_present": true,
+  "textures": [
+    {
+      "size": [
+        1024,
+        1024
+      ],
+      "mode": "RGB"
+    }
+  ],
+  "raw_accessor_bounds": [
+    {
+      "min": [
+        -0.2138671875,
+        -0.4990234375,
+        -0.4169921875
+      ],
+      "max": [
+        0.2138671875,
+        0.4990234375,
+        0.4169921875
+      ]
+    }
+  ],
+  "extensions": [],
+  "bytes": 238804,
+  "asset": "fuel-pump-blue",
+  "model_file": "assets/models/fuel-pump-blue/fuel-pump-blue.glb",
+  "requested_face_limit": 1800,
+  "source_task_id": "144c132b-14fe-4cf2-a332-5a0d5fb07512",
+  "convert_task_id": "b461f5f6-6940-4e60-96b3-8e1ee72be56e",
+  "credits_consumed": 60,
+  "preview": null,
+  "triangle_budget_review": {
+    "requested_target": 1800,
+    "actual_triangles": 1682,
+    "target_met": true,
+    "category_ceiling": 3000,
+    "status": "passed"
+  },
+  "structural_review": {
+    "status": "passed",
+    "notes": "Triangle mode, valid GLB length, UVs and embedded 1024px base colour checked. Requested targets are approximate; actual triangle count and target deviations are reported separately, within the user-specified 3000-prop / 8000-character ceilings. Scale, pivot, topology and visual quality require separate review."
+  },
+  "visual_review": {
+    "status": "accepted",
+    "notes": "Blue rectangular pump retains dark display, thick black side hose, close-fitting nozzle and integral foot. Four views show a plausible second rear display with no letters or logo. Primary display face now +Z; no canopy, scenery or ground attached.",
+    "views": [
+      "front",
+      "opposite",
+      "three-quarter",
+      "right"
+    ]
+  },
+  "import_review": {
+    "status": "passed",
+    "units": "metres",
+    "up": "+Y",
+    "forward": "+Z",
+    "yaw_degrees": -90.0,
+    "pivot": "ground-centre",
+    "double_sided": false,
+    "uniform_scale": 1.6031311154598826,
+    "bounds_m": [
+      [
+        -0.6684931506849315,
+        0.0,
+        -0.34285714285714286
+      ],
+      [
+        0.6684931506849315,
+        1.6,
+        0.34285714285714286
+      ]
+    ],
+    "dimensions_m": [
+      1.336986301369863,
+      1.6,
+      0.6857142857142857
+    ],
+    "vertex_checks": [
+      {
+        "triangles": 1682,
+        "degenerate_triangles": 0,
+        "uv_bounds": [
+          [
+            0.0,
+            0.0
+          ],
+          [
+            1.0,
+            1.0
+          ]
+        ]
+      }
+    ],
+    "notes": "Real scene vertices and indices decoded; finite positions/UVs; retained embedded 1024px base colour. Uniform root transform; raw file preserved."
+  },
+  "raw_model_file": "assets/models/fuel-pump-blue/tripo-out/fuel-pump-blue-convert-b461f5f6/model.glb"
+}

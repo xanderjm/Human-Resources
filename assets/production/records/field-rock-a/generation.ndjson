@@ -1,0 +1,32 @@
+── Plan ──────────────────────────
+input: /Users/coral/Documents/App Development/Human Resources/assets/references/field-rock-a/v1.png
+model: P1-20260311 — explicit --model
+steps:
+  1. image-to-model  POST /v3/generation/image-to-model — generate a 3D model from one image
+     model="P1-20260311" face_limit=1800 texture=true pbr=false texture_quality="standard" texture_alignment="original_image" export_uv=true
+  2. convert  POST /v3/models/convert — convert format / texture size / orientation
+     format="GLTF" texture_size=1024
+cost impact:
+  · non-default convert options bill as complex convert
+──────────────────────────────────
+model: P1-20260311 (explicit --model)
+task created efc15429-91a2-4763-ae19-de51e5da96df (@field-rock-a)
+image_to_model · queued
+image_to_model · running 14% · efc15429
+image_to_model · running 27% · efc15429
+image_to_model · running 41% · efc15429
+image_to_model · running 62% · efc15429
+image_to_model · success 100% · efc15429
+✓ image_to_model · efc15429-91a2-4763-ae19-de51e5da96df · 50 credits
+! non-default convert options use the "complex convert" price tier
+task created c850ab9f-b7e2-46c9-99f8-ecf6556352ec (@field-rock-a-convert)
+convert_model · queued
+✓ convert_model · c850ab9f-b7e2-46c9-99f8-ecf6556352ec · 10 credits
+downloading artifacts…
+✗ artifact download failed (the task itself succeeded)
+! fetch failed
+! retry with: tripo task get c850ab9f-b7e2-46c9-99f8-ecf6556352ec --download
+{"task_id":"c850ab9f-b7e2-46c9-99f8-ecf6556352ec","type":"convert_model","status":"success","credits_consumed":60,"chain":[{"task_id":"c850ab9f-b7e2-46c9-99f8-ecf6556352ec","type":"convert_model","status":"success","credits_consumed":10}],"source_task_id":"efc15429-91a2-4763-ae19-de51e5da96df","credits_breakdown":[{"task_id":"efc15429-91a2-4763-ae19-de51e5da96df","type":"image_to_model","credits_consumed":50},{"task_id":"c850ab9f-b7e2-46c9-99f8-ecf6556352ec","type":"convert_model","credits_consumed":10}]}
+{"event":"progress","task_id":"c850ab9f-b7e2-46c9-99f8-ecf6556352ec","status":"success","progress":100}
+downloading artifacts…
+{"type":"convert_model","status":"success","progress":100,"input":{"format":"GLTF","texture_size":1024,"original_model_id":"efc15429-91a2-4763-ae19-de51e5da96df"},"output":{"model_url":"https://tripo-data.rg1.data.tripo3d.com/tcli_3cfb1e2beb5848098033af224a01fda8/20261024/c850ab9f-b7e2-46c9-99f8-ecf6556352ec/tripo_convert_c850ab9f-b7e2-46c9-99f8-ecf6556352ec.glb?Policy=eyJTdGF0ZW1lbnQiOlt7IlJlc291cmNlIjoiaHR0cHM6Ly90cmlwby1kYXRhLnJnMS5kYXRhLnRyaXBvM2QuY29tL3RjbGlfM2NmYjFlMmJlYjU4NDgwOTgwMzNhZjIyNGEwMWZkYTgvMjAyNjEwMjQvYzg1MGFiOWYtYjdlMi00NmM5LTk5ZjgtZWNmNjU1NjM1MmVjL3RyaXBvX2NvbnZlcnRfYzg1MGFiOWYtYjdlMi00NmM5LTk5ZjgtZWNmNjU1NjM1MmVjLmdsYiIsIkNvbmRpdGlvbiI6eyJEYXRlTGVzc1RoYW4iOnsiQVdTOkVwb2NoVGltZSI6MTc5Mjk2MDc1Nn19fV19&Signature=bNPB-jKOYANBCSd5DYV9HulPIjdfcRjNTFyjCl0DvoeY1J9J51ZnsXlX4PEeDuJ3Rpqqv6bH1MiPqINCfQdzOmjW11I3gHdmdL9kCjFfxhz-6v7s9KBk6I4PUISHve~WRl8RtXr6KqNl~HlJHPE~sGuhG-r~L26bJq06szo8Gst6N73EQeBLJqIhafN63bVlTA4eAwyvRB7v1ZF4YJG3-1rZP13e7gnoVqXDxXufdZ4EQnlnFpmJl1eA4-UNOeQu-3c1esgyG1m7m3vsIGszdAh8JP5OhK~DWfGkmYjKPqYbkPytlgxdOXP1P5oILxqqlhhaHD9MMPTsMsYmh19-Fw__&Key-Pair-Id=K1676C64NMVM2J"},"task_id":"c850ab9f-b7e2-46c9-99f8-ecf6556352ec","created_at":"2026-10-24T20:10:48.344175Z","completed_at":"2026-10-24T20:10:49.624499Z","credits_consumed":10,"output_dir":"/Users/coral/Documents/App Development/Human Resources/assets/models/field-rock-a","files":["/Users/coral/Documents/App Development/Human Resources/assets/models/field-rock-a/model.glb"],"model_file":"/Users/coral/Documents/App Development/Human Resources/assets/models/field-rock-a/model.glb"}

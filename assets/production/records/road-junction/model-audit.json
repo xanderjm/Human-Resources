@@ -1,0 +1,562 @@
+{
+  "asset": "road-junction",
+  "model_file": "assets/models/road-junction/road-junction.glb",
+  "generator": "tools/build_measured_modules.py",
+  "orientation_variants": [
+    {
+      "yaw_degrees": 90,
+      "model_file": "assets/models/road-junction/road-junction-yaw90.glb",
+      "ports": [
+        {
+          "name": "west",
+          "centre_m": [
+            0,
+            0,
+            8
+          ],
+          "outward": [
+            0,
+            0,
+            1
+          ],
+          "edge_m": [
+            [
+              3,
+              0,
+              8
+            ],
+            [
+              -3,
+              0,
+              8
+            ]
+          ],
+          "edge_uv": [
+            [
+              3,
+              8
+            ],
+            [
+              -3,
+              8
+            ]
+          ]
+        },
+        {
+          "name": "east",
+          "centre_m": [
+            0,
+            0,
+            -8
+          ],
+          "outward": [
+            0,
+            0,
+            -1
+          ],
+          "edge_m": [
+            [
+              3,
+              0,
+              -8
+            ],
+            [
+              -3,
+              0,
+              -8
+            ]
+          ],
+          "edge_uv": [
+            [
+              3,
+              -8
+            ],
+            [
+              -3,
+              -8
+            ]
+          ]
+        },
+        {
+          "name": "north",
+          "centre_m": [
+            8,
+            0,
+            0
+          ],
+          "outward": [
+            1,
+            0,
+            0
+          ],
+          "edge_m": [
+            [
+              8,
+              0,
+              3
+            ],
+            [
+              8,
+              0,
+              -3
+            ]
+          ],
+          "edge_uv": [
+            [
+              8,
+              3
+            ],
+            [
+              8,
+              -3
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "yaw_degrees": 180,
+      "model_file": "assets/models/road-junction/road-junction-yaw180.glb",
+      "ports": [
+        {
+          "name": "west",
+          "centre_m": [
+            8,
+            0,
+            0
+          ],
+          "outward": [
+            1,
+            0,
+            0
+          ],
+          "edge_m": [
+            [
+              8,
+              0,
+              -3
+            ],
+            [
+              8,
+              0,
+              3
+            ]
+          ],
+          "edge_uv": [
+            [
+              8,
+              -3
+            ],
+            [
+              8,
+              3
+            ]
+          ]
+        },
+        {
+          "name": "east",
+          "centre_m": [
+            -8,
+            0,
+            0
+          ],
+          "outward": [
+            -1,
+            0,
+            0
+          ],
+          "edge_m": [
+            [
+              -8,
+              0,
+              -3
+            ],
+            [
+              -8,
+              0,
+              3
+            ]
+          ],
+          "edge_uv": [
+            [
+              -8,
+              -3
+            ],
+            [
+              -8,
+              3
+            ]
+          ]
+        },
+        {
+          "name": "north",
+          "centre_m": [
+            0,
+            0,
+            -8
+          ],
+          "outward": [
+            0,
+            0,
+            -1
+          ],
+          "edge_m": [
+            [
+              3,
+              0,
+              -8
+            ],
+            [
+              -3,
+              0,
+              -8
+            ]
+          ],
+          "edge_uv": [
+            [
+              3,
+              -8
+            ],
+            [
+              -3,
+              -8
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "yaw_degrees": 270,
+      "model_file": "assets/models/road-junction/road-junction-yaw270.glb",
+      "ports": [
+        {
+          "name": "west",
+          "centre_m": [
+            0,
+            0,
+            -8
+          ],
+          "outward": [
+            0,
+            0,
+            -1
+          ],
+          "edge_m": [
+            [
+              -3,
+              0,
+              -8
+            ],
+            [
+              3,
+              0,
+              -8
+            ]
+          ],
+          "edge_uv": [
+            [
+              -3,
+              -8
+            ],
+            [
+              3,
+              -8
+            ]
+          ]
+        },
+        {
+          "name": "east",
+          "centre_m": [
+            0,
+            0,
+            8
+          ],
+          "outward": [
+            0,
+            0,
+            1
+          ],
+          "edge_m": [
+            [
+              -3,
+              0,
+              8
+            ],
+            [
+              3,
+              0,
+              8
+            ]
+          ],
+          "edge_uv": [
+            [
+              -3,
+              8
+            ],
+            [
+              3,
+              8
+            ]
+          ]
+        },
+        {
+          "name": "north",
+          "centre_m": [
+            -8,
+            0,
+            0
+          ],
+          "outward": [
+            -1,
+            0,
+            0
+          ],
+          "edge_m": [
+            [
+              -8,
+              0,
+              -3
+            ],
+            [
+              -8,
+              0,
+              3
+            ]
+          ],
+          "edge_uv": [
+            [
+              -8,
+              -3
+            ],
+            [
+              -8,
+              3
+            ]
+          ]
+        }
+      ]
+    }
+  ],
+  "texture": "assets/textures/texture-asphalt/texture-asphalt.png",
+  "texture_sha256": "1b1821bf91bdddb363680813ca37feac7d5c0a2dfe7fc8bd955e819b7d443017",
+  "bounds_m": [
+    [
+      -8.0,
+      0.0,
+      -3.0
+    ],
+    [
+      8.0,
+      0.0,
+      8.0
+    ]
+  ],
+  "dimensions_m": [
+    16.0,
+    0.0,
+    11.0
+  ],
+  "ports": [
+    {
+      "name": "west",
+      "centre_m": [
+        -8,
+        0,
+        0
+      ],
+      "outward": [
+        -1,
+        0,
+        0
+      ],
+      "edge_m": [
+        [
+          -8,
+          0,
+          3
+        ],
+        [
+          -8,
+          0,
+          -3
+        ]
+      ],
+      "edge_uv": [
+        [
+          -8,
+          3
+        ],
+        [
+          -8,
+          -3
+        ]
+      ]
+    },
+    {
+      "name": "east",
+      "centre_m": [
+        8,
+        0,
+        0
+      ],
+      "outward": [
+        1,
+        0,
+        0
+      ],
+      "edge_m": [
+        [
+          8,
+          0,
+          3
+        ],
+        [
+          8,
+          0,
+          -3
+        ]
+      ],
+      "edge_uv": [
+        [
+          8,
+          3
+        ],
+        [
+          8,
+          -3
+        ]
+      ]
+    },
+    {
+      "name": "north",
+      "centre_m": [
+        0,
+        0,
+        8
+      ],
+      "outward": [
+        0,
+        0,
+        1
+      ],
+      "edge_m": [
+        [
+          -3,
+          0,
+          8
+        ],
+        [
+          3,
+          0,
+          8
+        ]
+      ],
+      "edge_uv": [
+        [
+          -3,
+          8
+        ],
+        [
+          3,
+          8
+        ]
+      ]
+    }
+  ],
+  "uv_mode": "world-aligned planar top UV; integer-metre translation; select baked orientation variants",
+  "notes": [
+    "Logical16x16m placement grid; occupied asphalt bounds16x11m. Planar UVs preserve uniform brush density, including the junction centre.",
+    "Planar top UV=(localX,localZ), one1m repeat. Orientation variants bake rotations and reprojectUV so texture remains world aligned. Translate only on integer-metre grid; select baked yaw variant instead of rotating default UVs."
+  ],
+  "seam_checks": [
+    {
+      "asset": "road-junction",
+      "port": "west",
+      "samples": 1025,
+      "integer_grid_translation": [
+        16,
+        16
+      ],
+      "max_rgb_error": 0.0
+    },
+    {
+      "asset": "road-junction",
+      "port": "east",
+      "samples": 1025,
+      "integer_grid_translation": [
+        16,
+        16
+      ],
+      "max_rgb_error": 0.0
+    },
+    {
+      "asset": "road-junction",
+      "port": "north",
+      "samples": 1025,
+      "integer_grid_translation": [
+        16,
+        16
+      ],
+      "max_rgb_error": 0.0
+    }
+  ],
+  "structural_review": {
+    "status": "passed"
+  },
+  "visual_review": {
+    "status": "passed_authoring_review",
+    "notes": "Reviewed isolated 3/4 render, twelve-item contact sheet, assembled tangent road/path joins, and 3x3 scrolling-ground preview. No scenery baked into references; native-device material scale review remains open."
+  },
+  "import_review": {
+    "status": "passed",
+    "units": "metres",
+    "up": "+Y",
+    "pivot": "local origin; see ports",
+    "bounds_m": [
+      [
+        -8.0,
+        0.0,
+        -3.0
+      ],
+      [
+        8.0,
+        0.0,
+        8.0
+      ]
+    ],
+    "dimensions_m": [
+      16.0,
+      0.0,
+      11.0
+    ]
+  },
+  "triangles": 4,
+  "vertices": 12,
+  "mesh_primitives": 1,
+  "uv_present": true,
+  "textures": [
+    {
+      "size": [
+        1024,
+        1024
+      ],
+      "mode": "RGB"
+    }
+  ],
+  "raw_accessor_bounds": [
+    {
+      "min": [
+        -8.0,
+        0.0,
+        -3.0
+      ],
+      "max": [
+        8.0,
+        0.0,
+        8.0
+      ]
+    }
+  ],
+  "extensions": [],
+  "bytes": 1430096
+}

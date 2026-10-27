@@ -169,7 +169,7 @@ The native log retains actual draw/triangle counts and faded-prop counts.
 These are visual review inputs, not naturally earned play, frame-time or art
 acceptance. Review target and warning readability with the retained shadows.
 
-After the bounded Farmland/capture-continuity correction, use the two targeted
+Historical pre-commitment review: after the Farmland/capture-continuity correction, use the two targeted
 modes instead of repeating the long normal film or the entire capacity set:
 
 ```
@@ -186,3 +186,10 @@ post-loss ticks remain exact. This is a controlled animation/composition proof,
 not a naturally occurring three-role capture. Native logs retain the source
 actor/kind/time and consecutive body transforms around cancellation. Freeze the
 production transport/renderer and scenery owners together before execution.
+
+The capture-loss portion of `--infantry-transition` requires its historical
+pre-26-October rules. Current committed beams cannot produce that reset; do not
+run this historical cancellation proof against current gameplay or reinterpret
+its old movie as current evidence. Current `capture_gameplay_contracts` and
+`scene_effects_contracts` exercise actual range escape through successful pickup,
+retaining separate synthetic presentation-release coverage.

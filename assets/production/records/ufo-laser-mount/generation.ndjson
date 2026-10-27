@@ -1,0 +1,28 @@
+── Plan ──────────────────────────
+input: /Users/coral/Documents/App Development/Human Resources/assets/references/ufo-laser-mount/v1.png
+model: P1-20260311 — explicit --model
+steps:
+  1. image-to-model  POST /v3/generation/image-to-model — generate a 3D model from one image
+     model="P1-20260311" face_limit=1200 texture=true pbr=false texture_quality="standard" texture_alignment="original_image" export_uv=true
+  2. convert  POST /v3/models/convert — convert format / texture size / orientation
+     format="GLTF" texture_size=1024
+cost impact:
+  · non-default convert options bill as complex convert
+──────────────────────────────────
+model: P1-20260311 (explicit --model)
+task created 3abe302d-ba27-4dec-9b59-0990657dae15 (@ufo-laser-mount)
+image_to_model · queued
+image_to_model · running 12% · 3abe302d
+image_to_model · running 22% · 3abe302d
+image_to_model · running 37% · 3abe302d
+image_to_model · running 55% · 3abe302d
+image_to_model · running 85% · 3abe302d
+image_to_model · success 100% · 3abe302d
+✓ image_to_model · 3abe302d-ba27-4dec-9b59-0990657dae15 · 50 credits
+! non-default convert options use the "complex convert" price tier
+task created 921d89b5-f7af-4161-9a50-6d39bbef6310 (@ufo-laser-mount-convert)
+convert_model · queued
+✓ convert_model · 921d89b5-f7af-4161-9a50-6d39bbef6310 · 10 credits
+downloading artifacts…
+✓ artifacts saved to /Users/coral/Documents/App Development/Human Resources/assets/models/ufo-laser-mount/tripo-out/ufo-laser-mount-convert-921d89b5
+{"task_id":"921d89b5-f7af-4161-9a50-6d39bbef6310","type":"convert_model","status":"success","credits_consumed":60,"output_dir":"/Users/coral/Documents/App Development/Human Resources/assets/models/ufo-laser-mount/tripo-out/ufo-laser-mount-convert-921d89b5","files":["model.glb"],"model_file":"/Users/coral/Documents/App Development/Human Resources/assets/models/ufo-laser-mount/tripo-out/ufo-laser-mount-convert-921d89b5/model.glb","chain":[{"task_id":"921d89b5-f7af-4161-9a50-6d39bbef6310","type":"convert_model","status":"success","credits_consumed":10,"output_dir":"/Users/coral/Documents/App Development/Human Resources/assets/models/ufo-laser-mount/tripo-out/ufo-laser-mount-convert-921d89b5","files":["model.glb"],"model_file":"/Users/coral/Documents/App Development/Human Resources/assets/models/ufo-laser-mount/tripo-out/ufo-laser-mount-convert-921d89b5/model.glb"}],"source_task_id":"3abe302d-ba27-4dec-9b59-0990657dae15","credits_breakdown":[{"task_id":"3abe302d-ba27-4dec-9b59-0990657dae15","type":"image_to_model","credits_consumed":50},{"task_id":"921d89b5-f7af-4161-9a50-6d39bbef6310","type":"convert_model","credits_consumed":10}]}

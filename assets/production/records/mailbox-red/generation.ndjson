@@ -1,0 +1,28 @@
+── Plan ──────────────────────────
+input: /Users/coral/Documents/App Development/Human Resources/assets/references/mailbox-red/v1.png
+model: P1-20260311 — explicit --model
+steps:
+  1. image-to-model  POST /v3/generation/image-to-model — generate a 3D model from one image
+     model="P1-20260311" face_limit=1200 texture=true pbr=false texture_quality="standard" texture_alignment="original_image" export_uv=true
+  2. convert  POST /v3/models/convert — convert format / texture size / orientation
+     format="GLTF" texture_size=1024
+cost impact:
+  · non-default convert options bill as complex convert
+──────────────────────────────────
+model: P1-20260311 (explicit --model)
+task created 9e2db3a4-cb3b-4f8f-b85c-421eb5403d05 (@mailbox-red)
+image_to_model · queued
+image_to_model · running 12% · 9e2db3a4
+image_to_model · running 22% · 9e2db3a4
+image_to_model · running 38% · 9e2db3a4
+image_to_model · running 61% · 9e2db3a4
+image_to_model · running 96% · 9e2db3a4
+image_to_model · success 100% · 9e2db3a4
+✓ image_to_model · 9e2db3a4-cb3b-4f8f-b85c-421eb5403d05 · 50 credits
+! non-default convert options use the "complex convert" price tier
+task created f17dd4c1-4369-402c-9622-2a0ba49c90c4 (@mailbox-red-convert)
+convert_model · queued
+✓ convert_model · f17dd4c1-4369-402c-9622-2a0ba49c90c4 · 10 credits
+downloading artifacts…
+✓ artifacts saved to /Users/coral/Documents/App Development/Human Resources/assets/models/mailbox-red/tripo-out/mailbox-red-convert-f17dd4c1
+{"task_id":"f17dd4c1-4369-402c-9622-2a0ba49c90c4","type":"convert_model","status":"success","credits_consumed":60,"output_dir":"/Users/coral/Documents/App Development/Human Resources/assets/models/mailbox-red/tripo-out/mailbox-red-convert-f17dd4c1","files":["model.glb"],"model_file":"/Users/coral/Documents/App Development/Human Resources/assets/models/mailbox-red/tripo-out/mailbox-red-convert-f17dd4c1/model.glb","chain":[{"task_id":"f17dd4c1-4369-402c-9622-2a0ba49c90c4","type":"convert_model","status":"success","credits_consumed":10,"output_dir":"/Users/coral/Documents/App Development/Human Resources/assets/models/mailbox-red/tripo-out/mailbox-red-convert-f17dd4c1","files":["model.glb"],"model_file":"/Users/coral/Documents/App Development/Human Resources/assets/models/mailbox-red/tripo-out/mailbox-red-convert-f17dd4c1/model.glb"}],"source_task_id":"9e2db3a4-cb3b-4f8f-b85c-421eb5403d05","credits_breakdown":[{"task_id":"9e2db3a4-cb3b-4f8f-b85c-421eb5403d05","type":"image_to_model","credits_consumed":50},{"task_id":"f17dd4c1-4369-402c-9622-2a0ba49c90c4","type":"convert_model","credits_consumed":10}]}

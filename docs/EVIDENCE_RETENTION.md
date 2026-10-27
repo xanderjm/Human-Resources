@@ -33,6 +33,18 @@ frames and leaves the current 19 source owners, 68 native build inputs and 33 pr
 application bundles intact. The observed free-space increase is 2.43 GB;
 APFS sharing and concurrent system activity affect physical-space measurements.
 
+The 27 October owner-requested follow-up is recorded in
+`build/evidence/space-cleanup-20261027/RESULT-FINAL.json`, with the exact removal
+list and retained PNG hashes in `PLAN.json`. It removes 3,214 disposable files
+(3.08 GB logical): pixel-identical raw screenshot duplicates, rebuildable Android
+intermediates and the verified installer for the retained Blender installation.
+All 77,345 non-target regular files remain unchanged. Unique films/images, apps,
+saves, platform packages, reports/logs, source and authoring provenance remain.
+Removed raw screenshot paths now refer to intentionally retired duplicates; the
+named lossless PNGs retain the exact pixels. Deleted Android intermediates must
+be regenerated before reuse. Whole-volume free-space changes include concurrent
+activity and are not attributed wholly to this cleanup.
+
 Hosted evidence remains subject to the repository's manual-workflow and CI
 artifact requirements. This local retention policy does not weaken a test or
 turn missing device, performance, signing or store evidence into a pass.

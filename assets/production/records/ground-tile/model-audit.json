@@ -1,0 +1,412 @@
+{
+  "asset": "ground-tile",
+  "model_file": "assets/models/ground-tile/ground-tile.glb",
+  "generator": "tools/build_measured_modules.py",
+  "orientation_variants": [
+    {
+      "yaw_degrees": 90,
+      "model_file": "assets/models/ground-tile/ground-tile-yaw90.glb",
+      "ports": [
+        {
+          "name": "start",
+          "centre_m": [
+            0,
+            0,
+            0
+          ],
+          "outward": [
+            -1,
+            0,
+            0
+          ],
+          "edge_m": [
+            [
+              0.0,
+              0.0,
+              8.0
+            ],
+            [
+              0.0,
+              0.0,
+              -8.0
+            ]
+          ],
+          "edge_uv": [
+            [
+              0.0,
+              8.0
+            ],
+            [
+              0.0,
+              -8.0
+            ]
+          ]
+        },
+        {
+          "name": "end",
+          "centre_m": [
+            16,
+            0,
+            0
+          ],
+          "outward": [
+            1,
+            0,
+            0
+          ],
+          "edge_m": [
+            [
+              16.0,
+              0.0,
+              8.0
+            ],
+            [
+              16.0,
+              0.0,
+              -8.0
+            ]
+          ],
+          "edge_uv": [
+            [
+              16.0,
+              8.0
+            ],
+            [
+              16.0,
+              -8.0
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "yaw_degrees": 180,
+      "model_file": "assets/models/ground-tile/ground-tile-yaw180.glb",
+      "ports": [
+        {
+          "name": "start",
+          "centre_m": [
+            0,
+            0,
+            0
+          ],
+          "outward": [
+            0,
+            0,
+            1
+          ],
+          "edge_m": [
+            [
+              8.0,
+              0.0,
+              0.0
+            ],
+            [
+              -8.0,
+              0.0,
+              0.0
+            ]
+          ],
+          "edge_uv": [
+            [
+              8.0,
+              0.0
+            ],
+            [
+              -8.0,
+              0.0
+            ]
+          ]
+        },
+        {
+          "name": "end",
+          "centre_m": [
+            0,
+            0,
+            -16
+          ],
+          "outward": [
+            0,
+            0,
+            -1
+          ],
+          "edge_m": [
+            [
+              8.0,
+              0.0,
+              -16.0
+            ],
+            [
+              -8.0,
+              0.0,
+              -16.0
+            ]
+          ],
+          "edge_uv": [
+            [
+              8.0,
+              -16.0
+            ],
+            [
+              -8.0,
+              -16.0
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "yaw_degrees": 270,
+      "model_file": "assets/models/ground-tile/ground-tile-yaw270.glb",
+      "ports": [
+        {
+          "name": "start",
+          "centre_m": [
+            0,
+            0,
+            0
+          ],
+          "outward": [
+            1,
+            0,
+            0
+          ],
+          "edge_m": [
+            [
+              0.0,
+              0.0,
+              -8.0
+            ],
+            [
+              0.0,
+              0.0,
+              8.0
+            ]
+          ],
+          "edge_uv": [
+            [
+              0.0,
+              -8.0
+            ],
+            [
+              0.0,
+              8.0
+            ]
+          ]
+        },
+        {
+          "name": "end",
+          "centre_m": [
+            -16,
+            0,
+            0
+          ],
+          "outward": [
+            -1,
+            0,
+            0
+          ],
+          "edge_m": [
+            [
+              -16.0,
+              0.0,
+              -8.0
+            ],
+            [
+              -16.0,
+              0.0,
+              8.0
+            ]
+          ],
+          "edge_uv": [
+            [
+              -16.0,
+              -8.0
+            ],
+            [
+              -16.0,
+              8.0
+            ]
+          ]
+        }
+      ]
+    }
+  ],
+  "texture": "assets/textures/texture-grass/texture-grass.png",
+  "texture_sha256": "f655840380659629bf5fc05fb916a7a92d39114e82af4df1cd13430691b24762",
+  "bounds_m": [
+    [
+      -8.0,
+      0.0,
+      0.0
+    ],
+    [
+      8.0,
+      0.0,
+      16.0
+    ]
+  ],
+  "dimensions_m": [
+    16.0,
+    0.0,
+    16.0
+  ],
+  "ports": [
+    {
+      "name": "start",
+      "centre_m": [
+        0,
+        0,
+        0
+      ],
+      "outward": [
+        0,
+        0,
+        -1
+      ],
+      "edge_m": [
+        [
+          -8.0,
+          0.0,
+          0.0
+        ],
+        [
+          8.0,
+          0.0,
+          0.0
+        ]
+      ],
+      "edge_uv": [
+        [
+          -8.0,
+          0.0
+        ],
+        [
+          8.0,
+          0.0
+        ]
+      ]
+    },
+    {
+      "name": "end",
+      "centre_m": [
+        0,
+        0,
+        16
+      ],
+      "outward": [
+        0,
+        0,
+        1
+      ],
+      "edge_m": [
+        [
+          -8.0,
+          0.0,
+          16.0
+        ],
+        [
+          8.0,
+          0.0,
+          16.0
+        ]
+      ],
+      "edge_uv": [
+        [
+          -8.0,
+          16.0
+        ],
+        [
+          8.0,
+          16.0
+        ]
+      ]
+    }
+  ],
+  "uv_mode": "world-aligned planar top UV; integer-metre translation; select baked orientation variants",
+  "notes": [
+    "Shared 16m square geometry. Default grass; replace only base-colour texture with sand for desert. 1m repeat footprint; UV range16x16. Seam-free translation by16m in X or Z. No perimeter wall or baked border.",
+    "Planar top UV=(localX,localZ), one1m repeat. Orientation variants bake rotations and reprojectUV so texture remains world aligned. Translate only on integer-metre grid; select baked yaw variant instead of rotating default UVs."
+  ],
+  "seam_checks": [
+    {
+      "asset": "ground-tile",
+      "port": "start",
+      "samples": 1025,
+      "integer_grid_translation": [
+        16,
+        16
+      ],
+      "max_rgb_error": 0.0
+    },
+    {
+      "asset": "ground-tile",
+      "port": "end",
+      "samples": 1025,
+      "integer_grid_translation": [
+        16,
+        16
+      ],
+      "max_rgb_error": 0.0
+    }
+  ],
+  "structural_review": {
+    "status": "passed"
+  },
+  "visual_review": {
+    "status": "passed_authoring_review",
+    "notes": "Reviewed isolated 3/4 render, twelve-item contact sheet, assembled tangent road/path joins, and 3x3 scrolling-ground preview. No scenery baked into references; native-device material scale review remains open."
+  },
+  "import_review": {
+    "status": "passed",
+    "units": "metres",
+    "up": "+Y",
+    "pivot": "local origin; see ports",
+    "bounds_m": [
+      [
+        -8.0,
+        0.0,
+        0.0
+      ],
+      [
+        8.0,
+        0.0,
+        16.0
+      ]
+    ],
+    "dimensions_m": [
+      16.0,
+      0.0,
+      16.0
+    ]
+  },
+  "triangles": 2,
+  "vertices": 6,
+  "mesh_primitives": 1,
+  "uv_present": true,
+  "textures": [
+    {
+      "size": [
+        1024,
+        1024
+      ],
+      "mode": "RGB"
+    }
+  ],
+  "raw_accessor_bounds": [
+    {
+      "min": [
+        -8.0,
+        0.0,
+        0.0
+      ],
+      "max": [
+        8.0,
+        0.0,
+        16.0
+      ]
+    }
+  ],
+  "extensions": [],
+  "bytes": 1272612
+}

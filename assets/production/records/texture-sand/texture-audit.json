@@ -1,0 +1,176 @@
+{
+  "id": "texture-sand",
+  "source": "/Users/coral/.codex/generated_images/01a16e3b-5221-78b2-bd33-9830eab86a7f/exec-0ae86061-6b00-4cf5-810d-5293d5c7e463.png",
+  "preserved_raw_file": "/Users/coral/Documents/App Development/Human Resources/assets/textures/texture-sand/raw-v1.png",
+  "source_sha256": "5b3e66e07ed2d48cc023ff3847c32752d3f9fa4c9cd7b5732fff606b04e9b4c2",
+  "generation_record": "/Users/coral/Documents/App Development/Human Resources/assets/production/records/texture-sand/tile-v1-generated.json",
+  "final_file": "/Users/coral/Documents/App Development/Human Resources/assets/textures/texture-sand/texture-sand.png",
+  "sha256": "3ad9f7030d4188e8aaa5004108d2847babb464ccbf768bd805bb84512a88c327",
+  "dimensions": [
+    1024,
+    1024
+  ],
+  "channels": "RGB",
+  "color_space": "sRGB albedo",
+  "role": "repeating albedo; no baked lighting or PBR maps",
+  "method": "Periodic-plus-smooth Poisson decomposition, compact Hermite C1 boundary correction, integer boundary projection",
+  "source_seams": {
+    "edge_value_x": {
+      "max_abs_8bit": 21.0,
+      "rms_8bit": 3.202731174976549
+    },
+    "edge_value_y": {
+      "max_abs_8bit": 24.0,
+      "rms_8bit": 4.257040736630709
+    },
+    "first_difference_x": {
+      "max_abs_8bit": 17.0,
+      "rms_8bit": 2.576814692276752
+    },
+    "first_difference_y": {
+      "max_abs_8bit": 24.0,
+      "rms_8bit": 3.2832335274593754
+    },
+    "interior_adjacent_rms_8bit": 2.017107826291702
+  },
+  "exported_seams": {
+    "edge_value_x": {
+      "max_abs_8bit": 0.0,
+      "rms_8bit": 0.0
+    },
+    "edge_value_y": {
+      "max_abs_8bit": 0.0,
+      "rms_8bit": 0.0
+    },
+    "first_difference_x": {
+      "max_abs_8bit": 0.0,
+      "rms_8bit": 0.0
+    },
+    "first_difference_y": {
+      "max_abs_8bit": 0.0,
+      "rms_8bit": 0.0
+    },
+    "interior_adjacent_rms_8bit": 2.0299032235995216
+  },
+  "correction_rms_8bit": 0.7916581672078351,
+  "numerical_qa": "passed",
+  "visual_qa": {
+    "status": "passed_authoring_review",
+    "reviewer": "seamless_materials agent",
+    "reviewed_at": "2026-10-24T21:31:36.098367+00:00",
+    "views": [
+      "3x3 repeat at 256 px per tile",
+      "3x3 repeat at 512 px per tile"
+    ],
+    "notes": "Peach/ochre brushwork remains soft; no pebbles, footprints, baked shadows or repeat border.",
+    "owner_approval": "not yet requested"
+  },
+  "box_downsample_mip_diagnostics": {
+    "512": {
+      "edge_value_x": {
+        "max_abs_8bit": 7.0,
+        "rms_8bit": 0.9621752698962908
+      },
+      "edge_value_y": {
+        "max_abs_8bit": 8.0,
+        "rms_8bit": 1.316462273164965
+      },
+      "first_difference_x": {
+        "max_abs_8bit": 21.0,
+        "rms_8bit": 2.2242449561592808
+      },
+      "first_difference_y": {
+        "max_abs_8bit": 24.0,
+        "rms_8bit": 3.9398967573190715
+      },
+      "interior_adjacent_rms_8bit": 2.1597837408654206
+    },
+    "256": {
+      "edge_value_x": {
+        "max_abs_8bit": 14.0,
+        "rms_8bit": 1.7188446943611089
+      },
+      "edge_value_y": {
+        "max_abs_8bit": 12.0,
+        "rms_8bit": 2.4179235237423593
+      },
+      "first_difference_x": {
+        "max_abs_8bit": 18.0,
+        "rms_8bit": 3.0697193818545263
+      },
+      "first_difference_y": {
+        "max_abs_8bit": 23.0,
+        "rms_8bit": 4.757806085792064
+      },
+      "interior_adjacent_rms_8bit": 2.0658811794838363
+    },
+    "128": {
+      "edge_value_x": {
+        "max_abs_8bit": 12.0,
+        "rms_8bit": 1.9704853463043057
+      },
+      "edge_value_y": {
+        "max_abs_8bit": 13.0,
+        "rms_8bit": 3.1881126862142124
+      },
+      "first_difference_x": {
+        "max_abs_8bit": 17.0,
+        "rms_8bit": 3.3494402517435655
+      },
+      "first_difference_y": {
+        "max_abs_8bit": 17.0,
+        "rms_8bit": 3.958771905528279
+      },
+      "interior_adjacent_rms_8bit": 2.0873643142909253
+    },
+    "64": {
+      "edge_value_x": {
+        "max_abs_8bit": 11.0,
+        "rms_8bit": 2.3127815143963195
+      },
+      "edge_value_y": {
+        "max_abs_8bit": 14.0,
+        "rms_8bit": 4.09585664625444
+      },
+      "first_difference_x": {
+        "max_abs_8bit": 15.0,
+        "rms_8bit": 2.9747198747669223
+      },
+      "first_difference_y": {
+        "max_abs_8bit": 12.0,
+        "rms_8bit": 4.239570536426223
+      },
+      "interior_adjacent_rms_8bit": 2.334805830774791
+    },
+    "32": {
+      "edge_value_x": {
+        "max_abs_8bit": 10.0,
+        "rms_8bit": 2.7443123000125187
+      },
+      "edge_value_y": {
+        "max_abs_8bit": 17.0,
+        "rms_8bit": 4.963407767518872
+      },
+      "first_difference_x": {
+        "max_abs_8bit": 15.0,
+        "rms_8bit": 4.111721050849631
+      },
+      "first_difference_y": {
+        "max_abs_8bit": 21.0,
+        "rms_8bit": 7.4916620318858484
+      },
+      "interior_adjacent_rms_8bit": 3.047464033756106
+    }
+  },
+  "tiled_preview": "/Users/coral/Documents/App Development/Human Resources/assets/textures/texture-sand/tiled-3x3-qa.png",
+  "close_tiled_preview": "/Users/coral/Documents/App Development/Human Resources/assets/textures/texture-sand/tiled-3x3-close-qa.png",
+  "repeat_sampler": {
+    "wrap_s": "REPEAT",
+    "wrap_t": "REPEAT"
+  },
+  "limitations": [
+    "Shipping gameplay integration, target GPU mip selection and device-scale density are not qualified; native authoring preview evidence is separate.",
+    "A single repeat tile can still show recurrent brush motifs over very large empty surfaces; numerical continuity alone does not establish art approval."
+  ],
+  "native_authoring_preview_evidence": "build/captures/seamless-material-check/evidence.json"
+}

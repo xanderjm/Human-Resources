@@ -91,7 +91,7 @@ def main():
         parser.error("--runs and --levels must be positive")
     spec = json.loads(SPEC_PATH.read_text())
     modules = spec["hardware"]
-    assert len({module["id"] for module in modules}) == len(modules) == 16
+    assert len({module["id"] for module in modules}) == len(modules) == 12
     assert len(spec["previous_effect_mapping"]) == 31
     assert all(len(module["ranks"]) == 3 for module in modules)
     for module in modules:

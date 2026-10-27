@@ -1,0 +1,28 @@
+── Plan ──────────────────────────
+input: /Users/coral/Documents/App Development/Human Resources/assets/references/field-rock-b/v1.png
+model: P1-20260311 — explicit --model
+steps:
+  1. image-to-model  POST /v3/generation/image-to-model — generate a 3D model from one image
+     model="P1-20260311" face_limit=1800 texture=true pbr=false texture_quality="standard" texture_alignment="original_image" export_uv=true
+  2. convert  POST /v3/models/convert — convert format / texture size / orientation
+     format="GLTF" texture_size=1024
+cost impact:
+  · non-default convert options bill as complex convert
+──────────────────────────────────
+model: P1-20260311 (explicit --model)
+task created 5b5d4ad3-988d-4778-b658-a99c08a4fcad (@field-rock-b)
+image_to_model · queued
+image_to_model · running 14% · 5b5d4ad3
+image_to_model · running 23% · 5b5d4ad3
+image_to_model · running 37% · 5b5d4ad3
+image_to_model · running 62% · 5b5d4ad3
+image_to_model · running 91% · 5b5d4ad3
+image_to_model · success 100% · 5b5d4ad3
+✓ image_to_model · 5b5d4ad3-988d-4778-b658-a99c08a4fcad · 50 credits
+! non-default convert options use the "complex convert" price tier
+task created ebbf06bd-2acd-4907-8c0e-632f2fbcfea1 (@field-rock-b-convert)
+convert_model · queued
+✓ convert_model · ebbf06bd-2acd-4907-8c0e-632f2fbcfea1 · 10 credits
+downloading artifacts…
+✓ artifacts saved to /Users/coral/Documents/App Development/Human Resources/assets/models/field-rock-b/tripo-out/field-rock-b-convert-ebbf06bd
+{"task_id":"ebbf06bd-2acd-4907-8c0e-632f2fbcfea1","type":"convert_model","status":"success","credits_consumed":60,"output_dir":"/Users/coral/Documents/App Development/Human Resources/assets/models/field-rock-b/tripo-out/field-rock-b-convert-ebbf06bd","files":["model.glb"],"model_file":"/Users/coral/Documents/App Development/Human Resources/assets/models/field-rock-b/tripo-out/field-rock-b-convert-ebbf06bd/model.glb","chain":[{"task_id":"ebbf06bd-2acd-4907-8c0e-632f2fbcfea1","type":"convert_model","status":"success","credits_consumed":10,"output_dir":"/Users/coral/Documents/App Development/Human Resources/assets/models/field-rock-b/tripo-out/field-rock-b-convert-ebbf06bd","files":["model.glb"],"model_file":"/Users/coral/Documents/App Development/Human Resources/assets/models/field-rock-b/tripo-out/field-rock-b-convert-ebbf06bd/model.glb"}],"source_task_id":"5b5d4ad3-988d-4778-b658-a99c08a4fcad","credits_breakdown":[{"task_id":"5b5d4ad3-988d-4778-b658-a99c08a4fcad","type":"image_to_model","credits_consumed":50},{"task_id":"ebbf06bd-2acd-4907-8c0e-632f2fbcfea1","type":"convert_model","credits_consumed":10}]}

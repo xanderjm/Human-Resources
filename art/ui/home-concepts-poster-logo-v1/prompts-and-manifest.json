@@ -1,0 +1,35 @@
+{
+  "created": "2026-10-26",
+  "mode": "built-in image_gen",
+  "intent": "Replace title logo in the two user-selected concept images with the supplied poster logo.",
+  "poster_reference": "/var/folders/gm/npwjrbpn7dxf1t_btyy41fqw0000gn/T/codex-clipboard-a169ccfe-7d14-45a3-bb60-626c2e4aca57.png",
+  "edits": [
+    {
+      "id": "07-space-toy-console-poster-logo",
+      "name": "Space Toy Console",
+      "key": "logoUpdateToy",
+      "target": "/var/folders/gm/npwjrbpn7dxf1t_btyy41fqw0000gn/T/codex-clipboard-8a37e276-7ef4-4902-a3c1-c89b9829adb1.png",
+      "prompt": "Use case: ui-mockup / precise logo replacement.\nImage 1 is the EDIT TARGET: a complete portrait Human Resources mobile home screen with a tactile ivory-and-cobalt toy-console UI.\nImage 2 is a LOGO REFERENCE ONLY: the approved illustrated poster.\nUpdate ONLY the main title wordmark on Image 1 to use the logo from the top of Image 2. Faithfully reproduce that specific two-line HUMAN RESOURCES logo: chunky forward-slanting cream letters, distinctive angular letter silhouettes and exaggerated H and R, slim coral-red offset extrusion/shadow, the small blue saucer emitting a mint triangular tractor beam as part of the A in HUMAN, and the broad curved mint swoosh beneath RESOURCES. Match the reference logo's proportions, arrangement, colours and distinctive letter construction rather than merely using another italic font. Both words are cream; coral belongs only to the narrow offset edge. Copy the logo only, not the poster background or large illustrated saucer/character.\nFit the approved logo cleanly inside the existing dark navy top title housing, above the unchanged credit/progression counters. Keep the ivory moulded casing and orange-tipped antenna details. Remove the old separate mint cow-abduction crest/decorative stars if necessary to give the approved logo clean space; the reference logo's own tiny UFO/beam and underline should carry that area. Do not overlay the old wordmark or duplicate saucer emblems.\nPreserve EVERYTHING ELSE from Image 1: full 850x1850 portrait composition; farmland, barn, farmer, sheep, original central blue saucer and cow, lighting, framing; top credits 1,240 RESEARCH CREDITS and NEXT BLUEPRINT 42 / 60 CAPTURES; entire lower LOCATION / FARMLAND arrow selector, mint START RUN button, HANGAR and SETTINGS buttons. Do not redesign controls, change values, alter button text or add new elements. Make one finished image, no side-by-side or poster.",
+      "source": "/Users/coral/.codex/generated_images/01a17808-ed70-7c82-b4e3-94a9f9e2f34a/exec-f367c519-5a69-4936-b616-11ad8fefa210.png",
+      "file": "07-space-toy-console-poster-logo.png",
+      "width": 850,
+      "height": 1850,
+      "sha256": "56c8037cc5ef73d60d7ab181c0ea6a3587596efb43c77b0039609843b167ae2b",
+      "target_sha256": "151f32738e61fc632b8c252f55866b4c35b97b45fccb9a8937f045bc33773f4e"
+    },
+    {
+      "id": "01-atomic-pulp-poster-logo",
+      "name": "Atomic Pulp",
+      "key": "logoUpdatePulp",
+      "target": "/var/folders/gm/npwjrbpn7dxf1t_btyy41fqw0000gn/T/codex-clipboard-9ce3fe7a-3be6-466f-8cfd-684142706f10.png",
+      "prompt": "Use case: ui-mockup / precise logo replacement.\nImage 1 is the EDIT TARGET: a complete portrait Human Resources mobile home screen with retro atomic pulp UI.\nImage 2 is a LOGO REFERENCE ONLY: the illustrated approved poster.\nUpdate ONLY the large upper title sign on Image 1, replacing its existing lettering/orbit emblem with the exact distinctive HUMAN RESOURCES logo from the top of Image 2. Reproduce the poster's two-line cream wordmark, the angular forward-slanting custom letter silhouettes with exaggerated H and R, thin coral-red offset extrusion/shadow, small blue saucer emitting a mint triangular beam with a white star within the A of HUMAN, and the broad mint curved swoosh immediately beneath RESOURCES. BOTH words must be cream, not a coral RESOURCES word. The coral is only the slim extruded shadow. Match that specific logo faithfully instead of a generic italic font. Do not include the poster's large blue UFO, abducted man, houses, sky or poster background.\nPlace this wordmark prominently and comfortably inside the existing upper navy enamel sign, keeping its coral-and-cream rim and the general sign position and scale. Remove the old orbit ring and old separate large right-side saucer attached to that sign, so they do not interfere with the approved logo. Keep the sign's small yellow starburst accents where they can coexist without touching the lettering. Maintain the original sign style; do not add a new toy-console housing.\nEverything outside the title area stays unchanged: the full 850x1850 portrait scene; sage-green farmland, barn, farmer, sheep, original central cobalt blue saucer, glowing mint abduction cone and cow; the 1,240 RESEARCH CREDITS and NEXT BLUEPRINT 42 / 60 CAPTURES cards; the cream FARMLAND arrow selector; the broad flying-saucer-shaped START RUN button and HANGAR / SETTINGS buttons below. Retain all control text, positions, dimensions and values. No restyling, added functions, layout changes or cropping. Produce ONE finished home-screen image.",
+      "source": "/Users/coral/.codex/generated_images/01a17808-ed70-7c82-b4e3-94a9f9e2f34a/exec-40fceb1e-236f-4492-bcd3-ee8f1dcbe8b3.png",
+      "file": "01-atomic-pulp-poster-logo.png",
+      "width": 850,
+      "height": 1850,
+      "sha256": "13e0b191dddfe75b2f99c7507ffa69bfab5840757896db8367ae7e1f07b35a1e",
+      "target_sha256": "b1c78f6491a476d0460f9136c71589339b2d76efa07e758b15b4485c9d2caf2c"
+    }
+  ],
+  "poster_sha256": "ae35e13cd278b9ac6f0dc73a34986a166424486ed6412efcf904cbefbe1c9b58"
+}

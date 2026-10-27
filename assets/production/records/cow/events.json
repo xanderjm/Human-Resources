@@ -1,0 +1,39 @@
+[
+  {
+    "task_id": "b14dca21-bce1-4c2b-ade7-b4d0d4670197",
+    "type": "convert_model",
+    "status": "success",
+    "credits_consumed": 60,
+    "output_dir": "/Users/coral/Documents/App Development/Human Resources/assets/models/cow/tripo-out/cow-convert-3-b14dca21",
+    "files": [
+      "model.glb"
+    ],
+    "model_file": "/Users/coral/Documents/App Development/Human Resources/assets/models/cow/tripo-out/cow-convert-3-b14dca21/model.glb",
+    "chain": [
+      {
+        "task_id": "b14dca21-bce1-4c2b-ade7-b4d0d4670197",
+        "type": "convert_model",
+        "status": "success",
+        "credits_consumed": 10,
+        "output_dir": "/Users/coral/Documents/App Development/Human Resources/assets/models/cow/tripo-out/cow-convert-3-b14dca21",
+        "files": [
+          "model.glb"
+        ],
+        "model_file": "/Users/coral/Documents/App Development/Human Resources/assets/models/cow/tripo-out/cow-convert-3-b14dca21/model.glb"
+      }
+    ],
+    "source_task_id": "f13c0cb3-a454-416c-b78e-9f3ed7c9df4a",
+    "credits_breakdown": [
+      {
+        "task_id": "f13c0cb3-a454-416c-b78e-9f3ed7c9df4a",
+        "type": "image_to_model",
+        "credits_consumed": 50
+      },
+      {
+        "task_id": "b14dca21-bce1-4c2b-ade7-b4d0d4670197",
+        "type": "convert_model",
+        "credits_consumed": 10
+      }
+    ]
+  }
+]

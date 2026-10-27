@@ -1,0 +1,39 @@
+[
+  {
+    "task_id": "623defd5-e746-46a0-8048-5ac73d3b24fa",
+    "type": "convert_model",
+    "status": "success",
+    "credits_consumed": 60,
+    "output_dir": "/Users/coral/Documents/App Development/Human Resources/assets/models/infantry-rifleman-body/tripo-out/infantry-rifleman-body-convert-623defd5",
+    "files": [
+      "model.glb"
+    ],
+    "model_file": "/Users/coral/Documents/App Development/Human Resources/assets/models/infantry-rifleman-body/tripo-out/infantry-rifleman-body-convert-623defd5/model.glb",
+    "chain": [
+      {
+        "task_id": "623defd5-e746-46a0-8048-5ac73d3b24fa",
+        "type": "convert_model",
+        "status": "success",
+        "credits_consumed": 10,
+        "output_dir": "/Users/coral/Documents/App Development/Human Resources/assets/models/infantry-rifleman-body/tripo-out/infantry-rifleman-body-convert-623defd5",
+        "files": [
+          "model.glb"
+        ],
+        "model_file": "/Users/coral/Documents/App Development/Human Resources/assets/models/infantry-rifleman-body/tripo-out/infantry-rifleman-body-convert-623defd5/model.glb"
+      }
+    ],
+    "source_task_id": "278374b5-5020-4182-a002-aff5a56d36c8",
+    "credits_breakdown": [
+      {
+        "task_id": "278374b5-5020-4182-a002-aff5a56d36c8",
+        "type": "image_to_model",
+        "credits_consumed": 50
+      },
+      {
+        "task_id": "623defd5-e746-46a0-8048-5ac73d3b24fa",
+        "type": "convert_model",
+        "credits_consumed": 10
+      }
+    ]
+  }
+]

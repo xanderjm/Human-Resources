@@ -1,0 +1,49 @@
+{
+  "triangles": 5902,
+  "vertices": 3849,
+  "mesh_primitives": 1,
+  "uv_present": true,
+  "textures": [
+    {
+      "size": [
+        1024,
+        1024
+      ],
+      "mode": "RGB"
+    }
+  ],
+  "raw_accessor_bounds": [
+    {
+      "min": [
+        -0.4990234375,
+        -0.2841796875,
+        -0.3037109375
+      ],
+      "max": [
+        0.4990234375,
+        0.2841796875,
+        0.3037109375
+      ]
+    }
+  ],
+  "extensions": [],
+  "bytes": 369668,
+  "asset": "cow",
+  "model_file": "assets/models/cow/tripo-out/cow-convert-6baf9f04/model.glb",
+  "requested_face_limit": 6000,
+  "source_task_id": "51b15a38-c12b-40ce-becf-6860cff3a2b7",
+  "convert_task_id": "6baf9f04-f49e-4d99-b7cd-f90880d6603b",
+  "credits_consumed": 60,
+  "preview": null,
+  "structural_review": {
+    "status": "passed",
+    "notes": "Triangle mode, valid GLB length, UVs and embedded 1024px base-colour textures checked. Scale, pivot, topology and visual quality still require review."
+  },
+  "visual_review": {
+    "status": "rejected",
+    "notes": "Front and side preserve shape/paint. Rear/top views show multiple spurious stalks ending in dark hoof-like tips on rump. Anatomically unacceptable; regenerate from clearer four-leg reference and one short tail."
+  },
+  "import_review": {
+    "status": "pending"
+  }
+}

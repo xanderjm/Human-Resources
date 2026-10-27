@@ -1,0 +1,102 @@
+{
+  "triangles": 1821,
+  "vertices": 2673,
+  "mesh_primitives": 1,
+  "uv_present": true,
+  "textures": [
+    {
+      "size": [
+        1024,
+        1024
+      ],
+      "mode": "RGB"
+    }
+  ],
+  "raw_accessor_bounds": [
+    {
+      "min": [
+        -0.4990234375,
+        -0.3427734375,
+        -0.4990234375
+      ],
+      "max": [
+        0.4990234375,
+        0.3427734375,
+        0.4990234375
+      ]
+    }
+  ],
+  "extensions": [],
+  "bytes": 281104,
+  "asset": "bush-round",
+  "model_file": "assets/models/bush-round/bush-round.glb",
+  "requested_face_limit": 1800,
+  "source_task_id": "7e255ef2-0282-4cf6-8e58-040821e3898b",
+  "convert_task_id": "71cf9644-d4b7-4195-9ac8-3c36ee8b3714",
+  "credits_consumed": 60,
+  "preview": null,
+  "triangle_budget_review": {
+    "requested_target": 1800,
+    "actual_triangles": 1821,
+    "target_met": false,
+    "category_ceiling": 3000,
+    "status": "passed"
+  },
+  "structural_review": {
+    "status": "passed",
+    "notes": "Triangle mode, valid GLB length, UVs and embedded 1024px base colour checked. Requested targets are approximate; actual triangle count and target deviations are reported separately, within the user-specified 3000-prop / 8000-character ceilings. Scale, pivot, topology and visual quality require separate review."
+  },
+  "visual_review": {
+    "status": "accepted",
+    "notes": "Repaired solid filled leafy volume, no hollow shell or floating leaf canopy. Opposite views match reference mass; 0.7m high, grounded pivot.",
+    "views": [
+      "three-quarter",
+      "opposite"
+    ]
+  },
+  "import_review": {
+    "status": "passed",
+    "units": "metres",
+    "up": "+Y",
+    "forward": "+Z",
+    "yaw_degrees": 0.0,
+    "pivot": "ground-centre",
+    "double_sided": false,
+    "uniform_scale": 1.021082621082621,
+    "bounds_m": [
+      [
+        -0.5095441595441594,
+        0.0,
+        -0.5095441595441594
+      ],
+      [
+        0.5095441595441594,
+        0.6999999999999998,
+        0.5095441595441594
+      ]
+    ],
+    "dimensions_m": [
+      1.0190883190883189,
+      0.6999999999999998,
+      1.0190883190883189
+    ],
+    "vertex_checks": [
+      {
+        "triangles": 1821,
+        "degenerate_triangles": 0,
+        "uv_bounds": [
+          [
+            0.0009367135353386402,
+            0.0023238062858581543
+          ],
+          [
+            0.9991074204444885,
+            0.9989889860153198
+          ]
+        ]
+      }
+    ],
+    "notes": "Real scene vertices and indices decoded; finite positions/UVs; retained embedded 1024px base colour. Uniform root transform; raw file preserved."
+  },
+  "raw_model_file": "assets/models/bush-round/tripo-out/bush-round-convert-2-71cf9644/model.glb"
+}

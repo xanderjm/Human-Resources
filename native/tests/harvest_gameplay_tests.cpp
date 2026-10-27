@@ -54,7 +54,7 @@ float capture_one(gp::Game::State& s) {
 void sweep_rewards_real_pilot_motion() {
   auto idle = harvest(); target(idle);
   const float idle_seconds = capture_one(idle);
-  require_near(idle_seconds, tune::base_capture_seconds, dt * 2, "automatic forward scroll retains ordinary capture duration");
+  require_near(idle_seconds, idle.capture_seconds(idle.actors.front()), dt * 2, "automatic forward scroll retains ordinary capture duration");
   require(idle.view.harvest_chain == 0, "automatic runner motion cannot earn sweep chain");
   auto sweep = harvest(); target(sweep);
   sweep.view.velocity.x = tune::harvest_minimum_pilot_speed + .5F;
@@ -84,7 +84,7 @@ void chain_overdrive_and_expiry() {
   s.view.velocity.x = 0;
   target(s, 3.F);
   const float boosted = capture_one(s);
-  require(boosted < 1.4F && boosted > 1.3F, "earned Overdrive increases actual outer-range capture cadence");
+  require_near(boosted, tune::base_capture_seconds * gp::abduction_profile(gp::EntityKind::cow).lift_load / tune::harvest_overdrive_multiplier, dt * 2, "earned Overdrive increases actual weighted outer-range capture cadence");
   s.advance_timers(10);
   require(s.view.harvest_chain == 0 && s.view.harvest_overdrive_seconds == 0, "active-time expiry removes chain and Overdrive");
   require_near(s.fire_multiplier(), 1, .0001F, "expired Overdrive restores normal weapon cadence");
@@ -111,8 +111,9 @@ void capture_upgrades_preserve_skill_rewards() {
   const float burst_before = s.view.harvest_overdrive_seconds;
   for (unsigned i = 0; i < tune::harvest_chain_target; ++i) {
     target(s);
+    const float expected = s.capture_seconds(s.actors.back()) / tune::harvest_sweep_multiplier;
     const float elapsed = capture_one(s);
-    require(elapsed < .15F, "legal strong capture build completes a fast close sweep");
+    require_near(elapsed, expected, dt * 2, "legal strong build accelerates the actual weighted target duration");
     require(s.view.harvest_chain == 0 && s.view.harvest_chain_seconds == 0,
             "strong moving captures cannot precharge another chain during Overdrive");
   }
@@ -151,14 +152,15 @@ void burst_expiry_boundary() {
             "expiry-boundary capture cannot restart the old burst");
   }
 }
-void lost_capture_clears_exposure() {
+void leaving_range_preserves_exposure() {
   auto s = harvest(); target(s); s.view.velocity.x = 2;
   s.capture(dt);
-  require(s.actors.front().sweep_progress > 0, "moving close beam records actual exposure");
-  s.view.player.x = 10;
+  const float exposure = s.actors.front().sweep_progress;
+  const float progress = s.actors.front().view.capture_progress;
+  s.view.player.x = 20;
   s.capture(dt);
-  require(s.actors.front().sweep_progress == 0 && s.actors.front().view.capture_progress == 0,
-          "broken ordinary beam resets both capture progress and sweep qualification");
+  require(s.actors.front().sweep_progress == exposure && s.actors.front().view.capture_progress > progress,
+          "leaving pickup range preserves earned sweep exposure and keeps capturing");
 }
 void sweep_feedback_follows_accepted_participation() {
   auto s = harvest();
@@ -181,7 +183,7 @@ void sweep_feedback_follows_accepted_participation() {
   require(!s.view.beams[0].sweep_active && s.view.beams[0].sweep_fraction == accepted,
           "movement outside the real core cannot brighten the sweep contribution");
   s.actors[0].view.position.x = core;
-  for (unsigned i = 0; i < 11; ++i) s.capture(dt);
+  for (unsigned i = 0; i < 100 && s.actors[0].sweep_progress < tune::harvest_sweep_fraction; ++i) s.capture(dt);
   s.sync();
   require(s.view.beams[0].sweep_fraction == 1 && s.actors[0].view.capture_progress < 1,
           "actual participation reaches its qualified marker before ordinary capture completes");
@@ -191,8 +193,8 @@ void sweep_feedback_follows_accepted_participation() {
           "qualification remains earned when the pilot stops after a real moving pass");
   s.view.player.x = 20;
   s.capture(dt); s.sync();
-  require(s.view.beams.empty() && s.actors[0].sweep_progress == 0,
-          "a broken beam loses the marker together with its actual saved participation");
+  require(s.view.beams.size() == 1 && !s.view.beams[0].sweep_active && s.view.beams[0].sweep_fraction == 1,
+          "a locked beam retains its earned marker outside pickup range without further contribution");
 
   auto idle = harvest(); target(idle); idle.capture(dt); idle.sync();
   require(!idle.view.beams[0].sweep_active && idle.view.beams[0].sweep_fraction == 0,
@@ -253,12 +255,17 @@ void starter_evade_and_countervolley() {
   s.last_direction = {1, 0};
   s.laser_clock = 10;
   s.move(dt, {{}, true});
-  require_near(s.view.player.x, tune::starter_dash_distance, .0001F, "fresh ship can evade without a random module");
+  require(s.view.player.x > 0 && s.view.player.x < tune::starter_dash_distance,
+      "fresh ship starts a real burst without teleporting its full distance");
   require_near(s.view.dash_cooldown_seconds, tune::starter_dash_cooldown, .0001F, "starter evade has its bounded cooldown");
   require_near(s.view.invulnerability_seconds, tune::starter_dash_invulnerability, .0001F, "starter evade provides brief actual protection");
   const float x = s.view.player.x;
   s.move(dt, {{}, true});
-  require_near(s.view.player.x, x, .0001F, "held/repeated dash cannot bypass its cooldown");
+  require(s.view.player.x > x && s.dash_remaining < tune::flight_dash_seconds - dt,
+      "repeated dash continues the same burst instead of restarting it");
+  for (unsigned i=0;i<16;++i) s.move(dt, {{}, true});
+  require_near(s.view.player.x, tune::starter_dash_distance, .0001F,
+      "held/repeated dash cannot exceed its original travel or bypass cooldown");
   gp::detail::Actor enemy;
   enemy.view.id = s.next_id++;
   enemy.view.kind = gp::EntityKind::soldier;
@@ -281,7 +288,8 @@ void starter_evade_and_countervolley() {
     upgraded.view.modules[static_cast<std::size_t>(gp::Module::phase_drive)] = static_cast<std::uint8_t>(rank);
     upgraded.last_direction = {1, 0};
     upgraded.move(dt, {{}, true});
-    require_near(upgraded.view.player.x, tune::dash_distance, .0001F, "Phase Drive upgrades actual evade distance");
+    for (unsigned i=0;i<16;++i) upgraded.move(dt, {});
+    require_near(upgraded.view.player.x, tune::dash_distance, .0001F, "Phase Drive upgrades integrated burst distance");
     require(upgraded.view.invulnerability_seconds > tune::starter_dash_invulnerability &&
             upgraded.view.dash_cooldown_seconds < tune::starter_dash_cooldown,
             "every Phase Drive rank improves starter protection and reuse time");
@@ -371,10 +379,9 @@ void actual_projectile_damage_cause() {
  auto miss=damage_fixture();damage_bullet(miss);miss.bullets[0].view.position={8,8};miss.projectiles(0);expect_damage_cause(miss,gp::DamageCause::unknown,0,0);
  auto intercepted=damage_fixture(40);intercepted.view.evolution_bits=1U<<static_cast<unsigned>(gp::Evolution::employee_benefits);damage_bullet(intercepted);intercepted.projectiles(0);expect_damage_cause(intercepted,gp::DamageCause::unknown,0,0);
  require(intercepted.view.hull==100 && intercepted.view.shield==40-gp::tuning::benefits_shield_cost,"paid intercept is not falsely announced as projectile damage");
- auto reflected=damage_fixture();reflected.view.modules[static_cast<unsigned>(gp::Module::mirror_plating)]=3;
- for(std::uint64_t seed=1;seed<1000;++seed) {auto probe=damage_fixture();probe.combat_random_state=seed;if(probe.combat_unit()<3*gp::tuning::reflect_step){reflected.combat_random_state=seed;break;}}
- damage_bullet(reflected);reflected.projectiles(0);expect_damage_cause(reflected,gp::DamageCause::unknown,0,0);
- require(reflected.view.hull==100 && reflected.view.shield==20 && reflected.reflected_damage==25,"reflected actual shot is not falsely announced as damage");
+ auto retired=damage_fixture();retired.view.modules[static_cast<unsigned>(gp::Module::mirror_plating)]=3;
+ damage_bullet(retired);retired.projectiles(0);expect_damage_cause(retired,gp::DamageCause::projectile,91,2);
+ require(retired.view.hull==95 && retired.view.shield==0,"retired reflection hardware cannot suppress actual projectile damage");
 }
 void unknown_and_zero_damage_cause() {
  auto s=damage_fixture(0);s.hurt(3);expect_damage_cause(s,gp::DamageCause::unknown,0,1);
@@ -390,11 +397,11 @@ int main() {
   chain_overdrive_and_expiry();
   capture_upgrades_preserve_skill_rewards();
   burst_expiry_boundary();
-  lost_capture_clears_exposure();
+  leaving_range_preserves_exposure();
   sweep_feedback_follows_accepted_participation();
   sweep_feedback_is_derived_after_restore();
   save_pause_and_future();
   starter_evade_and_countervolley();
   evade_preserves_existing_protection();
-  std::cout << "Harvest movement, chain, reward, cancellation and continuation contracts passed\n";
+  std::cout << "Harvest movement, chain, reward, locked capture and continuation contracts passed\n";
 }

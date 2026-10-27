@@ -58,15 +58,27 @@ struct InfantryAim final {
   bool preparing{};
   float pose_seconds{}; // Real active time since weapon raise; retained through warning, cleared on fire/cancel.
 };
+struct CivilianEscape final {
+  float alert_seconds{}, remaining_seconds{};
+  Vec2 heading;
+};
+struct FormationApproach final {
+  Vec2 slot; // Fixed lateral lane and runner-relative station, chosen at ingress.
+  bool active{};
+};
+enum class FormationKind : std::uint8_t { scout, patrol, closing, jeep_escort, rocket_screen, tank_advance, pincer };
 struct Actor final {
   EntityView view;
-  float age{}, attack_timer{}, slow_timer{}, focused_hits{}, focus_timer{}, grace{};
+  float age{}, attack_timer{}, slow_timer{}, focused_hits{}, focus_timer{}, grace{}; // grace: reserved zero codec slot from range cancellation.
   Vec2 aim;
   Vec2 locomotion_velocity; // Passive preferred movement, or military physical forward retaining its facing through stops.
   bool lifted{}, removed{};
   float sweep_progress{}; // Capture progress earned by moving inside the core, capped at qualification.
   VehicleEscape escape;
   InfantryAim infantry_aim;
+  std::uint32_t group_id{};
+  CivilianEscape civilian_escape;
+  FormationApproach formation;
 };
 [[nodiscard]] inline bool reserves_threat_slot(const Actor& actor) {
   return !actor.removed && (actor.view.warning_seconds > 0 ||
@@ -104,16 +116,26 @@ struct Game::State final {
   std::vector<detail::Projectile> bullets;
   std::optional<detail::BossState> boss;
   std::uint64_t random_state{1}, draft_random_state{2}, combat_random_state{3};
+  // Retired streak/Mirror fields retain codec6 offsets and have no live effect.
   std::uint32_t next_id{1}, streak{}, revive_count{}, picks{};
   std::uint64_t next_presentation_sequence{1};
   double score{}, next_boss{};
   float accumulator{}, biological_budget{}, soldier_budget{}, jeep_budget{}, tank_budget{};
   float laser_clock{}, drone_clock{}, pulse_clock{}, mirrorball_clock{}, reflected_damage{};
+  std::uint8_t next_laser{};
+  std::array<std::uint32_t, 4> laser_targets{}; // IDs already struck in this burst; may have since retired.
   float time_since_hit{}, capture_burst{}, vehicle_burst{}, movement_burst{}, drone_burst{};
   float vehicle_capture_cooldown{}, disable_cooldown{}, intercept_cooldown{};
   float capture_shield_budget{}, shield_budget_clock{};
   Vec2 last_direction{0, 1};
   bool pending_dash{};
+  Vec2 pending_dash_direction{}; // Input edge retained until the next fixed tick.
+  Vec2 dash_direction{};
+  float dash_remaining{}, dash_distance{};
+  FlightBounds flight_bounds{-tuning::field_half_width, tuning::field_half_width, -tuning::player_backward_allowance, tuning::player_forward_allowance};
+  std::uint32_t next_group{1};
+  std::uint8_t pockets_since_easy{}, revealed_threats{};
+  bool cattle_introduced{};
 
   [[nodiscard]] std::uint32_t random();
   [[nodiscard]] float random_unit();
@@ -137,15 +159,18 @@ struct Game::State final {
   void move(float dt, Control control);
   void advance_timers(float dt);
   void director(float dt);
-  void spawn_cohort(bool initial = false, unsigned opening_group = 0);
+  bool spawn_cohort(bool initial = false, unsigned opening_group = 0);
   void spawn(EntityKind kind, bool initial = false, std::optional<Vec2> pocket_position = std::nullopt);
+  bool spawn_formation(detail::FormationKind pattern, bool introduction = false);
   [[nodiscard]] bool place_biological(detail::Actor& target, float lateral_sample, float forward_sample, bool initial);
   void move_biological(float dt);
+  [[nodiscard]] Vec2 civilian_heading(detail::Actor& actor, float dt);
   [[nodiscard]] Vec2 military_velocity(const detail::Actor& actor, Vec2 preferred, float dt, Vec2 carry = {}) const;
   [[nodiscard]] detail::VehicleMotion vehicle_motion(const detail::Actor& actor, Vec2 destination, float dt) const;
   [[nodiscard]] detail::InfantryMotion infantry_motion(const detail::Actor& actor, Vec2 destination, float dt) const;
   void infantry_update(detail::Actor& actor, float dt, detail::InfantryAttackWindow window);
   void place_military(detail::Actor& actor);
+  void scroll_military(float distance);
   void enemies(float dt);
   void shoot(detail::Actor& enemy);
   void boss_update(detail::Actor& actor, float dt);
@@ -156,7 +181,7 @@ struct Game::State final {
   void capture(float dt);
   void captured(detail::Actor& target);
   void combat(float dt);
-  void laser_fire();
+  void laser_fire(unsigned laser);
   void secondary_hits(detail::Actor& target, float damage);
   void drone_fire();
   void pulse();

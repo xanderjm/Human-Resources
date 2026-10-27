@@ -1,0 +1,39 @@
+[
+  {
+    "task_id": "a551878c-12ca-4f0f-a0c3-318c4777410a",
+    "type": "convert_model",
+    "status": "success",
+    "credits_consumed": 60,
+    "output_dir": "/Users/coral/Documents/App Development/Human Resources/assets/models/infantry-rocketeer-body/tripo-out/infantry-rocketeer-body-convert-a551878c",
+    "files": [
+      "model.glb"
+    ],
+    "model_file": "/Users/coral/Documents/App Development/Human Resources/assets/models/infantry-rocketeer-body/tripo-out/infantry-rocketeer-body-convert-a551878c/model.glb",
+    "chain": [
+      {
+        "task_id": "a551878c-12ca-4f0f-a0c3-318c4777410a",
+        "type": "convert_model",
+        "status": "success",
+        "credits_consumed": 10,
+        "output_dir": "/Users/coral/Documents/App Development/Human Resources/assets/models/infantry-rocketeer-body/tripo-out/infantry-rocketeer-body-convert-a551878c",
+        "files": [
+          "model.glb"
+        ],
+        "model_file": "/Users/coral/Documents/App Development/Human Resources/assets/models/infantry-rocketeer-body/tripo-out/infantry-rocketeer-body-convert-a551878c/model.glb"
+      }
+    ],
+    "source_task_id": "c1f29a2d-26aa-499d-8475-3f5c4581d874",
+    "credits_breakdown": [
+      {
+        "task_id": "c1f29a2d-26aa-499d-8475-3f5c4581d874",
+        "type": "image_to_model",
+        "credits_consumed": 50
+      },
+      {
+        "task_id": "a551878c-12ca-4f0f-a0c3-318c4777410a",
+        "type": "convert_model",
+        "credits_consumed": 10
+      }
+    ]
+  }
+]

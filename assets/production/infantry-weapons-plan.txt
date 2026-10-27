@@ -1,0 +1,123 @@
+Human Resources — infantry/weapons production authority and future integration data
+
+Current owner instruction supersedes the earlier gripping/seated-pose proposal:
+ALL CHARACTER MODELS ARE UNARMED TRUE T-POSE, INCLUDING THE BODY INTENDED FOR
+JEEP CREW. Rigging, equipping weapons, seating and armed assemblies come LATER.
+No rigging, posing, animation, seating or armed assembly is part of this pass.
+
+Current production scope: eight independent models
+1. infantry-rifleman-body: compact navy helmet, shorts, coral sleeve accents;
+   1.6 m height target, unarmed true T-pose, empty palms.
+2. infantry-shotgunner-body: short broad silhouette, wide helmet, padded vest,
+   bare forearms; 1.5 m height target, unarmed true T-pose, empty palms.
+3. infantry-rocketeer-body: tall lanky silhouette, angular ear-pad helmet,
+   long trousers and small integral backpack; 1.8 m height target, unarmed true
+   T-pose, empty palms.
+4. weapon-carbine: separate single-barrel carbine, wood stock, square magazine,
+   navy/coral paint; approximately 0.70 m long, no hands/body fragments.
+5. weapon-shotgun: separate chunky break-action shotgun with EXACTLY TWO
+   side-by-side barrels, wood stock/foregrip, navy/coral paint;
+   approximately 0.70 m long, no hands/body fragments or loose shells.
+6. weapon-rocket-launcher: separate shoulder tube with two grips and the
+   explicitly approved INTEGRAL CORAL ROCKET NOSE; approximately 1.15 m long,
+   no human fragments or detached ammunition. Its loaded visual state is
+   intentional, not a geometry error or a separate projectile/animation.
+7. jeep-minigun-head: independent six-barrel navy/coral gun head, compact
+   integral ammo box and trunnion; no pedestal, operator or vehicle fused in.
+8. jeep-minigun-mount: independent baseplate, short column and fork bearing;
+   no gun, vehicle, floor or crew fused in.
+The rifleman T-pose body will also supply future jeep crew. There is NO separate
+seated character model to generate, and no standing body is placed through a
+seat to imply a completed seated fit.
+
+Visual direction
+- Existing low-poly navy/coral military family with broad hand-painted gouache
+  surfaces and warm comic faces. Read major shapes at elevated mobile scale.
+- Rifleman is the medium compact baseline; shotgunner is broader and shorter;
+  rocketeer is taller and narrower. Their bodies must remain distinguishable
+  before weapons are equipped.
+- Future weapon silhouettes: slender/long single barrel, short/broad double
+  barrel, and oversized loaded shoulder tube. These are visual role proposals,
+  not combat rules, damage/range/AI/targeting or progression decisions.
+- Preserve exaggerated heads, boots and simple mitten-like hands. No realistic
+  camouflage noise, engravings, tiny accessories, text, labels or logos.
+- Character targets 5,000–6,500 triangles; weapon/accessory targets 1,000–2,800.
+  Report actual counts per component. These are art targets, not demonstrated
+  mobile runtime budgets.
+
+Current reference and model QA
+- Body reference authority is its latest approved isolated UNARMED TRUE T-POSE
+  image: both arms straight/horizontal, legs complete, empty hands and no gun
+  fragments. Earlier armed concept sheets are not pose authorities.
+- Weapon references contain one separate weapon only. No hands, person,
+  mounting stand, additional view or discharge effect. Preserve the shotgun's
+  two muzzle holes and the launcher's approved coral loaded nose.
+- Normalize uniformly to metres, +Y up, muzzle/nose +Z. Retain raw downloads.
+  No nonuniform stretching, rigging, animation or separate retexturing step.
+- Measure actual generated geometry to record primary grip, support grip,
+  shoulder rest and muzzle/fire-alignment data. These sockets describe the
+  WEAPON, not a current body pose or a completed hand contact.
+- Prefer the measured primary-grip origin where unambiguous. A centre/rear
+  origin with measured external socket positions is acceptable while exact
+  future equipment transforms remain unimplemented. Never invent coordinates
+  by copying a guessed standing hand position.
+- For the loaded launcher record: loaded_state=true; coral nose is integrated
+  into this static mesh. Record forward axis/fire alignment for a FUTURE
+  separate projectile. Do not extract, animate or fire that nose now.
+- Inspect actual textured geometry from several angles for coherent stocks,
+  grips, exact shotgun barrel count, tube/nose orientation and absent human
+  fragments. Structural/export success alone is not visual acceptance.
+- Actual weapon sockets belong in assets/production/weapon-sockets.json and
+  are limited to the measured weapon IDs. No body grip-pose datums are imposed.
+
+Measured existing jeep data — FUTURE PLACEMENT ONLY
+This section preserves useful measurements; it does not authorize or claim
+rigging, seating, equipping, armed assembly fit or any current hand/body pose.
+
+Source: assets/models/jeep-chassis/jeep-chassis.glb
+SHA-256 f5c3216456bd78d2f842d42154838b8fb58b40f9df9b22cdbd8cf1db9eb1e0b1.
+Right-handed metres, +Y up, +Z front, +X right. Chassis-local bounds:
+X +/-0.828082, Y[0,1.280039], Z +/-1.550000. Seats, floor, body and windshield
+are a combined mesh, not independently movable nodes.
+
+The accepted unarmed vehicle assembly in assets/production/assemblies.json
+places the chassis wrapper at [0,0.12,0]. Coordinates below are CHASSIS-LOCAL;
+add 0.12 m to Y for that grounded assembly. Socket frames belong to an external
+metre-space placement wrapper, not a raw-space GLB internal normalizing node.
+Measurements came from actual decoded triangles and vertical intersections:
+- Right seat hip/seat contact datum approximately [0.32,0.556,0.00].
+- Left seat cushion is staggered rearward near [-0.32,0.556,-0.30]; do not
+  simply mirror right-seat Z and assume symmetric geometry.
+- Front/central footwell floor Y~0.173–0.178.
+- Right backrest rises near Z=-0.30 to Y~0.95; left backrest farther rearward
+  near Z=-0.60. Existing standing/T-pose body is NOT currently seated here.
+- Rear-bed support surface Y~0.372–0.375 over X[-0.50,+0.50],
+  Z[-1.20,-0.75]. Rear wall, fenders and seat backs remain present.
+- Windshield/frame roughly X[-0.664,+0.658], Z[0.19,0.42], top Y=1.280.
+
+Future layout candidates, deferred until the later equipping/seating work:
+A. Right-seat crew, using a future rig/pose of the rifleman T-pose body.
+   Reserve [0.32,0.556,0.00], forward +Z/back -Z, as a seat-contact datum only.
+   Do not generate a seated body, reposition arms, force hand contacts or clip
+   the current T-pose model through the cabin in this production pass.
+B. Same future right-seat crew plus rear-bed minigun.
+   Candidate pedestal base [-0.30,0.373,-0.98], primary axis +Y.
+   A 0.30 m square base occupies X[-0.45,-0.15], Z[-1.13,-0.83], within the
+   measured support patch. Left offset leaves more space beside right crew.
+   Candidate pedestal height range 0.85–1.05 m; at 1.05 m its upper datum is
+   Y=1.423 chassis-local (assembled Y=1.543). Depending on actual barrel radius,
+   windshield clearance may be small. This is a future fit constraint, not
+   an accepted mounting transform or instruction to stretch/assemble parts.
+   Useful future conventions: pedestal yaw +Y; head trunnion/pitch axle +X;
+   muzzle +Z at zero aim. Measure returned head and mount separately now.
+
+Deferred checks, NOT current production requirements:
+- Rigging/T-pose-to-seated conversion, gun-to-hand contact, shoulder placement,
+  raised rifle/windshield clearance, minigun pitch sweep and complete barrel
+  path/crew clearance are later integration work.
+- The independent minigun head/yoke neutral fit is checked and recorded in
+  assets/production/records/jeep-minigun-head/component-fit.json. This does not
+  qualify a complete vehicle, crew or moving gun assembly.
+- Current delivery remains eight independent, reviewed models plus measured
+  weapon pivot/socket metadata. Existing accepted jeep, wheels and assembly
+  definitions remain unchanged. This asset pass adds no gameplay or animation.

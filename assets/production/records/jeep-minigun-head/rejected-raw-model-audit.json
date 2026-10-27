@@ -1,0 +1,55 @@
+{
+  "triangles": 2575,
+  "vertices": 2266,
+  "mesh_primitives": 1,
+  "uv_present": true,
+  "textures": [
+    {
+      "size": [
+        1024,
+        1024
+      ],
+      "mode": "RGB"
+    }
+  ],
+  "raw_accessor_bounds": [
+    {
+      "min": [
+        -0.4990234375,
+        -0.2099609375,
+        -0.2568359375
+      ],
+      "max": [
+        0.4990234375,
+        0.2099609375,
+        0.2568359375
+      ]
+    }
+  ],
+  "extensions": [],
+  "bytes": 338320,
+  "asset": "jeep-minigun-head",
+  "model_file": "assets/models/jeep-minigun-head/tripo-out/jeep-minigun-head-convert-ad75a003/model.glb",
+  "requested_face_limit": 2800,
+  "source_task_id": "8e64a8cf-c16e-4f14-b67f-b73d955d2e5f",
+  "convert_task_id": "ad75a003-404a-431c-8f57-397091457814",
+  "credits_consumed": 60,
+  "preview": null,
+  "triangle_budget_review": {
+    "requested_target": 2800,
+    "actual_triangles": 2575,
+    "target_met": true,
+    "category_ceiling": 3000,
+    "status": "passed"
+  },
+  "structural_review": {
+    "status": "passed",
+    "notes": "Triangle mode, valid GLB length, UVs and embedded 1024px base colour checked. Requested targets are approximate; actual triangle count and target deviations are reported separately, within the user-specified 3000-prop / 8000-character ceilings. Scale, pivot, topology and visual quality require separate review."
+  },
+  "visual_review": {
+    "status": "pending"
+  },
+  "import_review": {
+    "status": "pending"
+  }
+}

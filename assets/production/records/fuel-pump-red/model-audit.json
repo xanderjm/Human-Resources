@@ -1,0 +1,104 @@
+{
+  "triangles": 1762,
+  "vertices": 1478,
+  "mesh_primitives": 1,
+  "uv_present": true,
+  "textures": [
+    {
+      "size": [
+        1024,
+        1024
+      ],
+      "mode": "RGB"
+    }
+  ],
+  "raw_accessor_bounds": [
+    {
+      "min": [
+        -0.1943359375,
+        -0.4990234375,
+        -0.4208984375
+      ],
+      "max": [
+        0.1943359375,
+        0.4990234375,
+        0.4208984375
+      ]
+    }
+  ],
+  "extensions": [],
+  "bytes": 243340,
+  "asset": "fuel-pump-red",
+  "model_file": "assets/models/fuel-pump-red/fuel-pump-red.glb",
+  "requested_face_limit": 1800,
+  "source_task_id": "b8feb47b-7229-4435-a9a8-66864a060ed3",
+  "convert_task_id": "874349a2-6feb-404b-ac59-4a47c2e91f0a",
+  "credits_consumed": 60,
+  "preview": null,
+  "triangle_budget_review": {
+    "requested_target": 1800,
+    "actual_triangles": 1762,
+    "target_met": true,
+    "category_ceiling": 3000,
+    "status": "passed"
+  },
+  "structural_review": {
+    "status": "passed",
+    "notes": "Triangle mode, valid GLB length, UVs and embedded 1024px base colour checked. Requested targets are approximate; actual triangle count and target deviations are reported separately, within the user-specified 3000-prop / 8000-character ceilings. Scale, pivot, topology and visual quality require separate review."
+  },
+  "visual_review": {
+    "status": "accepted",
+    "notes": "Quality remake removes the invented rear flame emblem. Blank display, plain painted rear and side panels, one attached hose/nozzle and clean base; no logos or labels. Actual four-angle render reviewed against approved v2; front+Z,1.6m high, grounded pivot. Broad painterly facets retained.",
+    "views": [
+      "three-quarter",
+      "opposite",
+      "front",
+      "right"
+    ]
+  },
+  "import_review": {
+    "status": "passed",
+    "units": "metres",
+    "up": "+Y",
+    "forward": "+Z",
+    "yaw_degrees": -90.0,
+    "pivot": "ground-centre",
+    "double_sided": false,
+    "uniform_scale": 1.6031311154598826,
+    "bounds_m": [
+      [
+        -0.6747553816046967,
+        0.0,
+        -0.31154598825831703
+      ],
+      [
+        0.6747553816046967,
+        1.6,
+        0.31154598825831703
+      ]
+    ],
+    "dimensions_m": [
+      1.3495107632093934,
+      1.6,
+      0.6230919765166341
+    ],
+    "vertex_checks": [
+      {
+        "triangles": 1762,
+        "degenerate_triangles": 0,
+        "uv_bounds": [
+          [
+            0.0,
+            0.0
+          ],
+          [
+            1.0,
+            1.0
+          ]
+        ]
+      }
+    ],
+    "notes": "Real scene vertices and indices decoded; finite positions/UVs; retained embedded 1024px base colour. Uniform root transform; raw file preserved."
+  },
+  "raw_model_file": "assets/models/fuel-pump-red/tripo-out/fuel-pump-red-convert-2-874349a2/model.glb"
+}

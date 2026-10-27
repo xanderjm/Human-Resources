@@ -1,0 +1,39 @@
+[
+  {
+    "task_id": "497b830f-d059-4fb7-a400-1bc042618824",
+    "type": "convert_model",
+    "status": "success",
+    "credits_consumed": 60,
+    "output_dir": "/Users/coral/Documents/App Development/Human Resources/assets/models/ufo-beam-emitter/tripo-out/ufo-beam-emitter-convert-497b830f",
+    "files": [
+      "model.glb"
+    ],
+    "model_file": "/Users/coral/Documents/App Development/Human Resources/assets/models/ufo-beam-emitter/tripo-out/ufo-beam-emitter-convert-497b830f/model.glb",
+    "chain": [
+      {
+        "task_id": "497b830f-d059-4fb7-a400-1bc042618824",
+        "type": "convert_model",
+        "status": "success",
+        "credits_consumed": 10,
+        "output_dir": "/Users/coral/Documents/App Development/Human Resources/assets/models/ufo-beam-emitter/tripo-out/ufo-beam-emitter-convert-497b830f",
+        "files": [
+          "model.glb"
+        ],
+        "model_file": "/Users/coral/Documents/App Development/Human Resources/assets/models/ufo-beam-emitter/tripo-out/ufo-beam-emitter-convert-497b830f/model.glb"
+      }
+    ],
+    "source_task_id": "e42911c0-84bf-422e-90f6-092a1b70cbd8",
+    "credits_breakdown": [
+      {
+        "task_id": "e42911c0-84bf-422e-90f6-092a1b70cbd8",
+        "type": "image_to_model",
+        "credits_consumed": 50
+      },
+      {
+        "task_id": "497b830f-d059-4fb7-a400-1bc042618824",
+        "type": "convert_model",
+        "credits_consumed": 10
+      }
+    ]
+  }
+]

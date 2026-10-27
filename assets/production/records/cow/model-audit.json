@@ -1,0 +1,101 @@
+{
+  "triangles": 6005,
+  "vertices": 6496,
+  "mesh_primitives": 1,
+  "uv_present": true,
+  "textures": [
+    {
+      "size": [
+        1024,
+        1024
+      ],
+      "mode": "RGB"
+    }
+  ],
+  "raw_accessor_bounds": [
+    {
+      "min": [
+        -0.4990234375,
+        -0.3505859375,
+        -0.4033203125
+      ],
+      "max": [
+        0.4990234375,
+        0.3505859375,
+        0.4033203125
+      ]
+    }
+  ],
+  "extensions": [],
+  "bytes": 496300,
+  "asset": "cow",
+  "model_file": "assets/models/cow/cow.glb",
+  "requested_face_limit": 6000,
+  "source_task_id": "f13c0cb3-a454-416c-b78e-9f3ed7c9df4a",
+  "convert_task_id": "b14dca21-bce1-4c2b-ade7-b4d0d4670197",
+  "credits_consumed": 60,
+  "preview": null,
+  "triangle_budget_review": {
+    "requested_target": 6000,
+    "actual_triangles": 6005,
+    "target_met": false,
+    "category_ceiling": 8000,
+    "status": "passed"
+  },
+  "structural_review": {
+    "status": "passed",
+    "notes": "Triangle mode, valid GLB length, UVs and embedded 1024px base colour checked. Requested targets are approximate; actual triangle count and target deviations are reported separately, within the user-specified 3000-prop / 8000-character ceilings. Scale, pivot, topology and visual quality require separate review."
+  },
+  "visual_review": {
+    "status": "accepted",
+    "notes": "Third attempt fixes duplicated rear stalks/nubs: clean rump, one small central underside tail, four correct legs. Good ivory/indigo/coral colour hierarchy; no scenery or added props. Painterly detail softer than source; 6005 triangles is 0.08 percent above requested approximate 6000 budget. Length 1.8m, ground pivot, +Z facing.",
+    "views": [
+      "three-quarter",
+      "rear",
+      "top"
+    ]
+  },
+  "import_review": {
+    "status": "passed",
+    "units": "metres",
+    "up": "+Y",
+    "forward": "+Z",
+    "yaw_degrees": -90.0,
+    "uniform_scale": 1.803522504892368,
+    "bounds_m": [
+      [
+        -0.7273972602739726,
+        0.0,
+        -0.9
+      ],
+      [
+        0.7273972602739727,
+        1.2645792563600784,
+        0.9
+      ]
+    ],
+    "dimensions_m": [
+      1.4547945205479453,
+      1.2645792563600784,
+      1.8
+    ],
+    "vertex_checks": [
+      {
+        "triangles": 6005,
+        "degenerate_triangles": 0,
+        "uv_bounds": [
+          [
+            0.0007663513533771038,
+            0.0007605552673339844
+          ],
+          [
+            0.9937187433242798,
+            0.9992291927337646
+          ]
+        ]
+      }
+    ],
+    "notes": "Real scene vertices and indices decoded; finite positions/UVs; retained embedded 1024px base colour. Uniform root transform; raw file preserved."
+  },
+  "raw_model_file": "assets/models/cow/tripo-out/cow-convert-3-b14dca21/model.glb"
+}

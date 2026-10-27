@@ -1,0 +1,20 @@
+CURRENT PAINTING WORKFLOW
+
+Built-in ImageGen was used to edit screenshots of the actual clean UFO mesh.
+See mapped-paint-prompts.json for the exact final ring and dome prompts, input
+template paths and planar UV registration. The screenshot templates are saved
+beside the finished mapped-ring.png and mapped-dome.png masters.
+
+All raised deck panel and chip meshes were removed. The final panel shapes,
+thin joins, broad blue/slate paint strokes, edge wear and small ochre accents
+are painted into the mapped ring texture. The dome has a separate registered
+paint map. Lamps and upgrade parts remain independent meshes.
+
+Supporting maps use the same built-in ImageGen workflow:
+- expressive-blue.png: broad cobalt, cerulean, slate, petrol, muted teal and
+  violet brush blocks with a few tiny ochre flecks, guided by the game style sheet.
+- dome-enamel.png: quiet deep petrol-blue paint, tinted for recessed navy frames.
+- mint-lens.png: bright turquoise/mint circular brushwork with a pale centre.
+
+PNG masters are untouched ImageGen outputs; GLBs embed JPEG encodings at their
+native size. Previous unused texture experiments live outside the export package.

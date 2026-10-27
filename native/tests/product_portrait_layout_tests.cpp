@@ -16,6 +16,7 @@
 #include <filesystem>
 #include <fstream>
 #include <human_resources/assets/preview_mesh.h>
+#include <ui_components.generated.h>
 
 namespace {
 namespace hr = human_resources;
@@ -25,21 +26,48 @@ bool glyph(const hr::presentation::ScreenQuad& q) {
   return std::abs(q.uv[2] - 64.F / 1024.F) < .00001F && std::abs(q.uv[3] - 80.F / 2048.F) < .00001F;
 }
 hr::assets::PreviewMesh atlas;
+hr::assets::PreviewMesh enamel_atlas;
+std::string atlas_copy(const Interface&);
+bool enamel_glyph(const hr::presentation::ScreenQuad& q) {
+  return q.presentation[0]==1 && std::abs(q.uv[2]-64.F/enamel::atlas_width)<.00001F &&
+      std::abs(q.uv[3]-80.F/enamel::atlas_height)<.00001F && q.uv[0]<.5F && q.uv[1]*enamel::atlas_height>=enamel::font_bank_y[0];
+}
+std::vector<hr::ui::Rect> shared_panels(const Interface& ui,enamel::Sprite sprite,const hr::ui::Rect& viewport) {
+  const auto& source=enamel::regions[static_cast<unsigned>(sprite)];
+  std::vector<hr::ui::Rect> result;
+  for(std::size_t i=0;i+8<ui.quads.size();++i) {
+    const auto& q=ui.quads[i];
+    if(q.presentation[0]!=1 || std::abs(q.uv[0]-static_cast<float>(source.x)/enamel::atlas_width)>.00001F ||
+        std::abs(q.uv[1]-static_cast<float>(source.y)/enamel::atlas_height)>.00001F ||
+        std::abs(q.uv[2]-static_cast<float>(source.insets[0])/enamel::atlas_width)>.00001F ||
+        std::abs(q.uv[3]-static_cast<float>(source.insets[1])/enamel::atlas_height)>.00001F)continue;
+    const auto& last=ui.quads[i+8];
+    result.push_back({viewport.x+q.rect[0]*viewport.width,viewport.y+q.rect[1]*viewport.height,
+        (last.rect[0]+last.rect[2]-q.rect[0])*viewport.width,(last.rect[1]+last.rect[3]-q.rect[1])*viewport.height});
+  }
+  return result;
+}
 hr::ui::Rect actual_glyph_ink(const hr::presentation::ScreenQuad& q, const hr::ui::Rect& viewport) {
-  const unsigned x = static_cast<unsigned>(std::lround(q.uv[0] * static_cast<float>(atlas.width)));
-  const unsigned y = static_cast<unsigned>(std::lround(q.uv[1] * static_cast<float>(atlas.height)));
+  const auto& pixels=q.presentation[0]==1?enamel_atlas:atlas;
+  const unsigned x = static_cast<unsigned>(std::lround(q.uv[0] * static_cast<float>(pixels.width)));
+  const unsigned y = static_cast<unsigned>(std::lround(q.uv[1] * static_cast<float>(pixels.height)));
   unsigned left = 64, top = 80, right = 0, bottom = 0;
   for (unsigned cy = 0; cy < 80; ++cy) for (unsigned cx = 0; cx < 64; ++cx)
-    if (std::to_integer<unsigned>(atlas.rgba[(static_cast<std::size_t>(y + cy) * atlas.width + x + cx) * 4 + 3])) {
+    if (std::to_integer<unsigned>(pixels.rgba[(static_cast<std::size_t>(y + cy) * pixels.width + x + cx) * 4 + 3])) {
       left = std::min(left, cx); top = std::min(top, cy); right = std::max(right, cx + 1); bottom = std::max(bottom, cy + 1);
     }
   if (right == 0) return {};
   left = left ? left - 1 : 0; top = top ? top - 1 : 0;
   right = std::min(64U, right + 1); bottom = std::min(80U, bottom + 1);
-  return {viewport.x + q.rect[0] * viewport.width + q.rect[2] * viewport.width * static_cast<float>(left) / 64,
-      viewport.y + q.rect[1] * viewport.height + q.rect[3] * viewport.height * static_cast<float>(top) / 80,
-      q.rect[2] * viewport.width * static_cast<float>(right - left) / 64,
-      q.rect[3] * viewport.height * static_cast<float>(bottom - top) / 80};
+  float min_x=std::numeric_limits<float>::max(),min_y=min_x,max_x=-min_x,max_y=-min_x;
+  for(const auto px:{left,right})for(const auto py:{top,bottom}) {
+    const float fx=static_cast<float>(px)/64,fy=static_cast<float>(py)/80;
+    const float x_pixel=viewport.x+(q.rect[0]+q.rect[2]*fx+q.presentation[1]*fy)*viewport.width;
+    const float y_pixel=viewport.y+(q.rect[1]+q.rect[3]*fy+q.presentation[2]*fx)*viewport.height;
+    min_x=std::min(min_x,x_pixel);max_x=std::max(max_x,x_pixel);
+    min_y=std::min(min_y,y_pixel);max_y=std::max(max_y,y_pixel);
+  }
+  return {min_x,min_y,max_x-min_x,max_y-min_y};
 }
 void compact_phone_cards_preserve_effects_and_scene_stage() {
   progression_tests::MemoryBackend backend;
@@ -63,6 +91,7 @@ void compact_phone_cards_preserve_effects_and_scene_stage() {
     View view{Screen::upgrade, &run, &store, phone, {0,20,0,0}};
     const auto ui = interface(view);
     const auto safe = hr::ui::inset(view.viewport, view.safe_area);
+    if(ui.buttons.size()!=4)std::cerr<<"Ordinary offer controls viewport="<<phone.width<<"x"<<phone.height<<" controls="<<ui.buttons.size()<<" pages="<<ui.page_count<<"\n";
     require(ui.buttons.size() == 4, "three choice cards and one evolution library target");
     for (std::size_t i = 0; i < ui.buttons.size(); ++i) {
       const auto& b = ui.buttons[i];
@@ -90,6 +119,24 @@ void compact_phone_cards_preserve_effects_and_scene_stage() {
         require(y + size * (1.F + 8.F / 48.F) <= first.bottom() - 2.F, "last effect line stays within card");
       }
     }
+    if(std::any_of(ui.quads.begin(),ui.quads.end(),[](const auto& q){return q.presentation[0]==1;})) {
+      Interface card_copy;
+      for(const auto& q:ui.quads)if(glyph(q)||enamel_glyph(q)) {
+        const auto ink=actual_glyph_ink(q,phone);
+        if(ink.width==0) {
+          const float y=q.rect[1]*phone.height;
+          if(y>=first.y && y<first.bottom())card_copy.quads.push_back(q);
+          continue;
+        }
+        const auto overlap=hr::ui::intersect(ink,first);
+        if(overlap.width<=0 || overlap.height<=0)continue;
+        require(ink.x>=first.x+1.99F && ink.right()<=first.right()-1.99F && ink.y>=first.y+1.99F && ink.bottom()<=first.bottom()-1.99F,"complete shared offer ink remains padded inside its own choice frame");
+        require(q.rect[2]*phone.width*48.F/64.F>=13.99F,"shared choice text preserves the physical fourteen-point floor");
+        card_copy.quads.push_back(q);
+      }
+      body_copy.clear();
+      for(const char ch:atlas_copy(card_copy))if(ch!=' ')body_copy+=ch;
+    }
     std::string expected_copy;
     for (const char ch : effect) if (ch != ' ') expected_copy += ch;
     require(body_copy.find(expected_copy) != std::string::npos, "long complete effect copy is rendered without truncation beside optional benefit/evolution context");
@@ -116,6 +163,18 @@ std::string compact(std::string_view text) {
 std::string atlas_copy(const Interface& ui) {
   std::string text;
   for (const auto& q : ui.quads) {
+    if (q.presentation[0] == 1 &&
+        std::abs(q.uv[2]-64.F/enamel::atlas_width)<.00001F &&
+        std::abs(q.uv[3]-80.F/enamel::atlas_height)<.00001F && q.uv[0]<.5F) {
+      const unsigned x = static_cast<unsigned>(std::lround(q.uv[0]*enamel::atlas_width));
+      const unsigned y = static_cast<unsigned>(std::lround(q.uv[1]*enamel::atlas_height));
+      const unsigned bank = y>=enamel::font_bank_y[1]?1:0;
+      if (y>=enamel::font_bank_y[bank] && (y-enamel::font_bank_y[bank])%80==0) {
+        const unsigned index=(y-enamel::font_bank_y[bank])/80*16+x/64;
+        if (index<95) text+=static_cast<char>(32+index);
+      }
+      continue;
+    }
     if (!glyph(q)) continue;
     const unsigned col = static_cast<unsigned>(std::lround(q.uv[0] * 1024.F / 64.F));
     const float offset = q.uv[1] * 2048.F >= 512 ? 512.F : 0.F;
@@ -185,6 +244,34 @@ void hangar_shows_owned_and_next_power_with_visible_basis() {
       const float scale = std::min(safe.width / 390.F, safe.height / 844.F);
       const float ox = safe.x + (safe.width - 390.F * scale) * .5F;
       const float oy = safe.y + (safe.height - 844.F * scale) * .5F;
+      const auto& frame=enamel::regions[static_cast<unsigned>(enamel::Sprite::cream_panel)];
+      std::vector<hr::ui::Rect> themed_cards;
+      for(std::size_t q_index=0;q_index+8<ui.quads.size();++q_index) {
+        const auto& q=ui.quads[q_index];
+        if(q.presentation[0]!=1 || std::abs(q.uv[0]-static_cast<float>(frame.x)/enamel::atlas_width)>.00001F ||
+            std::abs(q.uv[1]-static_cast<float>(frame.y)/enamel::atlas_height)>.00001F ||
+            std::abs(q.uv[2]-static_cast<float>(frame.insets[0])/enamel::atlas_width)>.00001F)continue;
+        const auto& last=ui.quads[q_index+8];
+        themed_cards.push_back({q.rect[0]*phone.width,q.rect[1]*phone.height,
+            (last.rect[0]+last.rect[2]-q.rect[0])*phone.width,(last.rect[1]+last.rect[3]-q.rect[1])*phone.height});
+      }
+      if(!themed_cards.empty()) {
+        require(themed_cards.size()==4,"each permanent track owns one complete reusable cream frame");
+        for(const auto& q:ui.quads)if(glyph(q)||enamel_glyph(q)) {
+          const auto ink=actual_glyph_ink(q,phone);if(ink.width==0)continue;
+          require(ink.x>=safe.x && ink.right()<=safe.right()+.01F && ink.y>=safe.y && ink.bottom()<=safe.bottom()+.01F,"actual themed Hangar ink stays in the safe viewport");
+          for(unsigned i=0;i<4;++i) {
+            const auto overlap=hr::ui::intersect(ink,themed_cards[i]);
+            if(overlap.width<=0 || overlap.height<=0)continue;
+            require(ink.x>=themed_cards[i].x+1.99F && ink.right()<=themed_cards[i].right()-1.99F && ink.y>=themed_cards[i].y+1.99F && ink.bottom()<=themed_cards[i].bottom()-1.99F,"comparison, basis and price lettering stays inside its own consumed shared frame");
+            if(q.color==std::array<float,4>{.0314F,.1412F,.2392F,1}) {
+              const auto price_overlap=hr::ui::intersect(ink,ui.buttons[i].bounds);
+              require(price_overlap.width<.01F || price_overlap.height<.01F,"live owned power and complete stat basis never cross the purchase target");
+            }
+          }
+        }
+        continue;
+      }
       bool price_label = false;
       for (const auto& q : ui.quads) {
         if (!glyph(q)) {
@@ -278,7 +365,7 @@ void held_button_feedback_preserves_targets_glyphs_and_geometry() {
         for (std::size_t i = 0; i < idle.quads.size(); ++i) {
           const auto& q = held.quads[i]; const auto& original = idle.quads[i];
           require(q.rect == original.rect && q.uv == original.uv, "pressure preserves original rounded surfaces and layout geometry");
-          if (glyph(q) || q.uv[2] >= 0) require(q.color == original.color, "pressure preserves glyph and icon colors");
+          if (glyph(q) || (q.uv[2] >= 0 && q.presentation[3] == 0)) require(q.color == original.color, "pressure preserves glyph and icon colors; only owned panel art may change");
           if (q.color != original.color) {
             ++changed;
             const hr::ui::Rect r{q.rect[0]*view.viewport.width, q.rect[1]*view.viewport.height, q.rect[2]*view.viewport.width, q.rect[3]*view.viewport.height};
@@ -300,22 +387,26 @@ void readable_page_is_real_safe_and_scaled(const View& view, const Interface& pa
   std::string rendered;
   std::vector<hr::ui::Rect> glyph_lines;
   for (const auto& q : page.quads) {
-    if (!glyph(q)) continue;
-    const float size = q.rect[2] * view.viewport.width * 48.F / 64.F;
+    if (!glyph(q) && !enamel_glyph(q)) continue;
+    const float size = q.rect[3] * view.viewport.height * 48.F / 80.F;
     require(size >= 14.F * view.text_scale - .01F, "readable body AND action glyphs honor requested text scale");
     const float x = q.rect[0] * view.viewport.width + size * 4.F / 48.F;
     const float y = q.rect[1] * view.viewport.height + size * 8.F / 48.F;
-    if (view.screen == Screen::run) {
-      const auto ink = actual_glyph_ink(q, view.viewport);
-      require(ink.width == 0 || (ink.x >= safe.x - .01F && ink.y >= safe.y - .01F && ink.right() <= safe.right() + .01F && ink.bottom() <= safe.bottom() + .01F), "actual consumed-atlas RUN ink stays inside safe area, including enlarged transparent bearings");
-    } else {
-      require(x >= safe.x && x < safe.right() && y >= safe.y && y + size <= safe.bottom(), "measured glyph origins and line height stay in safe area");
-    }
-    const unsigned col = static_cast<unsigned>(std::lround(q.uv[0] * 1024.F / 64.F));
-    const unsigned row = static_cast<unsigned>(std::lround(q.uv[1] * 2048.F / 80.F));
+    // Shared fonts normalize their capital top; their transparent cell origin
+    // can precede the content box. Check consumed ink on both atlas pages.
+    const auto ink = actual_glyph_ink(q, view.viewport);
+    require(ink.width == 0 || (ink.x >= safe.x - .01F && ink.y >= safe.y - .01F && ink.right() <= safe.right() + .01F && ink.bottom() <= safe.bottom() + .01F), "actual consumed-atlas ink stays inside safe area, including enlarged transparent bearings");
+    const bool extra=q.presentation[0]==1;
+    const float atlas_width=extra?static_cast<float>(enamel::atlas_width):1024.F;
+    const float atlas_height=extra?static_cast<float>(enamel::atlas_height):2048.F;
+    const float bank=extra?static_cast<float>(q.uv[1]*atlas_height>=enamel::font_bank_y[1]?enamel::font_bank_y[1]:enamel::font_bank_y[0]):q.uv[1]*atlas_height>=512?512.F:0.F;
+    const unsigned col = static_cast<unsigned>(std::lround(q.uv[0] * atlas_width / 64.F));
+    const unsigned row = static_cast<unsigned>(std::lround((q.uv[1] * atlas_height-bank) / 80.F));
     rendered += static_cast<char>(32 + row * 16 + col);
     glyph_lines.push_back({x,y,size,size});
   }
+  if(compact(rendered).find(compact(page.page_text))==std::string::npos)
+    std::cerr<<"Page-copy mismatch screen="<<static_cast<unsigned>(view.screen)<<" page="<<page.page<<" scale="<<view.text_scale<<" wanted=["<<page.page_text<<"] rendered=["<<rendered<<"]\n";
   require(compact(rendered).find(compact(page.page_text)) != std::string::npos, "complete spoken page is also rendered through actual atlas quads");
   if (view.screen != Screen::run && !page.page_text.empty() && !page.buttons.empty()) {
     auto body = page.page_text;
@@ -416,20 +507,27 @@ void larger_text_preserves_whole_offers_and_all_menu_actions() {
           if (view.screen == Screen::settings)
             require(reachable.contains(Command::motion) && reachable.contains(Command::audio) && reachable.contains(Command::haptics) && reachable.contains(Command::home), "all settings and fixed Back are reachable");
           if (view.screen == Screen::blueprints && recipes && count == 1 && interface(view).page_text.empty()) {
-            // When the scaled original two-recipe layout still fits, retain
-            // its existing three-page recipe navigation rather than force it.
-            for (unsigned recipe_page = 1; recipe_page < 3; ++recipe_page) {
+            // Visit every composition spread as well as text continuation
+            // pages. Short portraits show one complete recipe per spread.
+            for (unsigned recipe_page = 1; recipe_page < interface(view).recipe_page_count; ++recipe_page) {
               view.recipe_page = recipe_page;
               all_text += atlas_copy(interface(view));
             }
             view.recipe_page = 0;
           }
           if (view.screen == Screen::blueprints && recipes)
-            for (const auto name : hr::gameplay::tuning::evolution_names)
-              require(compact(all_text).find(compact(name)) != std::string::npos, "all six recipe identities survive large type");
+            for (const auto i : hr::gameplay::tuning::active_evolutions)
+              require(compact(all_text).find(compact(hr::gameplay::tuning::evolution_names[i])) != std::string::npos, "all five recipe identities survive large type");
           if (view.screen == Screen::blueprints && recipes) {
 
-            require(compact(all_text).find(compact("Every 8s release stored reflected damage, capped at 40 base damage scaled by weapon-damage research, divided across up to four enemies. No additional reflection roll or damage procs.")) != std::string::npos, "longest real recipe effect survives in full");
+            constexpr std::array<std::string_view, 5> effects{{"Replace four beams with a six-target biological capture field. No extra radius. Vehicles still consume two slots.",
+                "Rotating laser sweep adds +20% total laser output, including against bosses. It does not add mounts or fire-rate bonuses.",
+                "Full-health jeeps and tanks at or below 55% hull become eligible. Same two-slot requirement, eight-second vehicle cooldown and tank minimum capture time.",
+                "Biological captures grant drones +20% damage for 3s, refreshing without stacking. The whole squad intercepts one ordinary projectile per 6s, consuming 3 shield; unavailable below 3 shield.",
+                "Pulse radius becomes 6m; hit enemies slow by 25% for 1s. Boss slow is capped at 20%. No extra damage ticks."}};
+            for (const auto effect : effects)
+              require(compact(all_text).find(compact(effect)) != std::string::npos, "every surviving recipe effect survives in full");
+            require(all_text.find("Mirrorball") == std::string::npos, "retired recipe never appears in paged UI");
           }
           if (view.screen == Screen::results)
             require(reachable.contains(Command::retry) && reachable.contains(Command::hangar), "results retain retry and permanent progression access");
@@ -464,10 +562,13 @@ float word_size(const Interface& ui, float width, std::string_view word) {
   std::string text;
   std::vector<float> sizes;
   for (const auto& q : ui.quads) {
-    if (!glyph(q)) continue;
-    const unsigned col = static_cast<unsigned>(std::lround(q.uv[0] * 1024.F / 64.F));
-    const unsigned font_y = q.uv[1] * 2048.F >= 512 ? 512U : 0U;
-    const unsigned row = static_cast<unsigned>(std::lround((q.uv[1] * 2048.F - static_cast<float>(font_y)) / 80.F));
+    if (!glyph(q) && !enamel_glyph(q)) continue;
+    const bool extra=q.presentation[0]==1;
+    const float atlas_width=extra?static_cast<float>(enamel::atlas_width):1024.F;
+    const float atlas_height=extra?static_cast<float>(enamel::atlas_height):2048.F;
+    const float font_y=extra?static_cast<float>(q.uv[1]*atlas_height>=enamel::font_bank_y[1]?enamel::font_bank_y[1]:enamel::font_bank_y[0]):q.uv[1]*atlas_height>=512?512.F:0.F;
+    const unsigned col = static_cast<unsigned>(std::lround(q.uv[0] * atlas_width / 64.F));
+    const unsigned row = static_cast<unsigned>(std::lround((q.uv[1] * atlas_height - font_y) / 80.F));
     text += static_cast<char>(32 + row * 16 + col);
     sizes.push_back(q.rect[2] * width * 48.F / 64.F);
   }
@@ -488,9 +589,26 @@ void small_preferences_preserve_type_growth_and_useful_menus() {
       view.text_scale = scale;
       view.screen = Screen::title;
       auto ui = interface(view);
-      const float title = word_size(ui, phone.width, "RESOURCES");
-      require(title >= previous_title - .01F, "small system preference never makes the real title smaller");
-      previous_title = title;
+      const auto& logo=enamel::regions[static_cast<unsigned>(enamel::Sprite::logo)];
+      const auto brand=std::find_if(ui.quads.begin(),ui.quads.end(),[&](const auto& q) {
+        return q.presentation[0]==1 && std::abs(q.uv[0]-static_cast<float>(logo.x)/enamel::atlas_width)<.00001F &&
+            std::abs(q.uv[1]-static_cast<float>(logo.y)/enamel::atlas_height)<.00001F &&
+            std::abs(q.uv[2]-static_cast<float>(logo.width)/enamel::atlas_width)<.00001F;
+      });
+      if(brand==ui.quads.end()) {
+        const float title = word_size(ui, phone.width, "RESOURCES");
+        require(title >= previous_title - .01F, "small system preference never makes the live title smaller");
+        previous_title = title;
+      } else {
+        // A wordmark is artwork, not a live font-size sample. Its dedicated
+        // sprite must still be visible and named for spoken navigation; the
+        // actual instruction/body typography below retains its growth gate.
+        const auto safe=hr::ui::inset(view.viewport,view.safe_area);
+        require(brand->rect[2]*phone.width>=200 && brand->rect[3]*phone.height>=90,"approved wordmark retains a substantial visible title");
+        require(brand->rect[0]*phone.width>=safe.x && (brand->rect[0]+brand->rect[2])*phone.width<=safe.right(),"wordmark remains in the safe content width");
+        const auto spoken=accessibility_snapshot(view,ui);
+        require(std::any_of(spoken.begin(),spoken.end(),[](const auto& node){return node.label.find("Human Resources")!=std::string::npos || node.value.find("Human Resources")!=std::string::npos;}),"artwork title retains its spoken name");
+      }
       for (const auto expected : {Command::start,Command::hangar,Command::settings,Command::location_next})
         require(std::any_of(ui.buttons.begin(),ui.buttons.end(),[&](const auto& b){return b.command==expected;}), "small text preferences keep all title primary actions immediately available");
       view.screen = Screen::pause;
@@ -536,6 +654,24 @@ void compact_hud_maximum_values_preserve_spacing_and_ingress_bound() {
       const auto ui=interface(view);
       const auto pause=std::find_if(ui.buttons.begin(),ui.buttons.end(),[](const auto& b){return b.command==Command::pause;});
       require(pause!=ui.buttons.end(),"maximum HUD retains Pause");
+      if(ui.hud_bottom>0) {
+        const auto safe=hr::ui::inset(view.viewport,view.safe_area);
+        require(ui.hud_bottom-safe.y<100,"three-pod HUD reserves a bounded tactical header");
+        auto pods=shared_panels(ui,enamel::Sprite::navy_panel,phone);
+        pods.erase(std::remove_if(pods.begin(),pods.end(),[&](const auto& p){return p.y>=ui.hud_bottom;}),pods.end());
+        require(pods.size()==3,"approved HUD separates survival, level/XP and score into three reusable frames");
+        require(pods[0].right()+6.99F<=pods[1].x && pods[1].right()+6.99F<=pods[2].x,"all three tactical groups retain visible separation");
+        std::string copy=compact(atlas_copy(ui));
+        for(const auto value:{"HP9999","SHIELD9999","LV4B","XP","SCORE"})require(copy.find(value)!=std::string::npos,"themed HUD retains absolute defences and distinct level/XP/score at supported maxima");
+        if(score==9999)require(copy.find("SCORE9999")!=std::string::npos,"themed four-digit score remains fully visible");
+        for(const auto& q:ui.quads)if(glyph(q)||enamel_glyph(q)) {
+          const auto ink=actual_glyph_ink(q,phone);
+          if(ink.width==0 || ink.y>=ui.hud_bottom || ink.x>=pause->bounds.x)continue;
+          require(std::any_of(pods.begin(),pods.end(),[&](const auto& p){return ink.x>=p.x+1.99F && ink.right()<=p.right()-1.99F && ink.y>=p.y+1.99F && ink.bottom()<=p.bottom()-1.99F;}),"actual themed HUD alpha and filtering fringe fit the correct pod with physical padding");
+        }
+        require(!ui.text_overflow,"maximum supported values honestly fit the shared tactical components");
+        continue;
+      }
       std::vector<hr::ui::Rect> pods;
       for(const auto& q:ui.quads) if(q.uv[2]<0 && q.color==std::array<float,4>{.035F,.105F,.17F,.96F} && q.rect[1]*phone.height<pause->bounds.bottom()) {
         const hr::ui::Rect box{q.rect[0]*phone.width,q.rect[1]*phone.height,q.rect[2]*phone.width,q.rect[3]*phone.height};
@@ -570,6 +706,7 @@ void current_build_separates_temporary_and_permanent_identity() {
   run.modules[1] = 2;
   run.research[0] = 15;
   run.research[1] = 40;
+  run.stats.level = 5;
   run.evolution_bits = 1;
   View view{Screen::pause, &run, &store, {0,0,320,568}, {0,20,0,0}};
   view.show_build = true;
@@ -586,7 +723,10 @@ void current_build_separates_temporary_and_permanent_identity() {
       require(std::any_of(page.buttons.begin(), page.buttons.end(), [](const auto& b) { return b.command == Command::current_build; }), "build always has fixed Back to paused flight");
     }
     const auto text = compact(copy);
-    require(text.find("2/6hardwareslots") != std::string::npos && text.find("rank3of3") != std::string::npos, "build exposes actual installed slot occupancy and ranks");
+    require(text.find("+32%") != std::string::npos && text.find("+8%/level") != std::string::npos,
+        "enlarged current build exposes the earned level lift bonus and its base-rate unit");
+    require(text.find("2/6hardwareslots") != std::string::npos &&
+        (text.find("rank3of3") != std::string::npos || text.find("RANK3OF3") != std::string::npos), "build exposes actual installed slot occupancy and ranks");
     require(text.find("TEMPORARYFLIGHTRESEARCH") != std::string::npos && text.find("PERMANENTHANGAR") != std::string::npos, "temporary and permanent progression are explicitly distinct");
     require(text.find("WeaponDamage:+15%ofbase") != std::string::npos && text.find("HullReinforcement:+40points") != std::string::npos, "research values keep their correct units");
     require(text.find("GreatVacuum") != std::string::npos && text.find("GreatVacuum", text.find("GreatVacuum") + 1) == std::string::npos, "active evolution is named exactly once");
@@ -604,7 +744,7 @@ void run_onboarding_names_the_actual_input_without_moving_controls() {
     View view{Screen::run, &run, &store, phone, {0, 20, 0, 0}};
     const auto touch = interface(view);
     const auto touch_copy = compact(atlas_copy(touch));
-    require(touch_copy.find("DRAGTOFLY") != std::string::npos && touch_copy.find("TAPDASHTODODGE") != std::string::npos, "initial mobile hints explain drag and the actual Dash target");
+    require(touch_copy.find("DRAGTOFLY") != std::string::npos && touch_copy.find("FLICKTODASH") != std::string::npos, "initial mobile hints explain drag and the actual Dash target");
     require(touch_copy.find("ARROWS") == std::string::npos && touch_copy.find("SPACE") == std::string::npos, "default hints do not advertise a keyboard");
     for (const auto device : {hr::input::DeviceKind::pointer, hr::input::DeviceKind::keyboard, hr::input::DeviceKind::gamepad}) {
       view.hint_device = device;
@@ -667,7 +807,22 @@ void upgrade_board_exposes_actual_build_and_projected_benefits() {
     if(phone.width==390) {
       float last_bottom=0;
       for(const auto& button:ui.buttons)last_bottom=std::max(last_bottom,button.bounds.bottom());
-      require(last_bottom<700,"short real effects keep the decision board compact with paused world visible");
+      const bool themed=std::any_of(ui.quads.begin(),ui.quads.end(),[](const auto& q){return q.presentation[0]==1 && q.presentation[3]==1;});
+      if(themed) {
+        // The approved composition docks its footer at the bottom. Protect its
+        // actual open world window rather than the old footer's absolute Y.
+        const auto safe=hr::ui::inset(view.viewport,view.safe_area);
+        const float s=std::min(safe.width/390.F,safe.height/844.F);
+        const float x=safe.x+(safe.width-390*s)*.5F,y=safe.y+(safe.height-844*s)*.5F;
+        const hr::ui::Rect stage{x+50*s,y+253*s,290*s,50*s};
+        for(const auto& q:ui.quads) {
+          if(q.color[3]<.5F)continue;
+          const auto bounds=(glyph(q)||enamel_glyph(q))?actual_glyph_ink(q,phone):hr::ui::Rect{q.rect[0]*phone.width,q.rect[1]*phone.height,q.rect[2]*phone.width,q.rect[3]*phone.height};
+          const auto overlap=hr::ui::intersect(bounds,stage);
+          require(overlap.width<.01F || overlap.height<.01F,"approved promotion keeps a real clear scene window between the sign and its card stack");
+        }
+        require(last_bottom<=safe.bottom()+.01F,"docked promotion footer stays reachable in the safe viewport");
+      } else require(last_bottom<700,"short real effects keep the compact fallback board and paused world visible");
     }
     for(float scale:{2.F,3.2F}) {
       auto readable=view;readable.text_scale=scale;
@@ -812,6 +967,23 @@ void harvest_feedback_explains_sweeps_boost_and_dash_without_expanding_top_hud()
         if (scale == 1) {
           const auto safe=hr::ui::inset(view.viewport,view.safe_area);const float fit=std::min(safe.width/390.F,safe.height/844.F);
           const float ox=safe.x+(safe.width-390*fit)*.5F,oy=safe.y+(safe.height-844*fit)*.5F;
+          if(ui.hud_bottom>0) {
+            const auto dash=std::find_if(ui.buttons.begin(),ui.buttons.end(),[](const auto& b){return b.command==Command::dash;});
+            const auto panels=shared_panels(ui,enamel::Sprite::navy_panel,phone);
+            const auto status=std::find_if(panels.begin(),panels.end(),[&](const auto& p){return p.y>ui.hud_bottom && p.right()<dash->bounds.x;});
+            require(status!=panels.end(),"passive sweep/Overdrive has a shared navy status frame separate from the saucer action");
+            require(ui.buttons.size()==2,"the shared status component remains passive");
+            unsigned pips=0;
+            for(const auto& q:ui.quads) {
+              if(glyph(q)||enamel_glyph(q)) {
+                const auto ink=actual_glyph_ink(q,phone);const auto overlap=hr::ui::intersect(ink,*status);
+                if(overlap.width>0 && overlap.height>0)require(ink.x>=status->x+1.99F && ink.right()<=status->right()-1.99F && ink.y>=status->y+1.99F && ink.bottom()<=status->bottom()-1.99F,"complete timed status lettering and filter fringe stay inside its shared frame");
+              }
+              if(q.uv[2]<0 && q.color==std::array<float,4>{.0314F,.1412F,.2392F,1} &&
+                  std::abs(q.rect[3]*phone.height-12*fit)<.01F && q.rect[1]*phone.height>status->y && q.rect[1]*phone.height<status->bottom())++pips;
+            }
+            require(pips==hr::gameplay::tuning::harvest_chain_target,"shared empty/filled sweep pips retain non-color chain meaning");
+          } else {
           const hr::ui::Rect status{ox+20*fit,oy+752*fit,190*fit,60*fit};
           require(std::any_of(ui.quads.begin(),ui.quads.end(),[&](const auto& q){return q.uv[2]<0 && q.color==std::array<float,4>{.035F,.105F,.17F,.96F} && std::abs(q.rect[0]*phone.width-status.x)<.01F && std::abs(q.rect[1]*phone.height-status.y)<.01F;}),"passive sweep/Overdrive has a navy status backing distinct from the mint Dash action");
           require(ui.buttons.size()==2,"passive sweep/Overdrive does not become an input target");
@@ -821,6 +993,7 @@ void harvest_feedback_explains_sweeps_boost_and_dash_without_expanding_top_hud()
             if(q.uv[2]<0 && q.color==std::array<float,4>{.06F,.16F,.23F,.97F} && std::abs(q.rect[1]*phone.height-(oy+789*fit))<.01F)++pips;
           }
           require(pips==hr::gameplay::tuning::harvest_chain_target,"counted empty/filled sweep pips retain non-color chain meaning");
+          }
         }
         if (scale > 1) readable_page_is_real_safe_and_scaled(view, ui);
         auto dash = std::find_if(ui.buttons.begin(), ui.buttons.end(), [](const auto& b){return b.command == Command::dash;});
@@ -849,6 +1022,28 @@ void compact_choice_titles_stay_on_the_dark_frame() {
   for(const auto phone:std::array<hr::ui::Rect,2>{{{0,0,320,568},{0,0,390,844}}}) {
     View view{Screen::upgrade,&run,&store,phone,{0,20,0,0}};
     const auto ui=interface(view);
+    const bool themed=std::any_of(ui.quads.begin(),ui.quads.end(),[](const auto& q){return q.presentation[0]==1 && q.presentation[3]==1;});
+    if(themed) {
+      const auto copy=compact(atlas_copy(ui));
+      require(copy.find("0/6HARDWARE")!=std::string::npos,"themed promotion retains its live hardware admission summary");
+      for(unsigned i=0;i<3;++i) {
+        const auto pick=std::find_if(ui.buttons.begin(),ui.buttons.end(),[&](const auto& b){return b.command==static_cast<Command>(static_cast<unsigned>(Command::pick0)+i);});
+        require(pick!=ui.buttons.end(),"each shared card owns its choice action");
+        require(copy.find(compact(names[i]))!=std::string::npos && copy.find(compact(run.choices[i].description))!=std::string::npos,"themed cards keep complete real titles and conditions");
+        unsigned ink_count=0;
+        for(const auto& q:ui.quads)if(glyph(q)||enamel_glyph(q)) {
+          const auto ink=actual_glyph_ink(q,phone);
+          const auto overlap=hr::ui::intersect(ink,pick->bounds);
+          if(overlap.width<=0 || overlap.height<=0)continue;
+          require(ink.x>=pick->bounds.x+1.99F && ink.right()<=pick->bounds.right()-1.99F && ink.y>=pick->bounds.y+1.99F && ink.bottom()<=pick->bounds.bottom()-1.99F,"actual title and condition alpha stays in its own cream card with physical padding");
+          const float size=q.rect[3]*phone.height*48.F/80.F;
+          require(size>=13.99F,"shared promotion text keeps the physical text floor");
+          ++ink_count;
+        }
+        require(ink_count>names[i].size(),"each choice renders independent title and effect ink");
+      }
+      continue;
+    }
     std::string copy;
     std::vector<hr::ui::Rect> lines;
     std::vector<float> body_tops;
@@ -979,7 +1174,7 @@ void actual_damage_feedback_stays_inside_the_tactical_hud() {
     const auto copy=compact(atlas_copy(hit));
     const auto framing=gameplay_framing(viewport,view.safe_area,scale);
     const bool short_stage=framing.compact || scale>1;
-    const std::string expected=short_stage?std::string(hull?"HP":"SH")+(framing.compact?"":":")+(cause==hr::gameplay::DamageCause::contact?"BUMP":cause==hr::gameplay::DamageCause::projectile?"SHOT":"HIT"):std::string(hull?"HP ":"SHIELD ")+(cause==hr::gameplay::DamageCause::contact?"BUMP":cause==hr::gameplay::DamageCause::projectile?"SHOT":"HIT");
+    const std::string expected=short_stage?std::string(hull?"HP":"SH")+(framing.compact && !framing.banded?"":":")+(cause==hr::gameplay::DamageCause::contact?"BUMP":cause==hr::gameplay::DamageCause::projectile?"SHOT":"HIT"):std::string(hull?"HP ":"SHIELD ")+(cause==hr::gameplay::DamageCause::contact?"BUMP":cause==hr::gameplay::DamageCause::projectile?"SHOT":"HIT");
     require(copy.find(compact(expected))!=std::string::npos,"committed hit identifies agreed full or compact actual cause and affected defence at every text size");
     if(!short_stage)for(const auto value:{"HP100","SHIELD20","LV1","XP","SCORE0"}) require(copy.find(value)!=std::string::npos,"ordinary damage keeps every persistent survival/progress value visible");
     const auto after=std::find_if(hit.buttons.begin(),hit.buttons.end(),[](const auto& b){return b.command==Command::pause;})->bounds;
@@ -1013,6 +1208,12 @@ void bounded_damage_hud_keeps_ingress_vitality_clear() {
       require(result.damage_hud_bottom == 0, "actual hit cause never expands the bounded tactical row");
       const auto pause=std::find_if(result.buttons.begin(),result.buttons.end(),[](const auto& b){return b.command==Command::pause;})->bounds;
       const auto dash=std::find_if(result.buttons.begin(),result.buttons.end(),[](const auto& b){return b.command==Command::dash;})->bounds;
+      Interface appended;
+      appended.quads.assign(result.quads.begin()+static_cast<std::ptrdiff_t>(base.quads.size()),result.quads.end());
+      for(const auto& meter:shared_panels(appended,enamel::Sprite::navy_panel,viewport)) {
+        require(meter.y>=std::max(pause.bottom(),result.hud_bottom)+11.99F && meter.bottom()<=dash.y-11.99F,"actual shared vitality frames clear the occupied HUD and fixed action strip during damage");
+        ++visible_meters;
+      }
       for (std::size_t i=base.quads.size(); i<result.quads.size(); ++i) {
         const auto& q=result.quads[i];
         if (q.uv[2]>=0 || q.color!=std::array<float,4>{.035F,.105F,.17F,.96F}) continue;
@@ -1033,13 +1234,15 @@ void enlarged_run_preserves_two_bands_and_complete_semantics() {
   hr::gameplay::UpgradeChoice installed; installed.title="Shield Generator";
   unsigned percentage_cases=0, fraction_cases=0, icon_cases=0;
   for (const auto viewport : {hr::ui::Rect{0,0,320,568},hr::ui::Rect{0,0,390,844},hr::ui::Rect{0,0,768,1024},hr::ui::Rect{0,0,1366,1024},hr::ui::Rect{0,0,320,320},hr::ui::Rect{0,0,320,500},hr::ui::Rect{17,29,320,500}})
-    for (float scale : {1.3F,2.F,3.2F,3.4F}) for (unsigned inset_case=0;inset_case<3;++inset_case) for (unsigned state=0; state<18; ++state) {
+    for (float scale : {1.3F,2.F,3.2F,3.4F}) for (unsigned inset_case=0;inset_case<4;++inset_case) for (unsigned state=0; state<18; ++state) {
       const bool small=viewport.width==320 && viewport.height<=500;
       if(inset_case && !small)continue;
       auto run=original; run.stats.active_seconds=30; run.stats.level=24;
       run.hull=112; run.maximum_hull=130; run.shield=80; run.maximum_shield=100;
       run.xp=50; run.next_level_xp=100;
-      const hr::ui::Insets insets{inset_case==1?8.F:inset_case==2?12.F:0.F,viewport.width==390?59.F:20.F,inset_case==1?10.F:inset_case==2?12.F:0.F,viewport.width==390?34.F:inset_case==2?16.F:0.F};
+      // The condensed shared face fits more numeric/percentage states. A real
+      // narrower safe column still exercises the labelled HP fraction path.
+      const hr::ui::Insets insets{inset_case==1?8.F:inset_case==2?12.F:inset_case==3?26.F:0.F,viewport.width==390?59.F:20.F,inset_case==1?10.F:inset_case==2?12.F:inset_case==3?28.F:0.F,viewport.width==390?34.F:inset_case>=2?16.F:0.F};
       const auto framing=gameplay_framing(viewport,insets,scale,{static_cast<unsigned>(viewport.width*2),static_cast<unsigned>(viewport.height*2)});
       if((framing.compact && !framing.banded) || (scale>3.2F && !framing.banded))continue;
       const auto safe=framing.constrained?framing.run_layout:framing.safe;
@@ -1057,6 +1260,7 @@ void enlarged_run_preserves_two_bands_and_complete_semantics() {
       if(state==16){run.hull=99000000;run.maximum_hull=100000000;run.harvest_overdrive_seconds=5.5F;}
       if(state==17){run.dash_cooldown_seconds=4;view.promotion={.1F,&installed,false};}
       const auto ui=interface(view);
+      if(ui.text_overflow)std::cerr<<"Tactical fit viewport="<<viewport.width<<"x"<<viewport.height<<" scale="<<scale<<" inset="<<inset_case<<" state="<<state<<"\n";
       require(!ui.text_overflow,"every bounded tactical state fits at actual requested font size");
       const auto pause=std::find_if(ui.buttons.begin(),ui.buttons.end(),[](const auto& b){return b.command==Command::pause;})->bounds;
       const auto dash=std::find_if(ui.buttons.begin(),ui.buttons.end(),[](const auto& b){return b.command==Command::dash;})->bounds;
@@ -1066,7 +1270,7 @@ void enlarged_run_preserves_two_bands_and_complete_semantics() {
       require(dash.width>=44 && dash.height==44,"actual Dash target remains complete forty-four points");
       for(const auto& q:ui.quads) {
         hr::ui::Rect bounds{viewport.x+q.rect[0]*viewport.width,viewport.y+q.rect[1]*viewport.height,q.rect[2]*viewport.width,q.rect[3]*viewport.height};
-        if(glyph(q)) {
+        if(glyph(q)||enamel_glyph(q)) {
           require(q.rect[2]*viewport.width*48.F/64.F>=14*scale-.01F,"bounded rows never shrink requested readable type");
           bounds=actual_glyph_ink(q,viewport);
           if(bounds.width==0)continue;
@@ -1084,7 +1288,8 @@ void enlarged_run_preserves_two_bands_and_complete_semantics() {
       if(framing.banded) {
         if(copy.find(">>")!=std::string::npos)++icon_cases;
         const auto overlap=hr::ui::intersect(dash,framing.stage);
-        require(overlap.width==0 || overlap.height==0,"banded Dash target remains outside the exact world destination");
+        require(overlap.width>=dash.width-.05F && overlap.height>=dash.height-.05F,
+            "full-output flight reaches under the safe banded Dash overlay");
         auto changed=run;changed.dash_cooldown_seconds=run.dash_cooldown_seconds>0?0:4;
         auto other=view;other.run=&changed;
         const auto other_ui=interface(other);
@@ -1137,16 +1342,16 @@ void banded_framing_keeps_pixel_fit_and_global_contacts() {
       test_support::require_near(framing.stage.x,viewport.x+static_cast<float>(actual.x)*viewport.width/static_cast<float>(pixels.width),.001F,"DPI and odd-pixel fit share actual absolute stage x");
       test_support::require_near(framing.stage.y,viewport.y+static_cast<float>(actual.y)*viewport.height/static_cast<float>(pixels.height),.001F,"DPI and odd-pixel fit share actual absolute stage y");
       View view{Screen::run,&run,&store,viewport,{8,12,10,8}};view.text_scale=scale;view.framing=&framing;
-      view.stick_active=true;view.stick_origin={viewport.x+24,viewport.y+100};view.stick_position={view.stick_origin.x+44,view.stick_origin.y};
+      view.stick_active=true;view.stick_origin={viewport.x+24,viewport.y+100};view.stick_position={view.stick_origin.x+48,view.stick_origin.y};
       const auto ui=interface(view);
       require(!ui.text_overflow,"odd-DPI translated strip layout retains complete readable text");
       const auto& knob=ui.quads.back();
-      test_support::require_near(viewport.x+knob.rect[0]*viewport.width,view.stick_origin.x+38-8,.001F,"floating stick remains in full-window points in clear flanks");
-      test_support::require_near(viewport.y+knob.rect[1]*viewport.height,view.stick_origin.y-8,.001F,"floating stick receives no stage-local offset");
+      test_support::require_near(viewport.x+knob.rect[0]*viewport.width,view.stick_origin.x+48-7,.001F,"floating stick remains in full-window points in clear flanks");
+      test_support::require_near(viewport.y+knob.rect[1]*viewport.height,view.stick_origin.y-7,.001F,"floating stick receives no stage-local offset");
       hr::product::Controls controls;
       hr::input::Action contact{.id=static_cast<hr::input::ActionId>(ControlAction::contact),.device=1,.phase=hr::input::ActionPhase::started,.value=1,.position={view.stick_origin.x,view.stick_origin.y},.has_position=true,.contact=7,.source_kind=hr::input::DeviceKind::touch};
       controls.apply(contact,true,false);contact.phase=hr::input::ActionPhase::changed;contact.position={view.stick_position.x,view.stick_position.y};controls.apply(contact,true,false);
-      test_support::require_near(controls.sample().movement.x,1,.0001F,"banded presentation retains ordinary forty-four-point semantic stick throw");
+      test_support::require_near(controls.sample().movement.x,1,.0001F,"banded presentation retains Midnight Menu forty-eight-point semantic stick throw");
     }
 }
 
@@ -1212,6 +1417,33 @@ void report_header_contains_complete_consumed_glyph_ink() {
           require(compact(copy).find(compact(report.status))!=std::string::npos,"measured fallback preserves complete longer report status");
           continue;
         }
+        const auto& sign=enamel::regions[static_cast<unsigned>(enamel::Sprite::title_frame)];
+        const auto themed=std::find_if(ui.quads.begin(),ui.quads.end(),[&](const auto& q){
+          return q.presentation[0]==1 && std::abs(q.uv[0]-static_cast<float>(sign.x)/enamel::atlas_width)<.00001F &&
+              std::abs(q.uv[1]-static_cast<float>(sign.y)/enamel::atlas_height)<.00001F &&
+              std::abs(q.uv[2]-static_cast<float>(sign.width)/enamel::atlas_width)<.00001F;
+        });
+        const auto navy_frames=shared_panels(ui,enamel::Sprite::navy_panel,phone);
+        const auto safe_view=hr::ui::inset(view.viewport,view.safe_area);
+        const bool compact_sign=std::any_of(navy_frames.begin(),navy_frames.end(),[&](const auto& box){
+          return box.y<safe_view.y+20 && box.width>safe_view.width*.8F && box.height<safe_view.height*.25F;
+        });
+        if(themed!=ui.quads.end() || compact_sign) {
+          const auto copy=compact(atlas_copy(ui));
+          require(copy.find(compact(report.heading))!=std::string::npos && copy.find(compact(report.status))!=std::string::npos,"themed report preserves the complete live heading and status");
+          // The title sign and its separate measured status have deliberately
+          // different containers. Check consumed glyph alpha, including affine
+          // title tilt/shadows, against the actual safe viewport on both pages.
+          const auto safe=hr::ui::inset(view.viewport,view.safe_area);
+          unsigned ink_count=0;
+          for(const auto& q:ui.quads)if(glyph(q)||enamel_glyph(q)) {
+            const auto ink=actual_glyph_ink(q,phone);if(ink.width==0)continue;
+            require(ink.x>=safe.x && ink.right()<=safe.right()+.01F && ink.y>=safe.y && ink.bottom()<=safe.bottom()+.01F,"all actual themed report lettering and filter fringe remain inside the safe viewport");
+            ++ink_count;
+          }
+          require(ink_count>50 && !ui.text_overflow,"the themed report consumes real measured lettering without a false fit");
+          continue;
+        }
         // The standard interface's translucent scene dimmer precedes the report
         // panel. Own the navy header itself, never that full-viewport overlay.
         const auto first=std::find_if(ui.quads.begin(),ui.quads.end(),[](const auto& q){return q.uv[2]<0 && q.color[0]==.035F && q.color[1]==.105F && q.color[2]==.17F;});
@@ -1244,6 +1476,13 @@ int main(int argc, char** argv) {
   std::vector<std::byte> bytes(static_cast<std::size_t>(count));
   file.seekg(0); file.read(reinterpret_cast<char*>(bytes.data()), count);
   require(hr::assets::decode_preview_mesh(bytes, atlas), "actual production atlas decodes");
+  std::ifstream enamel_file(std::filesystem::path(argv[1]) / "ui-components.hrm",std::ios::binary|std::ios::ate);
+  require(enamel_file.good(),"actual shared-component atlas opens");
+  const auto enamel_count=enamel_file.tellg();
+  require(enamel_count>0 && enamel_count<32*1024*1024,"component atlas fixture is bounded");
+  std::vector<std::byte> enamel_bytes(static_cast<std::size_t>(enamel_count));
+  enamel_file.seekg(0);enamel_file.read(reinterpret_cast<char*>(enamel_bytes.data()),enamel_count);
+  require(hr::assets::decode_preview_mesh(enamel_bytes,enamel_atlas),"actual shared-component atlas decodes");
   bounded_damage_hud_keeps_ingress_vitality_clear();
   hangar_shows_owned_and_next_power_with_visible_basis();
   hangar_next_flight_is_reachable_without_hiding_purchases();

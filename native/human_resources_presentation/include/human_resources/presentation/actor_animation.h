@@ -27,5 +27,6 @@ struct ActorAnimation final {
   // Actual physical infantry yaw. Renderer history may articulate only feet;
   // this never changes root orientation or implies world travel.
   std::optional<float> body_heading{};
+  bool backward{}; // Actual infantry retreat; reverse the existing looping gait.
 };
 } // namespace human_resources::presentation

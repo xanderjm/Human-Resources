@@ -1,0 +1,111 @@
+{
+  "triangles": 5788,
+  "vertices": 3815,
+  "mesh_primitives": 1,
+  "uv_present": true,
+  "textures": [
+    {
+      "size": [
+        1024,
+        1024
+      ],
+      "mode": "RGB"
+    }
+  ],
+  "raw_accessor_bounds": [
+    {
+      "min": [
+        -0.1904296875,
+        -0.4990234375,
+        -0.3544921875
+      ],
+      "max": [
+        0.1904296875,
+        0.4990234375,
+        0.3544921875
+      ]
+    }
+  ],
+  "extensions": [],
+  "bytes": 378400,
+  "asset": "farmer-body",
+  "model_file": "assets/models/farmer-body/farmer-body.glb",
+  "requested_face_limit": 6000,
+  "source_task_id": "c7987858-e4de-42a6-b004-5bb23f173c70",
+  "convert_task_id": "12eb0e41-1f83-4c89-a2dd-71152aa1eb72",
+  "credits_consumed": 60,
+  "preview": null,
+  "triangle_budget_review": {
+    "requested_target": 6000,
+    "actual_triangles": 5788,
+    "target_met": true,
+    "category_ceiling": 8000,
+    "status": "passed"
+  },
+  "structural_review": {
+    "status": "passed",
+    "notes": "Triangle mode, valid GLB length, UVs and embedded 1024px base colour checked. Requested targets are approximate; actual triangle count and target deviations are reported separately, within the user-specified 3000-prop / 8000-character ceilings. Scale, pivot, topology and visual quality require separate review."
+  },
+  "visual_review": {
+    "status": "accepted",
+    "notes": "Complete bare-headed farmer, correct navy/cream/brown palette, two separated arms/hands and legs/boots; no hat, tools or extra anatomy. Rear clothing clean. Broad painted colour blocking preserved, with softer small brush detail than source. Normalized 1.6m tall, feet at Y=0, facing +Z.",
+    "views": [
+      "three-quarter",
+      "front",
+      "rear"
+    ]
+  },
+  "import_review": {
+    "status": "passed",
+    "units": "metres",
+    "up": "+Y",
+    "forward": "+Z",
+    "yaw_degrees": -90.0,
+    "uniform_scale": 1.6031311154598826,
+    "bounds_m": [
+      [
+        -0.5682974559686889,
+        0.0,
+        -0.30528375733855184
+      ],
+      [
+        0.5682974559686889,
+        1.6,
+        0.30528375733855184
+      ]
+    ],
+    "dimensions_m": [
+      1.1365949119373777,
+      1.6,
+      0.6105675146771037
+    ],
+    "vertex_checks": [
+      {
+        "triangles": 5788,
+        "degenerate_triangles": 0,
+        "uv_bounds": [
+          [
+            0.0,
+            0.0
+          ],
+          [
+            1.0,
+            1.0
+          ]
+        ]
+      }
+    ],
+    "notes": "Real scene vertices and indices decoded; finite positions/UVs; retained embedded 1024px base colour. Uniform root transform; raw file preserved."
+  },
+  "raw_model_file": "assets/models/farmer-body/tripo-out/farmer-body-convert-12eb0e41/model.glb",
+  "assembly_review": {
+    "status": "passed",
+    "assemblies": [
+      "farmer-with-straw-hat"
+    ],
+    "definition": "assets/production/assemblies.json",
+    "evidence": "assets/production/reviews/assemblies-final.png",
+    "notes": "Static actual-geometry fit checked from front, rear/opposite, side, three-quarter and high angles. Socket frames use metres/+Y up/+Z forward. No reflections or nonuniform scale.",
+    "runtime_qualified": false
+  }
+}

@@ -26,10 +26,9 @@ GameplayFraming gameplay_framing(ui::Rect viewport, ui::Insets safe_area, float 
     // Measure button copy in points; status copy wraps vertically in the rail.
     const float left = std::max(52.F, std::max(word_width("BUMP",14*type),word_width("SHOT",14*type)) + 12);
     const float right = std::max(52.F, std::max({word_width("DASH",14*type),word_width("BOOST",14*type),word_width("SWEEP",14*type),word_width("ADDED",14*type)}) + 12);
-    // A conservative product layout floor, not a physical-device guarantee.
-    // Enlarged rails must not consume the combat field into a few pixels.
-    constexpr float minimum_rail_stage_width = 100.F;
-    result.banded = result.compact && result.safe.width - left - right < minimum_rail_stage_width;
+    // Short displays use top/bottom strips: opaque full-height side rails
+    // would hide a ship that can now fly to the actual left and right edges.
+    result.banded = result.compact;
     if (result.banded) {
       const float top = result.safe.y + GameplayFraming::tactical_row_height + 12;
       const float bottom = result.safe.bottom() - GameplayFraming::tactical_bottom_margin - GameplayFraming::tactical_row_height - 10;
@@ -44,6 +43,11 @@ GameplayFraming gameplay_framing(ui::Rect viewport, ui::Insets safe_area, float 
       available = {result.safe.x + (result.compact ? left : 0) + (room - width) * .5F, result.safe.y + (result.safe.height - height) * .5F, width, height};
     }
     result.destination = {(available.x - viewport.x) / viewport.width, (available.y - viewport.y) / viewport.height, available.width / viewport.width, available.height / viewport.height};
+  }
+  const auto ui_stage = available; // Keep measured HUD/rail placement independent of flight reach.
+  if (context == FramingContext::flight) {
+    available = viewport;
+    result.destination = {0, 0, 1, 1};
   }
   result.stage = available;
   result.aspect = available.width / available.height;
@@ -60,16 +64,33 @@ GameplayFraming gameplay_framing(ui::Rect viewport, ui::Insets safe_area, float 
     result.stage = {viewport.x + static_cast<float>(actual.x) * sx, viewport.y + static_cast<float>(actual.y) * sy,
         static_cast<float>(actual.width) * sx, static_cast<float>(actual.height) * sy};
   }
-  result.run_layout = result.banded ? result.safe : result.constrained ? result.stage : result.safe;
+  result.run_layout = result.banded ? result.safe : result.constrained ? ui_stage : result.safe;
   if (result.compact && !result.banded) {
-    result.left_rail = {result.safe.x, result.safe.y, result.stage.x - result.safe.x, result.safe.height};
-    result.right_rail = {result.stage.right(), result.safe.y, result.safe.right() - result.stage.right(), result.safe.height};
+    result.left_rail = {result.safe.x, result.safe.y, ui_stage.x - result.safe.x, result.safe.height};
+    result.right_rail = {ui_stage.right(), result.safe.y, result.safe.right() - ui_stage.right(), result.safe.height};
   }
   presentation::StyleFrame projection;
   if(context==FramingContext::attract) result.camera_width=(result.aspect<1?17.F:31.F)/.75F;
+  if (context == FramingContext::flight)
+    result.camera_width *= std::max(1.F, result.aspect / portrait);
   presentation::set_overhead_camera(projection, result.aspect, result.camera_width, {0, 0, -.15F}, 27.F);
   result.camera = projection.camera;
-  result.logical_pixel = result.camera_width / std::min(320.F, result.stage.width);
+  result.logical_pixel = (context == FramingContext::flight ? 17.F / .75F : result.camera_width) / std::min(320.F, ui_stage.width);
+  // Invert the actual orthographic camera on the ship's Y=2.5m plane. A centre
+  // at a clip edge leaves roughly half the saucer outside, on every aspect/DPI.
+  const auto& m = result.camera;
+  const float determinant = m[0] * m[6] - m[2] * m[4];
+  if (std::abs(determinant) > .000001F) {
+    auto& area = result.flight_bounds;
+    area = {256, -256, 256, -256};
+    for (float x : {-1.F, 1.F}) for (float y : {-1.F, 1.F}) {
+      const float cx = x - m[1] * 2.5F - m[3], cy = y - m[5] * 2.5F - m[7];
+      const float world_x = (cx * m[6] - cy * m[2]) / determinant;
+      const float station = 2.3F - (cy * m[0] - cx * m[4]) / determinant;
+      area.left = std::min(area.left, world_x); area.right = std::max(area.right, world_x);
+      area.backward = std::min(area.backward, station); area.forward = std::max(area.forward, station);
+    }
+  }
   return result;
 }
 GameplayFraming gameplay_framing(float aspect, FramingContext context) {

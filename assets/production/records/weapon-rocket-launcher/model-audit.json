@@ -1,0 +1,121 @@
+{
+  "triangles": 1729,
+  "vertices": 1383,
+  "mesh_primitives": 1,
+  "uv_present": true,
+  "textures": [
+    {
+      "size": [
+        1024,
+        1024
+      ],
+      "mode": "RGB"
+    }
+  ],
+  "raw_accessor_bounds": [
+    {
+      "min": [
+        -0.1240234375,
+        -0.1943359375,
+        -0.4990234375
+      ],
+      "max": [
+        0.1240234375,
+        0.1943359375,
+        0.4990234375
+      ]
+    }
+  ],
+  "extensions": [],
+  "bytes": 218028,
+  "asset": "weapon-rocket-launcher",
+  "model_file": "assets/models/weapon-rocket-launcher/weapon-rocket-launcher.glb",
+  "requested_face_limit": 1800,
+  "source_task_id": "5e804ca5-314a-4e37-a1fd-11adf584e7ff",
+  "convert_task_id": "32b1d5cb-7957-49b2-88cb-43b7a8765439",
+  "credits_consumed": 60,
+  "preview": null,
+  "triangle_budget_review": {
+    "requested_target": 1800,
+    "actual_triangles": 1729,
+    "target_met": true,
+    "category_ceiling": 3000,
+    "status": "passed"
+  },
+  "structural_review": {
+    "status": "passed",
+    "notes": "Triangle mode, valid GLB length, UVs and embedded 1024px base colour checked. Requested targets are approximate; actual triangle count and target deviations are reported separately, within the user-specified 3000-prop / 8000-character ceilings. Scale, pivot, topology and visual quality require separate review."
+  },
+  "visual_review": {
+    "status": "accepted",
+    "notes": "Accepted independent loaded launcher: coherent navy shoulder tube and two separate hanging grip forms, integral coral loaded nose as explicitly approved, no human fragments or loose ammunition. Rear tube cap and occupied mouth remain static; side chevrons/fine brush detail were not retained in generation, while the major navy/coral identity and loaded silhouette remain clear. Uniform 1.15 m length, +Y up/+Z nose, measured primary rear-grip origin and secondary/tube-underside/nose data recorded. No extraction, discharge, animation, equipping or pose work.",
+    "model_sha256": "c9e3fa0367dd62ea0142554cb24eb6a516562cbbb7927705ab73280db2561818",
+    "reference": "assets/references/weapon-rocket-launcher/v1.png",
+    "reference_sha256": "bf7baffa96454e16aaceccbd0f7422f9515d71db159f4d8e51eedf6cad3522f8",
+    "evidence": [
+      "assets/production/records/weapon-rocket-launcher/review-weapons-final-three-quarter.png",
+      "assets/production/records/weapon-rocket-launcher/review-weapons-final-opposite.png",
+      "assets/production/records/weapon-rocket-launcher/review-weapons-final-front.png",
+      "assets/production/records/weapon-rocket-launcher/review-weapons-final-right.png",
+      "assets/production/records/weapon-rocket-launcher/review-sockets-side.png"
+    ],
+    "contact_sheet": "assets/production/reviews/props-six-weapons-final.png",
+    "method": "Actual decoded triangle/UV/base-colour geometry rendered with CPU depth buffer, plus inspected measured socket overlays.",
+    "runtime_qualified": false
+  },
+  "import_review": {
+    "status": "passed",
+    "units": "metres",
+    "up": "+Y",
+    "forward": "+Z",
+    "yaw_degrees": 180.0,
+    "pivot": "primary-grip",
+    "double_sided": false,
+    "uniform_scale": 1.1522504892367904,
+    "bounds_m": [
+      [
+        -0.141359,
+        -0.116463,
+        -0.421404
+      ],
+      [
+        0.144453,
+        0.331385,
+        0.728596
+      ]
+    ],
+    "dimensions_m": [
+      0.285812,
+      0.447847,
+      1.15
+    ],
+    "vertex_checks": [
+      {
+        "triangles": 1729,
+        "degenerate_triangles": 0,
+        "uv_bounds": [
+          [
+            0.0,
+            0.0
+          ],
+          [
+            1.0,
+            1.0
+          ]
+        ]
+      }
+    ],
+    "notes": "Real scene vertices and indices decoded; finite positions/UVs; retained embedded 1024px base colour. Uniform root transform; raw file preserved.",
+    "primary_grip_origin": true,
+    "measured_canonical_grip_m": [
+      -0.001547,
+      -0.107461,
+      -0.153596
+    ],
+    "pivot_notes": "Actual inspected feature bounds measured from triangle surface samples; only outer-root translation changed. No body poses/equipment/rigging.",
+    "normalized_file_bytes": 218388,
+    "bin_payload_matches_raw": true
+  },
+  "raw_model_file": "assets/models/weapon-rocket-launcher/tripo-out/weapon-rocket-launcher-convert-32b1d5cb/model.glb",
+  "socket_metadata": "assets/production/weapon-sockets.json"
+}

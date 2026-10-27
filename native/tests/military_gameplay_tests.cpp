@@ -42,6 +42,7 @@ void encounter_stream_and_bounds() {
   for (unsigned seed = 1; seed <= 128; ++seed) {
     game::Game::State actual, reference;
     actual.random_state = reference.random_state = seed;
+    actual.view.stats.active_seconds = tune::population_rocket_reveal_seconds;
     actual.spawn(game::EntityKind::soldier);
     for (unsigned sample = 0; sample < 4; ++sample) (void)reference.random_unit();
     require(actual.random_state == reference.random_state,
@@ -185,6 +186,11 @@ unsigned occupied_threats(const game::Game::State& state) {
 }
 void held_warning_slots_keep_provisional_aim_fresh_and_durable() {
   game::Game run; run.start({.seed=514}); auto& state = *run.state_;
+  state.view.stats.active_seconds = 112; // Post-learning build phase retains the ordinary two-slot budget.
+  state.sync();
+  // This reservation-only fixture holds a fixed world target while enemies
+  // advance independently; do not predict automatic camera carry as target motion.
+  state.view.velocity = {};
   auto source = soldier(game::InfantryRole::rifleman);
   source.locomotion_velocity = {0, 1}; source.view.body_heading = 3.14159265359F;
   state.actors = {source}; state.view.beams.clear(); state.next_id = 200;
@@ -265,7 +271,7 @@ void held_warning_slots_keep_provisional_aim_fresh_and_durable() {
 }
 void reservation_contraction_and_boss_drain() {
   game::Game::State state;
-  state.view.stats.active_seconds = tune::encounter_build_seconds + 1;
+  state.view.stats.active_seconds = 112 + tune::encounter_build_seconds + 1;
   for (unsigned i = 0; i < tune::encounter_assault_warning_cap; ++i) {
     auto a = soldier(game::InfantryRole::rifleman, i + 1);
     a.view.position = {-4.5F + 3.F * static_cast<float>(i), 8};
@@ -277,7 +283,7 @@ void reservation_contraction_and_boss_drain() {
       "assault fixture earns its actual preparations under the larger cap");
   auto waiting = soldier(game::InfantryRole::rifleman, 10); waiting.view.position = {-5, 12};
   state.actors.push_back(waiting);
-  state.view.stats.active_seconds = tune::encounter_build_seconds + tune::encounter_assault_seconds + 1;
+  state.view.stats.active_seconds = 112 + tune::encounter_build_seconds + tune::encounter_assault_seconds + 1;
   bool committed = false;
   for (unsigned frame = 0; frame < 21 && !committed; ++frame) {
     state.enemies(dt);
@@ -289,6 +295,7 @@ void reservation_contraction_and_boss_drain() {
       "previous owners convert their own reservations despite phase cap contraction without a self-slot deadlock");
   for (const bool boss_first : {false, true}) {
     game::Game::State encounter;
+    encounter.view.stats.active_seconds = 112;
     for (unsigned i = 0; i < tune::encounter_build_warning_cap; ++i) {
       auto a = soldier(game::InfantryRole::rifleman, i + 1);
       a.view.position = {i == 0 ? -4.F : 4.F, 8}; a.locomotion_velocity = {0, 1};
@@ -351,9 +358,10 @@ void cancellation_and_warning_cap() {
           "captured or disabled infantry cannot continue pursuit");
     }
   }
-  for (const auto [second, cap] : std::array<std::pair<double, unsigned>, 3>{{
-      {0, tune::encounter_build_warning_cap}, {tune::encounter_build_seconds + 1, tune::encounter_assault_warning_cap},
-      {tune::encounter_build_seconds + tune::encounter_assault_seconds + 1, tune::encounter_recovery_warning_cap}}}) {
+  for (const auto [second, cap] : std::array<std::pair<double, unsigned>, 6>{{
+      {13, 1}, {30, 2}, {35, 2}, {112, tune::encounter_build_warning_cap},
+      {112 + tune::encounter_build_seconds + 1, tune::encounter_assault_warning_cap},
+      {112 + tune::encounter_build_seconds + tune::encounter_assault_seconds + 1, tune::encounter_recovery_warning_cap}}}) {
     game::Game::State full;
     full.view.stats.active_seconds = second;
     for (unsigned i = 0; i < 18; ++i) full.actors.push_back(soldier(roles[i % 3], i + 1));
@@ -535,9 +543,9 @@ void malformed_military_authority() {
   state.sync();
   const auto good = run.save_state();
   require(!good.empty(), "wire corruption fixture starts with valid actual military state");
-  // Codec-three kind-aware offsets are deliberate corruption fixtures.
-  constexpr std::size_t actor = 378, role = actor + 49, recovery = actor + 50;
-  constexpr std::size_t projectile = actor + 106 + 4, projectile_role = projectile + 37;
+  // Codec6 adds population state after the persisted laser/flight prefix.
+  constexpr std::size_t actor = 434, role = actor + 49, recovery = actor + 50;
+  constexpr std::size_t projectile = actor + 119 + 4, projectile_role = projectile + 37;
   auto seal = [](auto& bytes) {
     std::uint64_t hash = 14695981039346656037ULL;
     for (std::size_t i = 0; i < bytes.size() - 8; ++i)

@@ -4,11 +4,107 @@ Owner request: 25 October 2026. Complete the mobile game with existing assets an
 accepted progression, using Archero as the reference when decisions are missing.
 The coordinating agent owns integration review and evidence; implementation is
 delegated. Intended audience is teens and adults (13+), confirmed in this chat.
-The owner selected portrait as the primary mobile orientation on 25 October
-2026. Product identity, iOS/Android shells, camera, touch layout and screens must
-change together. Prior landscape captures are historical integration evidence.
+The owner confirmed portrait-only gameplay on26October2026, superseding the
+earlier portrait-first direction. iOS/Android remain orientation-locked;
+desktop previews request portrait window constraints. Product identity, shells,
+camera, touch layout and screens must agree. Prior landscape captures are
+historical integration evidence, outside the current UI acceptance scope.
 
 ## Current truth
+
+The Atomic Enamel shared-family pass records a56/56host aggregate and actual
+320frame semantic-input player smokes at320×568and390×844. Screen mask495,
+all three Build pages, six policy pages and every actual recipe spread pass
+with fresh isolated storage.37-state native matrices cover small/tall phones,
+47/59point top safe areas and requested text sizes through3.4x. Required GPU
+evidence and exact source epochs are under
+`build/evidence/atomic-ui-implementation-v1/`. Shared frames, icons and measured
+type now serve ordinary menus, enlarged reader and tactical strips. The portrait-only source removes separate landscape arrangements and constrains
+desktop window sizes. Its final56/56aggregate,111source-bound native captures
+and fresh320frame small/rotated-request player flows pass; see the newest
+development-log entry and `portrait-only-pass-report.json`. Final reference fidelity remains unfinished. This is
+not physical-mobile, human-fun or release qualification.
+
+The separate persistent-enemy candidate's earlier epoch is recorded in ADR012 and
+`build/evidence/enemy-engagement-20261026/`. Optimized gameplay/save/account,
+military/vehicle/boss, animation and native SDL/Metal recording pass; aggregate
+verification was55/56 because the independently edited shared maximum-stat
+three-pod HUD assertion fails. Authority19/codec6/account2 retains protected
+old-run banking. The source-stable2,400frame recording reaches89.1167active
+seconds and includes ordinary military; ten-case repeated boss tests provide
+their separate scope. This has not replaced an owner app or refreshed human
+balance, physical-phone or release qualification.
+
+The latest owner-requested action-pacing candidate passes53/54 optimized host
+suites, including gameplay/save/account, military/vehicle/boss and full spatial
+visibility checks. The shared Pause bank-status text assertion still fails;
+no gate is weakened. Native runtime review, sealed separate-app startup and
+source-bound six-pilot comparisons are under `build/evidence/action-pacing/`.
+The new faster-action owner app runs with an isolated fresh save; earlier apps
+and saves remain preserved. ADR011 records authority17/fingerprint
+17338307908522862680, codec6/account2 and protected old-run handling. This is a
+human-playtest candidate, with no refreshed phone or release qualification.
+Older aggregate counts and source epochs below remain historical.
+
+
+The latest physical-ship integration passes the optimized host aggregate53/53,
+including actual assembled-saucer edge reach, full-rig interior composition and
+all36 live module/rank geometry contracts. Thirty offline cooked components
+replace decorative glyphs; twelve live hardware families follow ADR010. Native
+colour/neutral top views and combinations, source-stable SDL/Metal inspection
+and isolated startup smoke pass. Evidence is under
+`build/evidence/ship-components-v2/`; the newest development-log entry records
+exact corrections and proof. This source has not replaced an owner app or
+refreshed physical-device/mobile/release qualification. Older gate counts below
+retain their dated evidence scope.
+
+
+The later twelve-hardware candidate removes Reserve Battery, Bounty Scanner,
+Mirror Plating and Overtime Reactor, plus the now-invalid Mirrorball recipe.
+Nine families including Beam Splitter are fresh-account random-draft eligible;
+three achievement unlocks and five evolutions remain. Six slots/three ranks stay.
+The owner explicitly rejects guaranteed/preinstalled Beam Splitter. Codec6/
+authority16/account2 uses fingerprint10192927285037145995 and stable retired
+bit slots with protected old-run banking. The latest optimized aggregate is
+**52/53**, with a shared maximum-gear edge-clipping failure retained. All changed
+gameplay/account/UI,37tuning tests and static/diff checks pass. An actual first-
+draft film and final source-stable NoAccountIO native library/recipe renders
+cover the new availability and five-recipe pagination. Concurrent ship/UI/shader
+work retains separate source epochs in this checkout; no device/fun/release or
+updated owner-app qualification is inferred. See ADR010 and
+`build/evidence/hardware-pruning/REPORT.json`.
+
+
+The later 26 October faster-progression candidate uses 1.6-second base lifts,
++8 base-rate points per earned level, `12+2L` XP and stronger 12/18/25-point
+Capture Speed research. Codec6/authority15/account2, fingerprint
+`18201898154895775871`; protected old-run banking remains. The current optimized
+host gate is **51/52**, with progression/save/UI/35tuning checks passing and an
+unchanged synthetic saucer-edge visibility failure (vertical visible fraction
+.735871 versus the existing .3–.7 range). No gate is weakened. Native promotion
+review and final source-stable 280frame SDL/Metal screen-flow smoke pass; required
+host evidence includes that GPU log. Scripted fresh medians change first choice
+14.18→10.02seconds and survival286.03→394.18seconds, with one600second survivor;
+projected credit rate40.51→93.31/minute materially accelerates Hangar progression
+without changing prices. This is a playtest/economy candidate, outside existing
+owner apps and mobile packages, with no human-fun/device/release qualification.
+See ADR009 and `build/evidence/progression-pacing/REPORT.json`.
+
+
+The 26 October population implementation adds per-type lift loads/rewards,
+overlapping civilian/animal reveals, species-specific local escape, measured
+passive ground spacing and complete military approach formations. Game
+codec6/authority14 retains concurrent laser/flight fields and account2 protected
+banking. The final optimized host gate passes52/52 with stable source inputs;
+the focused population suite also passes ASan/UBSan. A separate fresh-save
+390×844 native SDL/Metal recording contains4,600frames/230video seconds and
+195.267active seconds through the first boss, with actual animation deltas and
+source/executable stability. Evidence is in `build/evidence/encounter-population/`.
+This source is a playable tuning candidate, outside the existing owner apps and
+older mobile packages. Native sampled-frame review, neutral-box spacing probes
+and scripted portable pacing comparisons do not qualify human feel, physical
+phone performance, store delivery or refreshed mobile packages. ADR008 and the
+population plan describe exact rules and acceptance scope.
 
 The accepted authority8 baseline implements boss combat and Pause bank
 disclosure. Exact source/commit is recorded in

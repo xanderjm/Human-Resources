@@ -74,6 +74,8 @@ def cook(source_root: Path, output_root: Path, project: dict[str, object]) -> in
                     paths.update((optimization["recipe"], optimization["canonical_source"]))
                     paths.update(optimization["authoring_tool_sha256"])
             paths.update({"tools/art_tools.py", "tools/art-toolchain.json", "tools/art-requirements.txt", "tools/cook_product_content.py", "tools/cook_style_preview.py", "tools/normalize_glb.py", "assets/production/inventory.json"})
+            paths.update(provenance.get("ship_component_sources", []))
+            paths.update(provenance.get("ui_sources", []))
             definition = json.loads(recipe.read_text())
             paths.update("assets/textures/texture-" + name + "/texture-" + name + ".png" for name in definition["materials"])
             paths.update("assets/fonts/human-resources-v3/ttf/" + name for name in definition["fonts"])

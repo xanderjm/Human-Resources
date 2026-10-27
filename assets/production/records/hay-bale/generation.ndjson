@@ -1,0 +1,28 @@
+── Plan ──────────────────────────
+input: /Users/coral/Documents/App Development/Human Resources/assets/references/hay-bale/v2.png
+model: P1-20260311 — explicit --model
+steps:
+  1. image-to-model  POST /v3/generation/image-to-model — generate a 3D model from one image
+     model="P1-20260311" face_limit=1600 texture=true pbr=false texture_quality="standard" texture_alignment="original_image" export_uv=true
+  2. convert  POST /v3/models/convert — convert format / texture size / orientation
+     format="GLTF" texture_size=1024
+cost impact:
+  · non-default convert options bill as complex convert
+──────────────────────────────────
+model: P1-20260311 (explicit --model)
+task created 62a8ae43-2045-4825-b7f4-045bbdb7749d (@hay-bale-2)
+image_to_model · queued
+image_to_model · running 13% · 62a8ae43
+image_to_model · running 22% · 62a8ae43
+image_to_model · running 36% · 62a8ae43
+image_to_model · running 55% · 62a8ae43
+image_to_model · running 85% · 62a8ae43
+image_to_model · success 100% · 62a8ae43
+✓ image_to_model · 62a8ae43-2045-4825-b7f4-045bbdb7749d · 50 credits
+! non-default convert options use the "complex convert" price tier
+task created 9545fdc9-e1be-48f3-af5c-254afb65464a (@hay-bale-convert-2)
+convert_model · queued
+✓ convert_model · 9545fdc9-e1be-48f3-af5c-254afb65464a · 10 credits
+downloading artifacts…
+✓ artifacts saved to /Users/coral/Documents/App Development/Human Resources/assets/models/hay-bale/tripo-out/hay-bale-convert-2-9545fdc9
+{"task_id":"9545fdc9-e1be-48f3-af5c-254afb65464a","type":"convert_model","status":"success","credits_consumed":60,"output_dir":"/Users/coral/Documents/App Development/Human Resources/assets/models/hay-bale/tripo-out/hay-bale-convert-2-9545fdc9","files":["model.glb"],"model_file":"/Users/coral/Documents/App Development/Human Resources/assets/models/hay-bale/tripo-out/hay-bale-convert-2-9545fdc9/model.glb","chain":[{"task_id":"9545fdc9-e1be-48f3-af5c-254afb65464a","type":"convert_model","status":"success","credits_consumed":10,"output_dir":"/Users/coral/Documents/App Development/Human Resources/assets/models/hay-bale/tripo-out/hay-bale-convert-2-9545fdc9","files":["model.glb"],"model_file":"/Users/coral/Documents/App Development/Human Resources/assets/models/hay-bale/tripo-out/hay-bale-convert-2-9545fdc9/model.glb"}],"source_task_id":"62a8ae43-2045-4825-b7f4-045bbdb7749d","credits_breakdown":[{"task_id":"62a8ae43-2045-4825-b7f4-045bbdb7749d","type":"image_to_model","credits_consumed":50},{"task_id":"9545fdc9-e1be-48f3-af5c-254afb65464a","type":"convert_model","credits_consumed":10}]}

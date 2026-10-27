@@ -1,0 +1,7 @@
+{
+  "id": "texture-pavement",
+  "version": 1,
+  "source": "/Users/coral/.codex/generated_images/01a16e3b-5221-78b2-bd33-9830eab86a7f/exec-fb4011b2-7e45-4730-a366-468a82ca0230.png",
+  "prompt": "Use case: stylized-concept. Create ONE flat square albedo MATERIAL SWATCH for the approved painterly low-poly UFO mobile game. Image 1 is the approved asset/material style guide. Image 2 is gameplay palette context. Subject: warm pale stone pavement. Warm pale ivory/grey stone with broad quiet brushed tonal variation and a few regular large slab joints, no grass, props, stones or cast shadows. The square swatch is viewed exactly straight-on, no perspective or thickness. It occupies 75% of a square image, centred with PURE WHITE margins on all four sides. This is a material reference, not a landscape scene. No label, text, border line, bevel, base, ground plane, studio shadow, extra swatches or objects. Visible broad gouache brush direction, simple large hand-painted shapes, low contrast suitable for a quiet background behind bright animals and UFO. Do not paint directional lighting gradients across the swatch. Match source materials, not photographic PBR.",
+  "review": "Approved flat isolated white-backed material reference: broad hand-painted surface, no scenery/props or directional scene lighting. Final tile must remove white margins, match a quiet biome palette and repeat seamlessly."
+}

@@ -22,9 +22,35 @@ CapturePose blend(const CapturePose& from, const CapturePose& to, float weight) 
 }
 } // namespace
 
+unsigned SceneEffects::capture_port(std::uint32_t actor_id) const {
+  const auto found=std::find_if(intake_bindings_.begin(),intake_bindings_.end(),[&](const auto& b){return b.id==actor_id&&actor_id!=0;});
+  return found==intake_bindings_.end()?0:found->port;
+}
+void SceneEffects::bind_capture_ports(const gameplay::Snapshot& run) {
+  const unsigned count=std::clamp(run.beam_capacity,1U,6U);
+  std::array<bool,6> occupied{};
+  const auto live=[&](std::uint32_t id){return id!=0&&std::any_of(run.beams.begin(),run.beams.end(),[&](const auto& b){return b.target_id==id;});};
+  for(auto& b:intake_bindings_) {
+    if(b.id&&run.stats.active_seconds-b.last_seen>.65&&!live(b.id)) b={};
+    if(live(b.id)&&b.port<count) {occupied[b.port]=true;b.last_seen=run.stats.active_seconds;}
+  }
+  for(const auto& beam:run.beams) {
+    if(!beam.target_id)continue;
+    const auto existing=std::find_if(intake_bindings_.begin(),intake_bindings_.end(),[&](const auto& b){return b.id==beam.target_id;});
+    if(existing!=intake_bindings_.end()&&existing->port<count)continue;
+    auto free=std::find_if(intake_bindings_.begin(),intake_bindings_.end(),[](const auto& b){return b.id==0;});
+    if(free==intake_bindings_.end()) {
+      free=std::min_element(intake_bindings_.begin(),intake_bindings_.end(),[&](const auto& a,const auto& b){return (live(a.id)?run.stats.active_seconds+1:a.last_seen)<(live(b.id)?run.stats.active_seconds+1:b.last_seen);});
+    }
+    const auto port=std::find(occupied.begin(),occupied.begin()+count,false);
+    const auto index=port==occupied.begin()+count?0U:static_cast<unsigned>(port-occupied.begin());
+    *free={beam.target_id,index,run.stats.active_seconds};occupied[index]=true;
+  }
+}
 void SceneEffects::begin_capture_frame(const gameplay::Snapshot& run) {
   const double now = run.stats.active_seconds;
-  if (capture_initialized_ && now < capture_seconds_) captures_ = {};
+  if (capture_initialized_ && now < capture_seconds_) {captures_ = {};intake_bindings_ = {};}
+  bind_capture_ports(run);
   const float elapsed = capture_initialized_ ? std::clamp(static_cast<float>(now - capture_seconds_), 0.F, .25F) : 0;
   constexpr float intake_seconds = .34F;
   completed_count_ = 0;

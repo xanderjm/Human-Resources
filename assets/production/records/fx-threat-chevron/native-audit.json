@@ -1,0 +1,58 @@
+{
+  "schema_version": 1,
+  "id": "fx-threat-chevron",
+  "status": "art-review-passed",
+  "production": {
+    "status": "generated",
+    "file": "assets/graphics/fx-threat-chevron/fx-threat-chevron.png",
+    "source": "assets/graphics/fx-threat-chevron/fx-threat-chevron.svg",
+    "metadata": "assets/graphics/fx-threat-chevron/asset.json"
+  },
+  "reference": {
+    "status": "approved",
+    "path": "assets/references/fx-threat-chevron/v1.png",
+    "sha256": "67469d2892385613c8752e4cc2331905e6c0519ba3e937dcc4e901e68e3eca06"
+  },
+  "qa": {
+    "status": "art-review-passed",
+    "visual_review": "Two strong coral directional chevrons with open background; no panel or extra graphic.",
+    "review_evidence": "assets/production/reviews/native-graphics-contact-sheet.png",
+    "reviewed_against": "art/style-guide/ufo-asset-style-guide.png",
+    "runtime_qualified": false
+  },
+  "alpha_audit": {
+    "dimensions_px": [
+      512,
+      512
+    ],
+    "rgba": true,
+    "alpha_range": [
+      0,
+      255
+    ],
+    "alpha_nonzero_bbox": [
+      50,
+      130,
+      409,
+      382
+    ],
+    "transparent_margin_px": [
+      50,
+      130,
+      103,
+      130
+    ],
+    "border_alpha_max": 0,
+    "visible_pixels": 38332,
+    "repeat_axis_check": null,
+    "sha256": "fca9fdb6a6eb150a6d2485098a2566476597e8538613119c96be423866125356"
+  },
+  "variants": [],
+  "svg": {
+    "self_contained": true,
+    "text_baked": false,
+    "external_dependencies": false
+  },
+  "usage": "Rotate in presentation to point toward threat; clamp both axes. Shape carries meaning beyond colour.",
+  "limitations": "Art production asset. Native runtime upload, blend, depth/occlusion and device readability are not qualified."
+}

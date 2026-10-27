@@ -1,0 +1,28 @@
+── Plan ──────────────────────────
+input: /Users/coral/Documents/App Development/Human Resources/assets/references/tank-hull/v1.png
+model: P1-20260311 — explicit --model
+steps:
+  1. image-to-model  POST /v3/generation/image-to-model — generate a 3D model from one image
+     model="P1-20260311" face_limit=2800 texture=true pbr=false texture_quality="standard" texture_alignment="original_image" export_uv=true
+  2. convert  POST /v3/models/convert — convert format / texture size / orientation
+     format="GLTF" texture_size=1024
+cost impact:
+  · non-default convert options bill as complex convert
+──────────────────────────────────
+model: P1-20260311 (explicit --model)
+task created 0ac6f244-c360-4c12-91b2-a425a817f8dc (@tank-hull)
+image_to_model · queued
+image_to_model · running 12% · 0ac6f244
+image_to_model · running 20% · 0ac6f244
+image_to_model · running 32% · 0ac6f244
+image_to_model · running 50% · 0ac6f244
+image_to_model · running 77% · 0ac6f244
+image_to_model · success 100% · 0ac6f244
+✓ image_to_model · 0ac6f244-c360-4c12-91b2-a425a817f8dc · 50 credits
+! non-default convert options use the "complex convert" price tier
+task created 73b0c9e9-a221-454a-a501-0ac393b7db3d (@tank-hull-convert)
+convert_model · queued
+✓ convert_model · 73b0c9e9-a221-454a-a501-0ac393b7db3d · 10 credits
+downloading artifacts…
+✓ artifacts saved to /Users/coral/Documents/App Development/Human Resources/assets/models/tank-hull/tripo-out/tank-hull-convert-73b0c9e9
+{"task_id":"73b0c9e9-a221-454a-a501-0ac393b7db3d","type":"convert_model","status":"success","credits_consumed":60,"output_dir":"/Users/coral/Documents/App Development/Human Resources/assets/models/tank-hull/tripo-out/tank-hull-convert-73b0c9e9","files":["model.glb"],"model_file":"/Users/coral/Documents/App Development/Human Resources/assets/models/tank-hull/tripo-out/tank-hull-convert-73b0c9e9/model.glb","chain":[{"task_id":"73b0c9e9-a221-454a-a501-0ac393b7db3d","type":"convert_model","status":"success","credits_consumed":10,"output_dir":"/Users/coral/Documents/App Development/Human Resources/assets/models/tank-hull/tripo-out/tank-hull-convert-73b0c9e9","files":["model.glb"],"model_file":"/Users/coral/Documents/App Development/Human Resources/assets/models/tank-hull/tripo-out/tank-hull-convert-73b0c9e9/model.glb"}],"source_task_id":"0ac6f244-c360-4c12-91b2-a425a817f8dc","credits_breakdown":[{"task_id":"0ac6f244-c360-4c12-91b2-a425a817f8dc","type":"image_to_model","credits_consumed":50},{"task_id":"73b0c9e9-a221-454a-a501-0ac393b7db3d","type":"convert_model","credits_consumed":10}]}

@@ -1,0 +1,58 @@
+{
+  "schema_version": 1,
+  "id": "ui-laser",
+  "status": "art-review-passed",
+  "production": {
+    "status": "generated",
+    "file": "assets/graphics/ui-laser/ui-laser.png",
+    "source": "assets/graphics/ui-laser/ui-laser.svg",
+    "metadata": "assets/graphics/ui-laser/asset.json"
+  },
+  "reference": {
+    "status": "approved",
+    "path": "assets/references/ui-laser/v1.png",
+    "sha256": "488164deba87b32391be032622c7de6ff7f1d8fa921e0f94bf67fe536bd14b14"
+  },
+  "qa": {
+    "status": "art-review-passed",
+    "visual_review": "Standalone coral beam/starburst with ivory core, no text or card.",
+    "review_evidence": "assets/production/reviews/native-graphics-contact-sheet.png",
+    "reviewed_against": "art/style-guide/ufo-asset-style-guide.png",
+    "runtime_qualified": false
+  },
+  "alpha_audit": {
+    "dimensions_px": [
+      512,
+      512
+    ],
+    "rgba": true,
+    "alpha_range": [
+      0,
+      255
+    ],
+    "alpha_nonzero_bbox": [
+      94,
+      78,
+      473,
+      421
+    ],
+    "transparent_margin_px": [
+      94,
+      78,
+      39,
+      91
+    ],
+    "border_alpha_max": 0,
+    "visible_pixels": 34335,
+    "repeat_axis_check": null,
+    "sha256": "9a532972f5331eac248e2d5351c6a19d9d95d0f975983b5deef1c569d17deec0"
+  },
+  "variants": [],
+  "svg": {
+    "self_contained": true,
+    "text_baked": false,
+    "external_dependencies": false
+  },
+  "usage": "Standalone upgrade icon, no text/card. Clamp both axes.",
+  "limitations": "Art production asset. Native runtime upload, blend, depth/occlusion and device readability are not qualified."
+}

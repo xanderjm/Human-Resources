@@ -1,0 +1,28 @@
+── Plan ──────────────────────────
+input: /Users/coral/Documents/App Development/Human Resources/assets/references/fuel-pump-blue/v1.png
+model: P1-20260311 — explicit --model
+steps:
+  1. image-to-model  POST /v3/generation/image-to-model — generate a 3D model from one image
+     model="P1-20260311" face_limit=1800 texture=true pbr=false texture_quality="standard" texture_alignment="original_image" export_uv=true
+  2. convert  POST /v3/models/convert — convert format / texture size / orientation
+     format="GLTF" texture_size=1024
+cost impact:
+  · non-default convert options bill as complex convert
+──────────────────────────────────
+model: P1-20260311 (explicit --model)
+task created 144c132b-14fe-4cf2-a332-5a0d5fb07512 (@fuel-pump-blue)
+image_to_model · queued
+image_to_model · running 9% · 144c132b
+image_to_model · running 16% · 144c132b
+image_to_model · running 25% · 144c132b
+image_to_model · running 39% · 144c132b
+image_to_model · running 59% · 144c132b
+image_to_model · success 100% · 144c132b
+✓ image_to_model · 144c132b-14fe-4cf2-a332-5a0d5fb07512 · 50 credits
+! non-default convert options use the "complex convert" price tier
+task created b461f5f6-6940-4e60-96b3-8e1ee72be56e (@fuel-pump-blue-convert)
+convert_model · queued
+✓ convert_model · b461f5f6-6940-4e60-96b3-8e1ee72be56e · 10 credits
+downloading artifacts…
+✓ artifacts saved to /Users/coral/Documents/App Development/Human Resources/assets/models/fuel-pump-blue/tripo-out/fuel-pump-blue-convert-b461f5f6
+{"task_id":"b461f5f6-6940-4e60-96b3-8e1ee72be56e","type":"convert_model","status":"success","credits_consumed":60,"output_dir":"/Users/coral/Documents/App Development/Human Resources/assets/models/fuel-pump-blue/tripo-out/fuel-pump-blue-convert-b461f5f6","files":["model.glb"],"model_file":"/Users/coral/Documents/App Development/Human Resources/assets/models/fuel-pump-blue/tripo-out/fuel-pump-blue-convert-b461f5f6/model.glb","chain":[{"task_id":"b461f5f6-6940-4e60-96b3-8e1ee72be56e","type":"convert_model","status":"success","credits_consumed":10,"output_dir":"/Users/coral/Documents/App Development/Human Resources/assets/models/fuel-pump-blue/tripo-out/fuel-pump-blue-convert-b461f5f6","files":["model.glb"],"model_file":"/Users/coral/Documents/App Development/Human Resources/assets/models/fuel-pump-blue/tripo-out/fuel-pump-blue-convert-b461f5f6/model.glb"}],"source_task_id":"144c132b-14fe-4cf2-a332-5a0d5fb07512","credits_breakdown":[{"task_id":"144c132b-14fe-4cf2-a332-5a0d5fb07512","type":"image_to_model","credits_consumed":50},{"task_id":"b461f5f6-6940-4e60-96b3-8e1ee72be56e","type":"convert_model","credits_consumed":10}]}

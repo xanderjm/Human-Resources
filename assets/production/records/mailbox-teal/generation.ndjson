@@ -1,0 +1,28 @@
+── Plan ──────────────────────────
+input: /Users/coral/Documents/App Development/Human Resources/assets/references/mailbox-teal/v1.png
+model: P1-20260311 — explicit --model
+steps:
+  1. image-to-model  POST /v3/generation/image-to-model — generate a 3D model from one image
+     model="P1-20260311" face_limit=1200 texture=true pbr=false texture_quality="standard" texture_alignment="original_image" export_uv=true
+  2. convert  POST /v3/models/convert — convert format / texture size / orientation
+     format="GLTF" texture_size=1024
+cost impact:
+  · non-default convert options bill as complex convert
+──────────────────────────────────
+model: P1-20260311 (explicit --model)
+task created 558835da-2fa6-44e2-9de6-9bb39201398a (@mailbox-teal)
+image_to_model · queued
+image_to_model · running 12% · 558835da
+image_to_model · running 22% · 558835da
+image_to_model · running 40% · 558835da
+image_to_model · running 61% · 558835da
+image_to_model · running 96% · 558835da
+image_to_model · success 100% · 558835da
+✓ image_to_model · 558835da-2fa6-44e2-9de6-9bb39201398a · 50 credits
+! non-default convert options use the "complex convert" price tier
+task created c40380aa-4544-4ddd-b4c2-deb191ff8e65 (@mailbox-teal-convert)
+convert_model · queued
+✓ convert_model · c40380aa-4544-4ddd-b4c2-deb191ff8e65 · 10 credits
+downloading artifacts…
+✓ artifacts saved to /Users/coral/Documents/App Development/Human Resources/assets/models/mailbox-teal/tripo-out/mailbox-teal-convert-c40380aa
+{"task_id":"c40380aa-4544-4ddd-b4c2-deb191ff8e65","type":"convert_model","status":"success","credits_consumed":60,"output_dir":"/Users/coral/Documents/App Development/Human Resources/assets/models/mailbox-teal/tripo-out/mailbox-teal-convert-c40380aa","files":["model.glb"],"model_file":"/Users/coral/Documents/App Development/Human Resources/assets/models/mailbox-teal/tripo-out/mailbox-teal-convert-c40380aa/model.glb","chain":[{"task_id":"c40380aa-4544-4ddd-b4c2-deb191ff8e65","type":"convert_model","status":"success","credits_consumed":10,"output_dir":"/Users/coral/Documents/App Development/Human Resources/assets/models/mailbox-teal/tripo-out/mailbox-teal-convert-c40380aa","files":["model.glb"],"model_file":"/Users/coral/Documents/App Development/Human Resources/assets/models/mailbox-teal/tripo-out/mailbox-teal-convert-c40380aa/model.glb"}],"source_task_id":"558835da-2fa6-44e2-9de6-9bb39201398a","credits_breakdown":[{"task_id":"558835da-2fa6-44e2-9de6-9bb39201398a","type":"image_to_model","credits_consumed":50},{"task_id":"c40380aa-4544-4ddd-b4c2-deb191ff8e65","type":"convert_model","credits_consumed":10}]}

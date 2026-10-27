@@ -1,0 +1,39 @@
+[
+  {
+    "task_id": "921d89b5-f7af-4161-9a50-6d39bbef6310",
+    "type": "convert_model",
+    "status": "success",
+    "credits_consumed": 60,
+    "output_dir": "/Users/coral/Documents/App Development/Human Resources/assets/models/ufo-laser-mount/tripo-out/ufo-laser-mount-convert-921d89b5",
+    "files": [
+      "model.glb"
+    ],
+    "model_file": "/Users/coral/Documents/App Development/Human Resources/assets/models/ufo-laser-mount/tripo-out/ufo-laser-mount-convert-921d89b5/model.glb",
+    "chain": [
+      {
+        "task_id": "921d89b5-f7af-4161-9a50-6d39bbef6310",
+        "type": "convert_model",
+        "status": "success",
+        "credits_consumed": 10,
+        "output_dir": "/Users/coral/Documents/App Development/Human Resources/assets/models/ufo-laser-mount/tripo-out/ufo-laser-mount-convert-921d89b5",
+        "files": [
+          "model.glb"
+        ],
+        "model_file": "/Users/coral/Documents/App Development/Human Resources/assets/models/ufo-laser-mount/tripo-out/ufo-laser-mount-convert-921d89b5/model.glb"
+      }
+    ],
+    "source_task_id": "3abe302d-ba27-4dec-9b59-0990657dae15",
+    "credits_breakdown": [
+      {
+        "task_id": "3abe302d-ba27-4dec-9b59-0990657dae15",
+        "type": "image_to_model",
+        "credits_consumed": 50
+      },
+      {
+        "task_id": "921d89b5-f7af-4161-9a50-6d39bbef6310",
+        "type": "convert_model",
+        "credits_consumed": 10
+      }
+    ]
+  }
+]

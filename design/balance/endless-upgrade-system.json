@@ -1,6 +1,6 @@
 {
   "version": "endless-v2-proposal",
-  "status": "Proposed design, not approved product behavior. Numbers are initial tuning; only card availability is checked, not combat balance.",
+  "status": "Twelve-family native playtest catalogue. Owner removed Reserve Battery, Bounty Scanner, Mirror Plating and Overtime Reactor on 26 October 2026. Numerical tuning remains a playtest candidate.",
   "supersedes": "The finite ten-minute, eight-line, fixed-pick upgrade proposal in upgrades.json. Historical results.json does not validate this design.",
   "loop": {
     "mode": "Endless runner; run ends on death, with no time or level limit. All run upgrades reset for the next run.",
@@ -21,7 +21,7 @@
       "research": 1
     },
     "empty_rarity_rule": "Renormalize among rarities with eligible candidates. Hardware has a fixed rarity; research has one eligible candidate per rarity with different numerical strength.",
-    "no_replacement": "Hardware choices last for the run. All sixteen blueprints are in the launch pool, but a run installs at most six.",
+    "no_replacement": "Hardware choices last for the run. All twelve blueprints are in the launch pool, but a run installs at most six.",
     "minimum_pool": "Weapon Damage, Hull Reinforcement, Shield Capacity and Specimen Value are always eligible, including at full health and after every hardware rank and bounded research stat is complete. Thus at least four distinct families remain.",
     "baseline": {
       "hull": 100,
@@ -32,7 +32,7 @@
       "laser_damage": 8,
       "laser_shots_per_second": 1.5,
       "tractor_beams": 1,
-      "capture_seconds": 2,
+      "capture_seconds": 1.6,
       "capture_radius_metres": 4,
       "movement_metres_per_second": 6,
       "capture_movement_penalty_percent": 15
@@ -108,11 +108,11 @@
       "name": "Tractor Lens",
       "rarity": "Common",
       "ranks": [
-        "Pick 1: Add 10% of base capture radius (4 -> 4.4m) and unlock 0.3s of range grace.",
-        "Pick 2: Add another 10% of base radius (4.4 -> 4.8m; +20% total) and add 0.3s grace (0.3 -> 0.6s).",
-        "Pick 3: Add another 10% of base radius (4.8 -> 5.2m; +30% total) and add 0.3s grace (0.6 -> 0.9s). Also unlock a gentle pull from 15% beyond the ring at up to 0.5m/s."
+        "Pick 1: Add 10% of base capture radius (4 -> 4.4m).",
+        "Pick 2: Add another 10% of base radius (4.4 -> 4.8m; +20% total).",
+        "Pick 3: Add another 10% of base radius (4.8 -> 5.2m; +30% total). Also unlock a gentle pull from 15% beyond the ring at up to 0.5m/s."
       ],
-      "rules": "Pull strength cannot exceed 25% of a target's normal movement speed. No pulling vehicles or bosses."
+      "rules": "Range gates pickup only; all active beams stay locked and continue capturing outside the ring. Pull strength cannot exceed 25% of a target's normal movement speed. No pulling vehicles or bosses."
     },
     {
       "id": "heavy_winch",
@@ -126,35 +126,7 @@
         "Pick 2: Raise the jeep capture threshold by 20 percentage points (40% -> 60% hull), and add +20% vehicle capture speed.",
         "Pick 3: Raise the jeep threshold by 15 percentage points (60% -> 75% hull); unlock tank capture at or below 35% hull. Add another 20 percentage points of vehicle capture speed (+20% -> +40%). Also unlock +40% biological capture speed for 5s after destroying a military vehicle."
       ],
-      "rules": "Two occupied beam slots per vehicle, base 3s capture, tank minimum 2s, one vehicle completion per 8s. Lasers skip a vehicle already being lifted; its driver cannot shoot while lifted. Vehicle abductions do not activate kill or biological capture procs."
-    },
-    {
-      "id": "overtime_reactor",
-      "name": "Overtime Reactor",
-      "rarity": "Uncommon",
-      "requires": {
-        "beam_splitter": 1
-      },
-      "ranks": [
-        "Pick 1: Unlock +4% firing rate per active beam, capped at +12%.",
-        "Pick 2: Add 3 percentage points per active beam (+4% -> +7%) and raise the maximum bonus by 9 percentage points (+12% -> +21%).",
-        "Pick 3: Add 3 percentage points per active beam (+7% -> +10%) and raise the maximum bonus by 9 percentage points (+21% -> +30%)."
-      ],
-      "rules": "Additive with fire-rate research. A vehicle counts as one active beam, occupying two slots."
-    },
-    {
-      "id": "reserve_battery",
-      "name": "Reserve Battery",
-      "rarity": "Uncommon",
-      "requires": {
-        "beam_splitter": 1
-      },
-      "ranks": [
-        "Pick 1: Unlock +8% weapon damage per idle beam, capped at +16%.",
-        "Pick 2: Add 4 percentage points per idle beam (+8% -> +12%) and raise the maximum bonus by 8 percentage points (+16% -> +24%).",
-        "Pick 3: Add 4 percentage points per idle beam (+12% -> +16%) and raise the maximum bonus by 8 percentage points (+24% -> +32%)."
-      ],
-      "rules": "Additive with weapon-damage research. Occupied vehicle slots are not idle."
+      "rules": "Two occupied beam slots per vehicle, lift duration follows target weight and level (level-one jeep 3.6s, tank 4.8s before Winch speed gains), tank minimum 2s, 8s cooldown after each completion before new vehicle pickups. Active lifts continue through that cooldown. Weapons skip targets already being lifted; their drivers cannot shoot while lifted. Vehicle abductions do not activate kill or biological capture procs."
     },
     {
       "id": "shield_generator",
@@ -179,17 +151,6 @@
       "rules": "Capture-based shield restoration shares a global 4/s cap. Vehicles and secondary effects cannot trigger healing."
     },
     {
-      "id": "mirror_plating",
-      "name": "Mirror Plating",
-      "rarity": "Rare",
-      "ranks": [
-        "Pick 1: Unlock a 5% chance to reflect incoming projectiles while shield energy remains.",
-        "Pick 2: Add 5 percentage points of reflection chance (5% -> 10%) while shield energy remains.",
-        "Pick 3: Add 5 percentage points of reflection chance (10% -> 15%) while shield energy remains."
-      ],
-      "rules": "Reflection prevents that projectile's hit and returns its original damage. No reflection of contact damage or recursive reflection."
-    },
-    {
       "id": "vector_thrusters",
       "name": "Vector Thrusters",
       "rarity": "Common",
@@ -210,17 +171,6 @@
         "Pick 3: Add 0.05s invulnerability (0.25 -> 0.3s) and reduce cooldown by 0.5s (2.5 -> 2s). Dash distance stays 3m."
       ],
       "rules": "No damage, no cooldown reduction from research and no chain invulnerability."
-    },
-    {
-      "id": "bounty_scanner",
-      "name": "Bounty Scanner",
-      "rarity": "Common",
-      "ranks": [
-        "Pick 1: Add +10% specimen score. Also unlock a streak bonus of +2% per 10 uninterrupted biological captures, capped at another +10%.",
-        "Pick 2: Add 10 percentage points of specimen score (+10% -> +20%). Increase each streak step by 1 percentage point (+2% -> +3%) and raise its cap by 5 percentage points (+10% -> +15%).",
-        "Pick 3: Add 10 percentage points of specimen score (+20% -> +30%). Increase each streak step by 1 percentage point (+3% -> +4%) and raise its cap by 5 percentage points (+15% -> +20%)."
-      ],
-      "rules": "Hull damage resets the streak; shield damage does not. Score bonuses add to Specimen Value research and never increase XP."
     }
   ],
   "research": [
@@ -277,12 +227,12 @@
       "name": "Capture Speed",
       "unit": "percentage_points_over_base",
       "values": {
-        "Common": 4,
-        "Uncommon": 6,
-        "Rare": 10
+        "Common": 12,
+        "Uncommon": 18,
+        "Rare": 25
       },
       "cap": 100,
-      "effect": "Permanent research capture-speed bonus is capped at +100%. Show the actual remaining gain on a near-cap card. Stop offering at the cap; temporary/module bonuses use the remaining headroom above it."
+      "effect": "Temporary flight research adds 12/18/25 percentage points to biological capture rate, capped at +100% research. Level-ups independently add +8 percentage points to all abduction rates; both reset on a new run. Show the actual remaining gain on a near-cap card. Stop offering at the cap; temporary/module bonuses use the remaining headroom above it."
     },
     {
       "id": "fire_rate",
@@ -318,7 +268,8 @@
         "beam_splitter",
         "tractor_lens"
       ],
-      "effect": "Replace four beams with a six-target biological capture field. No extra radius. Vehicles still consume two slots."
+      "effect": "Replace four beams with a six-target biological capture field. No extra radius. Vehicles still consume two slots.",
+      "slot": 0
     },
     {
       "name": "Office Shredder",
@@ -327,7 +278,8 @@
         "laser_array",
         "rail_lens"
       ],
-      "effect": "Rotating laser sweep adds +20% total laser output, including against bosses. It does not add mounts or fire-rate bonuses."
+      "effect": "Rotating laser sweep adds +20% total laser output, including against bosses. It does not add mounts or fire-rate bonuses.",
+      "slot": 1
     },
     {
       "name": "Hostile Acquisition",
@@ -336,16 +288,8 @@
         "heavy_winch",
         "beam_splitter"
       ],
-      "effect": "Full-health jeeps and tanks at or below 55% hull become eligible. Same two-slot requirement, eight-second vehicle cooldown and tank minimum capture time."
-    },
-    {
-      "name": "Mirrorball",
-      "rarity": "Legendary (earned)",
-      "ingredients": [
-        "shield_generator",
-        "mirror_plating"
-      ],
-      "effect": "Every 8s release stored reflected damage, capped at 40 base damage scaled by weapon-damage research, divided across up to four enemies. No additional reflection roll or damage procs."
+      "effect": "Full-health jeeps and tanks at or below 55% hull become eligible. Same two-slot requirement, eight-second vehicle cooldown and tank minimum capture time.",
+      "slot": 2
     },
     {
       "name": "Employee Benefits",
@@ -354,7 +298,8 @@
         "orbit_drones",
         "repair_swarm"
       ],
-      "effect": "Biological captures grant drones +20% damage for 3s, refreshing without stacking. The whole squad intercepts one ordinary projectile per 6s, consuming 3 shield; unavailable below 3 shield."
+      "effect": "Biological captures grant drones +20% damage for 3s, refreshing without stacking. The whole squad intercepts one ordinary projectile per 6s, consuming 3 shield; unavailable below 3 shield.",
+      "slot": 4
     },
     {
       "name": "Storm Drain",
@@ -363,13 +308,14 @@
         "tractor_lens",
         "emp_ring"
       ],
-      "effect": "Pulse radius becomes 6m; hit enemies slow by 25% for 1s. Boss slow is capped at 20%. No extra damage ticks."
+      "effect": "Pulse radius becomes 6m; hit enemies slow by 25% for 1s. Boss slow is capped at 20%. No extra damage ticks.",
+      "slot": 5
     }
   ],
   "evolution_rule": "When both ingredients reach rank III, the recipe evolves immediately without another roll, pick or hardware slot. At most two evolutions per run: the first two recipes completed. Preview an impending evolution on its completing card. After two evolutions, subsequent recipe completions retain only their normal module effects. If one card completes multiple recipes and slots are insufficient, resolve in catalogue order and show that outcome in the preview.",
   "stacking_and_limits": {
     "example": "With base damage 100, three Common Weapon Damage picks and one Rare pick give 117 before fixed hardware multipliers, not repeated compounding.",
-    "damage": "Sum all research and conditional Reserve Battery damage percentages against the fixed base. Bounded hardware multipliers then apply. Arcs, pulses and reflected hits cannot trigger other secondary damage effects.",
+    "damage": "Sum weapon-damage research against the fixed base. Bounded hardware multipliers then apply. Arcs and pulses cannot trigger recursive secondary effects.",
     "hull_and_shield": "Capacity adds flat amounts. Recharge, reflection chance and invulnerability do not grow through endless research.",
     "capture_minimum_seconds": 0.6,
     "movement_maximum_base_multiplier": 1.5,
@@ -437,5 +383,6 @@
     "percentages": "Say percentage points for an increase in an existing percentage bonus. Say percent of base for additive damage, radius, movement or research bonuses.",
     "research": "Each displayed research value is the gain from one pick of that rarity, not a cumulative rank total. Show the current stat and resulting stat; near a research cap show the actual remaining gain.",
     "evolutions": "Label recipe effects as evolution unlocks requiring both ingredients at rank III. Preview any evolution on the card that completes its recipe."
-  }
+  },
+  "previous_effect_mapping_status": "Historical mapping from the earlier 31-effect proposal; mappings to the four retired families are no longer live upgrades."
 }

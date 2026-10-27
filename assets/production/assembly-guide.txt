@@ -1,0 +1,49 @@
+Human Resources — static model assembly recipes
+
+Authority: assets/production/assemblies.json
+Reproduce final proof with healthy bundled Python:
+  python tools/render_assemblies.py --edition final
+The tool reuses the existing authoring-only numpy/Pillow environment and the
+actual normalized GLB triangle/UV/base-colour data. It does not render through
+or change the native runtime renderer.
+
+Conventions
+- Metres, right-handed +Y up, +Z forward, +X right.
+- Load each node's normalized model_file, including its existing normalizing
+  root. Do not apply its import scale twice. Put that imported hierarchy inside
+  an external placement wrapper. Socket frames belong to the wrapper in
+  normalized metres, never to a GLB internal raw-space/normalizing node.
+- Traverse nodes in listed order. Unattached nodes use translation_m and yaw.
+  Attached nodes use parent world transform multiplied by the named socket's
+  local translation and +Y yaw. No reflections or nonuniform scale are used.
+- source_sha256 records exactly which normalized models were reviewed.
+
+Farmer and resident
+- Straw hat now has a 1.05 m broad brim; cap width is 0.68 m. Their raw files and
+  images are preserved. Uniform normalization replaced the guessed smaller
+  dimensions rather than applying nonuniform attachment scale.
+- Hats sit over the existing hair; concealed hair/cap overlap is intentional.
+  These are separate accessories with no body mesh changes or animation.
+- The straw socket's 180 degree yaw puts its low brim toward the rear, leaving
+  the face clear from the front and the principal three-quarter angle.
+
+Jeep
+- Chassis translation [0,0.12,0]; wheel radius 0.30 m.
+- Wheel socket positions are relative to the chassis. All axle centres become
+  world Y=0.30 m, so tyres meet Y=0.
+- The model's decorated hub faces local +X. Right instances have zero yaw;
+  left instances yaw 180 degrees, pointing hubs to assembly -X. Roll axes
+  follow the transformed local +X axis; no negative scale is needed.
+- Existing standing soldier is not used as seated crew. A standing model
+  clipped through a seat would not constitute an approved driver fit.
+
+Tank
+- Turret socket is at [-0.04,0.955,-0.24] relative to the hull. A shallow 0.04 m
+  seating overlap joins its base to the hull ring.
+- Its primary axis is +Y, with +Z cannon aim at zero yaw. The existing base
+  footprint centred pivot remains intact. No turret/hull resizing is applied.
+
+Evidence: assets/production/reviews/assemblies-final.png and five rendered
+angles per assembly. These are static art-fit reviews only: animation,
+collision, skinning, native runtime appearance and device performance remain
+unqualified. Production/reference files remain outside the shipping allowlist.

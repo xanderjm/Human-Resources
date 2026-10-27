@@ -1,0 +1,102 @@
+{
+  "triangles": 1659,
+  "vertices": 1920,
+  "mesh_primitives": 1,
+  "uv_present": true,
+  "textures": [
+    {
+      "size": [
+        1024,
+        1024
+      ],
+      "mode": "RGB"
+    }
+  ],
+  "raw_accessor_bounds": [
+    {
+      "min": [
+        -0.4990234375,
+        -0.4091796875,
+        -0.4990234375
+      ],
+      "max": [
+        0.4990234375,
+        0.4091796875,
+        0.4990234375
+      ]
+    }
+  ],
+  "extensions": [],
+  "bytes": 233780,
+  "asset": "desert-scrub",
+  "model_file": "assets/models/desert-scrub/desert-scrub.glb",
+  "requested_face_limit": 1800,
+  "source_task_id": "bb627b37-6b14-4b9c-be25-cdd6c1c991f9",
+  "convert_task_id": "d0842e13-aa6e-4ded-94b4-2b646d46b61e",
+  "credits_consumed": 60,
+  "preview": null,
+  "triangle_budget_review": {
+    "requested_target": 1800,
+    "actual_triangles": 1659,
+    "target_met": true,
+    "category_ceiling": 3000,
+    "status": "passed"
+  },
+  "structural_review": {
+    "status": "passed",
+    "notes": "Triangle mode, valid GLB length, UVs and embedded 1024px base colour checked. Requested targets are approximate; actual triangle count and target deviations are reported separately, within the user-specified 3000-prop / 8000-character ceilings. Scale, pivot, topology and visual quality require separate review."
+  },
+  "visual_review": {
+    "status": "accepted",
+    "notes": "Compact connected olive/ochre radiating scrub, no scenery or loose debris. 0.45m high grounded pivot.",
+    "views": [
+      "three-quarter",
+      "opposite"
+    ]
+  },
+  "import_review": {
+    "status": "passed",
+    "units": "metres",
+    "up": "+Y",
+    "forward": "+Z",
+    "yaw_degrees": 0.0,
+    "pivot": "ground-centre",
+    "double_sided": false,
+    "uniform_scale": 0.5498806682577566,
+    "bounds_m": [
+      [
+        -0.27440334128878285,
+        0.0,
+        -0.27440334128878285
+      ],
+      [
+        0.27440334128878285,
+        0.45000000000000007,
+        0.27440334128878285
+      ]
+    ],
+    "dimensions_m": [
+      0.5488066825775657,
+      0.45000000000000007,
+      0.5488066825775657
+    ],
+    "vertex_checks": [
+      {
+        "triangles": 1659,
+        "degenerate_triangles": 0,
+        "uv_bounds": [
+          [
+            0.0006683305255137384,
+            0.0006683468818664551
+          ],
+          [
+            0.9857905507087708,
+            0.9993316531181335
+          ]
+        ]
+      }
+    ],
+    "notes": "Real scene vertices and indices decoded; finite positions/UVs; retained embedded 1024px base colour. Uniform root transform; raw file preserved."
+  },
+  "raw_model_file": "assets/models/desert-scrub/tripo-out/desert-scrub-convert-d0842e13/model.glb"
+}

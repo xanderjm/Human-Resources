@@ -1,0 +1,39 @@
+[
+  {
+    "task_id": "c9a2b427-d960-4bfd-b63a-9502477f83b5",
+    "type": "convert_model",
+    "status": "success",
+    "credits_consumed": 60,
+    "output_dir": "/Users/coral/Documents/App Development/Human Resources/assets/models/resident-body/tripo-out/resident-body-convert-c9a2b427",
+    "files": [
+      "model.glb"
+    ],
+    "model_file": "/Users/coral/Documents/App Development/Human Resources/assets/models/resident-body/tripo-out/resident-body-convert-c9a2b427/model.glb",
+    "chain": [
+      {
+        "task_id": "c9a2b427-d960-4bfd-b63a-9502477f83b5",
+        "type": "convert_model",
+        "status": "success",
+        "credits_consumed": 10,
+        "output_dir": "/Users/coral/Documents/App Development/Human Resources/assets/models/resident-body/tripo-out/resident-body-convert-c9a2b427",
+        "files": [
+          "model.glb"
+        ],
+        "model_file": "/Users/coral/Documents/App Development/Human Resources/assets/models/resident-body/tripo-out/resident-body-convert-c9a2b427/model.glb"
+      }
+    ],
+    "source_task_id": "f610087b-24d5-4a47-8cad-2cb17f534ba1",
+    "credits_breakdown": [
+      {
+        "task_id": "f610087b-24d5-4a47-8cad-2cb17f534ba1",
+        "type": "image_to_model",
+        "credits_consumed": 50
+      },
+      {
+        "task_id": "c9a2b427-d960-4bfd-b63a-9502477f83b5",
+        "type": "convert_model",
+        "credits_consumed": 10
+      }
+    ]
+  }
+]

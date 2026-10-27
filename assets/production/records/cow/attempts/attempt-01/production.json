@@ -1,0 +1,43 @@
+{
+  "asset": "cow",
+  "status": "cli_succeeded_pending_model_audit",
+  "task_ids": [
+    "6baf9f04-f49e-4d99-b7cd-f90880d6603b",
+    "51b15a38-c12b-40ce-becf-6860cff3a2b7"
+  ],
+  "started_at": "2026-10-24T18:32:40.061178+00:00",
+  "reference": "/Users/coral/Documents/App Development/Human Resources/assets/references/cow/v1.png",
+  "local_pid": 95141,
+  "command": [
+    "tripo",
+    "make",
+    "/Users/coral/Documents/App Development/Human Resources/assets/references/cow/v1.png",
+    "--model",
+    "tripo-p1",
+    "-p",
+    "face_limit=6000",
+    "-p",
+    "texture=true",
+    "-p",
+    "pbr=false",
+    "-p",
+    "texture_quality=standard",
+    "-p",
+    "texture_alignment=original_image",
+    "-p",
+    "export_uv=true",
+    "--then",
+    "convert:format=GLTF,texture_size=1024",
+    "--out",
+    "/Users/coral/Documents/App Development/Human Resources/assets/models/cow",
+    "--name",
+    "cow",
+    "--json",
+    "--yes",
+    "--no-open",
+    "--timeout",
+    "600"
+  ],
+  "return_code": 0,
+  "finished_at": "2026-10-24T18:34:02.455285+00:00"
+}

@@ -6,7 +6,54 @@ optional synthesized audio, accessibility and atomic local persistence. The
 old counter proof remains in `foundation_proof.cpp` as lineage only; it is not
 the installed game.
 
+Tractor beams now commit acquired targets through completion. Pickup range still
+gates acquisition; capture time, capacity and movement cost remain. Flying away
+continues the lift at the ordinary rate once close-sweep conditions cease. See
+`TRACTOR_BEAM_RULES.md` for runtime, upgrade and continuation ownership.
+
+The native population candidate now gives each animal/civilian type and equipped
+infantry role a distinct lift load and capture score; jeeps and tanks have their
+own weighted durations/rewards through the existing Winch gates. The populated
+opening starts with a farmer, two sheep and a pig. Cattle and more people precede
+rifles, shotgun teams, jeeps, rocket screens, tanks and the first boss. Local
+species escape, measured passive ground clearance, complete military formations
+and their approach slots are owned by portable gameplay. Easy small-animal
+pockets remain available later. These rules are shared by all three locations;
+Suburbia keeps its resident appearance. See `ENCOUNTER_POPULATION_PLAN.md` and
+`adr/008-population-and-abduction-progression.md`. Game codec6/authority14 retains
+the existing flight/laser fields and account2 protection. Current host/native
+verification is separate from owner-app delivery and physical-phone acceptance.
+
+Owner flight clarification: released controls keep the ship steady on screen,
+with equal forward/backward/lateral steering response. Scroll changes preserve
+pilot velocity and vertical-edge stops retain runner carry, so neither world
+acceleration nor the ground's direction changes steering response. Existing
+capture slowdown, thrusters and Dash remain. See ADR007 and the newest log for
+focused flight proof and the separate concurrent shared verification gaps.
+
+Ship hardware now changes the physical assembly: wider and stepped rotors,
+complete capacitor cells, replacement barrels/muzzles, branched capture ports,
+working winch jaws, shield crystals, repair docks, engine pods and fitted Phase
+canopies. All twelve current hardware families have three distinct physical
+ranks. Ring speed follows Fire Rate research and actual Overdrive; drones clear
+the complete rig. See `SHIP_UPGRADE_VISUALS.md` for geometry, source cooking,
+real emitter ownership, reduced motion and exact verification limits. The four
+retired hardware families remain absent from this assembly and shipping content.
+
+The latest action-pacing candidate is described in
+`adr/011-action-pacing-and-military-escalation.md`: faster weighted lifts and
+travel, doubled civilian delivery, earlier military introductions and up to six
+complete formations. Codec6/authority17/account2 retains protected incompatible
+continuation handling. Existing owner apps remain separate delivery checkpoints.
+
 ## Build and launch
+
+The latest enemy candidate uses the scrolling combat frame and persistent
+engagement in `adr/012-persistent-enemy-engagement.md`. Infantry faces the player
+while independently travelling and visibly backpedalling; full warnings stay
+dodgeable. Military no longer expires with age or scroll distance. Authority19
+retains codec6/account2 and protected incompatible-run handling. Native candidate
+verification and delivery remain distinct from older owner apps.
 
 Use `python3 tools/project.py verify` for the aggregate repository gate. Ordinary
 iteration uses the optimized `dev` preset. On macOS, build the launchable app with
@@ -28,7 +75,11 @@ capture path and never changes the world target or reads the write-only
 swapchain. The helper's matching option records actual capture dimensions;
 FFmpeg input-size flags alone cannot change native rendering.
 `--width 375 --height 667` selects a smaller portrait window for layout review.
-The default is portrait 390×844; wide desktop layouts remain supported.
+The default is portrait 390×844. The game is portrait only: desktop preview
+requests rotate width/height into portrait, enforce a320×568minimum and a3:4
+maximum window aspect, and remain resizable through phone/tablet portrait sizes.
+iOS/Android shells and the SDL orientation hint retain their portrait lock.
+Separate landscape menus are outside the product scope.
 
 Normal presentation keeps the longest-side 1280-pixel world/MSAA target, then
 draws screen quads in a single-sample pass at the actual physical swapchain
@@ -95,6 +146,20 @@ Python, Blender, font rasterization tools and source GLBs do not ship.
 
 The atlas uses the approved Beam UI and Abduction Compact typography plus the
 existing HUD panel, upgrade card, coin, shield, beam, laser and XP graphics.
+The newer Atomic Enamel composition adds one checked secondary2048x2048atlas
+with reusable blank panels, icons, the preserved title logo, live display glyphs
+and an offline-authored upright label companion. Nine/three-slice frames and
+aspect-preserving icons are shared across ordinary portrait compositions.
+The real first promotion, ordinary small/tall phone HUD and compact menu flows
+now use this library. Compact recipes use five single-card spreads; tall phones
+retain three two-card spreads. Measured enlarged pages share fonts and icons
+without shrinking requested text. Bounded enlarged tactical strips now use the
+same frames, icons and measured upright label bank. Native fixtures include
+37screen/states,47/59point top safe areas and enlarged text through3.4x.
+Final visual acceptance is tracked
+in [ATOMIC_UI_IMPLEMENTATION.md](ATOMIC_UI_IMPLEMENTATION.md). The host-only
+`human_resources_ui_review` renders37memory-backed screen/state fixtures without
+loading a player save. It is excluded from the shipping package.
 Text quads batch in groups of 128; static mesh/texture assets preload before play.
 The renderer owns per-entity animation players, deformed bounds and GPU uploads. Runtime shaders are offline HLSL. Android
 loads APK asset names through SDL_IO rather than filesystem probes.
@@ -107,21 +172,48 @@ playable integration candidate, not a physical-device visual approval claim.
 
 ## Ownership and controls
 
+The progression candidate starts with a 1.6-second sheep lift and adds +8 percentage
+points of base abduction rate per earned level after level one. It uses existing
+saved level state, adds to eligible research/Hangar/Winch gains, and retains the
+biological minimum and two-second tank floor. The next promotion costs
+`12 + 2 * current level` XP, including existing survival XP; Capture Speed choices
+grant 12/18/25 biological rate points, capped at +100% research. Promotion and
+Current Build display the level reward, with matching spoken values. Six hardware
+slots, twelve live families and three ranks remain. Nine families, including Beam
+Splitter, are available in random drafts from a fresh account. Heavy Winch, Arc
+Coil and Phase Drive retain their achievement gates; the four retired families
+and Mirrorball do not appear in offers, the library or recipes. Beam Splitter
+is neither guaranteed nor preinstalled. Game codec6/authority16 and
+its new numeric fingerprint use existing protected old-run banking; account2
+progress is preserved. Existing delivered apps are separate binaries.
+
+World travel starts at 2.4 m/s and gains 0.6 m/s gradually over the first 90 active
+seconds, plus 0.01 m/s per capture and 0.12 m/s per level after the first, capped
+at 4.6 m/s. The ramp uses existing saved active time/counters and freezes during
+pause and upgrade choices. `runtime-spatial.json` owns this tuning; the offline
+balance simulator remains separate. Changed tuning uses the existing protected
+incompatible-run recovery rather than silently resuming an older ruleset.
+
 `human_resources_product` owns presentation and the floating-stick contact
 policy. It reads gameplay snapshots and account views; it does not mutate rules
 or durable progress. `human_resources_client` dispatches commands to those
 owners. The scene consumes monotonic runner distance separately from bounded
 player dodging and fades foreground tree occluders near the saucer.
 
-Drag an open part of the scene to fly; another finger may press HUD controls
+Drag an open part of the scene to fly with Midnight Menu’s anchored 48-point thumbstick; flick quickly in a direction to Dash without lifting. Another finger may press HUD controls
 without stealing the movement contact. Keyboard WASD/arrows and controller left
 stick map to the same semantic movement. Enter/controller south activates a
 focused menu action; directional actions move focus. Escape/controller start
 pauses. Space/controller east or the Dash button triggers the starter Dash;
 Phase Drive hardware improves it. The base cooldown is four active seconds.
-Dash also triggers an ordinary counter-volley when a valid target is available.
+Dash travels as a short decelerating burst and also triggers an ordinary counter-volley when a valid target is available.
+The ship centre can reach all four camera edges on phones, tablets and wide windows, leaving roughly half the saucer outside. The world fills the output and safe HUD controls overlay flight. Layout-derived world limits survive cold continuations and update after a device resize.
 Flying close while moving accelerates capture; three qualified close sweeps
 within five active seconds grant six seconds of Overdrive capture/fire cadence.
+Multiple hull lasers fire as a quick sequential burst, with 70ms base spacing
+and the existing whole-burst cadence. Confirmed hits briefly flash the struck
+enemy/player assembly white, yellow and red; reduced motion suppresses the
+material pulse while preserving the ordinary damage indicators.
 Level-up pauses the run for exactly three choices. Focus loss and
 background cancel input, freeze simulation and discard elapsed catch-up.
 

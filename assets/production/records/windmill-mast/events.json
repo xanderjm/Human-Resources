@@ -1,0 +1,39 @@
+[
+  {
+    "task_id": "dcf7591d-6d61-451b-b3ab-0632f9795bf1",
+    "type": "convert_model",
+    "status": "success",
+    "credits_consumed": 60,
+    "output_dir": "/Users/coral/Documents/App Development/Human Resources/assets/models/windmill-mast/tripo-out/windmill-mast-convert-dcf7591d",
+    "files": [
+      "model.glb"
+    ],
+    "model_file": "/Users/coral/Documents/App Development/Human Resources/assets/models/windmill-mast/tripo-out/windmill-mast-convert-dcf7591d/model.glb",
+    "chain": [
+      {
+        "task_id": "dcf7591d-6d61-451b-b3ab-0632f9795bf1",
+        "type": "convert_model",
+        "status": "success",
+        "credits_consumed": 10,
+        "output_dir": "/Users/coral/Documents/App Development/Human Resources/assets/models/windmill-mast/tripo-out/windmill-mast-convert-dcf7591d",
+        "files": [
+          "model.glb"
+        ],
+        "model_file": "/Users/coral/Documents/App Development/Human Resources/assets/models/windmill-mast/tripo-out/windmill-mast-convert-dcf7591d/model.glb"
+      }
+    ],
+    "source_task_id": "a4924c58-03b6-431a-84b2-08c21dcaeba2",
+    "credits_breakdown": [
+      {
+        "task_id": "a4924c58-03b6-431a-84b2-08c21dcaeba2",
+        "type": "image_to_model",
+        "credits_consumed": 50
+      },
+      {
+        "task_id": "dcf7591d-6d61-451b-b3ab-0632f9795bf1",
+        "type": "convert_model",
+        "credits_consumed": 10
+      }
+    ]
+  }
+]

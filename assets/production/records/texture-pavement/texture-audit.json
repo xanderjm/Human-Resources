@@ -1,0 +1,176 @@
+{
+  "id": "texture-pavement",
+  "source": "/Users/coral/.codex/generated_images/01a16e3b-5221-78b2-bd33-9830eab86a7f/exec-b713e4db-fc20-4c49-8beb-15cde2ab6029.png",
+  "preserved_raw_file": "/Users/coral/Documents/App Development/Human Resources/assets/textures/texture-pavement/raw-v1.png",
+  "source_sha256": "54773997ec26d251937ef90b4e46f1389e67e04e6eacab5ae6bf201d0c6cd069",
+  "generation_record": "/Users/coral/Documents/App Development/Human Resources/assets/production/records/texture-pavement/tile-v1-generated.json",
+  "final_file": "/Users/coral/Documents/App Development/Human Resources/assets/textures/texture-pavement/texture-pavement.png",
+  "sha256": "a9ab7ae7d93dc1ad324893ac7be643beed9988986b53999773ea1bd000f00131",
+  "dimensions": [
+    1024,
+    1024
+  ],
+  "channels": "RGB",
+  "color_space": "sRGB albedo",
+  "role": "repeating albedo; no baked lighting or PBR maps",
+  "method": "Periodic-plus-smooth Poisson decomposition, compact Hermite C1 boundary correction, integer boundary projection",
+  "source_seams": {
+    "edge_value_x": {
+      "max_abs_8bit": 33.0,
+      "rms_8bit": 10.934597829252798
+    },
+    "edge_value_y": {
+      "max_abs_8bit": 33.0,
+      "rms_8bit": 10.740563324185251
+    },
+    "first_difference_x": {
+      "max_abs_8bit": 15.0,
+      "rms_8bit": 2.4550649176752946
+    },
+    "first_difference_y": {
+      "max_abs_8bit": 20.0,
+      "rms_8bit": 2.9810054057593836
+    },
+    "interior_adjacent_rms_8bit": 2.3133302240735247
+  },
+  "exported_seams": {
+    "edge_value_x": {
+      "max_abs_8bit": 0.0,
+      "rms_8bit": 0.0
+    },
+    "edge_value_y": {
+      "max_abs_8bit": 0.0,
+      "rms_8bit": 0.0
+    },
+    "first_difference_x": {
+      "max_abs_8bit": 0.0,
+      "rms_8bit": 0.0
+    },
+    "first_difference_y": {
+      "max_abs_8bit": 0.0,
+      "rms_8bit": 0.0
+    },
+    "interior_adjacent_rms_8bit": 2.3251487924160834
+  },
+  "correction_rms_8bit": 2.2601184091522,
+  "numerical_qa": "passed",
+  "visual_qa": {
+    "status": "passed_authoring_review",
+    "reviewer": "seamless_materials agent",
+    "reviewed_at": "2026-10-24T21:31:36.098116+00:00",
+    "views": [
+      "3x3 repeat at 256 px per tile",
+      "3x3 repeat at 512 px per tile"
+    ],
+    "notes": "Warm limestone brushwork has no mortar joints; repeating joins are continuous without a border or cross blend.",
+    "owner_approval": "not yet requested"
+  },
+  "box_downsample_mip_diagnostics": {
+    "512": {
+      "edge_value_x": {
+        "max_abs_8bit": 5.0,
+        "rms_8bit": 1.0968705484240153
+      },
+      "edge_value_y": {
+        "max_abs_8bit": 5.0,
+        "rms_8bit": 1.299789646442839
+      },
+      "first_difference_x": {
+        "max_abs_8bit": 15.0,
+        "rms_8bit": 2.644028255648314
+      },
+      "first_difference_y": {
+        "max_abs_8bit": 18.0,
+        "rms_8bit": 3.3538107989270953
+      },
+      "interior_adjacent_rms_8bit": 2.4107978759555926
+    },
+    "256": {
+      "edge_value_x": {
+        "max_abs_8bit": 8.0,
+        "rms_8bit": 1.7473938928205817
+      },
+      "edge_value_y": {
+        "max_abs_8bit": 9.0,
+        "rms_8bit": 2.1857135562557137
+      },
+      "first_difference_x": {
+        "max_abs_8bit": 21.0,
+        "rms_8bit": 3.1436940849898227
+      },
+      "first_difference_y": {
+        "max_abs_8bit": 17.0,
+        "rms_8bit": 4.15597586815259
+      },
+      "interior_adjacent_rms_8bit": 2.5144672985850036
+    },
+    "128": {
+      "edge_value_x": {
+        "max_abs_8bit": 9.0,
+        "rms_8bit": 2.443102535711508
+      },
+      "edge_value_y": {
+        "max_abs_8bit": 10.0,
+        "rms_8bit": 2.6555758948546986
+      },
+      "first_difference_x": {
+        "max_abs_8bit": 19.0,
+        "rms_8bit": 4.081844966841995
+      },
+      "first_difference_y": {
+        "max_abs_8bit": 13.0,
+        "rms_8bit": 3.5211415052508186
+      },
+      "interior_adjacent_rms_8bit": 3.007472408454075
+    },
+    "64": {
+      "edge_value_x": {
+        "max_abs_8bit": 11.0,
+        "rms_8bit": 3.261997087674972
+      },
+      "edge_value_y": {
+        "max_abs_8bit": 12.0,
+        "rms_8bit": 3.1208305518456676
+      },
+      "first_difference_x": {
+        "max_abs_8bit": 19.0,
+        "rms_8bit": 6.074194048047308
+      },
+      "first_difference_y": {
+        "max_abs_8bit": 14.0,
+        "rms_8bit": 4.4651427748729375
+      },
+      "interior_adjacent_rms_8bit": 3.829978881110858
+    },
+    "32": {
+      "edge_value_x": {
+        "max_abs_8bit": 11.0,
+        "rms_8bit": 4.167083312502083
+      },
+      "edge_value_y": {
+        "max_abs_8bit": 13.0,
+        "rms_8bit": 4.006505127081873
+      },
+      "first_difference_x": {
+        "max_abs_8bit": 22.0,
+        "rms_8bit": 7.956260637594355
+      },
+      "first_difference_y": {
+        "max_abs_8bit": 20.0,
+        "rms_8bit": 8.13364924249872
+      },
+      "interior_adjacent_rms_8bit": 5.011098792790969
+    }
+  },
+  "tiled_preview": "/Users/coral/Documents/App Development/Human Resources/assets/textures/texture-pavement/tiled-3x3-qa.png",
+  "close_tiled_preview": "/Users/coral/Documents/App Development/Human Resources/assets/textures/texture-pavement/tiled-3x3-close-qa.png",
+  "repeat_sampler": {
+    "wrap_s": "REPEAT",
+    "wrap_t": "REPEAT"
+  },
+  "limitations": [
+    "Shipping gameplay integration, target GPU mip selection and device-scale density are not qualified; native authoring preview evidence is separate.",
+    "A single repeat tile can still show recurrent brush motifs over very large empty surfaces; numerical continuity alone does not establish art approval."
+  ],
+  "native_authoring_preview_evidence": "build/captures/seamless-material-check/evidence.json"
+}

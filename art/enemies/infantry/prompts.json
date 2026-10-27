@@ -1,0 +1,121 @@
+{
+  "tool": "built-in image_gen",
+  "images": [
+    {
+      "kind": "armed-lineup-guide",
+      "source": "/Users/coral/.codex/generated_images/01a16e3b-5221-78b2-bd33-9830eab86a7f/exec-d595bafa-5268-4b89-8e4d-b86ded8a67eb.png",
+      "prompt": "Use case: stylized-concept.\nAsset type: production art direction lineup for a real top-down mobile UFO game.\nReference image1 is the approved low-poly gouache material and character style. Reference image2 is the EXISTING navy soldier identity to evolve.\nCreate ONE landscape image of exactly THREE distinct comic infantry characters standing separately across pure white, all fully visible from helmet to boots, each holding their own distinct weapon. One single front three-quarter view per character, generous white spacing, no labels/text/background/scene/ground shadows.\nSame game family: chunky economical low-poly forms with broad visible hand-painted gouache brush strokes in albedo, warm peach faces with simple dark dot eyes and noses, oversized bean boots, charcoal/navy uniforms, muted steel-blue highlights, coral double-chevron threat markings on weapon/armor; charming slightly incompetent rural military, not realistic violence. Painterly texture is essential, not shiny plastic.\nLEFT RIFLEMAN: medium compact build like existing soldier, round low navy steel helmet, rolled sleeves, navy shirt and shorts, brown belt/boots, one slim coral shoulder stripe. Holds a compact boxy navy carbine with one stock, short square magazine and thin single barrel, both hands low-ready across chest, muzzle angled upward a little toward viewer-right, fingers readable.\nCENTRE SHOTGUNNER: noticeably short/broad stocky proportions, wide flat-brim navy helmet, oversized blocky padded navy vest, bare peach forearms, wider stance and large boots. Holds ONE short chunky double-barrel break-action shotgun with TWO large side-by-side dark muzzle holes and broad warm wooden stock/foregrip; thick stubby silhouette unlike the rifle. Both hands support it across belly.\nRIGHT ROCKET TROOPER: taller/lankier than other two, narrow navy body, tall angular navy helmet with large simple ear pads, small square integral backpack, dark long trousers and bean boots. Carries ONE oversized simple charcoal/navy shoulder launcher resting on right shoulder with rounded coral rocket tip visible at forward end, chunky rear tube and two simple grips; no complicated mechanism. Distinct long tube silhouette over the shoulder.\nConstraints: exactly3 people, exactlyone gun each; no vehicles, minigun, flames, smoke, tracers, muzzle flashes, gore, bases, badges with writing, logos, real-world weapon branding or extra detached items. Distinct clear silhouettes in same painterly style, not three reskins.",
+      "refs": [
+        "/Users/coral/Documents/App Development/Human Resources/art/style-guide/ufo-asset-style-guide.png",
+        "/Users/coral/Documents/App Development/Human Resources/assets/references/soldier-body/v1.png"
+      ]
+    },
+    {
+      "kind": "isolated-tripo-input",
+      "id": "infantry-rifleman-body",
+      "version": 1,
+      "source": "/Users/coral/.codex/generated_images/01a16e3b-5221-78b2-bd33-9830eab86a7f/exec-bc3b1960-da51-47b3-b3e0-68e24a866394.png",
+      "prompt": "Use case: precise-object-edit. Production image-to-3D reference. Image1 is an ARMED CHARACTER VISUAL GUIDE ONLY: extract exactly the named character body; do not copy the whole image. Image2 is approved game material/style. SUBJECT: Compact navy rifleman,round helmet,rolled sleeves,shorts,coral sleeve stripe,brown belt/boots. Preserve identical face,head-to-body ratio and clothing; remove the entire rifle,stock,magazine,barrel,and all gun parts.\nTRUE ANATOMICAL T-POSE: upright front-facing body, BOTH arms straight HORIZONTAL at shoulder height, elbows straight, arms fully extended left and right, palms downward and hands EMPTY. Legs straight,feet shoulder-width apart,all fingers simplified into readable mitten shapes. One full body and one head; slight front-three-quarter camera of only10-15degrees to keep BOTH entire arms readable. Absolutely NO gun,weapon,grip,barrel,projectile,gunstock,shield or held prop anywhere. Do not preserve the original carrying arm pose. Character body and clothing only.\nPainterly low-poly3D game asset with BROAD VISIBLY HAND-PAINTED gouache albedo strokes matching reference. Economical exaggerated massing,navy/steel-blue uniforms or metal,warm peach character skin,brown boots/wood,coral military accents. Neutral softlight,no realistic PBR,photo detail or plastic.\nOne SINGLE asset centred on PURE WHITE (#FFFFFF) background with comfortable white margin on ALL edges,including hands/feet or weapon tips. No labels,text,logos,watermarks,bases,ground plane,cast shadows,scene,framing,additional objects or alternative views.",
+      "status": "approved",
+      "input_contract": "unarmed_true_t_pose",
+      "review": "Approved unarmed true T-pose: both straight horizontal arms,empty palms,one complete body; matching rifleman navy helmet/shorts/coral sleeves and painterly face. No gun parts."
+    },
+    {
+      "kind": "armed-character-reference",
+      "id": "infantry-rifleman-body",
+      "version": 1,
+      "source": "/Users/coral/.codex/generated_images/01a16e3b-5221-78b2-bd33-9830eab86a7f/exec-c402dd2a-d51c-4ebe-85a9-da90b8d265e0.png",
+      "prompt": "Use case: stylized-concept. Extract and faithfully reproduce ONE armed character from reference1 (the approved three-soldier lineup); reference2 supplies the approved game asset paint/material style. SUBJECT: LEFT compact rifleman: navy round helmet, rolled sleeves and shorts, coral sleeve stripe, brown belt/boots. Keep exactly his boxy navy single-barrel carbine, square magazine and wood stock. Hold weapon with right trigger hand and left support hand, ready across chest; muzzle angled a little upward.\nOne full-body single front three-quarter view, square composition, centred with comfortable pure white margins around ALL helmet/boots/weapon parts. Match this exact character identity, face/proportions/equipment and painterly palette. Broad visibly hand-painted gouache strokes on chunky economical low-poly3D forms, warm peach comic face/doteyes, navy/steel-blue uniform, coral threat markings, brown boots. Strong readable game silhouette. No realistic PBR/plastic look.\nExactly ONE person holding ONE weapon. No extra gun, vehicle, bases, scene, ground plane, cast shadow, labels, text, badges with writing, flashes, tracers, smoke or gore. Do not include other two soldiers or alternative views. This armed image is a style/assembly reference; separate modular body and weapon refs will follow.",
+      "status": "approved_visual_guide_only",
+      "review": "Approved standalone full armed character art matching lineup; never a Tripo body input. User requires separate true T-pose unarmed body and isolated weapon references.",
+      "path": "assets/references/infantry-rifleman-body/armed-v1.png"
+    },
+    {
+      "kind": "isolated-tripo-input",
+      "id": "infantry-shotgunner-body",
+      "version": 1,
+      "source": "/Users/coral/.codex/generated_images/01a16e3b-5221-78b2-bd33-9830eab86a7f/exec-2ce9a466-8174-4d77-9858-2cbfc03f0296.png",
+      "prompt": "Use case: precise-object-edit. Production image-to-3D reference. Image1 is an ARMED CHARACTER VISUAL GUIDE ONLY: extract exactly the named character body; do not copy the whole image. Image2 is approved game material/style. SUBJECT: Short broad stocky shotgunner,wide navy helmet,thick blocky navy padded vest,bare peach forearms,navy shorts,wide stance and large brown boots. Preserve exact face,clothing and proportions. Remove ENTIRE shotgun,wood stock,all barrels/foregrip and trigger guard.\nTRUE ANATOMICAL T-POSE: upright front-facing body, BOTH arms straight HORIZONTAL at shoulder height, elbows straight, arms fully extended left and right, palms downward and hands EMPTY. Legs straight,feet shoulder-width apart,all fingers simplified into readable mitten shapes. One full body and one head; slight front-three-quarter camera of only10-15degrees to keep BOTH entire arms readable. Absolutely NO gun,weapon,grip,barrel,projectile,gunstock,shield or held prop anywhere. Do not preserve the original carrying arm pose. Character body and clothing only.\nPainterly low-poly3D game asset with BROAD VISIBLY HAND-PAINTED gouache albedo strokes matching reference. Economical exaggerated massing,navy/steel-blue uniforms or metal,warm peach character skin,brown boots/wood,coral military accents. Neutral softlight,no realistic PBR,photo detail or plastic.\nOne SINGLE asset centred on PURE WHITE (#FFFFFF) background with comfortable white margin on ALL edges,including hands/feet or weapon tips. No labels,text,logos,watermarks,bases,ground plane,cast shadows,scene,framing,additional objects or alternative views.",
+      "status": "approved",
+      "input_contract": "unarmed_true_t_pose",
+      "review": "Approved unarmed true T-pose: straight horizontal arms,empty hands,short broad padded-vest body and wide helmet; no gun,stock,barrels or trigger parts."
+    },
+    {
+      "kind": "armed-character-reference",
+      "id": "infantry-shotgunner-body",
+      "version": 1,
+      "source": "/Users/coral/.codex/generated_images/01a16e3b-5221-78b2-bd33-9830eab86a7f/exec-4a84aad3-6e57-4b30-8870-c3c9af397299.png",
+      "prompt": "Use case: stylized-concept. Extract and faithfully reproduce ONE armed character from reference1 (the approved three-soldier lineup); reference2 supplies the approved game asset paint/material style. SUBJECT: CENTRE short broad heavy shotgunner: wide navy helmet, thick padded navy vest, bare forearms, shorts and huge boots. Keep exactly his chunky navy TWO side-by-side barrel shotgun and wood stock/foregrip. Only two muzzle holes, no third lower barrel. Both hands carry it at belly height.\nOne full-body single front three-quarter view, square composition, centred with comfortable pure white margins around ALL helmet/boots/weapon parts. Match this exact character identity, face/proportions/equipment and painterly palette. Broad visibly hand-painted gouache strokes on chunky economical low-poly3D forms, warm peach comic face/doteyes, navy/steel-blue uniform, coral threat markings, brown boots. Strong readable game silhouette. No realistic PBR/plastic look.\nExactly ONE person holding ONE weapon. No extra gun, vehicle, bases, scene, ground plane, cast shadow, labels, text, badges with writing, flashes, tracers, smoke or gore. Do not include other two soldiers or alternative views. This armed image is a style/assembly reference; separate modular body and weapon refs will follow.",
+      "status": "approved_visual_guide_only",
+      "review": "Approved standalone full armed character art matching lineup; never a Tripo body input. User requires separate true T-pose unarmed body and isolated weapon references.",
+      "path": "assets/references/infantry-shotgunner-body/armed-v1.png"
+    },
+    {
+      "kind": "isolated-tripo-input",
+      "id": "infantry-rocketeer-body",
+      "version": 1,
+      "source": "/Users/coral/.codex/generated_images/01a16e3b-5221-78b2-bd33-9830eab86a7f/exec-d171e93a-16df-4a05-a585-e8f858ef302b.png",
+      "prompt": "Use case: precise-object-edit. Production image-to-3D reference. Image1 is an ARMED CHARACTER VISUAL GUIDE ONLY: extract exactly the named character body; do not copy the whole image. Image2 is approved game material/style. SUBJECT: Tall lanky navy rocket trooper,ear-pad helmet,long navy trousers,small integral navy backpack,brown belt/boots. Preserve exact face,clothing/head/bodyproportions. Remove ENTIRE shoulder launcher,coralrocketnose,reartube,grips and ALL weapon parts, including behind head. Integral small clothing backpack remains.\nTRUE ANATOMICAL T-POSE: upright front-facing body, BOTH arms straight HORIZONTAL at shoulder height, elbows straight, arms fully extended left and right, palms downward and hands EMPTY. Legs straight,feet shoulder-width apart,all fingers simplified into readable mitten shapes. One full body and one head; slight front-three-quarter camera of only10-15degrees to keep BOTH entire arms readable. Absolutely NO gun,weapon,grip,barrel,projectile,gunstock,shield or held prop anywhere. Do not preserve the original carrying arm pose. Character body and clothing only.\nPainterly low-poly3D game asset with BROAD VISIBLY HAND-PAINTED gouache albedo strokes matching reference. Economical exaggerated massing,navy/steel-blue uniforms or metal,warm peach character skin,brown boots/wood,coral military accents. Neutral softlight,no realistic PBR,photo detail or plastic.\nOne SINGLE asset centred on PURE WHITE (#FFFFFF) background with comfortable white margin on ALL edges,including hands/feet or weapon tips. No labels,text,logos,watermarks,bases,ground plane,cast shadows,scene,framing,additional objects or alternative views.",
+      "status": "approved",
+      "input_contract": "unarmed_true_t_pose",
+      "review": "Approved unarmed true T-pose: straight horizontal arms,empty hands,tall long-trouser body,ear-pad helmet and small integral backpack; no launcher or projectile."
+    },
+    {
+      "kind": "armed-character-reference",
+      "id": "infantry-rocketeer-body",
+      "version": 1,
+      "source": "/Users/coral/.codex/generated_images/01a16e3b-5221-78b2-bd33-9830eab86a7f/exec-cac800d5-4007-4759-b52d-88d4847312a6.png",
+      "prompt": "Use case: stylized-concept. Extract and faithfully reproduce ONE armed character from reference1 (the approved three-soldier lineup); reference2 supplies the approved game asset paint/material style. SUBJECT: RIGHT tall lanky rocket trooper: navy angular helmet with ear pads, long trousers, small integral navy backpack, brown belt/boots. ONE long navy shoulder-launcher with integral coral rocket nose, no loose ammunition. Launcher seated on his right shoulder, both hands on its simple grips.\nOne full-body single front three-quarter view, square composition, centred with comfortable pure white margins around ALL helmet/boots/weapon parts. Match this exact character identity, face/proportions/equipment and painterly palette. Broad visibly hand-painted gouache strokes on chunky economical low-poly3D forms, warm peach comic face/doteyes, navy/steel-blue uniform, coral threat markings, brown boots. Strong readable game silhouette. No realistic PBR/plastic look.\nExactly ONE person holding ONE weapon. No extra gun, vehicle, bases, scene, ground plane, cast shadow, labels, text, badges with writing, flashes, tracers, smoke or gore. Do not include other two soldiers or alternative views. This armed image is a style/assembly reference; separate modular body and weapon refs will follow.",
+      "status": "approved_visual_guide_only",
+      "review": "Approved standalone full armed character art matching lineup; never a Tripo body input. User requires separate true T-pose unarmed body and isolated weapon references.",
+      "path": "assets/references/infantry-rocketeer-body/armed-v1.png"
+    },
+    {
+      "kind": "isolated-tripo-input",
+      "id": "weapon-carbine",
+      "version": 1,
+      "source": "/Users/coral/.codex/generated_images/01a16e3b-5221-78b2-bd33-9830eab86a7f/exec-67d6e63b-7729-4ea9-abeb-1bca38f47e35.png",
+      "prompt": "Use case: stylized-concept. Create a single isolated fictional military CARBINE game prop, matching the small navy object carried by the LEFT character in reference1. It is a nonfunctional stylized low-poly3D asset for an overhead cartoon UFO game. Blocky navy receiver, short single narrow barrel with one dark muzzle inset, simple square magazine, one warm wooden stock and grip, broad coral doublechevron painted on the side. Preserve the guide's proportions and visibly brushed gouache materials. Broad simple forms rather than realistic small mechanisms or technical internals. One complete prop only, with no character or hands. Clean three-quarter view, long axis across image toward viewer-right. Entire silhouette surrounded by generous pure white margins. No text,labels,diagrams,logos,background scenery,stand or presentation base.",
+      "status": "approved",
+      "review": "Approved isolated painterly navy single-barrel game carbine,woodstock/grip,square magazine,coral chevrons; no human fragments or extra parts."
+    },
+    {
+      "kind": "isolated-tripo-input",
+      "id": "weapon-shotgun",
+      "version": 1,
+      "source": "/Users/coral/.codex/generated_images/01a16e3b-5221-78b2-bd33-9830eab86a7f/exec-8d1653a9-4fa9-417e-94b3-085ceadd8106.png",
+      "prompt": "Use case: precise-object-edit. Production image-to-3D reference. Image1 is an ARMED CHARACTER VISUAL GUIDE ONLY: extract exactly the named weapon; do not copy the whole image. Image2 is approved game material/style. SUBJECT: ONE short chunky navy DOUBLE-BARREL SHOTGUN from the character reference,all by itself. ExactlyTWO large side-by-side navy barrels with dark circular muzzle insets,one broad warm wooden stock and squared wood foregrip,small coral receiver chevron. NO third lower barrel/tube; lower foregrip is solid rectangular wood. One weapon with no loose ammunition. Full stock and both muzzles visible.\nIsolated gun only: absolutelyNO person,head,skin,hands,arms,character fragment,stand,strap,ground,vehicle,mount,firing effects,casings or detached extra piece. Single full weapon in a clear slightly elevated three-quarter view. Do NOT include the soldier.\nPainterly low-poly3D game asset with BROAD VISIBLY HAND-PAINTED gouache albedo strokes matching reference. Economical exaggerated massing,navy/steel-blue uniforms or metal,warm peach character skin,brown boots/wood,coral military accents. Neutral softlight,no realistic PBR,photo detail or plastic.\nOne SINGLE asset centred on PURE WHITE (#FFFFFF) background with comfortable white margin on ALL edges,including hands/feet or weapon tips. No labels,text,logos,watermarks,bases,ground plane,cast shadows,scene,framing,additional objects or alternative views.",
+      "status": "approved",
+      "input_contract": "isolated_weapon_no_human",
+      "review": "Approved one isolated double-barrel shotgun,two side-by-side muzzle holes,solid wood stock/foregrip,no human fragments or third barrel; navy/coral broad gouache paint."
+    },
+    {
+      "kind": "isolated-tripo-input",
+      "id": "weapon-rocket-launcher",
+      "version": 1,
+      "source": "/Users/coral/.codex/generated_images/01a16e3b-5221-78b2-bd33-9830eab86a7f/exec-1d13e386-38a8-4ade-918d-c83febe49f60.png",
+      "prompt": "Use case: precise-object-edit. Production image-to-3D reference. Image1 is an ARMED CHARACTER VISUAL GUIDE ONLY: extract exactly the named weapon; do not copy the whole image. Image2 is approved game material/style. SUBJECT: ONE oversized navy shoulder ROCKET LAUNCHER from the character reference,all by itself: long chunky shoulder tube with broad rear collar,one integral rounded coral loaded rocket nose at front,coral doublechevron on side,two simple connected underside grips. All parts are one loaded launcher object; no detached ammunition. Preserve exaggerated toy-like proportions and broad navy/coral gouache strokes. Full front nose,rear tube,and both grips visible; barrel front viewer-right.\nIsolated gun only: absolutelyNO person,head,skin,hands,arms,character fragment,stand,strap,ground,vehicle,mount,firing effects,casings or detached extra piece. Single full weapon in a clear slightly elevated three-quarter view. Do NOT include the soldier.\nPainterly low-poly3D game asset with BROAD VISIBLY HAND-PAINTED gouache albedo strokes matching reference. Economical exaggerated massing,navy/steel-blue uniforms or metal,warm peach character skin,brown boots/wood,coral military accents. Neutral softlight,no realistic PBR,photo detail or plastic.\nOne SINGLE asset centred on PURE WHITE (#FFFFFF) background with comfortable white margin on ALL edges,including hands/feet or weapon tips. No labels,text,logos,watermarks,bases,ground plane,cast shadows,scene,framing,additional objects or alternative views.",
+      "status": "approved",
+      "input_contract": "isolated_weapon_no_human",
+      "review": "Approved one isolated loaded shoulder launcher,navy tube,coral integral nose,two grips,no soldier/hands or detached ammunition; broad painterly planes."
+    },
+    {
+      "kind": "isolated-tripo-input",
+      "id": "jeep-minigun-head",
+      "version": 1,
+      "source": "/Users/coral/.codex/generated_images/01a16e3b-5221-78b2-bd33-9830eab86a7f/exec-3d6f44d3-c11e-448c-8c28-4d34b5abf143.png",
+      "prompt": "Use case: stylized-concept. Create one isolated FICTIONAL ROTARY CANNON game prop for the navy cartoon jeep in reference2, matching the broad low-poly hand-painted gouache3D style of reference1. It is a deliberately simplified nonfunctional toy-like game mesh, no real-world model or technical details. One chunky navy receiver, six short thick parallel barrel forms inside two broad navy rings, six simple dark round inset marks on the front, compact integral side box, small rear handle and two small side trunnion bosses. One coral doublechevron painted on side. Broad steel-blue brushed highlights, charcoal/navy mass, visibly painterly texture. Head assembly only, no pedestal or vehicle. One clear front three-quarter view, full silhouette with generous pure white margins. No person,hands,loose belt,detached parts,text,logos,labels,diagrams,base,ground or scenery.",
+      "status": "approved",
+      "review": "Approved isolated compact rotary gun head,navy barrel cluster with five visible front muzzle openings,receiver,sidebox,trunnions and rearhandle; no vehicle/operator/pedestal. Stylized barrel count accepted as visual design."
+    },
+    {
+      "kind": "isolated-tripo-input",
+      "id": "jeep-minigun-mount",
+      "version": 2,
+      "source": "/Users/coral/.codex/generated_images/01a16e3b-5221-78b2-bd33-9830eab86a7f/exec-946cbf9c-b367-4ea0-b01b-81910d698c84.png",
+      "prompt": "Use case: precise-object-edit. Reference1 is the navy painted mounting pedestal to correct; retain its material,coral marking,U fork top and four base bolts. Change its proportions: baseplate must be SMALL AND NARROW, only0.30m square, column from base to top bearing1.05m tall. Thus overall height is at least3.5TIMES baseplate width. Make the straight column much longer and slimmer, with a compact Ufork no wider than the baseplate and small buttresses inside that0.30m footprint. Current base is far too wide. One connected slender mounting pedestal, navy/steel-blue broad gouache paint with tiny coralchevron; single three-quarter view. Pure white margins around entire object. No weapon,barrel,vehicle,human,ground,stand beyond its smallplate,labels,text,logos or extra views.",
+      "status": "approved",
+      "review": "Approved revised slender pedestal,small square four-boltbase,long uprightcolumn and compact openfork,navy/coralpaint; proportions fit planned rear-bed footprint."
+    }
+  ]
+}

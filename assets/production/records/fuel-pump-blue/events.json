@@ -1,0 +1,39 @@
+[
+  {
+    "task_id": "b461f5f6-6940-4e60-96b3-8e1ee72be56e",
+    "type": "convert_model",
+    "status": "success",
+    "credits_consumed": 60,
+    "output_dir": "/Users/coral/Documents/App Development/Human Resources/assets/models/fuel-pump-blue/tripo-out/fuel-pump-blue-convert-b461f5f6",
+    "files": [
+      "model.glb"
+    ],
+    "model_file": "/Users/coral/Documents/App Development/Human Resources/assets/models/fuel-pump-blue/tripo-out/fuel-pump-blue-convert-b461f5f6/model.glb",
+    "chain": [
+      {
+        "task_id": "b461f5f6-6940-4e60-96b3-8e1ee72be56e",
+        "type": "convert_model",
+        "status": "success",
+        "credits_consumed": 10,
+        "output_dir": "/Users/coral/Documents/App Development/Human Resources/assets/models/fuel-pump-blue/tripo-out/fuel-pump-blue-convert-b461f5f6",
+        "files": [
+          "model.glb"
+        ],
+        "model_file": "/Users/coral/Documents/App Development/Human Resources/assets/models/fuel-pump-blue/tripo-out/fuel-pump-blue-convert-b461f5f6/model.glb"
+      }
+    ],
+    "source_task_id": "144c132b-14fe-4cf2-a332-5a0d5fb07512",
+    "credits_breakdown": [
+      {
+        "task_id": "144c132b-14fe-4cf2-a332-5a0d5fb07512",
+        "type": "image_to_model",
+        "credits_consumed": 50
+      },
+      {
+        "task_id": "b461f5f6-6940-4e60-96b3-8e1ee72be56e",
+        "type": "convert_model",
+        "credits_consumed": 10
+      }
+    ]
+  }
+]

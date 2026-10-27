@@ -1,0 +1,168 @@
+{
+  "triangles": 2587,
+  "vertices": 2302,
+  "mesh_primitives": 1,
+  "uv_present": true,
+  "textures": [
+    {
+      "size": [
+        1024,
+        1024
+      ],
+      "mode": "RGB"
+    }
+  ],
+  "raw_accessor_bounds": [
+    {
+      "min": [
+        -0.4990234375,
+        -0.2099609375,
+        -0.2568359375
+      ],
+      "max": [
+        0.4990234375,
+        0.2099609375,
+        0.2568359375
+      ]
+    }
+  ],
+  "extensions": [],
+  "bytes": 446080,
+  "asset": "jeep-minigun-head",
+  "model_file": "assets/models/jeep-minigun-head/jeep-minigun-head.glb",
+  "requested_face_limit": 2800,
+  "source_task_id": "8e64a8cf-c16e-4f14-b67f-b73d955d2e5f",
+  "convert_task_id": "ad75a003-404a-431c-8f57-397091457814",
+  "credits_consumed": 60,
+  "preview": null,
+  "triangle_budget_review": {
+    "requested_target": 2800,
+    "actual_triangles": 2587,
+    "target_met": true,
+    "category_ceiling": 3000,
+    "status": "passed"
+  },
+  "structural_review": {
+    "status": "passed",
+    "notes": "Triangle mode, valid GLB length, UVs and embedded 1024px base colour checked. Requested targets are approximate; actual triangle count and target deviations are reported separately, within the user-specified 3000-prop / 8000-character ceilings. Scale, pivot, topology and visual quality require separate review."
+  },
+  "visual_review": {
+    "status": "accepted",
+    "reviewer": "seamless_materials agent",
+    "reviewed_at": "2026-10-25T00:02:02.881877+00:00",
+    "model_sha256": "9b75f1d8d4a539b3d44bf21c1170fb2f18e71f762502c3b9be92fa81f66d098b",
+    "notes": "Accepted after closing unintended receiver-to-barrel ring separation with a 12-triangle matching material collar. Original geometry and 1024 paint retained. Actual front, side, back, underside and three-quarter reviewed; barrel rings/cluster connected and no unintended receiver holes. Actual model has SIX stylized visible muzzle openings; explicitly accepted as a visual variation from five-count approval note. +Z muzzle direction, 0.85m Z length, origin at measured trunnion pair centre with axle +X. Separate asset; no operator, rig or animation. Neutral mount fixture passed; animated pitch sweep remains owner work."
+  },
+  "import_review": {
+    "status": "passed",
+    "units": "metres",
+    "up": "+Y",
+    "forward": "+Z",
+    "yaw_degrees": -90.0,
+    "pivot": "measured-trunnion-centre",
+    "double_sided": false,
+    "uniform_scale": 0.8516634050880626,
+    "bounds_m": [
+      [
+        -0.21624266144814092,
+        -0.1505381604696673,
+        -0.42250489236790606
+      ],
+      [
+        0.22123287671232875,
+        0.20709393346379648,
+        0.4274951076320939
+      ]
+    ],
+    "dimensions_m": [
+      0.4374755381604697,
+      0.3576320939334638,
+      0.85
+    ],
+    "vertex_checks": [
+      {
+        "triangles": 2587,
+        "degenerate_triangles": 0,
+        "uv_bounds": [
+          [
+            0.0,
+            0.0
+          ],
+          [
+            1.0,
+            1.0
+          ]
+        ]
+      }
+    ],
+    "notes": "Real scene vertices and indices decoded; finite positions/UVs; retained embedded 1024px base colour. Uniform root transform; raw file preserved. Origin is the measured pair-of-boss bounding centre; no character pose, rig or animation added.",
+    "trunnion_origin_raw": [
+      -0.0029296875,
+      -0.033203125,
+      0.0029296875
+    ],
+    "trunnion_axis": "+X",
+    "component_fit_record": "assets/production/records/jeep-minigun-head/component-fit.json",
+    "neutral_component_fit_status": "passed_neutral_static_authoring_fit",
+    "pitch_sweep": "Not qualified; owner will rig and position later.",
+    "trunnion_axle_bounds_local_m": [
+      [
+        -0.18962818003913895,
+        -0.04075342465753424,
+        -0.04158512720156555
+      ],
+      [
+        0.18962818003913892,
+        0.040753424657534246,
+        0.041585127201565555
+      ]
+    ],
+    "preservation_checks": {
+      "embedded_image_bytes": "identical SHA256 to downloaded original",
+      "embedded_image_sha256": "e8ea4cc1af6116221ba745111e192a2f70f1e1e769d86b0baa785c9d0cb089a5",
+      "source_uvs": "unchanged",
+      "source_geometry": "unchanged source head vertices; connector added"
+    }
+  },
+  "generation_raw_model_file": "assets/models/jeep-minigun-head/tripo-out/jeep-minigun-head-convert-ad75a003/model.glb",
+  "raw_model_file": "assets/models/jeep-minigun-head/jeep-minigun-head-repaired-source.glb",
+  "geometry_repair": {
+    "asset": "jeep-minigun-head",
+    "description": "Added a small closed matching navy connector collar behind the existing rear barrel ring to bridge the unintended receiver separation. Existing game-prop geometry and embedded paint atlas retained.",
+    "source": "assets/models/jeep-minigun-head/tripo-out/jeep-minigun-head-convert-ad75a003/model.glb",
+    "source_sha256": "440425943f0379c7381b9321b5ddeb6298b2d46b0432672ad295a4295950c961",
+    "repaired_source": "assets/models/jeep-minigun-head/jeep-minigun-head-repaired-source.glb",
+    "repaired_source_sha256": "d9fada93794304efe9af4e99de273aed5d559a47a803665afd8058ea923ca0a1",
+    "details": {
+      "added_triangles": 12,
+      "raw_collar_bounds": [
+        [
+          -0.075,
+          -0.16,
+          -0.135
+        ],
+        [
+          0.02,
+          0.12,
+          0.135
+        ]
+      ],
+      "intended_openings_retained": "Six stylized barrel muzzle insets and rear handle gap.",
+      "source_uv_triangle": [
+        [
+          0.7251902222633362,
+          0.20644211769104004
+        ],
+        [
+          0.7156206965446472,
+          0.1951027512550354
+        ],
+        [
+          0.6905199289321899,
+          0.21672677993774414
+        ]
+      ]
+    },
+    "material_policy": "Original embedded base-colour and material retained; no PBR maps, no retexture."
+  }
+}

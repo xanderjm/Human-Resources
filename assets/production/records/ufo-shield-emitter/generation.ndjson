@@ -1,0 +1,28 @@
+── Plan ──────────────────────────
+input: /Users/coral/Documents/App Development/Human Resources/assets/references/ufo-shield-emitter/v1.png
+model: P1-20260311 — explicit --model
+steps:
+  1. image-to-model  POST /v3/generation/image-to-model — generate a 3D model from one image
+     model="P1-20260311" face_limit=1000 texture=true pbr=false texture_quality="standard" texture_alignment="original_image" export_uv=true
+  2. convert  POST /v3/models/convert — convert format / texture size / orientation
+     format="GLTF" texture_size=1024
+cost impact:
+  · non-default convert options bill as complex convert
+──────────────────────────────────
+model: P1-20260311 (explicit --model)
+task created 38fee116-5a9a-40b0-aee4-8173c3dc8d40 (@ufo-shield-emitter)
+image_to_model · queued
+image_to_model · running 10% · 38fee116
+image_to_model · running 20% · 38fee116
+image_to_model · running 32% · 38fee116
+image_to_model · running 50% · 38fee116
+image_to_model · running 77% · 38fee116
+image_to_model · success 100% · 38fee116
+✓ image_to_model · 38fee116-5a9a-40b0-aee4-8173c3dc8d40 · 50 credits
+! non-default convert options use the "complex convert" price tier
+task created 2fa7f583-fdff-44cc-8351-ef418d7a3222 (@ufo-shield-emitter-convert)
+convert_model · queued
+✓ convert_model · 2fa7f583-fdff-44cc-8351-ef418d7a3222 · 10 credits
+downloading artifacts…
+✓ artifacts saved to /Users/coral/Documents/App Development/Human Resources/assets/models/ufo-shield-emitter/tripo-out/ufo-shield-emitter-convert-2fa7f583
+{"task_id":"2fa7f583-fdff-44cc-8351-ef418d7a3222","type":"convert_model","status":"success","credits_consumed":60,"output_dir":"/Users/coral/Documents/App Development/Human Resources/assets/models/ufo-shield-emitter/tripo-out/ufo-shield-emitter-convert-2fa7f583","files":["model.glb"],"model_file":"/Users/coral/Documents/App Development/Human Resources/assets/models/ufo-shield-emitter/tripo-out/ufo-shield-emitter-convert-2fa7f583/model.glb","chain":[{"task_id":"2fa7f583-fdff-44cc-8351-ef418d7a3222","type":"convert_model","status":"success","credits_consumed":10,"output_dir":"/Users/coral/Documents/App Development/Human Resources/assets/models/ufo-shield-emitter/tripo-out/ufo-shield-emitter-convert-2fa7f583","files":["model.glb"],"model_file":"/Users/coral/Documents/App Development/Human Resources/assets/models/ufo-shield-emitter/tripo-out/ufo-shield-emitter-convert-2fa7f583/model.glb"}],"source_task_id":"38fee116-5a9a-40b0-aee4-8173c3dc8d40","credits_breakdown":[{"task_id":"38fee116-5a9a-40b0-aee4-8173c3dc8d40","type":"image_to_model","credits_consumed":50},{"task_id":"2fa7f583-fdff-44cc-8351-ef418d7a3222","type":"convert_model","credits_consumed":10}]}

@@ -1,0 +1,497 @@
+{
+  "status": "passed",
+  "mesh_topology": {
+    "Hull": {
+      "vertices": 384,
+      "quads": 384,
+      "triangles": 768,
+      "boundary_edges": 0,
+      "nonmanifold_edges": 0,
+      "degenerate_triangles": 0,
+      "signed_volume": 0.500369871
+    },
+    "Dome_Collar": {
+      "vertices": 288,
+      "quads": 288,
+      "triangles": 576,
+      "boundary_edges": 0,
+      "nonmanifold_edges": 0,
+      "degenerate_triangles": 0,
+      "signed_volume": 0.016652218
+    },
+    "Dome": {
+      "vertices": 142,
+      "quads": 120,
+      "triangles": 280,
+      "boundary_edges": 0,
+      "nonmanifold_edges": 0,
+      "degenerate_triangles": 0,
+      "signed_volume": 0.201056167
+    },
+    "Outer_Ring": {
+      "vertices": 528,
+      "quads": 528,
+      "triangles": 1056,
+      "boundary_edges": 0,
+      "nonmanifold_edges": 0,
+      "degenerate_triangles": 0,
+      "signed_volume": 1.480469127
+    },
+    "Bearing": {
+      "vertices": 240,
+      "quads": 240,
+      "triangles": 480,
+      "boundary_edges": 0,
+      "nonmanifold_edges": 0,
+      "degenerate_triangles": 0,
+      "signed_volume": 0.010233264
+    },
+    "Lens_Bezel": {
+      "vertices": 66,
+      "quads": 48,
+      "triangles": 128,
+      "boundary_edges": 0,
+      "nonmanifold_edges": 0,
+      "degenerate_triangles": 0,
+      "signed_volume": 0.002348892
+    },
+    "Lens": {
+      "vertices": 66,
+      "quads": 48,
+      "triangles": 128,
+      "boundary_edges": 0,
+      "nonmanifold_edges": 0,
+      "degenerate_triangles": 0,
+      "signed_volume": 0.002309601
+    },
+    "Antenna_Stem": {
+      "vertices": 18,
+      "quads": 8,
+      "triangles": 32,
+      "boundary_edges": 0,
+      "nonmanifold_edges": 0,
+      "degenerate_triangles": 0,
+      "signed_volume": 0.000718604
+    },
+    "Antenna_Tip": {
+      "vertices": 50,
+      "quads": 36,
+      "triangles": 96,
+      "boundary_edges": 0,
+      "nonmanifold_edges": 0,
+      "degenerate_triangles": 0,
+      "signed_volume": 0.002068947
+    },
+    "Beam_Housing": {
+      "vertices": 192,
+      "quads": 192,
+      "triangles": 384,
+      "boundary_edges": 0,
+      "nonmanifold_edges": 0,
+      "degenerate_triangles": 0,
+      "signed_volume": 0.025869287
+    },
+    "Beam_Lens": {
+      "vertices": 50,
+      "quads": 32,
+      "triangles": 96,
+      "boundary_edges": 0,
+      "nonmanifold_edges": 0,
+      "degenerate_triangles": 0,
+      "signed_volume": 0.000179085
+    },
+    "Laser_Base": {
+      "vertices": 34,
+      "quads": 24,
+      "triangles": 64,
+      "boundary_edges": 0,
+      "nonmanifold_edges": 0,
+      "degenerate_triangles": 0,
+      "signed_volume": 0.013064882
+    },
+    "Laser_Barrel": {
+      "vertices": 130,
+      "quads": 112,
+      "triangles": 256,
+      "boundary_edges": 0,
+      "nonmanifold_edges": 0,
+      "degenerate_triangles": 0,
+      "signed_volume": 0.027927632
+    },
+    "Laser_Lens": {
+      "vertices": 50,
+      "quads": 32,
+      "triangles": 96,
+      "boundary_edges": 0,
+      "nonmanifold_edges": 0,
+      "degenerate_triangles": 0,
+      "signed_volume": 0.001089983
+    },
+    "Laser_Pylon": {
+      "vertices": 8,
+      "quads": 6,
+      "triangles": 12,
+      "boundary_edges": 0,
+      "nonmanifold_edges": 0,
+      "degenerate_triangles": 0,
+      "signed_volume": 0.001488
+    },
+    "Shield_Base": {
+      "vertices": 42,
+      "quads": 32,
+      "triangles": 80,
+      "boundary_edges": 0,
+      "nonmanifold_edges": 0,
+      "degenerate_triangles": 0,
+      "signed_volume": 0.01048328
+    },
+    "Shield_Stem": {
+      "vertices": 34,
+      "quads": 24,
+      "triangles": 64,
+      "boundary_edges": 0,
+      "nonmanifold_edges": 0,
+      "degenerate_triangles": 0,
+      "signed_volume": 0.000760372
+    },
+    "Shield_Crystal": {
+      "vertices": 52,
+      "quads": 40,
+      "triangles": 100,
+      "boundary_edges": 0,
+      "nonmanifold_edges": 0,
+      "degenerate_triangles": 0,
+      "signed_volume": 0.003472208
+    }
+  },
+  "base_triangles": 4824,
+  "dimensions_m": [
+    2.5999999999999996,
+    1.3975300041090692,
+    2.5999999999999996
+  ],
+  "bounds_m": [
+    [
+      -1.2999999999999998,
+      0.0,
+      -1.2999999999999998
+    ],
+    [
+      1.2999999999999998,
+      1.3975300041090692,
+      1.2999999999999998
+    ]
+  ],
+  "ring_nominal_radial_clearance_m": 0.017,
+  "ring_min_radial_clearance_m": 0.01570678963611649,
+  "coordinate_system": "+Y up, +Z forward, metres",
+  "pivot": "Outer_Ring_Pivot at [0, 0.35, 0]; rotate about local Y",
+  "note": "Closed welded source surfaces, outward winding, finite geometry, UVs; GLB splits vertices at flat normals/UV seams.",
+  "base_swept_clearance": {
+    "minimum_bore_radius_m": 0.6027067896361165,
+    "fixed_radius_above_rotor_floor_m": 0.5870000000000001,
+    "minimum_clearance_m": 0.01570678963611638,
+    "full_turn_degrees": 360,
+    "status": "passed"
+  },
+  "upgraded_swept_clearance": {
+    "minimum_bore_radius_m": 0.6027067896361165,
+    "fixed_radius_above_rotor_floor_m": 0.5870000000000001,
+    "minimum_clearance_m": 0.01570678963611638,
+    "full_turn_degrees": 360,
+    "status": "passed"
+  },
+  "glb_exports": {
+    "part-antenna.glb": {
+      "status": "passed",
+      "drawn_triangles": 128,
+      "render_meshes": 2,
+      "textures": [
+        {
+          "name": "mint-lens",
+          "size": [
+            1254,
+            1254
+          ],
+          "encoding": "JPEG"
+        },
+        {
+          "name": "expressive-blue",
+          "size": [
+            1254,
+            1254
+          ],
+          "encoding": "JPEG"
+        }
+      ],
+      "bytes": 1319172
+    },
+    "part-beam.glb": {
+      "status": "passed",
+      "drawn_triangles": 768,
+      "render_meshes": 6,
+      "textures": [
+        {
+          "name": "dome-enamel",
+          "size": [
+            1254,
+            1254
+          ],
+          "encoding": "JPEG"
+        },
+        {
+          "name": "mint-lens",
+          "size": [
+            1254,
+            1254
+          ],
+          "encoding": "JPEG"
+        },
+        {
+          "name": "expressive-blue",
+          "size": [
+            1254,
+            1254
+          ],
+          "encoding": "JPEG"
+        }
+      ],
+      "bytes": 1660156
+    },
+    "part-laser.glb": {
+      "status": "passed",
+      "drawn_triangles": 428,
+      "render_meshes": 6,
+      "textures": [
+        {
+          "name": "dome-enamel",
+          "size": [
+            1254,
+            1254
+          ],
+          "encoding": "JPEG"
+        },
+        {
+          "name": "mint-lens",
+          "size": [
+            1254,
+            1254
+          ],
+          "encoding": "JPEG"
+        },
+        {
+          "name": "expressive-blue",
+          "size": [
+            1254,
+            1254
+          ],
+          "encoding": "JPEG"
+        }
+      ],
+      "bytes": 1659572
+    },
+    "part-outer-ring.glb": {
+      "status": "passed",
+      "drawn_triangles": 2592,
+      "render_meshes": 15,
+      "textures": [
+        {
+          "name": "mapped-ring",
+          "size": [
+            1254,
+            1254
+          ],
+          "encoding": "JPEG"
+        },
+        {
+          "name": "dome-enamel",
+          "size": [
+            1254,
+            1254
+          ],
+          "encoding": "JPEG"
+        },
+        {
+          "name": "mint-lens",
+          "size": [
+            1254,
+            1254
+          ],
+          "encoding": "JPEG"
+        },
+        {
+          "name": "expressive-blue",
+          "size": [
+            1254,
+            1254
+          ],
+          "encoding": "JPEG"
+        }
+      ],
+      "bytes": 2365576
+    },
+    "part-rim-lens.glb": {
+      "status": "passed",
+      "drawn_triangles": 256,
+      "render_meshes": 2,
+      "textures": [
+        {
+          "name": "mint-lens",
+          "size": [
+            1254,
+            1254
+          ],
+          "encoding": "JPEG"
+        }
+      ],
+      "bytes": 575152
+    },
+    "part-shield.glb": {
+      "status": "passed",
+      "drawn_triangles": 244,
+      "render_meshes": 3,
+      "textures": [
+        {
+          "name": "dome-enamel",
+          "size": [
+            1254,
+            1254
+          ],
+          "encoding": "JPEG"
+        },
+        {
+          "name": "mint-lens",
+          "size": [
+            1254,
+            1254
+          ],
+          "encoding": "JPEG"
+        },
+        {
+          "name": "expressive-blue",
+          "size": [
+            1254,
+            1254
+          ],
+          "encoding": "JPEG"
+        }
+      ],
+      "bytes": 1643104
+    },
+    "ufo-modular-upgraded.glb": {
+      "status": "passed",
+      "drawn_triangles": 6564,
+      "render_meshes": 43,
+      "textures": [
+        {
+          "name": "mapped-ring",
+          "size": [
+            1254,
+            1254
+          ],
+          "encoding": "JPEG"
+        },
+        {
+          "name": "dome-enamel",
+          "size": [
+            1254,
+            1254
+          ],
+          "encoding": "JPEG"
+        },
+        {
+          "name": "mint-lens",
+          "size": [
+            1254,
+            1254
+          ],
+          "encoding": "JPEG"
+        },
+        {
+          "name": "mapped-dome",
+          "size": [
+            1254,
+            1254
+          ],
+          "encoding": "JPEG"
+        },
+        {
+          "name": "expressive-blue",
+          "size": [
+            1254,
+            1254
+          ],
+          "encoding": "JPEG"
+        }
+      ],
+      "bytes": 3063400
+    },
+    "ufo-modular.glb": {
+      "status": "passed",
+      "drawn_triangles": 4824,
+      "render_meshes": 24,
+      "textures": [
+        {
+          "name": "mapped-ring",
+          "size": [
+            1254,
+            1254
+          ],
+          "encoding": "JPEG"
+        },
+        {
+          "name": "dome-enamel",
+          "size": [
+            1254,
+            1254
+          ],
+          "encoding": "JPEG"
+        },
+        {
+          "name": "mint-lens",
+          "size": [
+            1254,
+            1254
+          ],
+          "encoding": "JPEG"
+        },
+        {
+          "name": "mapped-dome",
+          "size": [
+            1254,
+            1254
+          ],
+          "encoding": "JPEG"
+        },
+        {
+          "name": "expressive-blue",
+          "size": [
+            1254,
+            1254
+          ],
+          "encoding": "JPEG"
+        }
+      ],
+      "bytes": 2973060
+    }
+  },
+  "surface_review": {
+    "status": "reviewed",
+    "geometry_panel_count": 0,
+    "workflow": "Orthographic model screenshots painted with ImageGen, bound to matching planar UVs. Separate ring and dome maps.",
+    "mapping_checks": "Passed: source UVs match screenshot projection to 1e-12; no panel/wear/strip nodes in any export.",
+    "templates": [
+      "materials/ring-top-template.jpg",
+      "materials/dome-top-template.jpg",
+      "materials/ufo-top-layout.jpg"
+    ],
+    "maps": [
+      "materials/mapped-ring.png",
+      "materials/mapped-dome.png"
+    ],
+    "views": [
+      "perspective",
+      "top"
+    ]
+  }
+}

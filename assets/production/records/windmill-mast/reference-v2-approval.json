@@ -1,0 +1,7 @@
+{
+  "id": "windmill-mast",
+  "version": 2,
+  "source": "/Users/coral/.codex/generated_images/01a16e3b-5221-78b2-bd33-9830eab86a7f/exec-3eb63b56-66fc-408f-856a-ef335e7bd85d.png",
+  "prompt": "Use case: precise-object-edit. Image 1 is the isolated tower to correct; image 2 is the approved painted low-poly style guide. Preserve the complete four-leg dark metal lattice tower, broad gouache texture, leg braces, white background and single front three-quarter view. CHANGE ONLY THE TOP MOUNT: REMOVE the tall vertical peg on top. Replace it with ONE SHORT HORIZONTAL AXLE STUB projecting toward the viewer from the FRONT face of the top mounting block, just like the axle on which a normal upright farm windmill fan spins. Its shaft is parallel to the ground, not upright. There is NO rotor or fan in this image. No blades, tail vane, extra views, floor, scenery, text, or ground shadow. All pieces belong to one joined tower. Keep full white margins.",
+  "review": "Approved v2: lattice tower with generous clear braces and horizontal front mounting spindle, no vertical peg, rotor or scenery."
+}

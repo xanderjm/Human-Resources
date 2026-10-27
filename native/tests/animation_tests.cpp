@@ -174,8 +174,15 @@ void clocks_loops_pause_and_fades() {
   require(p.seek(0) && p.advance(.25F, 2), "scaled clock advances in one bounded update");
   require_near(p.time(), .5F, 1e-6F, "playback rate scales clip phase");
   const auto scaled = p.pose().world;
-  require(!p.advance(.1F, 257) && !p.advance(.1F, -1), "invalid playback rates rejected");
+  require(!p.advance(.1F, 257) && !p.advance(.1F, -257), "invalid playback rates rejected");
   require(p.pose().world == scaled, "invalid rate does not mutate pose");
+  require(p.advance(.25F, -2), "looping gait can run backwards");
+  require_near(p.time(), 0, 1e-6F, "reverse gait consumes the matching stride phase");
+  require(p.advance(.1F, -1), "reverse gait wraps through zero");
+  require_near(p.time(), .9F, 1e-6F, "reverse loop wraps to the last part of its stride");
+  require(p.advance(0, -1) && p.time() == .9F, "paused reverse gait retains its phase");
+  require(p.play("turn", 0) && !p.advance(.1F, -1) && p.time() == 0,
+      "one-shot combat and capture clips cannot run backwards");
   require(p.bind(source) && p.play("walk", .2F) && p.advance(.1F, 4), "rate-scaled clip crossfades");
   require_near(p.pose().world[0][12], .4F, 1e-5F, "crossfade duration uses active time, not clip rate");
 }

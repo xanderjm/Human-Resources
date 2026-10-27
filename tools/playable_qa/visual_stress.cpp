@@ -199,9 +199,11 @@ hr::presentation::StyleFrame present(Fixture& fixture, hr::product::SceneEffects
   scene.screen_quads = hr::product::interface(view).quads;
   const auto mesh_count = [&](std::string_view id) { return std::count_if(scene.instances.begin(), scene.instances.end(), [&](const auto& instance) { return instance.mesh == id; }); };
   require(mesh_count("beam") == 6, "production scene did not produce six capture cones");
-  require(mesh_count("ufo-modular") == 4, "production scene did not produce the ship plus three orbit drones");
-  require(mesh_count("ufo-laser") == 7, "production scene did not produce four ship lasers plus three drone emitters");
-  require(mesh_count("ufo-shield") == 1, "production scene did not produce installed shield hardware");
+  require(mesh_count("ufo-modular") == 1 && mesh_count("ship-drone") + mesh_count("ship-drone-elite") == 3,
+      "production scene did not produce the ship plus three armed orbit drones");
+  require(mesh_count("ufo-laser") == 4, "production scene did not produce four independently aimed ship lasers");
+  require(mesh_count("ship-shield-base") == 1 && mesh_count("ship-shield-crystal") == 3,
+      "production scene did not produce installed shield machinery");
   require(std::any_of(scene.instances.begin(), scene.instances.end(), [](const auto& instance) { return instance.shield_rim; }), "production shield rim material absent");
   require(std::any_of(effects.beats().begin(), effects.beats().end(), [](const auto& beat) { return beat.kind == hr::product::SceneBeatKind::emp_pulse && beat.radius == tuning::storm_radius; }), "authoritative radius EMP beat absent");
   require(!capacity || effects.beats().size() == hr::product::SceneEffects::beat_capacity, "bounded effects cache was not saturated");

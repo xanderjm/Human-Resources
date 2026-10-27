@@ -21,14 +21,12 @@ const Actor* owner(const auto& state) {
 }
 std::optional<BossAttackPlan> eligible(const auto& state, const Actor& actor, float delay = 0) {
   const auto& boss = *state.boss;
-  const float warning = boss.next_kind == BossAttackKind::fan ? tuning::boss_fan_warning_seconds : tuning::boss_rake_warning_seconds;
-  const float planted = warning + (boss.next_kind == BossAttackKind::rake ? 2 * tuning::boss_rake_interval_seconds : 0);
-  const float runner = state.view.runner_distance + state.view.forward_speed * delay;
+  const float runner = state.view.runner_distance;
+  const Vec2 velocity{state.view.velocity.x, state.view.velocity.z - state.view.forward_speed};
   const Vec2 player{std::clamp(state.view.player.x + state.view.velocity.x * delay, -tuning::field_half_width, tuning::field_half_width),
-      std::clamp(state.view.player.z + state.view.velocity.z * delay, runner - tuning::player_backward_allowance, runner + tuning::player_forward_allowance)};
+      std::clamp(state.view.player.z + velocity.z * delay, runner - tuning::player_backward_allowance, runner + tuning::player_forward_allowance)};
   const float station = actor.view.position.z - runner;
-  const float low = -tuning::encounter_warning_retire_behind + tuning::scroll_maximum_metres_per_second *
-      (planted + 1 / tuning::fixed_hz);
+  const float low = -tuning::encounter_warning_retire_behind;
   if (station < low || station > tuning::encounter_warning_entry_ahead ||
       distance_squared(actor.view.position, player) >= tuning::laser_range * tuning::laser_range * 1.44F)
     return {};
@@ -39,7 +37,7 @@ std::optional<BossAttackPlan> eligible(const auto& state, const Actor& actor, fl
     return {};
   if (state.bullets.size() + 3 > tuning::projectile_active_cap)
     return {};
-  return boss_attack_plan(frame, player, state.view.velocity, boss.next_kind);
+  return boss_attack_plan(frame, player, velocity, boss.next_kind);
 }
 bool ready_to_brake(const auto& state, const Actor& actor) {
   // The actual N-tick linear brake integrates v*(N-1)/2 fixed steps.
@@ -231,7 +229,7 @@ void Game::State::boss_update(Actor& actor, float dt) {
     const float arrival = std::min(1.F, std::sqrt(length_squared(route)) / tuning::tactics_arrival_radius);
     const float slow = actor.slow_timer > 0 ? tuning::storm_boss_slow : 0;
     auto relative = scaled(direction(route), tuning::military_movement_speed[3] * arrival * (1 - slow));
-    const Vec2 carry{0, lateral_bypass ? 0.F : view.forward_speed};
+    const Vec2 carry{}; // Common arena scrolling is applied before local motion.
     const auto desired = add(relative, carry);
     const float change = tuning::boss_movement_acceleration * dt;
     relative = {actor.view.velocity.x + std::clamp(desired.x - actor.view.velocity.x, -change, change),

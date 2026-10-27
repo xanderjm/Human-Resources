@@ -1,0 +1,131 @@
+{
+  "triangles": 1972,
+  "vertices": 1941,
+  "mesh_primitives": 1,
+  "uv_present": true,
+  "textures": [
+    {
+      "size": [
+        1024,
+        1024
+      ],
+      "mode": "RGB"
+    }
+  ],
+  "raw_accessor_bounds": [
+    {
+      "min": [
+        -0.2509765625,
+        -0.4990234375,
+        -0.2705078125
+      ],
+      "max": [
+        0.2138671875,
+        0.48711854219436646,
+        0.2610073685646057
+      ]
+    }
+  ],
+  "extensions": [],
+  "bytes": 351684,
+  "asset": "windmill-mast",
+  "model_file": "assets/models/windmill-mast/windmill-mast.glb",
+  "requested_face_limit": 2200,
+  "source_task_id": "a4924c58-03b6-431a-84b2-08c21dcaeba2",
+  "convert_task_id": "dcf7591d-6d61-451b-b3ab-0632f9795bf1",
+  "credits_consumed": 60,
+  "preview": null,
+  "triangle_budget_review": {
+    "requested_target": 2200,
+    "actual_triangles": 1972,
+    "target_met": true,
+    "category_ceiling": 3000,
+    "status": "passed"
+  },
+  "structural_review": {
+    "status": "passed",
+    "notes": "Triangle mode, valid GLB length, UVs and embedded 1024px base colour checked. Requested targets are approximate; actual triangle count and target deviations are reported separately, within the user-specified 3000-prop / 8000-character ceilings. Scale, pivot, topology and visual quality require separate review."
+  },
+  "visual_review": {
+    "status": "accepted",
+    "reviewer": "seamless_materials agent",
+    "notes": "Accepted after controlled spindle relocation: intact four-foot lattice with open braces; horizontal spindle is visibly seated in top bearing and points +Z. Compared approved v2 reference against opposite three-quarter and right-side actual GLB views.",
+    "model_sha256": "a0e8b489b0bcaf6fb1df414524e6443594369052e66c5ceebf137ba6c9e02fa6",
+    "reviewed_at": "2026-10-24T22:05:11.178326+00:00",
+    "qualification": "Authoring/import QA only; native engine rendering, collisions and device performance not qualified."
+  },
+  "import_review": {
+    "status": "passed",
+    "units": "metres",
+    "up": "+Y",
+    "forward": "+Z",
+    "yaw_degrees": 0.0,
+    "pivot": "ground-centre",
+    "double_sided": false,
+    "uniform_scale": 3.5491846732706276,
+    "bounds_m": [
+      [
+        -0.8249081564828216,
+        0.0,
+        -0.9432227671225806
+      ],
+      [
+        0.8249081564828216,
+        3.5,
+        0.9432227671225806
+      ]
+    ],
+    "dimensions_m": [
+      1.6498163129656431,
+      3.5,
+      1.8864455342451611
+    ],
+    "vertex_checks": [
+      {
+        "triangles": 1972,
+        "degenerate_triangles": 0,
+        "uv_bounds": [
+          [
+            0.0,
+            0.0
+          ],
+          [
+            1.0,
+            1.0
+          ]
+        ]
+      }
+    ],
+    "notes": "Real scene vertices and indices decoded; finite positions/UVs; retained embedded 1024px base colour. Uniform root transform; raw file preserved. Semantic forward and repaired geometry checked in actual rendered views."
+  },
+  "generation_raw_model_file": "assets/models/windmill-mast/tripo-out/windmill-mast-convert-dcf7591d/model.glb",
+  "raw_model_file": "assets/models/windmill-mast/windmill-mast-repaired-source.glb",
+  "geometry_repair": {
+    "asset": "windmill-mast",
+    "description": "Moved the detached diagonal spindle island, including its bolt geometry, into the existing bearing and aligned its axis horizontally to +Z.",
+    "source": "assets/models/windmill-mast/tripo-out/windmill-mast-convert-dcf7591d/model.glb",
+    "source_sha256": "88cf87babfb4e61376715091af2f845fd943fb5e8fb8a2b59870c26aad586c9e",
+    "repaired_source": "assets/models/windmill-mast/windmill-mast-repaired-source.glb",
+    "repaired_source_sha256": "33453fabc9fef38b3f27829adb40551cb400a80fbf856c6e04218f57df73870e",
+    "details": {
+      "moved_vertex_count": 645,
+      "original_axis": [
+        0.6225408315658569,
+        0.10579649358987808,
+        0.7754031419754028
+      ],
+      "target_axis": [
+        0.0,
+        0.0,
+        1.0
+      ],
+      "raw_bearing_anchor": [
+        -0.018,
+        0.446,
+        0.025
+      ],
+      "added_triangles": 0
+    },
+    "material_policy": "Original embedded base-colour and material retained; no PBR maps, no retexture."
+  }
+}

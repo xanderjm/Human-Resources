@@ -1,0 +1,92 @@
+[
+  {
+    "n": 1,
+    "name": "The Perfect Hire",
+    "file": "01-the-perfect-hire.png",
+    "original": "../concepts-v1/01-the-perfect-hire.png",
+    "source": "/Users/coral/.codex/generated_images/01a16f97-681b-7230-a898-387cc060f823/exec-c3c73dbc-4523-46ef-9dfa-acfe12066368.png",
+    "status": "Edited with image_gen",
+    "logo_reference": "../concepts-v1/05-occupational-hazard.png"
+  },
+  {
+    "n": 2,
+    "name": "Personnel Department",
+    "file": "02-personnel-department.png",
+    "original": "../concepts-v1/02-personnel-department.png",
+    "source": "/Users/coral/.codex/generated_images/01a16f97-681b-7230-a898-387cc060f823/exec-f8a990bb-ab6f-4694-b2e8-ec1e9ea7fe29.png",
+    "status": "Edited with image_gen",
+    "logo_reference": "../concepts-v1/05-occupational-hazard.png"
+  },
+  {
+    "n": 3,
+    "name": "Mass Recruitment",
+    "file": "03-mass-recruitment.png",
+    "original": "../concepts-v1/03-mass-recruitment.png",
+    "source": "/Users/coral/.codex/generated_images/01a16f97-681b-7230-a898-387cc060f823/exec-63b41228-7417-4d79-a9f0-175885f58956.png",
+    "status": "Edited with image_gen",
+    "logo_reference": "../concepts-v1/05-occupational-hazard.png"
+  },
+  {
+    "n": 4,
+    "name": "The Night Shift",
+    "file": "04-the-night-shift.png",
+    "original": "../concepts-v1/04-the-night-shift.png",
+    "source": "/Users/coral/.codex/generated_images/01a16f97-681b-7230-a898-387cc060f823/exec-72a7f991-4e4e-47f9-a8a7-f0dbbb696011.png",
+    "status": "Edited with image_gen",
+    "logo_reference": "../concepts-v1/05-occupational-hazard.png"
+  },
+  {
+    "n": 5,
+    "name": "Occupational Hazard",
+    "file": "05-occupational-hazard.png",
+    "original": "../concepts-v1/05-occupational-hazard.png",
+    "source": "/Users/coral/Documents/App Development/Human Resources/art/covers/concepts-v1/05-occupational-hazard.png",
+    "status": "Approved logo source; original retained",
+    "logo_reference": "../concepts-v1/05-occupational-hazard.png"
+  },
+  {
+    "n": 6,
+    "name": "Field Work",
+    "file": "06-field-work.png",
+    "original": "../concepts-v1/06-field-work.png",
+    "source": "/Users/coral/.codex/generated_images/01a16f97-681b-7230-a898-387cc060f823/exec-13fc6042-dadd-458a-a9df-2a8cf49c4f07.png",
+    "status": "Edited with image_gen",
+    "logo_reference": "../concepts-v1/05-occupational-hazard.png"
+  },
+  {
+    "n": 7,
+    "name": "Employee of the Month",
+    "file": "07-employee-of-the-month.png",
+    "original": "../concepts-v1/07-employee-of-the-month.png",
+    "source": "/Users/coral/.codex/generated_images/01a16f97-681b-7230-a898-387cc060f823/exec-28dc9c5d-26ce-44a2-988a-bc3dee0047a4.png",
+    "status": "Edited with image_gen",
+    "logo_reference": "../concepts-v1/05-occupational-hazard.png"
+  },
+  {
+    "n": 8,
+    "name": "Roadside Attraction",
+    "file": "08-roadside-attraction.png",
+    "original": "../concepts-v1/08-roadside-attraction.png",
+    "source": "/Users/coral/.codex/generated_images/01a16f97-681b-7230-a898-387cc060f823/exec-c0d0b713-bc73-432a-986d-ea82e454acfe.png",
+    "status": "Edited with image_gen",
+    "logo_reference": "../concepts-v1/05-occupational-hazard.png"
+  },
+  {
+    "n": 9,
+    "name": "Upward Mobility",
+    "file": "09-upward-mobility.png",
+    "original": "../concepts-v1/09-upward-mobility.png",
+    "source": "/Users/coral/.codex/generated_images/01a16f97-681b-7230-a898-387cc060f823/exec-86e0c2a9-11a1-4716-988f-1f00f09fb544.png",
+    "status": "Edited with image_gen",
+    "logo_reference": "../concepts-v1/05-occupational-hazard.png"
+  },
+  {
+    "n": 10,
+    "name": "World’s Best Employer",
+    "file": "10-worlds-best-employer.png",
+    "original": "../concepts-v1/10-worlds-best-employer.png",
+    "source": "/Users/coral/.codex/generated_images/01a16f97-681b-7230-a898-387cc060f823/exec-50726e1a-4659-4368-8fab-c91d6e0d72e1.png",
+    "status": "Edited with image_gen",
+    "logo_reference": "../concepts-v1/05-occupational-hazard.png"
+  }
+]

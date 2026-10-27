@@ -1,0 +1,27 @@
+── Plan ──────────────────────────
+input: /Users/coral/Documents/App Development/Human Resources/assets/references/infantry-shotgunner-body/v1.png
+model: P1-20260311 — explicit --model
+steps:
+  1. image-to-model  POST /v3/generation/image-to-model — generate a 3D model from one image
+     model="P1-20260311" face_limit=6000 texture=true pbr=false texture_quality="standard" texture_alignment="original_image" export_uv=true
+  2. convert  POST /v3/models/convert — convert format / texture size / orientation
+     format="GLTF" texture_size=1024
+cost impact:
+  · non-default convert options bill as complex convert
+──────────────────────────────────
+model: P1-20260311 (explicit --model)
+task created 80b37b36-a7cc-4152-a225-cb53c6562789 (@infantry-shotgunner-body)
+image_to_model · queued
+image_to_model · running 11% · 80b37b36
+image_to_model · running 32% · 80b37b36
+image_to_model · running 51% · 80b37b36
+image_to_model · running 76% · 80b37b36
+image_to_model · success 100% · 80b37b36
+✓ image_to_model · 80b37b36-a7cc-4152-a225-cb53c6562789 · 50 credits
+! non-default convert options use the "complex convert" price tier
+task created 4582013f-1dca-47de-959a-e6cefa248645 (@infantry-shotgunner-body-convert)
+convert_model · queued
+✓ convert_model · 4582013f-1dca-47de-959a-e6cefa248645 · 10 credits
+downloading artifacts…
+✓ artifacts saved to /Users/coral/Documents/App Development/Human Resources/assets/models/infantry-shotgunner-body/tripo-out/infantry-shotgunner-body-convert-4582013f
+{"task_id":"4582013f-1dca-47de-959a-e6cefa248645","type":"convert_model","status":"success","credits_consumed":60,"output_dir":"/Users/coral/Documents/App Development/Human Resources/assets/models/infantry-shotgunner-body/tripo-out/infantry-shotgunner-body-convert-4582013f","files":["model.glb"],"model_file":"/Users/coral/Documents/App Development/Human Resources/assets/models/infantry-shotgunner-body/tripo-out/infantry-shotgunner-body-convert-4582013f/model.glb","chain":[{"task_id":"4582013f-1dca-47de-959a-e6cefa248645","type":"convert_model","status":"success","credits_consumed":10,"output_dir":"/Users/coral/Documents/App Development/Human Resources/assets/models/infantry-shotgunner-body/tripo-out/infantry-shotgunner-body-convert-4582013f","files":["model.glb"],"model_file":"/Users/coral/Documents/App Development/Human Resources/assets/models/infantry-shotgunner-body/tripo-out/infantry-shotgunner-body-convert-4582013f/model.glb"}],"source_task_id":"80b37b36-a7cc-4152-a225-cb53c6562789","credits_breakdown":[{"task_id":"80b37b36-a7cc-4152-a225-cb53c6562789","type":"image_to_model","credits_consumed":50},{"task_id":"4582013f-1dca-47de-959a-e6cefa248645","type":"convert_model","credits_consumed":10}]}

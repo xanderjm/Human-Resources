@@ -1,11 +1,12 @@
 #pragma once
 #include <human_resources/presentation/frame_viewport.h>
+#include <human_resources/gameplay/gameplay.h>
 #include <human_resources/presentation/style_scene.h>
 #include <human_resources/ui/geometry.h>
 
 namespace human_resources::product {
 enum class FramingContext { flight, attract };
-// Disposable display data; field rules and semantic input remain unchanged.
+// Shared display projection and the semantic ship-centre area it exposes.
 struct GameplayFraming final {
   GameplayFraming() = default;
   static constexpr float tactical_row_height = 44.F;
@@ -15,6 +16,7 @@ struct GameplayFraming final {
   presentation::PixelExtent render_extent;
   std::array<float, 4> destination{0, 0, 1, 1};
   presentation::Matrix camera{};
+  gameplay::FlightBounds flight_bounds{};
   float aspect{}, camera_width{17.F / .75F}, logical_pixel{};
   bool constrained{}, compact{}, banded{};
 };

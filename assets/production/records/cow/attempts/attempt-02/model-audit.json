@@ -1,0 +1,49 @@
+{
+  "triangles": 5792,
+  "vertices": 3789,
+  "mesh_primitives": 1,
+  "uv_present": true,
+  "textures": [
+    {
+      "size": [
+        1024,
+        1024
+      ],
+      "mode": "RGB"
+    }
+  ],
+  "raw_accessor_bounds": [
+    {
+      "min": [
+        -0.4990234375,
+        -0.3486328125,
+        -0.4013671875
+      ],
+      "max": [
+        0.4990234375,
+        0.3486328125,
+        0.4013671875
+      ]
+    }
+  ],
+  "extensions": [],
+  "bytes": 364564,
+  "asset": "cow",
+  "model_file": "assets/models/cow/tripo-out/cow-convert-2-23487d74/model.glb",
+  "requested_face_limit": 6000,
+  "source_task_id": "ff7b0000-b07e-4587-99d7-df00dd316f08",
+  "convert_task_id": "23487d74-720a-4963-9dcc-d2470416b181",
+  "credits_consumed": 60,
+  "preview": null,
+  "structural_review": {
+    "status": "passed",
+    "notes": "Triangle mode, valid GLB length, UVs and embedded 1024px base-colour textures checked. Scale, pivot, topology and visual quality still require review."
+  },
+  "visual_review": {
+    "status": "rejected",
+    "notes": "Second model fixes legs and removes long spurious stalks but mirrors small tail nub to two rump positions. Needs neutral reference with tail occluded to avoid bilateral reconstruction."
+  },
+  "import_review": {
+    "status": "pending"
+  }
+}

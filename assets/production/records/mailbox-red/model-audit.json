@@ -1,0 +1,104 @@
+{
+  "triangles": 1151,
+  "vertices": 1072,
+  "mesh_primitives": 1,
+  "uv_present": true,
+  "textures": [
+    {
+      "size": [
+        1024,
+        1024
+      ],
+      "mode": "RGB"
+    }
+  ],
+  "raw_accessor_bounds": [
+    {
+      "min": [
+        -0.2275390625,
+        -0.4990234375,
+        -0.2119140625
+      ],
+      "max": [
+        0.2275390625,
+        0.4990234375,
+        0.2119140625
+      ]
+    }
+  ],
+  "extensions": [],
+  "bytes": 245748,
+  "asset": "mailbox-red",
+  "model_file": "assets/models/mailbox-red/mailbox-red.glb",
+  "requested_face_limit": 1200,
+  "source_task_id": "9e2db3a4-cb3b-4f8f-b85c-421eb5403d05",
+  "convert_task_id": "f17dd4c1-4369-402c-9622-2a0ba49c90c4",
+  "credits_consumed": 60,
+  "preview": null,
+  "triangle_budget_review": {
+    "requested_target": 1200,
+    "actual_triangles": 1151,
+    "target_met": true,
+    "category_ceiling": 3000,
+    "status": "passed"
+  },
+  "structural_review": {
+    "status": "passed",
+    "notes": "Triangle mode, valid GLB length, UVs and embedded 1024px base colour checked. Requested targets are approximate; actual triangle count and target deviations are reported separately, within the user-specified 3000-prop / 8000-character ceilings. Scale, pivot, topology and visual quality require separate review."
+  },
+  "visual_review": {
+    "status": "accepted",
+    "notes": "Closed terracotta mailbox retains peaked cap, dark slot, brass lock and narrow post. Front, right, three-quarter and opposite views show coherent back/side construction, no scene or ground geometry. Main slot face now +Z.",
+    "views": [
+      "front",
+      "opposite",
+      "three-quarter",
+      "right"
+    ]
+  },
+  "import_review": {
+    "status": "passed",
+    "units": "metres",
+    "up": "+Y",
+    "forward": "+Z",
+    "yaw_degrees": -90.0,
+    "pivot": "ground-centre",
+    "double_sided": false,
+    "uniform_scale": 1.1021526418786693,
+    "bounds_m": [
+      [
+        -0.23356164383561645,
+        0.0,
+        -0.25078277886497063
+      ],
+      [
+        0.23356164383561645,
+        1.1,
+        0.25078277886497063
+      ]
+    ],
+    "dimensions_m": [
+      0.4671232876712329,
+      1.1,
+      0.5015655577299413
+    ],
+    "vertex_checks": [
+      {
+        "triangles": 1151,
+        "degenerate_triangles": 0,
+        "uv_bounds": [
+          [
+            0.0,
+            0.0
+          ],
+          [
+            1.0,
+            1.0
+          ]
+        ]
+      }
+    ],
+    "notes": "Real scene vertices and indices decoded; finite positions/UVs; retained embedded 1024px base colour. Uniform root transform; raw file preserved."
+  },
+  "raw_model_file": "assets/models/mailbox-red/tripo-out/mailbox-red-convert-f17dd4c1/model.glb"
+}

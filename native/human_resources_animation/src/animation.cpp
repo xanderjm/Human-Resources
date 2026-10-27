@@ -54,13 +54,15 @@ bool Player::seek(float seconds) {
 }
 bool Player::advance(float seconds, float playback_rate) {
   if (!asset_ || !std::isfinite(seconds) || seconds < 0 || seconds > .25F ||
-      !std::isfinite(playback_rate) || playback_rate < 0 || playback_rate > 256)
+      !std::isfinite(playback_rate) || std::abs(playback_rate) > 256)
     return false;
+  const auto& clip = asset_->clips()[clip_];
+  if (playback_rate < 0 && !clip.loop) return false;
   if (seconds == 0)
     return true;
-  const auto& clip = asset_->clips()[clip_];
   const float elapsed = seconds * playback_rate;
   time_ = clip.loop ? std::fmod(time_ + elapsed, clip.seconds) : std::min(time_ + elapsed, clip.seconds);
+  if (time_ < 0) time_ += clip.seconds;
   fade_time_ = std::min(fade_time_ + seconds, fade_seconds_);
   return evaluate();
 }

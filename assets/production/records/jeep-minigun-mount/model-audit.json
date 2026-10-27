@@ -1,0 +1,151 @@
+{
+  "triangles": 984,
+  "vertices": 961,
+  "mesh_primitives": 1,
+  "uv_present": true,
+  "textures": [
+    {
+      "size": [
+        1024,
+        1024
+      ],
+      "mode": "RGB"
+    }
+  ],
+  "raw_accessor_bounds": [
+    {
+      "min": [
+        -0.1201171875,
+        -0.4990234375,
+        -0.1957734376192093
+      ],
+      "max": [
+        0.1201171875,
+        0.4990234375,
+        0.2016328126192093
+      ]
+    }
+  ],
+  "extensions": [],
+  "bytes": 279720,
+  "asset": "jeep-minigun-mount",
+  "model_file": "assets/models/jeep-minigun-mount/jeep-minigun-mount.glb",
+  "requested_face_limit": 1000,
+  "source_task_id": "e7ecb75e-75b5-411f-9045-db03be9bb2e0",
+  "convert_task_id": "fd6b2548-183b-4b75-aff8-e5ab3d7cda9b",
+  "credits_consumed": 60,
+  "preview": null,
+  "triangle_budget_review": {
+    "requested_target": 1000,
+    "actual_triangles": 984,
+    "target_met": true,
+    "category_ceiling": 3000,
+    "status": "passed"
+  },
+  "structural_review": {
+    "status": "passed",
+    "notes": "Triangle mode, valid GLB length, UVs and embedded 1024px base colour checked. Requested targets are approximate; actual triangle count and target deviations are reported separately, within the user-specified 3000-prop / 8000-character ceilings. Scale, pivot, topology and visual quality require separate review."
+  },
+  "visual_review": {
+    "status": "accepted",
+    "reviewer": "seamless_materials agent",
+    "reviewed_at": "2026-10-25T00:02:02.885711+00:00",
+    "model_sha256": "e272fd867a17fd6eb7e1ac9ca8fa358d0b487bbc7110ceb39b37473179353613",
+    "notes": "Accepted after upper-fork-only fit repair: widened cheeks/bridge, enlarged intentional bearing bores, lowered bridge floor and shortened only upper neck. Preserved lower column/base/bolts and existing 1024 paint. Actual three-quarter, front, side and underside reviewed; connected floor/neck/column and small closed base; intentional U opening/bearing holes retained. 1.05m maximum height, base footprint 0.2774\u00d70.2527m, overall fork width 0.4181m overhang allowed. Neutral actual head fixture passed with 17.5mm bridge/neck clearance and conservative 2.46mm radial clearance; no promise of pitch animation clearance. No operator, rig or animation."
+  },
+  "import_review": {
+    "status": "passed",
+    "units": "metres",
+    "up": "+Y",
+    "forward": "+Z",
+    "yaw_degrees": -90.0,
+    "pivot": "ground-centre",
+    "double_sided": false,
+    "uniform_scale": 1.052054794520548,
+    "bounds_m": [
+      [
+        -0.2090465754678805,
+        0.0,
+        -0.12636986301369865
+      ],
+      [
+        0.2090465754678805,
+        1.05,
+        0.12636986301369865
+      ]
+    ],
+    "dimensions_m": [
+      0.418093150935761,
+      1.05,
+      0.2527397260273973
+    ],
+    "vertex_checks": [
+      {
+        "triangles": 984,
+        "degenerate_triangles": 0,
+        "uv_bounds": [
+          [
+            0.0,
+            0.0
+          ],
+          [
+            1.0,
+            1.0
+          ]
+        ]
+      }
+    ],
+    "notes": "Real scene vertices and indices decoded; finite positions/UVs; retained embedded 1024px base colour. Uniform root transform; raw file preserved.",
+    "component_fit_record": "assets/production/records/jeep-minigun-head/component-fit.json",
+    "neutral_component_fit_status": "passed_neutral_static_authoring_fit",
+    "pitch_sweep": "Not qualified; owner will rig and position later.",
+    "head_socket_m": [
+      4.336808689942018e-19,
+      1.0017123287671232,
+      -0.005136986301369864
+    ],
+    "bearing_axis": "+X",
+    "base_bounds_m": [
+      [
+        -0.1356164383561644,
+        0.0,
+        -0.12636986301369865
+      ],
+      [
+        0.14178082191780825,
+        0.05753424657534245,
+        0.12636986301369865
+      ]
+    ],
+    "preservation_checks": {
+      "embedded_image_bytes": "identical SHA256 to downloaded original",
+      "embedded_image_sha256": "af4f155deee75d680a836966cab2bab1754d4b2ff25b51d49dd107617db0a602",
+      "source_uvs": "unchanged",
+      "source_geometry": "all base/lower column positions below raw Y0.24 bitwise unchanged"
+    }
+  },
+  "raw_model_file": "assets/models/jeep-minigun-mount/jeep-minigun-mount-repaired-source.glb",
+  "generation_raw_model_file": "assets/models/jeep-minigun-mount/tripo-out/jeep-minigun-mount-convert-fd6b2548/model.glb",
+  "geometry_repair": {
+    "asset": "jeep-minigun-mount",
+    "description": "Widened only the upper fork cheeks/bridge and enlarged the visual bearing bores; lowered its floor and shortened the upper neck for neutral head clearance. Base, bolts, lower column, maximum height and existing paint atlas retained.",
+    "source": "assets/models/jeep-minigun-mount/tripo-out/jeep-minigun-mount-convert-fd6b2548/model.glb",
+    "source_sha256": "9be117e0622f847847244340de62633cf23e482c1940e135755546d523111d98",
+    "repaired_source": "assets/models/jeep-minigun-mount/jeep-minigun-mount-repaired-source.glb",
+    "repaired_source_sha256": "8e58dc131fa3bd7e83ce140ce35cfe652a14f2da41a06d6cbbc664dc8a58f160",
+    "details": {
+      "raw_cheek_translation_each_side": 0.103,
+      "raw_fork_floor_lowering": 0.095,
+      "raw_upper_neck_shortening": 0.065,
+      "raw_bearing_xy_centre": [
+        -0.0048828125,
+        0.453125
+      ],
+      "added_triangles": 0,
+      "lower_geometry_below_raw_y": 0.24,
+      "neutral_fit_only": true,
+      "pitch_sweep": "Future owner rigging review; not qualified."
+    },
+    "material_policy": "Original embedded base-colour and material retained; no PBR maps, no retexture."
+  }
+}

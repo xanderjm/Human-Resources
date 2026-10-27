@@ -1,0 +1,39 @@
+[
+  {
+    "task_id": "12eb0e41-1f83-4c89-a2dd-71152aa1eb72",
+    "type": "convert_model",
+    "status": "success",
+    "credits_consumed": 60,
+    "output_dir": "/Users/coral/Documents/App Development/Human Resources/assets/models/farmer-body/tripo-out/farmer-body-convert-12eb0e41",
+    "files": [
+      "model.glb"
+    ],
+    "model_file": "/Users/coral/Documents/App Development/Human Resources/assets/models/farmer-body/tripo-out/farmer-body-convert-12eb0e41/model.glb",
+    "chain": [
+      {
+        "task_id": "12eb0e41-1f83-4c89-a2dd-71152aa1eb72",
+        "type": "convert_model",
+        "status": "success",
+        "credits_consumed": 10,
+        "output_dir": "/Users/coral/Documents/App Development/Human Resources/assets/models/farmer-body/tripo-out/farmer-body-convert-12eb0e41",
+        "files": [
+          "model.glb"
+        ],
+        "model_file": "/Users/coral/Documents/App Development/Human Resources/assets/models/farmer-body/tripo-out/farmer-body-convert-12eb0e41/model.glb"
+      }
+    ],
+    "source_task_id": "c7987858-e4de-42a6-b004-5bb23f173c70",
+    "credits_breakdown": [
+      {
+        "task_id": "c7987858-e4de-42a6-b004-5bb23f173c70",
+        "type": "image_to_model",
+        "credits_consumed": 50
+      },
+      {
+        "task_id": "12eb0e41-1f83-4c89-a2dd-71152aa1eb72",
+        "type": "convert_model",
+        "credits_consumed": 10
+      }
+    ]
+  }
+]

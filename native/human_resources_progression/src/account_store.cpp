@@ -228,8 +228,8 @@ std::array<TrackView, 4> AccountStore::hangar() const {
   }
   return result;
 }
-std::array<BlueprintView, 6> AccountStore::blueprints() const {
-  std::array<BlueprintView, 6> result{};
+std::array<BlueprintView, 3> AccountStore::blueprints() const {
+  std::array<BlueprintView, 3> result{};
   for (std::size_t i = 0; i < result.size(); ++i) {
     const auto& rule = tuning::unlock_rules[i];
     const auto module = static_cast<std::size_t>(std::countr_zero(rule.blueprint));

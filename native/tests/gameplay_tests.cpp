@@ -55,10 +55,19 @@ void draft_and_restart() {
   for (int i = 0; i < 60 * 30 && run.snapshot().phase == game::Phase::active; ++i) {
     run.advance(1.0F / 60);
   }
-  require(run.snapshot().phase == game::Phase::choosing_upgrade, "survival earns a first upgrade by nineteen seconds");
+  require(run.snapshot().phase == game::Phase::choosing_upgrade, "survival earns an opening upgrade");
+  require(run.snapshot().stats.active_seconds <= 14.05, "survival alone guarantees the cheaper first promotion by fourteen active seconds");
+  require_near(game::level_capture_speed_bonus(run.snapshot().stats.level), .08F, .00001F,
+      "the first natural promotion grants its level lift reward before choosing any card");
+  const auto earned_bytes = run.save_state();
+  game::Game restored;
+  require(restored.restore_state(earned_bytes) == game::SaveStateIssue::none && restored.save_state() == earned_bytes,
+      "cold promotion recovery preserves the earned level and exact card choices");
   const auto frozen = run.snapshot().stats.active_seconds;
+  const auto frozen_speed = run.snapshot().forward_speed;
   run.advance(1);
   require(run.snapshot().stats.active_seconds == frozen, "upgrade choice freezes every active clock");
+  require(run.snapshot().forward_speed == frozen_speed, "upgrade choice freezes the opening speed ramp");
   const auto& choices = run.snapshot().choices;
   for (std::size_t i = 0; i < choices.size(); ++i) {
     require(!choices[i].title.empty() && !choices[i].description.empty(), "upgrade communicates its result");
@@ -70,9 +79,14 @@ void draft_and_restart() {
   require(!run.choose_upgrade(3), "out of range selection is rejected");
   require(run.reroll() && run.reroll(), "two free rerolls available");
   require(!run.reroll(), "reroll allowance is bounded per run");
+  require_near(game::level_capture_speed_bonus(run.snapshot().stats.level), .08F, .00001F,
+      "rerolls cannot farm the automatic level reward");
   require(run.choose_upgrade(0), "select card and continue");
+  require_near(game::level_capture_speed_bonus(run.snapshot().stats.level), .08F, .00001F,
+      "selecting a card does not apply the level reward twice");
   run.start();
   require(run.snapshot().stats.level == 1 && run.snapshot().stats.active_seconds == 0, "restart resets run progression");
+  require_near(game::level_capture_speed_bonus(run.snapshot().stats.level), 0, 0, "a new flight resets earned lift speed");
   require(run.snapshot().rerolls_remaining == tuning::rerolls, "restart restores rerolls");
   for (const auto rank : run.snapshot().modules) {
     require(rank == 0, "restart resets installed hardware");

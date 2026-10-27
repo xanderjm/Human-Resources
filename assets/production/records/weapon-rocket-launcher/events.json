@@ -1,0 +1,39 @@
+[
+  {
+    "task_id": "32b1d5cb-7957-49b2-88cb-43b7a8765439",
+    "type": "convert_model",
+    "status": "success",
+    "credits_consumed": 60,
+    "output_dir": "/Users/coral/Documents/App Development/Human Resources/assets/models/weapon-rocket-launcher/tripo-out/weapon-rocket-launcher-convert-32b1d5cb",
+    "files": [
+      "model.glb"
+    ],
+    "model_file": "/Users/coral/Documents/App Development/Human Resources/assets/models/weapon-rocket-launcher/tripo-out/weapon-rocket-launcher-convert-32b1d5cb/model.glb",
+    "chain": [
+      {
+        "task_id": "32b1d5cb-7957-49b2-88cb-43b7a8765439",
+        "type": "convert_model",
+        "status": "success",
+        "credits_consumed": 10,
+        "output_dir": "/Users/coral/Documents/App Development/Human Resources/assets/models/weapon-rocket-launcher/tripo-out/weapon-rocket-launcher-convert-32b1d5cb",
+        "files": [
+          "model.glb"
+        ],
+        "model_file": "/Users/coral/Documents/App Development/Human Resources/assets/models/weapon-rocket-launcher/tripo-out/weapon-rocket-launcher-convert-32b1d5cb/model.glb"
+      }
+    ],
+    "source_task_id": "5e804ca5-314a-4e37-a1fd-11adf584e7ff",
+    "credits_breakdown": [
+      {
+        "task_id": "5e804ca5-314a-4e37-a1fd-11adf584e7ff",
+        "type": "image_to_model",
+        "credits_consumed": 50
+      },
+      {
+        "task_id": "32b1d5cb-7957-49b2-88cb-43b7a8765439",
+        "type": "convert_model",
+        "credits_consumed": 10
+      }
+    ]
+  }
+]

@@ -1,0 +1,411 @@
+{
+  "asset": "road-corner",
+  "model_file": "assets/models/road-corner/road-corner.glb",
+  "generator": "tools/build_measured_modules.py",
+  "orientation_variants": [
+    {
+      "yaw_degrees": 90,
+      "model_file": "assets/models/road-corner/road-corner-yaw90.glb",
+      "ports": [
+        {
+          "name": "start",
+          "centre_m": [
+            0.0,
+            0.0,
+            -9.0
+          ],
+          "outward": [
+            -1,
+            0,
+            0
+          ],
+          "edge_m": [
+            [
+              0,
+              0,
+              -6
+            ],
+            [
+              0,
+              0,
+              -12
+            ]
+          ],
+          "edge_uv": [
+            [
+              0,
+              -6
+            ],
+            [
+              0,
+              -12
+            ]
+          ]
+        },
+        {
+          "name": "end",
+          "centre_m": [
+            9.0,
+            0.0,
+            0.0
+          ],
+          "outward": [
+            0,
+            0,
+            1
+          ],
+          "edge_m": [
+            [
+              6,
+              0,
+              0
+            ],
+            [
+              12,
+              0,
+              0
+            ]
+          ],
+          "edge_uv": [
+            [
+              6,
+              0
+            ],
+            [
+              12,
+              0
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "yaw_degrees": 180,
+      "model_file": "assets/models/road-corner/road-corner-yaw180.glb",
+      "ports": [
+        {
+          "name": "start",
+          "centre_m": [
+            -9.0,
+            0.0,
+            0.0
+          ],
+          "outward": [
+            0,
+            0,
+            1
+          ],
+          "edge_m": [
+            [
+              -6,
+              0,
+              0
+            ],
+            [
+              -12,
+              0,
+              0
+            ]
+          ],
+          "edge_uv": [
+            [
+              -6,
+              0
+            ],
+            [
+              -12,
+              0
+            ]
+          ]
+        },
+        {
+          "name": "end",
+          "centre_m": [
+            0.0,
+            0.0,
+            -9.0
+          ],
+          "outward": [
+            1,
+            0,
+            0
+          ],
+          "edge_m": [
+            [
+              0,
+              0,
+              -6
+            ],
+            [
+              0,
+              0,
+              -12
+            ]
+          ],
+          "edge_uv": [
+            [
+              0,
+              -6
+            ],
+            [
+              0,
+              -12
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "yaw_degrees": 270,
+      "model_file": "assets/models/road-corner/road-corner-yaw270.glb",
+      "ports": [
+        {
+          "name": "start",
+          "centre_m": [
+            0.0,
+            0.0,
+            9.0
+          ],
+          "outward": [
+            1,
+            0,
+            0
+          ],
+          "edge_m": [
+            [
+              0,
+              0,
+              6
+            ],
+            [
+              0,
+              0,
+              12
+            ]
+          ],
+          "edge_uv": [
+            [
+              0,
+              6
+            ],
+            [
+              0,
+              12
+            ]
+          ]
+        },
+        {
+          "name": "end",
+          "centre_m": [
+            -9.0,
+            0.0,
+            0.0
+          ],
+          "outward": [
+            0,
+            0,
+            -1
+          ],
+          "edge_m": [
+            [
+              -6,
+              0,
+              0
+            ],
+            [
+              -12,
+              0,
+              0
+            ]
+          ],
+          "edge_uv": [
+            [
+              -6,
+              0
+            ],
+            [
+              -12,
+              0
+            ]
+          ]
+        }
+      ]
+    }
+  ],
+  "texture": "assets/textures/texture-asphalt/texture-asphalt.png",
+  "texture_sha256": "1b1821bf91bdddb363680813ca37feac7d5c0a2dfe7fc8bd955e819b7d443017",
+  "bounds_m": [
+    [
+      3.6739402930577075e-16,
+      0.0,
+      0.0
+    ],
+    [
+      12.0,
+      0.0,
+      12.0
+    ]
+  ],
+  "dimensions_m": [
+    12.0,
+    0.0,
+    12.0
+  ],
+  "ports": [
+    {
+      "name": "start",
+      "centre_m": [
+        9.0,
+        0.0,
+        0.0
+      ],
+      "outward": [
+        0,
+        0,
+        -1
+      ],
+      "edge_m": [
+        [
+          6,
+          0,
+          0
+        ],
+        [
+          12,
+          0,
+          0
+        ]
+      ],
+      "edge_uv": [
+        [
+          6,
+          0
+        ],
+        [
+          12,
+          0
+        ]
+      ]
+    },
+    {
+      "name": "end",
+      "centre_m": [
+        0.0,
+        0.0,
+        9.0
+      ],
+      "outward": [
+        -1,
+        0,
+        0
+      ],
+      "edge_m": [
+        [
+          0,
+          0,
+          6
+        ],
+        [
+          0,
+          0,
+          12
+        ]
+      ],
+      "edge_uv": [
+        [
+          0,
+          6
+        ],
+        [
+          0,
+          12
+        ]
+      ]
+    }
+  ],
+  "uv_mode": "world-aligned planar top UV; integer-metre translation; select baked orientation variants",
+  "notes": [
+    "Planar top UV=(localX,localZ), one1m repeat. Orientation variants bake rotations and reprojectUV so texture remains world aligned. Translate only on integer-metre grid; select baked yaw variant instead of rotating default UVs."
+  ],
+  "seam_checks": [
+    {
+      "asset": "road-corner",
+      "port": "start",
+      "samples": 1025,
+      "integer_grid_translation": [
+        16,
+        16
+      ],
+      "max_rgb_error": 0.0
+    },
+    {
+      "asset": "road-corner",
+      "port": "end",
+      "samples": 1025,
+      "integer_grid_translation": [
+        16,
+        16
+      ],
+      "max_rgb_error": 0.0
+    }
+  ],
+  "structural_review": {
+    "status": "passed"
+  },
+  "visual_review": {
+    "status": "passed_authoring_review",
+    "notes": "Reviewed isolated 3/4 render, twelve-item contact sheet, assembled tangent road/path joins, and 3x3 scrolling-ground preview. No scenery baked into references; native-device material scale review remains open."
+  },
+  "import_review": {
+    "status": "passed",
+    "units": "metres",
+    "up": "+Y",
+    "pivot": "local origin; see ports",
+    "bounds_m": [
+      [
+        3.6739402930577075e-16,
+        0.0,
+        0.0
+      ],
+      [
+        12.0,
+        0.0,
+        12.0
+      ]
+    ],
+    "dimensions_m": [
+      12.0,
+      0.0,
+      12.0
+    ]
+  },
+  "triangles": 128,
+  "vertices": 384,
+  "mesh_primitives": 1,
+  "uv_present": true,
+  "textures": [
+    {
+      "size": [
+        1024,
+        1024
+      ],
+      "mode": "RGB"
+    }
+  ],
+  "raw_accessor_bounds": [
+    {
+      "min": [
+        3.6739402930577075e-16,
+        0.0,
+        0.0
+      ],
+      "max": [
+        12.0,
+        0.0,
+        12.0
+      ]
+    }
+  ],
+  "extensions": [],
+  "bytes": 1443444
+}

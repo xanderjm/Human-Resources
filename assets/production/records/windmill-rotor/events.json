@@ -1,0 +1,39 @@
+[
+  {
+    "task_id": "3f7e1b16-481c-42cd-9663-c62d831053fe",
+    "type": "convert_model",
+    "status": "success",
+    "credits_consumed": 60,
+    "output_dir": "/Users/coral/Documents/App Development/Human Resources/assets/models/windmill-rotor/tripo-out/windmill-rotor-convert-3f7e1b16",
+    "files": [
+      "model.glb"
+    ],
+    "model_file": "/Users/coral/Documents/App Development/Human Resources/assets/models/windmill-rotor/tripo-out/windmill-rotor-convert-3f7e1b16/model.glb",
+    "chain": [
+      {
+        "task_id": "3f7e1b16-481c-42cd-9663-c62d831053fe",
+        "type": "convert_model",
+        "status": "success",
+        "credits_consumed": 10,
+        "output_dir": "/Users/coral/Documents/App Development/Human Resources/assets/models/windmill-rotor/tripo-out/windmill-rotor-convert-3f7e1b16",
+        "files": [
+          "model.glb"
+        ],
+        "model_file": "/Users/coral/Documents/App Development/Human Resources/assets/models/windmill-rotor/tripo-out/windmill-rotor-convert-3f7e1b16/model.glb"
+      }
+    ],
+    "source_task_id": "a0e389f0-05d6-446c-b0a2-6ea95b395826",
+    "credits_breakdown": [
+      {
+        "task_id": "a0e389f0-05d6-446c-b0a2-6ea95b395826",
+        "type": "image_to_model",
+        "credits_consumed": 50
+      },
+      {
+        "task_id": "3f7e1b16-481c-42cd-9663-c62d831053fe",
+        "type": "convert_model",
+        "credits_consumed": 10
+      }
+    ]
+  }
+]

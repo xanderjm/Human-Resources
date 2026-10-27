@@ -1,0 +1,28 @@
+── Plan ──────────────────────────
+input: /Users/coral/Documents/App Development/Human Resources/assets/references/barn/v2.png
+model: P1-20260311 — explicit --model
+steps:
+  1. image-to-model  POST /v3/generation/image-to-model — generate a 3D model from one image
+     model="P1-20260311" face_limit=2800 texture=true pbr=false texture_quality="standard" texture_alignment="original_image" export_uv=true
+  2. convert  POST /v3/models/convert — convert format / texture size / orientation
+     format="GLTF" texture_size=1024
+cost impact:
+  · non-default convert options bill as complex convert
+──────────────────────────────────
+model: P1-20260311 (explicit --model)
+task created 3dcbbb31-5d17-44e8-8e2f-cbfe380a9d15 (@barn-2)
+image_to_model · queued
+image_to_model · running 11% · 3dcbbb31
+image_to_model · running 18% · 3dcbbb31
+image_to_model · running 29% · 3dcbbb31
+image_to_model · running 46% · 3dcbbb31
+image_to_model · running 69% · 3dcbbb31
+image_to_model · success 100% · 3dcbbb31
+✓ image_to_model · 3dcbbb31-5d17-44e8-8e2f-cbfe380a9d15 · 50 credits
+! non-default convert options use the "complex convert" price tier
+task created ca86e56c-c080-408d-957f-d0eb0e756dc3 (@barn-convert-2)
+convert_model · queued
+✓ convert_model · ca86e56c-c080-408d-957f-d0eb0e756dc3 · 10 credits
+downloading artifacts…
+✓ artifacts saved to /Users/coral/Documents/App Development/Human Resources/assets/models/barn/tripo-out/barn-convert-2-ca86e56c
+{"task_id":"ca86e56c-c080-408d-957f-d0eb0e756dc3","type":"convert_model","status":"success","credits_consumed":60,"output_dir":"/Users/coral/Documents/App Development/Human Resources/assets/models/barn/tripo-out/barn-convert-2-ca86e56c","files":["model.glb"],"model_file":"/Users/coral/Documents/App Development/Human Resources/assets/models/barn/tripo-out/barn-convert-2-ca86e56c/model.glb","chain":[{"task_id":"ca86e56c-c080-408d-957f-d0eb0e756dc3","type":"convert_model","status":"success","credits_consumed":10,"output_dir":"/Users/coral/Documents/App Development/Human Resources/assets/models/barn/tripo-out/barn-convert-2-ca86e56c","files":["model.glb"],"model_file":"/Users/coral/Documents/App Development/Human Resources/assets/models/barn/tripo-out/barn-convert-2-ca86e56c/model.glb"}],"source_task_id":"3dcbbb31-5d17-44e8-8e2f-cbfe380a9d15","credits_breakdown":[{"task_id":"3dcbbb31-5d17-44e8-8e2f-cbfe380a9d15","type":"image_to_model","credits_consumed":50},{"task_id":"ca86e56c-c080-408d-957f-d0eb0e756dc3","type":"convert_model","credits_consumed":10}]}

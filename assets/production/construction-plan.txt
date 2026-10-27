@@ -1,0 +1,317 @@
+UFO ASSET PRODUCTION PLAN — REVIEWED INVENTORY
+
+92 deliverables: 56 tripo_model, 12 procedural_model, 7 tileable_texture, 17 native_graphic
+
+BUILDING THE LEVELS
+Use a 16m scrolling grid with a broad central playable area. Ground planes and measured path/road/pavement modules repeat. Freeform models decorate edges and act as targets or threats.
+Farmland: grass ground + dirt straight/bend strips, independent soil beds with seedling instances, fence posts and rails at 2m centres, barns/silos/windmills and separate hay/trees/rocks.
+Suburbia: 6m streets with bends and T junctions, 1.5m sidewalks with matching corners/end caps, independent houses/lamp/mailbox/bin/hedge placement, quiet road space for gameplay.
+Desert: sand ground with recoloured road modules, boundary cliffs/boulders/cacti, separate canopy and fuel pumps, individual roadside bollards and scrub.
+Shared cast and military remain the same across all biomes. Match the painterly style guide rather than the earlier textureless frames.
+
+REVIEW CHANGES MADE BEFORE PRODUCTION
+- Farmer hat and resident cap separated so headwear can move independently; reference images must not include those items on their bodies.
+- Jeep driver and all wheels separated from chassis. The soldier is shared; do not generate a new driver fused into the vehicle.
+- Tank hull and turret separated for independent aiming; cannon remains attached to turret. Tracks belong to hull.
+- Windmill rotor separated from mast. Canopy separated from fuel pumps. Plants/hedges separated from buildings. Crops assembled from seedling instances and soil beds.
+- Ground, roads, pavement and fencing use exact measured geometry; variants are made through reusable modules/materials instead of baked mini-scenes.
+- Faint crop-circle decal is separate from live capture ring. Trail is instanced dots, not a frozen curve. Score/level text is dynamic; no digits baked into UI art.
+- Added bare-head body references, upgrade attachment meshes, road bends/junctions, pavement termination, tilled soil, reusable shadow, shield shell and UI primitives missing from the sheet.
+- Added separate ivory road-centre dash sprite; painted road markings are instanced independently.
+- Existing round tree, cactus, rock, mailbox, house and fuel-pump variations explicitly enumerated. No helicopters or new animal species added.
+
+PIPELINE
+Generate one isolated white-background image per inventory item/variation using the approved sheet and relevant biome frame. Inspect it; regenerate if components, silhouettes, colours or isolation are wrong.
+For Tripo model items, run the user-prescribed direct CLI dry run, validate JSON and then execute with --yes. Textures enabled; PBR disabled; original_image alignment; UVs; P1; GLTF conversion at 1024px. No rigging/retexturing.
+Measured modules and native graphics are built to exact specs from the approved references. Seamless albedo tiles are generated separately from their white-backed material references.
+Review downloaded geometry, UVs, texture size, dimensions and multi-angle renders. Remake failures. Keep original downloads and all task IDs. Publish a local review gallery with every reference, final asset, QA outcome and download.
+
+INDIVIDUAL ASSETS
+ufo-body | UFO body | tripo_model | all
+  Make: Cobalt saucer, blue hemispherical dome, three mint painted lamps, crooked antenna. No beam, laser, pilot or ground.
+  Assemble: Base ship with attachment sockets; fixed opaque painted dome.
+ufo-laser-mount | UFO laser attachment | tripo_model | all
+  Make: Small cobalt bolt-on single barrel with mint inset muzzle and painted blue highlights.
+  Assemble: Separate upgrade mesh attached to a saucer socket.
+ufo-beam-emitter | UFO beam emitter attachment | tripo_model | all
+  Make: Small cobalt annular emitter with three mint insets; no drawn beam or glow cloud.
+  Assemble: Separate upgrade under the saucer; capture ring remains an effect.
+ufo-shield-emitter | UFO shield emitter attachment | tripo_model | all
+  Make: Compact cobalt mounting foot and mint lens on a stub stalk. No energy shield shell.
+  Assemble: Repeatable upgrade socket prop; shield surface is an effect.
+farmer-body | Farmer without hat | tripo_model | all
+  Make: Warm peach comic farmer, navy overalls, cream shirt, brown bean boots. Bare head, empty hands, neutral relaxed A stance; no hat or tools.
+  Assemble: Hat is separate for abduction; no rigging/animation in initial generation.
+resident-body | Sleepy resident without cap | tripo_model | suburb
+  Make: Warm peach resident, navy bathrobe, cream belt/trim, large slippers. Bare head, empty hands and relaxed neutral A stance.
+  Assemble: Nightcap separate; shared human scale.
+soldier-body | Helmeted soldier | tripo_model | all
+  Make: Comic warm peach soldier, navy uniform and helmet, large boots, empty hands, neutral A stance. No gun or vehicle.
+  Assemble: Shared crew actor, never fused into jeep geometry.
+straw-hat | Amber straw hat | tripo_model | all
+  Make: One amber broad brim straw hat, black/navy band, clearly open underside, no head or person.
+  Assemble: Detachable shared farmer headwear and loose-hat effect prop.
+nightcap | Mustard nightcap | tripo_model | suburb
+  Make: One mustard soft drooping nightcap with cream pompom, hollow head opening; no head.
+  Assemble: Detachable resident cap.
+cow | Pear-shaped cow | tripo_model | all
+  Make: One standing pear-shaped ivory cow, large painterly indigo-black patches, coral nose, broad ears, four short legs, tiny horns and tail.
+  Assemble: One intact neutral quadruped; no grass, collar, platforms or effects.
+sheep | Cream sheep | tripo_model | all
+  Make: One standing cream/gold scalloped-wool sheep, dark navy face and four short legs; broad painted wool masses.
+  Assemble: One intact quadruped; wool is geometric masses with painterly texture, not hair.
+pig | Salmon pig | tripo_model | all
+  Make: One standing salmon-pink bean pig, four stub feet, little ears, broad rosy planes and tiny curly tail.
+  Assemble: One intact quadruped; no ground or accessories.
+jeep-chassis | Jeep chassis without wheels or crew | tripo_model | all
+  Make: Navy open-top jeep body with empty seats, open wheel wells, coral chevrons and windshield frame. NO wheels, tires, driver or gunner.
+  Assemble: Four wheel instances and separate crew actors assembled later.
+jeep-wheel | Reusable jeep wheel | tripo_model | all
+  Make: One chunky dark rubber wheel with navy hub, clearly defined axle centre. No axle or vehicle, only one wheel.
+  Assemble: Four copies around X axle; spare copy optional.
+tank-hull | Tracked tank hull without turret | tripo_model | all
+  Make: Squat charcoal/navy tank hull with two continuous caterpillar track assemblies; flat central turret mounting platform. No turret, barrel or crew.
+  Assemble: Turret mounts on top and rotates independently.
+tank-turret | Tank turret and cannon | tripo_model | all
+  Make: One low angular navy turret with coral double chevron, short thick cannon and slim antenna. No hull or tracks.
+  Assemble: Single articulated turret assembly with cannon included, central yaw pivot.
+missile | Military missile | tripo_model | all
+  Make: One small navy missile with coral/red nose, four simple tail fins, dark exhaust opening. No flame, smoke, platform or trail.
+  Assemble: Shared projectile; exhaust is a separate effect.
+tree-round-large | Large rounded tree | tripo_model | farm,suburb
+  Make: One olive/sage faceted rounded crown and short warm brown trunk; broad painterly leaf patches. No plants or ground at base.
+  Assemble: Repeat/rotate/scale this individual asset; rows and clusters are assembled, not fused into the model.
+tree-round-small | Small rounded tree | tripo_model | farm,suburb
+  Make: One compact irregular olive/sage rounded crown on short warm wood trunk; visibly different crown silhouette from large tree. No ground.
+  Assemble: Repeat/rotate/scale this individual asset; rows and clusters are assembled, not fused into the model.
+bush-round | Rounded bush | tripo_model | farm,suburb
+  Make: One squat painterly sage/olive bush with a few broad foliage lobes, no pot or ground.
+  Assemble: Repeat/rotate/scale this individual asset; rows and clusters are assembled, not fused into the model.
+bush-low | Low spreading bush | tripo_model | farm,suburb
+  Make: One low irregular spreading sage bush, clear small-game silhouette, no rocks or ground.
+  Assemble: Repeat/rotate/scale this individual asset; rows and clusters are assembled, not fused into the model.
+hedge-module | Straight hedge module | tripo_model | farm,suburb
+  Make: One neatly trimmed long sage hedge block with slightly rounded irregular top; no soil bed or pavement.
+  Assemble: Repeat/rotate/scale this individual asset; rows and clusters are assembled, not fused into the model.
+field-rock-a | Field rock A | tripo_model | farm,suburb
+  Make: One low angular blue-grey field stone with broad painted slate planes, no vegetation.
+  Assemble: Repeat/rotate/scale this individual asset; rows and clusters are assembled, not fused into the model.
+field-rock-b | Field rock B | tripo_model | farm,suburb
+  Make: One taller asymmetric blue-grey field stone, silhouette different from rock A, no ground.
+  Assemble: Repeat/rotate/scale this individual asset; rows and clusters are assembled, not fused into the model.
+cactus-tall | Tall branching cactus | tripo_model | desert
+  Make: One tall sage-green faceted cactus with two asymmetric upward arms and broad painted rib highlights. No ground, pot or stones.
+  Assemble: Repeat/rotate/scale this individual asset; rows and clusters are assembled, not fused into the model.
+cactus-short | Short cactus | tripo_model | desert
+  Make: One short squat faceted sage-green cactus with one small side arm; no ground, pot or rocks.
+  Assemble: Repeat/rotate/scale this individual asset; rows and clusters are assembled, not fused into the model.
+cliff-module-a | Tall desert outcrop | tripo_model | desert
+  Make: One connected chunky blush/sandstone cliff outcrop with mauve shadow planes, broad low-poly forms, no scattered stones or floor slab.
+  Assemble: Repeat/rotate/scale this individual asset; rows and clusters are assembled, not fused into the model.
+cliff-module-b | Low desert outcrop | tripo_model | desert
+  Make: One connected broad low stepped sandstone/mauve outcrop, visibly different from tall cliff, no separate debris or ground.
+  Assemble: Repeat/rotate/scale this individual asset; rows and clusters are assembled, not fused into the model.
+desert-boulder-a | Sandstone boulder A | tripo_model | desert
+  Make: One broad rounded-faceted sandstone boulder with mauve painterly shadows, no plants or stones attached.
+  Assemble: Repeat/rotate/scale this individual asset; rows and clusters are assembled, not fused into the model.
+desert-boulder-b | Sandstone boulder B | tripo_model | desert
+  Make: One smaller angular asymmetric sandstone boulder with mauve painted faces, no ground.
+  Assemble: Repeat/rotate/scale this individual asset; rows and clusters are assembled, not fused into the model.
+grass-tuft | Sage grass tuft | tripo_model | farm,suburb
+  Make: One connected small stylised sage grass tuft of broad faceted blades, no soil base or other objects.
+  Assemble: Repeat/rotate/scale this individual asset; rows and clusters are assembled, not fused into the model.
+desert-scrub | Dry desert scrub | tripo_model | desert
+  Make: One connected dry straw/olive scrub tuft of broad stylised pointed leaves, no soil, cactus or rock.
+  Assemble: Repeat/rotate/scale this individual asset; rows and clusters are assembled, not fused into the model.
+crop-seedling | Crop seedling | tripo_model | farm
+  Make: One small green crop seedling with broad oval leaves and short central stem, no dirt bed, pot, other plants or ground.
+  Assemble: Repeat/rotate/scale this individual asset; rows and clusters are assembled, not fused into the model.
+barn | Farm barn | tripo_model | farm
+  Make: Solid cream timber barn with muted terracotta roof, shallow dark door panel, painted planks and tile strokes. No grass, bushes, fence, hay or terrain.
+  Assemble: Static building, separate surrounding props.
+silo | Farm silo | tripo_model | farm
+  Make: One round blue-grey metal farm silo, conical cap, broad brushed painted panels, flat bottom. No ground or props.
+  Assemble: Standalone farm landmark.
+windmill-mast | Windmill mast without rotor | tripo_model | farm
+  Make: One simple dark painted metal tapered lattice windmill tower with top rotor mounting spindle. No rotor blades, ground or plants.
+  Assemble: Separate rotor mounted on spindle.
+windmill-rotor | Windmill rotor | tripo_model | farm
+  Make: One radial farm windmill rotor of broad slate-grey vanes and central hub, all joined; no tower, ground or scenery.
+  Assemble: Separate rotating element; no animation generation.
+hay-bale | Round hay bale | tripo_model | farm
+  Make: One wheat-gold cylindrical hay bale, hand-painted circular straw rings on ends and broad curved straw strokes, no ground.
+  Assemble: Reusable standalone bale.
+house-coral | Coral-roof house | tripo_model | suburb
+  Make: One small cream timber bungalow with coral pitched roof, simple warm painted windows, door and short step. No lamp, hedge, flowers, lawn, mailbox, fence or pavement.
+  Assemble: Place alongside modular pavement; window glow is optional material metadata.
+house-teal | Teal-roof house | tripo_model | suburb
+  Make: One small cream timber bungalow in same family with petrol-teal pitched roof, warm painted windows, door and short step. No surrounding props, shrubbery, grass or ground.
+  Assemble: Second building variation; common scale/paint treatment.
+streetlamp | Streetlamp | tripo_model | suburb
+  Make: One slender charcoal streetlamp with simple warm amber lantern, square foot only. No pavement slab, people or ground.
+  Assemble: Repeat at pavement edge; no light object baked into model.
+mailbox-red | Red mailbox | tripo_model | suburb
+  Make: One small muted terracotta-red rural mailbox on a dark narrow post, closed box, painted mail slot. No ground, shrubs or house.
+  Assemble: Standalone fixed mailbox.
+mailbox-teal | Teal mailbox | tripo_model | suburb
+  Make: One small muted petrol-teal mailbox on dark narrow post, same scale as red mailbox, no surrounding props or ground.
+  Assemble: Colour/silhouette variation.
+wheelie-bin | Wheelie bin | tripo_model | suburb
+  Make: One charcoal-blue wheelie rubbish bin with closed lid and two small wheels, subtle painted wear. No litter, ground or other bins.
+  Assemble: Single static prop; wheels and lid fixed.
+service-canopy | Roadside service canopy | tripo_model | desert
+  Make: One simple flat muted-rust roof slab with cream fascia and four cream posts. Open below. No fuel pumps, ground platform, road, plants, rocks or cars.
+  Assemble: Place pump instances under it independently.
+fuel-pump-red | Red fuel pump | tripo_model | desert
+  Make: One small red vintage rectangular fuel pump, dark simple display, thick black hose fixed close to side and nozzle. No labels, ground, canopy or other pumps.
+  Assemble: Standalone pump module.
+fuel-pump-blue | Blue fuel pump | tripo_model | desert
+  Make: One small petrol-blue vintage fuel pump in same family, dark display and close-fitting thick black hose/nozzle. No text, surrounding scenery or ground.
+  Assemble: Second colour variant.
+road-bollard | Desert roadside bollard | tripo_model | desert
+  Make: One short square warm-grey wooden roadside bollard with slightly lighter painted top, no ground, road or other posts.
+  Assemble: Repeat along roadside.
+fence-post | Timber fence post | procedural_model | farm
+  Make: One plain square warm-brown timber fence post, painted grain, bevelled top, no ground or rail.
+  Assemble: Exact box post with bottom pivot; repeat at 2m centres.
+fence-rail | Timber fence rail | procedural_model | farm
+  Make: One straight horizontal warm timber rail, squared ends, broad painted wood strokes, no posts or ground.
+  Assemble: Exact 2m rail, two instances per span; rotate for corners.
+ground-tile | Universal ground tile | procedural_model | all
+  Make: One isolated flat square painterly ground tile on white, no props or terrain border.
+  Assemble: 16m square plane, shared UV layout; choose biome material.
+path-straight | Farm path straight | procedural_model | farm
+  Make: One isolated straight beige dirt path ribbon with soft painted edges, no grass, rocks or props.
+  Assemble: 16m straight flat ribbon; overlays grass with small height offset.
+path-corner | Farm path bend | procedural_model | farm
+  Make: One isolated quarter-circle beige dirt path ribbon of consistent width, no surrounding grass or props.
+  Assemble: 90 degree bend, 6m centre radius, 3m width.
+soil-bed | Tilled crop bed | procedural_model | farm
+  Make: One flat long dark brown painted tilled-soil rectangle, no seedlings, fence, rocks or props.
+  Assemble: 4m repeatable soil strip; seedlings remain separate objects.
+road-straight | Street straight | procedural_model | suburb,desert
+  Make: One isolated flat slate asphalt road rectangle, no kerbs, cars, markings or scenery.
+  Assemble: 6m x 16m surface; biome material plus separate markings.
+road-corner | Street corner | procedural_model | suburb,desert
+  Make: One isolated quarter-circle asphalt road surface, consistent lane width, no props or pavement.
+  Assemble: 90 degree road bend, 9m centre radius, 6m width.
+road-junction | Street T junction | procedural_model | suburb,desert
+  Make: One isolated flat T-shaped asphalt junction surface, no markings, kerbs or props.
+  Assemble: 6m road mouths on 16m grid; rotate for all junction orientations.
+pavement-straight | Pavement straight and kerb | procedural_model | suburb
+  Make: One straight pale-stone sidewalk slab with raised outer kerb, painted block joints, no streetlamp or other props.
+  Assemble: 16m long, 1.5m wide, 0.16m high, continuous edge joins.
+pavement-corner | Curved pavement and kerb | procedural_model | suburb
+  Make: One 90-degree curved pale-stone pavement and kerb segment, consistent width, no road or scenery.
+  Assemble: Quarter annulus adjacent to road-corner; matching 1.5m width.
+pavement-end | Pavement termination | procedural_model | suburb
+  Make: One short pale-stone pavement end-cap with bevelled kerb finish, no other object.
+  Assemble: Caps exposed pavement ends without open edges.
+texture-grass | Painterly sage grass | tileable_texture | farm,suburb
+  Make: Soft dusty sage grass with broad restrained olive painted strokes, no distinct plants, stones or cast shadows.
+  Assemble: Generate white-background flat material reference, then a separate seamless albedo tile. 1024px texture, no PBR maps.
+texture-dirt | Painterly beige dirt | tileable_texture | farm
+  Make: Warm quiet beige dirt, broad subtle painted tones, no pebbles or grass silhouettes.
+  Assemble: Generate white-background flat material reference, then a separate seamless albedo tile. 1024px texture, no PBR maps.
+texture-soil | Painterly tilled soil | tileable_texture | farm
+  Make: Quiet warm dark brown soil with broad lengthwise painted furrow shapes, no plants.
+  Assemble: Generate white-background flat material reference, then a separate seamless albedo tile. 1024px texture, no PBR maps.
+texture-asphalt | Painterly slate asphalt | tileable_texture | suburb,desert
+  Make: Quiet slate-blue asphalt, broad subtle blue-grey brush patches; no markings, cracks, litter or cast shadows.
+  Assemble: Generate white-background flat material reference, then a separate seamless albedo tile. 1024px texture, no PBR maps.
+texture-pavement | Painterly pale stone | tileable_texture | suburb
+  Make: Warm pale stone, soft broad brush variation; no baked mortar lines or objects. Measured geometry supplies slab joints.
+  Assemble: Generate white-background flat material reference, then a separate seamless albedo tile. 1024px texture, no PBR maps.
+texture-sand | Painterly ochre sand | tileable_texture | desert
+  Make: Quiet pale ochre/peach sand with broad warm/cool brushed patches, no rocks, footprints or plants.
+  Assemble: Generate white-background flat material reference, then a separate seamless albedo tile. 1024px texture, no PBR maps.
+texture-wood | Painterly warm timber | tileable_texture | farm,desert
+  Make: Warm brown timber with broad simple lengthwise grain brushstrokes, no knots larger than small scale, no objects.
+  Assemble: Generate white-background flat material reference, then a separate seamless albedo tile. 1024px texture, no PBR maps.
+fx-capture-ring | Capture radius ring | native_graphic | all
+  Make: Mint thin circular ground decal with restrained segmented strokes and soft edge.
+  Assemble: Native reusable vector/shader/mesh asset with a white-background reference preview; transparent render where applicable. Never send to Tripo.
+fx-crop-circle | Crop circle stamp | native_graphic | all
+  Make: Faint flattened-grass concentric ring pattern, neutral mask tinted by ground material.
+  Assemble: Native reusable vector/shader/mesh asset with a white-background reference preview; transparent render where applicable. Never send to Tripo.
+fx-capture-dot | Capture trail dot | native_graphic | all
+  Make: One mint emissive rounded dot; runtime paths repeat this dot, not a frozen curved mesh.
+  Assemble: Native reusable vector/shader/mesh asset with a white-background reference preview; transparent render where applicable. Never send to Tripo.
+fx-laser | Laser strip | native_graphic | all
+  Make: Thin mint core and soft edge, repeatable short strip.
+  Assemble: Native reusable vector/shader/mesh asset with a white-background reference preview; transparent render where applicable. Never send to Tripo.
+fx-hit-spark | Small interception spark | native_graphic | all
+  Make: Small mint/ivory six-ray starburst, restrained size.
+  Assemble: Native reusable vector/shader/mesh asset with a white-background reference preview; transparent render where applicable. Never send to Tripo.
+fx-exhaust-puff | Projectile exhaust puff | native_graphic | all
+  Make: One soft pale warm-grey simple puff; particles repeat it.
+  Assemble: Native reusable vector/shader/mesh asset with a white-background reference preview; transparent render where applicable. Never send to Tripo.
+fx-blob-shadow | Soft actor shadow | native_graphic | all
+  Make: One soft charcoal ellipse on transparent background; tint/scale at placement.
+  Assemble: Native reusable vector/shader/mesh asset with a white-background reference preview; transparent render where applicable. Never send to Tripo.
+fx-threat-chevron | Military double chevron | native_graphic | all
+  Make: Two bold coral angular chevrons, no backing panel.
+  Assemble: Native reusable vector/shader/mesh asset with a white-background reference preview; transparent render where applicable. Never send to Tripo.
+fx-shield-shell | Shield shell | native_graphic | all
+  Make: Subtle mint spherical field surface with thin edge treatment; no saucer baked in.
+  Assemble: Native reusable vector/shader/mesh asset with a white-background reference preview; transparent render where applicable. Never send to Tripo.
+ui-coin | Score coin | native_graphic | all
+  Make: Simple amber circular score coin, no digits baked in.
+  Assemble: Native reusable vector/shader/mesh asset with a white-background reference preview; transparent render where applicable. Never send to Tripo.
+ui-beam | Beam upgrade icon | native_graphic | all
+  Make: Mint UFO intake/rings symbol, no text or card baked in.
+  Assemble: Native reusable vector/shader/mesh asset with a white-background reference preview; transparent render where applicable. Never send to Tripo.
+ui-laser | Laser upgrade icon | native_graphic | all
+  Make: Coral laser/starburst symbol, no text or card baked in.
+  Assemble: Native reusable vector/shader/mesh asset with a white-background reference preview; transparent render where applicable. Never send to Tripo.
+ui-shield | Shield icon | native_graphic | all
+  Make: Mint simple shield outline/fill used for both health pips and upgrade.
+  Assemble: Native reusable vector/shader/mesh asset with a white-background reference preview; transparent render where applicable. Never send to Tripo.
+ui-hud-panel | HUD capsule | native_graphic | all
+  Make: Navy rounded capsule background, no score or level digits baked in.
+  Assemble: Native reusable vector/shader/mesh asset with a white-background reference preview; transparent render where applicable. Never send to Tripo.
+ui-xp-track | XP meter track | native_graphic | all
+  Make: Navy rounded XP meter trough and separate mint fill element; no text baked in.
+  Assemble: Native reusable vector/shader/mesh asset with a white-background reference preview; transparent render where applicable. Never send to Tripo.
+ui-upgrade-card | Upgrade card background | native_graphic | all
+  Make: Compact ivory/navy rounded card background, no icon, text or level digits baked in.
+  Assemble: Native reusable vector/shader/mesh asset with a white-background reference preview; transparent render where applicable. Never send to Tripo.
+
+road-centre-dash | Individual road centre dash | native_graphic | suburb,desert
+  Make: One ivory painted marking with transparent margins, no asphalt or text.
+  Assemble: Instance with gaps along road centre. Clamp sprite; terrain material repeats separately.
+
+INFANTRY AND JEEP WEAPON EXTENSION — 25 OCTOBER 2026
+Owner correction: ALL character generation inputs are unarmed TRUE T-POSES. The rifleman T-pose is reused as future jeep crew. Armed lineup/individual images are visual guides only. Rigging,equipping,seating and animation come later. Eight independent new source models, never combined character/weapon submissions.
+
+infantry-rifleman-body | Rifleman body | tripo_model
+  Make: Compact navy helmeted rifleman,coral sleeve stripe,true T-pose with empty hands; no gun.
+  Assemble: Unarmed true T-pose source for later rigging. Separate weapon is equipped after rigging; no posed/armed mesh generation. Reuse this same body as jeep crew; future seated pose uses recorded jeep seat datum.
+
+infantry-shotgunner-body | Heavy shotgunner body | tripo_model
+  Make: Short broad navy soldier,wide helmet,padded vest,bare forearms,true T-pose with empty hands.
+  Assemble: Unarmed true T-pose source for later rigging. Separate weapon is equipped after rigging; no posed/armed mesh generation.
+
+infantry-rocketeer-body | Rocket trooper body | tripo_model
+  Make: Tall lanky navy trooper,angular ear-pad helmet,small integral backpack,true T-pose with empty hands.
+  Assemble: Unarmed true T-pose source for later rigging. Separate weapon is equipped after rigging; no posed/armed mesh generation.
+
+weapon-carbine | Infantry carbine | tripo_model
+  Make: One compact navy carbine,wood stock,single barrel,square magazine,coral doublechevron. No hands.
+  Assemble: Separate carry mesh; front muzzle+Z, grip sockets recorded after import.
+
+weapon-shotgun | Double-barrel shotgun | tripo_model
+  Make: One chunky two-barrel navy break-action shotgun,wood stock/foregrip; no hands or shells.
+  Assemble: Separate two-hand carry mesh; front two muzzles+Z.
+
+weapon-rocket-launcher | Shoulder rocket launcher | tripo_model
+  Make: One oversized navy shoulder tube,coral integral rocket nose,two grips; no person or loose ammunition.
+  Assemble: Separate shoulder carry mesh; front nose+Z.
+
+jeep-minigun-head | Mounted jeep minigun | tripo_model
+  Make: One compact stylized five-barrel navy rotary gun head,coralchevron,sidebox and trunnions; no pedestal/vehicle/operator/effects.
+  Assemble: Separate yaw/pitch gun assembly on jeep-minigun-mount.
+
+jeep-minigun-mount | Jeep minigun pedestal | tripo_model
+  Make: One navy pedestal with small baseplate,short column and fork bearing; no gun,vehicle,ground.
+  Assemble: Rear-bed mount; exact attachment and gun socket after import.

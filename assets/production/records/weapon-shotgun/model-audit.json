@@ -1,0 +1,121 @@
+{
+  "triangles": 1537,
+  "vertices": 2126,
+  "mesh_primitives": 1,
+  "uv_present": true,
+  "textures": [
+    {
+      "size": [
+        1024,
+        1024
+      ],
+      "mode": "RGB"
+    }
+  ],
+  "raw_accessor_bounds": [
+    {
+      "min": [
+        -0.4990234375,
+        -0.1279296875,
+        -0.0576171875
+      ],
+      "max": [
+        0.4990234375,
+        0.1279296875,
+        0.0576171912252903
+      ]
+    }
+  ],
+  "extensions": [],
+  "bytes": 296500,
+  "asset": "weapon-shotgun",
+  "model_file": "assets/models/weapon-shotgun/weapon-shotgun.glb",
+  "requested_face_limit": 1600,
+  "source_task_id": "c8e85741-eb07-402a-8866-e9e71a3233c4",
+  "convert_task_id": "76c8dec5-7d22-4f4e-95a2-44f8f7d35695",
+  "credits_consumed": 60,
+  "preview": null,
+  "triangle_budget_review": {
+    "requested_target": 1600,
+    "actual_triangles": 1537,
+    "target_met": true,
+    "category_ceiling": 3000,
+    "status": "passed"
+  },
+  "structural_review": {
+    "status": "passed",
+    "notes": "Triangle mode, valid GLB length, UVs and embedded 1024px base colour checked. Requested targets are approximate; actual triangle count and target deviations are reported separately, within the user-specified 3000-prop / 8000-character ceilings. Scale, pivot, topology and visual quality require separate review."
+  },
+  "visual_review": {
+    "status": "accepted",
+    "notes": "Accepted independent double-barrel shotgun: exactly two side-by-side open muzzle bores verified in the front render, coherent stock/neck, trigger loop and wooden fore-end, navy/coral palette, no hands/body fragments or shells. Fine brush detail is smoother than reference, but broad painted blocks and silhouette remain. Uniform 0.70 m length, +Y up/+Z muzzle, measured primary stock-neck grip at origin; separate support, shoulder/butt and two muzzle datums recorded. No equipping, rigging or pose work.",
+    "model_sha256": "fdfb970d978be03c8cef8e3db03a088cdc9d77fd054169901f8588e08934a3a4",
+    "reference": "assets/references/weapon-shotgun/v1.png",
+    "reference_sha256": "bdf7291c261d4abbe93f1dedeee8e7cf2a60a7fd1f8e0c7037d67e7081525ff3",
+    "evidence": [
+      "assets/production/records/weapon-shotgun/review-weapons-final-three-quarter.png",
+      "assets/production/records/weapon-shotgun/review-weapons-final-opposite.png",
+      "assets/production/records/weapon-shotgun/review-weapons-final-front.png",
+      "assets/production/records/weapon-shotgun/review-weapons-final-right.png",
+      "assets/production/records/weapon-shotgun/review-sockets-side.png"
+    ],
+    "contact_sheet": "assets/production/reviews/props-six-weapons-final.png",
+    "method": "Actual decoded triangle/UV/base-colour geometry rendered with CPU depth buffer, plus inspected measured socket overlays.",
+    "runtime_qualified": false
+  },
+  "import_review": {
+    "status": "passed",
+    "units": "metres",
+    "up": "+Y",
+    "forward": "+Z",
+    "yaw_degrees": -90.0,
+    "pivot": "primary-grip",
+    "double_sided": false,
+    "uniform_scale": 0.7013698630136986,
+    "bounds_m": [
+      [
+        -0.042637,
+        -0.107192,
+        -0.220034
+      ],
+      [
+        0.038185,
+        0.07226,
+        0.479966
+      ]
+    ],
+    "dimensions_m": [
+      0.080822,
+      0.179452,
+      0.7
+    ],
+    "vertex_checks": [
+      {
+        "triangles": 1537,
+        "degenerate_triangles": 0,
+        "uv_bounds": [
+          [
+            0.0006312744808383286,
+            0.0005785822868347168
+          ],
+          [
+            0.9994214177131653,
+            0.999412477016449
+          ]
+        ]
+      }
+    ],
+    "notes": "Real scene vertices and indices decoded; finite positions/UVs; retained embedded 1024px base colour. Uniform root transform; raw file preserved.",
+    "primary_grip_origin": true,
+    "measured_canonical_grip_m": [
+      0.002226,
+      0.017466,
+      -0.129966
+    ],
+    "pivot_notes": "Actual inspected feature bounds measured from triangle surface samples; only outer-root translation changed. No body poses/equipment/rigging.",
+    "normalized_file_bytes": 296848,
+    "bin_payload_matches_raw": true
+  },
+  "raw_model_file": "assets/models/weapon-shotgun/tripo-out/weapon-shotgun-convert-76c8dec5/model.glb",
+  "socket_metadata": "assets/production/weapon-sockets.json"
+}

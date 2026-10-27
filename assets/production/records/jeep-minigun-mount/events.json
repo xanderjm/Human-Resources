@@ -1,0 +1,39 @@
+[
+  {
+    "task_id": "fd6b2548-183b-4b75-aff8-e5ab3d7cda9b",
+    "type": "convert_model",
+    "status": "success",
+    "credits_consumed": 60,
+    "output_dir": "/Users/coral/Documents/App Development/Human Resources/assets/models/jeep-minigun-mount/tripo-out/jeep-minigun-mount-convert-fd6b2548",
+    "files": [
+      "model.glb"
+    ],
+    "model_file": "/Users/coral/Documents/App Development/Human Resources/assets/models/jeep-minigun-mount/tripo-out/jeep-minigun-mount-convert-fd6b2548/model.glb",
+    "chain": [
+      {
+        "task_id": "fd6b2548-183b-4b75-aff8-e5ab3d7cda9b",
+        "type": "convert_model",
+        "status": "success",
+        "credits_consumed": 10,
+        "output_dir": "/Users/coral/Documents/App Development/Human Resources/assets/models/jeep-minigun-mount/tripo-out/jeep-minigun-mount-convert-fd6b2548",
+        "files": [
+          "model.glb"
+        ],
+        "model_file": "/Users/coral/Documents/App Development/Human Resources/assets/models/jeep-minigun-mount/tripo-out/jeep-minigun-mount-convert-fd6b2548/model.glb"
+      }
+    ],
+    "source_task_id": "e7ecb75e-75b5-411f-9045-db03be9bb2e0",
+    "credits_breakdown": [
+      {
+        "task_id": "e7ecb75e-75b5-411f-9045-db03be9bb2e0",
+        "type": "image_to_model",
+        "credits_consumed": 50
+      },
+      {
+        "task_id": "fd6b2548-183b-4b75-aff8-e5ab3d7cda9b",
+        "type": "convert_model",
+        "credits_consumed": 10
+      }
+    ]
+  }
+]

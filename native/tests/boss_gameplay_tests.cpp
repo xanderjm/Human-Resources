@@ -37,7 +37,7 @@ void commit_rake(gp::Game& game) {
       s.view.runner_distance+std::clamp(station+(station>6?-10.F:10.F),0.F,12.F)};
   actor.view.velocity={};actor.view.body_heading=0;
   auto& boss=*s.boss;boss.next_kind=gp::BossAttackKind::rake;boss.body_heading=0;
-  boss.plan=gp::boss_attack_plan(actor.view,s.view.player,s.view.velocity,boss.next_kind);
+  boss.plan=gp::boss_attack_plan(actor.view,s.view.player,{s.view.velocity.x,s.view.velocity.z-s.view.forward_speed},boss.next_kind);
   require(boss.plan.has_value(),"controlled rake has physical source solutions");
   boss.phase=gp::BossPhase::warning;boss.remaining_ticks=boss.total_ticks=81;boss.next_release=0;
   actor.view.warning_seconds=tune::boss_rake_warning_seconds;s.sync();
@@ -49,7 +49,7 @@ void stored_source_and_phase_schedule() {
   for(unsigned frame=1;frame<=117;++frame) {
     advance(game,{{-.8F,0},false});
     for(const auto& p:s.bullets)if(p.source==id&&seen.insert(p.view.id).second) {
-      const auto& shot=plan.shells[releases++];
+      const auto& shot=s.boss->plan->shells[releases++];
       require_near(p.view.launch_position.x,shot.shot.origin.x,1e-6F,"rake X source remains committed despite player dodge");
       require_near(p.view.launch_position.z,shot.shot.origin.z,1e-6F,"rake Z source remains committed despite player dodge");
       require_near(p.view.velocity.x,shot.trajectory.x*tune::projectile_speed[3],1e-6F,"released velocity consumes stored trajectory");
@@ -57,7 +57,11 @@ void stored_source_and_phase_schedule() {
       require(frame==81+(releases-1)*18,"rake releases on exact 60Hz 0/.30/.60 schedule");
     }
     require_near(s.actors.front().view.position.x,root.x,0,"warning and salvo chassis X planted");
-    require_near(s.actors.front().view.position.z,root.z,0,"warning and salvo chassis Z planted");
+    require_near(s.actors.front().view.position.z-s.view.runner_distance,root.z,.0001F,"warning and salvo chassis stays planted in the scrolling arena");
+    for (unsigned i=0;i<3;++i) {
+      require_near(s.boss->plan->shells[i].aim.x,plan.shells[i].aim.x,.0001F,"arena scrolling preserves committed rake X within world-float reconstruction precision");
+      require_near(s.boss->plan->shells[i].aim.z-s.view.runner_distance,plan.shells[i].aim.z,.0001F,"arena scrolling preserves each committed rake station despite dodging");
+    }
   }
   require(releases==3&&s.boss->phase==gp::BossPhase::recovery&&s.boss->next_kind==gp::BossAttackKind::fan,"complete rake uses three shells and advances exactly once");
   advance(game);require(gp::detail::length_squared(s.actors.front().view.velocity)>0,"weapon recovery allows real chassis reposition immediately");
@@ -84,7 +88,9 @@ void repeated_full_flight_cycles() {
   require(cases==10,"bounded actual-advance station cases exercised");
 }
 void real_tank_introduction_does_not_trap_boss() {
-  auto game=isolated({},true);auto& s=*game.state_;s.view.stats.active_seconds=20;
+  auto game=isolated({},true);auto& s=*game.state_;s.view.stats.active_seconds=tune::enemy_start_second[2];
+  // Residual heavy ingress may overlap a boss; new director arrivals pause while it is alive.
+  s.spawn(gp::EntityKind::tank);
   unsigned rake=0,fan=0,switches=0;bool tank_seen=false;auto previous=gp::BossPhase::approach;bool flank=s.boss->flank_right;
   for(unsigned frame=0;frame<5400;++frame) {
     advance(game);require(s.boss.has_value(),"real ordinary tank ingress cannot permanently trap and retire max-scroll boss");
@@ -96,8 +102,23 @@ void real_tank_introduction_does_not_trap_boss() {
     previous=s.boss->phase;
   }
   require(tank_seen&&rake>=6&&fan>=6,"crowded actual introduction retains repeated boss combat");
-  require(switches>0&&switches<8,"blocked flank changes persist without per-tick lane oscillation");
+  require(switches<8,"ordinary tank ingress cannot provoke per-tick lane oscillation");
   std::cout<<"BOSS actual tank ingress fan="<<fan<<" rake="<<rake<<" flank_switches="<<switches<<'\n';
+}
+void blocked_route_retains_a_physical_detour() {
+  auto game=isolated({},true);auto& s=*game.state_;
+  auto& actor=s.actors.front();actor.view.position={3.5F,0};actor.view.velocity={};
+  actor.attack_timer=100;
+  gp::detail::Actor tank; tank.view.id=s.next_id++;tank.view.kind=gp::EntityKind::tank;
+  tank.view.position={3.5F,6};tank.view.hull=tank.view.maximum_hull=1000000;
+  s.actors.push_back(tank);
+  require(s.boss->flank_right,"blocked fixture starts on the right flank");
+  s.boss_update(s.actors.front(),dt);
+  require(!s.boss->flank_right,"blocked station diagonals select the admitted horizontal corridor");
+  for(unsigned frame=0;frame<30;++frame) {
+    s.boss_update(s.actors.front(),dt);
+    require(!s.boss->flank_right,"committed detour persists while physically crossing the blocked side");
+  }
 }
 void quiet_window_budget_and_cancellation() {
   auto game=isolated();auto& s=*game.state_;
@@ -168,7 +189,7 @@ void stationary_and_dash_controls() {
   for(const auto kind:{gp::BossAttackKind::fan,gp::BossAttackKind::rake}) {
     auto game=isolated();commit_rake(game);auto& s=*game.state_;
     if(kind==gp::BossAttackKind::fan) {
-      s.boss->next_kind=kind;s.boss->plan=gp::boss_attack_plan(s.actors.front().view,s.view.player,s.view.velocity,kind);
+      s.boss->next_kind=kind;s.boss->plan=gp::boss_attack_plan(s.actors.front().view,s.view.player,{s.view.velocity.x,s.view.velocity.z-s.view.forward_speed},kind);
       s.boss->remaining_ticks=s.boss->total_ticks=75;s.actors.front().view.warning_seconds=tune::boss_fan_warning_seconds;
     }
     s.view.invulnerability_seconds=0;const float before=s.view.hull+s.view.shield;
@@ -177,13 +198,15 @@ void stationary_and_dash_controls() {
   }
   auto dashed=isolated();commit_rake(dashed);auto& s=*dashed.state_;s.view.invulnerability_seconds=0;
   const float before=s.view.hull+s.view.shield;
-  for(unsigned frame=0;frame<240;++frame)advance(dashed,{{},frame==105});
+  // React sideways just before the warned first release; world acceleration changes
+  // flight time, so the old fixed forward-Dash at105 no longer dodges it.
+  for(unsigned frame=0;frame<240;++frame)advance(dashed,{{},frame==75,{-1,0}});
   require(s.view.hull+s.view.shield==before&&s.view.dash_cooldown_seconds>0,
       "timed starter Dash avoids the same stationary rake that otherwise hits");
 }
 }
 int main() {
   stored_source_and_phase_schedule();quiet_window_budget_and_cancellation();ordinary_steering_defaults();
-  dodge_paths_use_real_movement_and_collision();stationary_and_dash_controls();repeated_full_flight_cycles();real_tank_introduction_does_not_trap_boss();
+  dodge_paths_use_real_movement_and_collision();stationary_and_dash_controls();repeated_full_flight_cycles();real_tank_introduction_does_not_trap_boss();blocked_route_retains_a_physical_detour();
   std::cout<<"Boss source, phase, quiet-window, cancellation, movement and cycle contracts passed\n";
 }

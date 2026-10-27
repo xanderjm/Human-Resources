@@ -1,0 +1,194 @@
+{
+  "id": "texture-asphalt",
+  "source": "/Users/coral/.codex/generated_images/01a16e3b-5221-78b2-bd33-9830eab86a7f/exec-59c357eb-a08b-46e6-a09d-e31ef9435954.png",
+  "preserved_raw_file": "/Users/coral/Documents/App Development/Human Resources/assets/textures/texture-asphalt/raw-v1.png",
+  "source_sha256": "221f696a120e89fc9054845017dcf8ab3b928390995b71a7dc684c82c18f8f63",
+  "generation_record": "/Users/coral/Documents/App Development/Human Resources/assets/production/records/texture-asphalt/tile-v1-generated.json",
+  "final_file": "/Users/coral/Documents/App Development/Human Resources/assets/textures/texture-asphalt/texture-asphalt.png",
+  "sha256": "1b1821bf91bdddb363680813ca37feac7d5c0a2dfe7fc8bd955e819b7d443017",
+  "dimensions": [
+    1024,
+    1024
+  ],
+  "channels": "RGB",
+  "color_space": "sRGB albedo",
+  "role": "repeating albedo; no baked lighting or PBR maps",
+  "method": "Periodic full-width interior brush-strip quilt; two closed minimum-error seams; local28px smooth feather; final2-texel exact periodic projection. No mirroring or whole-image contrast change.",
+  "source_seams": {
+    "edge_value_x": {
+      "max_abs_8bit": 51.0,
+      "rms_8bit": 13.464386860962762
+    },
+    "edge_value_y": {
+      "max_abs_8bit": 40.0,
+      "rms_8bit": 15.6867633459179
+    },
+    "first_difference_x": {
+      "max_abs_8bit": 24.0,
+      "rms_8bit": 4.312688703600883
+    },
+    "first_difference_y": {
+      "max_abs_8bit": 30.0,
+      "rms_8bit": 10.819196505324845
+    },
+    "interior_adjacent_rms_8bit": 3.5267495480974564
+  },
+  "exported_seams": {
+    "edge_value_x": {
+      "max_abs_8bit": 0.0,
+      "rms_8bit": 0.0
+    },
+    "edge_value_y": {
+      "max_abs_8bit": 0.0,
+      "rms_8bit": 0.0
+    },
+    "first_difference_x": {
+      "max_abs_8bit": 0.0,
+      "rms_8bit": 0.0
+    },
+    "first_difference_y": {
+      "max_abs_8bit": 0.0,
+      "rms_8bit": 0.0
+    },
+    "interior_adjacent_rms_8bit": 3.5081439664073453
+  },
+  "correction_rms_8bit": 6.324293167967615,
+  "numerical_qa": "passed",
+  "visual_qa": {
+    "status": "passed_authoring_review",
+    "reviewer": "measured_modules agent",
+    "reviewed_at": "2026-10-24T22:04:46.103223+00:00",
+    "views": [
+      "3x3 repeat at512px per tile",
+      "1024px-wide native wrap neighbourhood with join at centre"
+    ],
+    "notes": "Replaced the old horizontal stroke termination with a real interior brush strip joined along two closed minimum-error paths. No visible horizontal hairline at repeat boundaries; no mirrored paint or straight cross blend. Broad blue/slate brush contrast retained. Root final capture review remains separate.",
+    "owner_approval": "not yet requested"
+  },
+  "box_downsample_mip_diagnostics": {
+    "512": {
+      "edge_value_x": {
+        "max_abs_8bit": 7.0,
+        "rms_8bit": 1.616363266203898
+      },
+      "edge_value_y": {
+        "max_abs_8bit": 15.0,
+        "rms_8bit": 1.9329583867740143
+      },
+      "first_difference_x": {
+        "max_abs_8bit": 26.0,
+        "rms_8bit": 4.632103216502557
+      },
+      "first_difference_y": {
+        "max_abs_8bit": 44.0,
+        "rms_8bit": 7.629182596014683
+      },
+      "interior_adjacent_rms_8bit": 3.5006529639719157
+    },
+    "256": {
+      "edge_value_x": {
+        "max_abs_8bit": 11.0,
+        "rms_8bit": 2.555121490914538
+      },
+      "edge_value_y": {
+        "max_abs_8bit": 16.0,
+        "rms_8bit": 2.858649156507318
+      },
+      "first_difference_x": {
+        "max_abs_8bit": 25.0,
+        "rms_8bit": 4.420301177521731
+      },
+      "first_difference_y": {
+        "max_abs_8bit": 29.0,
+        "rms_8bit": 5.577811324046975
+      },
+      "interior_adjacent_rms_8bit": 3.1330051455457366
+    },
+    "128": {
+      "edge_value_x": {
+        "max_abs_8bit": 14.0,
+        "rms_8bit": 2.8622907492659326
+      },
+      "edge_value_y": {
+        "max_abs_8bit": 16.0,
+        "rms_8bit": 3.39998468133804
+      },
+      "first_difference_x": {
+        "max_abs_8bit": 34.0,
+        "rms_8bit": 5.630090289388499
+      },
+      "first_difference_y": {
+        "max_abs_8bit": 28.0,
+        "rms_8bit": 5.19590183060971
+      },
+      "interior_adjacent_rms_8bit": 3.3504054030918224
+    },
+    "64": {
+      "edge_value_x": {
+        "max_abs_8bit": 14.0,
+        "rms_8bit": 3.801041523933495
+      },
+      "edge_value_y": {
+        "max_abs_8bit": 14.0,
+        "rms_8bit": 4.04789039706693
+      },
+      "first_difference_x": {
+        "max_abs_8bit": 27.0,
+        "rms_8bit": 5.640257086339239
+      },
+      "first_difference_y": {
+        "max_abs_8bit": 27.0,
+        "rms_8bit": 5.259911279353167
+      },
+      "interior_adjacent_rms_8bit": 4.053990617240059
+    },
+    "32": {
+      "edge_value_x": {
+        "max_abs_8bit": 13.0,
+        "rms_8bit": 4.823985212802101
+      },
+      "edge_value_y": {
+        "max_abs_8bit": 22.0,
+        "rms_8bit": 5.336587548861788
+      },
+      "first_difference_x": {
+        "max_abs_8bit": 17.0,
+        "rms_8bit": 6.648151372123431
+      },
+      "first_difference_y": {
+        "max_abs_8bit": 21.0,
+        "rms_8bit": 7.66145656299549
+      },
+      "interior_adjacent_rms_8bit": 5.208822728330035
+    }
+  },
+  "tiled_preview": "/Users/coral/Documents/App Development/Human Resources/assets/textures/texture-asphalt/tiled-3x3-qa.png",
+  "close_tiled_preview": "/Users/coral/Documents/App Development/Human Resources/assets/textures/texture-asphalt/tiled-3x3-close-qa.png",
+  "repeat_sampler": {
+    "wrap_s": "REPEAT",
+    "wrap_t": "REPEAT"
+  },
+  "limitations": [
+    "Shipping gameplay integration, target GPU mip selection and device-scale density are not qualified; native authoring preview evidence is separate.",
+    "A single repeat tile can still show recurrent brush motifs over very large empty surfaces; numerical continuity alone does not establish art approval."
+  ],
+  "asphalt_quilt_override": {
+    "donor_centre_row": 448,
+    "top_cut_range": [
+      336,
+      430
+    ],
+    "bottom_cut_range": [
+      592,
+      684
+    ],
+    "feather_width_px": 28,
+    "closed_minimum_error_score": 47757.600000000384,
+    "method": "Periodic full-width interior brush-strip quilt; two closed minimum-error seams; local28px smooth feather; final2-texel exact periodic projection. No mirroring or whole-image contrast change.",
+    "script": "tools/repair_asphalt_tile.py",
+    "integrated_in": "tools/seamless_textures.py",
+    "input_master": "assets/textures/texture-asphalt/pre-quilt-master-v2.png",
+    "input_sha256": "67f3b0d600fd2fd207ed3b2b244208b8ba20744e8ba84311f24898b5f06d95b2"
+  },
+  "native_authoring_preview_evidence": "build/captures/seamless-material-check/evidence.json"
+}

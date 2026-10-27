@@ -1,0 +1,24 @@
+{
+  "asset": "service-canopy",
+  "description": "Added a thin continuous cream roof backing under the existing red panels to close tiny through-gaps; four supports and open space beneath retained.",
+  "source": "assets/models/service-canopy/tripo-out/service-canopy-convert-65881859/model.glb",
+  "source_sha256": "cc5f111cfa513200f2a2694366e937b8a269fd349e56cd1299fa7c8f827376dc",
+  "repaired_source": "assets/models/service-canopy/service-canopy-repaired-source.glb",
+  "repaired_source_sha256": "ebd64043e30218a5326fea16941b0b9bf22c0cde9e06d9f3e06b9fa40c613d5c",
+  "details": {
+    "added_triangles": 12,
+    "raw_backing_bounds": [
+      [
+        -0.325,
+        0.165,
+        -0.475
+      ],
+      [
+        0.325,
+        0.177,
+        0.475
+      ]
+    ]
+  },
+  "material_policy": "Original embedded base-colour and material retained; no PBR maps, no retexture."
+}

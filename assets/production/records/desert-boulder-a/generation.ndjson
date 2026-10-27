@@ -1,0 +1,27 @@
+── Plan ──────────────────────────
+input: /Users/coral/Documents/App Development/Human Resources/assets/references/desert-boulder-a/v1.png
+model: P1-20260311 — explicit --model
+steps:
+  1. image-to-model  POST /v3/generation/image-to-model — generate a 3D model from one image
+     model="P1-20260311" face_limit=1800 texture=true pbr=false texture_quality="standard" texture_alignment="original_image" export_uv=true
+  2. convert  POST /v3/models/convert — convert format / texture size / orientation
+     format="GLTF" texture_size=1024
+cost impact:
+  · non-default convert options bill as complex convert
+──────────────────────────────────
+model: P1-20260311 (explicit --model)
+task created bceadc51-8034-4eee-9218-6b90e4a51223 (@desert-boulder-a)
+image_to_model · queued
+image_to_model · running 11% · bceadc51
+image_to_model · running 31% · bceadc51
+image_to_model · running 50% · bceadc51
+image_to_model · running 76% · bceadc51
+image_to_model · success 100% · bceadc51
+✓ image_to_model · bceadc51-8034-4eee-9218-6b90e4a51223 · 50 credits
+! non-default convert options use the "complex convert" price tier
+task created 30a35814-75d2-4cd3-aea9-6b6b4bbeb78d (@desert-boulder-a-convert)
+convert_model · queued
+✓ convert_model · 30a35814-75d2-4cd3-aea9-6b6b4bbeb78d · 10 credits
+downloading artifacts…
+✓ artifacts saved to /Users/coral/Documents/App Development/Human Resources/assets/models/desert-boulder-a/tripo-out/desert-boulder-a-convert-30a35814
+{"task_id":"30a35814-75d2-4cd3-aea9-6b6b4bbeb78d","type":"convert_model","status":"success","credits_consumed":60,"output_dir":"/Users/coral/Documents/App Development/Human Resources/assets/models/desert-boulder-a/tripo-out/desert-boulder-a-convert-30a35814","files":["model.glb"],"model_file":"/Users/coral/Documents/App Development/Human Resources/assets/models/desert-boulder-a/tripo-out/desert-boulder-a-convert-30a35814/model.glb","chain":[{"task_id":"30a35814-75d2-4cd3-aea9-6b6b4bbeb78d","type":"convert_model","status":"success","credits_consumed":10,"output_dir":"/Users/coral/Documents/App Development/Human Resources/assets/models/desert-boulder-a/tripo-out/desert-boulder-a-convert-30a35814","files":["model.glb"],"model_file":"/Users/coral/Documents/App Development/Human Resources/assets/models/desert-boulder-a/tripo-out/desert-boulder-a-convert-30a35814/model.glb"}],"source_task_id":"bceadc51-8034-4eee-9218-6b90e4a51223","credits_breakdown":[{"task_id":"bceadc51-8034-4eee-9218-6b90e4a51223","type":"image_to_model","credits_consumed":50},{"task_id":"30a35814-75d2-4cd3-aea9-6b6b4bbeb78d","type":"convert_model","credits_consumed":10}]}

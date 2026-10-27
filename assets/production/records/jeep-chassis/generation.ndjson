@@ -1,0 +1,28 @@
+── Plan ──────────────────────────
+input: /Users/coral/Documents/App Development/Human Resources/assets/references/jeep-chassis/v1.png
+model: P1-20260311 — explicit --model
+steps:
+  1. image-to-model  POST /v3/generation/image-to-model — generate a 3D model from one image
+     model="P1-20260311" face_limit=2800 texture=true pbr=false texture_quality="standard" texture_alignment="original_image" export_uv=true
+  2. convert  POST /v3/models/convert — convert format / texture size / orientation
+     format="GLTF" texture_size=1024
+cost impact:
+  · non-default convert options bill as complex convert
+──────────────────────────────────
+model: P1-20260311 (explicit --model)
+task created 613855fe-1d70-438a-8cd6-1ccf1f2438b8 (@jeep-chassis)
+image_to_model · queued
+image_to_model · running 9% · 613855fe
+image_to_model · running 17% · 613855fe
+image_to_model · running 29% · 613855fe
+image_to_model · running 44% · 613855fe
+image_to_model · running 68% · 613855fe
+image_to_model · success 100% · 613855fe
+✓ image_to_model · 613855fe-1d70-438a-8cd6-1ccf1f2438b8 · 50 credits
+! non-default convert options use the "complex convert" price tier
+task created e8dd1da5-7011-4196-b9dd-0ca60245d2a5 (@jeep-chassis-convert)
+convert_model · queued
+✓ convert_model · e8dd1da5-7011-4196-b9dd-0ca60245d2a5 · 10 credits
+downloading artifacts…
+✓ artifacts saved to /Users/coral/Documents/App Development/Human Resources/assets/models/jeep-chassis/tripo-out/jeep-chassis-convert-e8dd1da5
+{"task_id":"e8dd1da5-7011-4196-b9dd-0ca60245d2a5","type":"convert_model","status":"success","credits_consumed":60,"output_dir":"/Users/coral/Documents/App Development/Human Resources/assets/models/jeep-chassis/tripo-out/jeep-chassis-convert-e8dd1da5","files":["model.glb"],"model_file":"/Users/coral/Documents/App Development/Human Resources/assets/models/jeep-chassis/tripo-out/jeep-chassis-convert-e8dd1da5/model.glb","chain":[{"task_id":"e8dd1da5-7011-4196-b9dd-0ca60245d2a5","type":"convert_model","status":"success","credits_consumed":10,"output_dir":"/Users/coral/Documents/App Development/Human Resources/assets/models/jeep-chassis/tripo-out/jeep-chassis-convert-e8dd1da5","files":["model.glb"],"model_file":"/Users/coral/Documents/App Development/Human Resources/assets/models/jeep-chassis/tripo-out/jeep-chassis-convert-e8dd1da5/model.glb"}],"source_task_id":"613855fe-1d70-438a-8cd6-1ccf1f2438b8","credits_breakdown":[{"task_id":"613855fe-1d70-438a-8cd6-1ccf1f2438b8","type":"image_to_model","credits_consumed":50},{"task_id":"e8dd1da5-7011-4196-b9dd-0ca60245d2a5","type":"convert_model","credits_consumed":10}]}
