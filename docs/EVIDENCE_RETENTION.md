@@ -45,6 +45,17 @@ named lossless PNGs retain the exact pixels. Deleted Android intermediates must
 be regenerated before reuse. Whole-volume free-space changes include concurrent
 activity and are not attributed wholly to this cleanup.
 
+The later general cleanup on 27 October is recorded in
+`build/evidence/obsolete-cleanup-20261027/PLAN.json` and `RESULT.json`. It retires
+17 superseded preview/QA bundles, older UI iteration media, automatic Blender
+backups, old frozen Windows compiler outputs and the installed Gradle version's
+redundant download archive: 3,017 files / 3.04 GB logical. Current owner apps and
+the immediate baseline, all saves, current portrait matrices, selected comparison
+and failure evidence, all mobile packages/bundles and newest platform
+qualifications remain. All 74,629 retained files/links pass preservation checks.
+Historical reports referring to these exact retired paths no longer imply that
+their old preview/capture/build artifacts remain available.
+
 Hosted evidence remains subject to the repository's manual-workflow and CI
 artifact requirements. This local retention policy does not weaken a test or
 turn missing device, performance, signing or store evidence into a pass.
